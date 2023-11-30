@@ -1,0 +1,1840 @@
+{
+  "status": "OK",
+  "Data": {
+    "costByCondition": [
+      {
+        "date": "202209",
+        "cost": [
+          {
+            "cost": 0.0,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 29176.660518378598,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 1012.3199999999999,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 5654.546878847998,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 6636.8399271706,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 666.6606111272,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2988.7273804996,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 1701.2044691998994,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 1872.0386861541995,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 119.05317303199999,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 4051.965241274687,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202210",
+        "cost": [
+          {
+            "cost": 0.0,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 29246.487033395,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 866.4532,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 5820.572400587204,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7286.78331919176,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 700.0072607147,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3118.0493409406,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 1873.8616933917997,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2110.3172133364023,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 144.1128745868,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 4174.701276514799,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202211",
+        "cost": [
+          {
+            "cost": 0.0,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 33244.9653876525,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 1115.1935999999998,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 6531.042258163695,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 6931.625371850165,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 666.5272222384,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2972.0150734716,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2122.4662008664986,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2307.8782451386987,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 168.30225592110003,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 5124.246121495797,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202212",
+        "cost": [
+          {
+            "cost": 0.0,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 33542.4806703613,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 1049.2224,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7005.198381481182,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7244.319758958452,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 685.9997391963,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3005.3531454151,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2343.3910125714992,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2428.6685659177,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 194.4567418735,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 5748.767785722699,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202301",
+        "cost": [
+          {
+            "cost": 0.0,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 34446.4483734364,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 902.3232000000002,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 12092.012659599364,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7506.191416251456,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 686.3779999488,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3154.961856209,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2540.381749477299,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2748.5224912865024,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 8738.7567193637,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 5056.006333488999,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202302",
+        "cost": [
+          {
+            "cost": 4974.8160000098005,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 31134.2565342793,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 747.8016,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7186.172004622414,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7195.508054828904,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 620.0569452894,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2797.940354191,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2622.0136162200997,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2273.432167086902,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 4254.5372280901,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 4649.589607719388,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202303",
+        "cost": [
+          {
+            "cost": 3747.2645121118,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 34525.158627362,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 902.3232,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7645.542587817878,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7868.1245539110405,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 678.7636000248,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2999.3432031903,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2921.2409427113002,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2924.242144039402,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 23.0284664316,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 5632.475107722998,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202304",
+        "cost": [
+          {
+            "cost": 0.0,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 34200.461566521604,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 873.2159999999999,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7646.467474632193,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7161.343829715213,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 659.179600056,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2949.5162457673,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3122.960699940999,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2672.9545914420996,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 22.965785289800003,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 5286.364951783693,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202305",
+        "cost": [
+          {
+            "cost": 134720.2180303515,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 56105.855388245,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 21912.40088,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 8761.333155029404,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7650.211709610052,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 9333.6354450248,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3283.7729455961,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3298.755087181101,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3381.6726541057997,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 22.919945131,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 10438.893084622607,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202306",
+        "cost": [
+          {
+            "cost": 126720.3172475879,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 60063.9215768743,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 21478.753254,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 9381.3493843144,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 7838.049482349498,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 9491.006150101199,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3380.8117486422,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3235.418692192401,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3511.796238217307,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 25.4388311018,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 11035.423492457096,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202307",
+        "cost": [
+          {
+            "cost": 130944.0000000092,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 65378.64353964661,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 22303.504,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 11377.34441365492,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 8054.198841631336,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 9449.4088820872,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3500.7302586734004,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 3502.4889482991002,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2752.8816981949017,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 9504.9994778016,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 11728.429412398902,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "202308",
+        "cost": [
+          {
+            "cost": 134532.2750000063,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 58768.471433887105,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 21972.448800000002,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 5987.008632321093,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 5866.0289913937895,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 9470.3182059701,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2110.6942435374003,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 1981.6709016573002,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2054.349599171699,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 17.1280497681,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 10942.925553330802,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      },
+      {
+        "date": "estimated",
+        "cost": [
+          {
+            "cost": 147858.32086588998,
+            "item": "Savings Plans for AWS Compute usage",
+            "itemAlias": "Savings Plans for AWS Compute usage",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 1,
+            "serviceGroup": false
+          },
+          {
+            "cost": 64589.76112660819,
+            "item": "Amazon Relational Database Service",
+            "itemAlias": "Amazon Relational Database Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 2,
+            "serviceGroup": false
+          },
+          {
+            "cost": 24148.921772709095,
+            "item": "Amazon ElastiCache",
+            "itemAlias": "Amazon ElastiCache",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 3,
+            "serviceGroup": false
+          },
+          {
+            "cost": 6580.049608055344,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 4,
+            "serviceGroup": false
+          },
+          {
+            "cost": 6447.086372530869,
+            "item": "Amazon Elastic Container Service",
+            "itemAlias": "Amazon Elastic Container Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 5,
+            "serviceGroup": false
+          },
+          {
+            "cost": 10408.397152284393,
+            "item": "Amazon OpenSearch Service",
+            "itemAlias": "Amazon OpenSearch Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 6,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2319.7682988020924,
+            "item": "Amazon MQ",
+            "itemAlias": "Amazon MQ",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 7,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2177.964596434788,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 8,
+            "serviceGroup": false
+          },
+          {
+            "cost": 2257.842456057681,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 9,
+            "serviceGroup": false
+          },
+          {
+            "cost": 18.82466254598418,
+            "item": "Amazon Elastic File System",
+            "itemAlias": "Amazon Elastic File System",
+            "vendor": "AWS",
+            "isOthers": false,
+            "order": 10,
+            "serviceGroup": false
+          },
+          {
+            "cost": 12026.87308808133,
+            "item": "others",
+            "itemAlias": "others",
+            "vendor": "AWS",
+            "isOthers": true,
+            "numberOfOthers": 56,
+            "order": 99,
+            "serviceGroup": false
+          }
+        ]
+      }
+    ],
+    "customFilters": [
+      {
+        "item": "AWS Backup",
+        "itemAlias": "AWS Backup",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS CloudTrail",
+        "itemAlias": "AWS CloudTrail",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Config",
+        "itemAlias": "AWS Config",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Data Transfer",
+        "itemAlias": "AWS Data Transfer",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Glue",
+        "itemAlias": "AWS Glue",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Key Management Service",
+        "itemAlias": "AWS Key Management Service",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Lambda",
+        "itemAlias": "AWS Lambda",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Secrets Manager",
+        "itemAlias": "AWS Secrets Manager",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Security Hub",
+        "itemAlias": "AWS Security Hub",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Service Catalog",
+        "itemAlias": "AWS Service Catalog",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Step Functions",
+        "itemAlias": "AWS Step Functions",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Systems Manager",
+        "itemAlias": "AWS Systems Manager",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS WAF",
+        "itemAlias": "AWS WAF",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS X-Ray",
+        "itemAlias": "AWS X-Ray",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon API Gateway",
+        "itemAlias": "Amazon API Gateway",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Athena",
+        "itemAlias": "Amazon Athena",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Chime Voice Connector a service sold by AMCS LLC",
+        "itemAlias": "Amazon Chime Voice Connector a service sold by AMCS LLC",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon CloudFront",
+        "itemAlias": "Amazon CloudFront",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Cognito",
+        "itemAlias": "Amazon Cognito",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Connect Customer Profiles",
+        "itemAlias": "Amazon Connect Customer Profiles",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon DynamoDB",
+        "itemAlias": "Amazon DynamoDB",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon EC2 Container Registry (ECR)",
+        "itemAlias": "Amazon EC2 Container Registry (ECR)",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon ElastiCache",
+        "itemAlias": "Amazon ElastiCache",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Elastic Compute Cloud",
+        "itemAlias": "Amazon Elastic Compute Cloud",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Elastic Container Registry Public",
+        "itemAlias": "Amazon Elastic Container Registry Public",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Elastic Container Service",
+        "itemAlias": "Amazon Elastic Container Service",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Elastic Container Service for Kubernetes",
+        "itemAlias": "Amazon Elastic Container Service for Kubernetes",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Elastic File System",
+        "itemAlias": "Amazon Elastic File System",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Elastic MapReduce",
+        "itemAlias": "Amazon Elastic MapReduce",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon GuardDuty",
+        "itemAlias": "Amazon GuardDuty",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Kinesis Firehose",
+        "itemAlias": "Amazon Kinesis Firehose",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Lightsail",
+        "itemAlias": "Amazon Lightsail",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon MQ",
+        "itemAlias": "Amazon MQ",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon OpenSearch Service",
+        "itemAlias": "Amazon OpenSearch Service",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Pinpoint",
+        "itemAlias": "Amazon Pinpoint",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon QuickSight",
+        "itemAlias": "Amazon QuickSight",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Relational Database Service",
+        "itemAlias": "Amazon Relational Database Service",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Route 53",
+        "itemAlias": "Amazon Route 53",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon SageMaker",
+        "itemAlias": "Amazon SageMaker",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Simple Email Service",
+        "itemAlias": "Amazon Simple Email Service",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Simple Notification Service",
+        "itemAlias": "Amazon Simple Notification Service",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Simple Queue Service",
+        "itemAlias": "Amazon Simple Queue Service",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Simple Storage Service",
+        "itemAlias": "Amazon Simple Storage Service",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Virtual Private Cloud",
+        "itemAlias": "Amazon Virtual Private Cloud",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AmazonCloudWatch",
+        "itemAlias": "AmazonCloudWatch",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AmazonWorkMail",
+        "itemAlias": "AmazonWorkMail",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "CloudWatch Events",
+        "itemAlias": "CloudWatch Events",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Elastic Load Balancing",
+        "itemAlias": "Elastic Load Balancing",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS CodeArtifact",
+        "itemAlias": "AWS CodeArtifact",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Cost Explorer",
+        "itemAlias": "AWS Cost Explorer",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Registrar",
+        "itemAlias": "Amazon Registrar",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Database Migration Service",
+        "itemAlias": "AWS Database Migration Service",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Dev Guru",
+        "itemAlias": "Amazon Dev Guru",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Redshift",
+        "itemAlias": "Amazon Redshift",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "CodeBuild",
+        "itemAlias": "CodeBuild",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon AppFlow",
+        "itemAlias": "Amazon AppFlow",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Directory Service",
+        "itemAlias": "AWS Directory Service",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon WorkSpaces",
+        "itemAlias": "Amazon WorkSpaces",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Savings Plans for AWS Compute usage",
+        "itemAlias": "Savings Plans for AWS Compute usage",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS Compute Optimizer",
+        "itemAlias": "AWS Compute Optimizer",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon DocumentDB (with MongoDB compatibility)",
+        "itemAlias": "Amazon DocumentDB (with MongoDB compatibility)",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Macie",
+        "itemAlias": "Amazon Macie",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon MemoryDB",
+        "itemAlias": "Amazon MemoryDB",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Amazon Verified Permissions",
+        "itemAlias": "Amazon Verified Permissions",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "AWS IoT",
+        "itemAlias": "AWS IoT",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "Microsoft Windows Server 2019 Base with Containers Support by Bansir",
+        "itemAlias": "Microsoft Windows Server 2019 Base with Containers Support by Bansir",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      }
+    ],
+    "timeFrameScope": {
+      "endDate": "2023-08-21",
+      "startDate": "2022-09-01"
+    }
+  }
+}

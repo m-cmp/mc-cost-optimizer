@@ -1,0 +1,10 @@
+{
+  "status": "ok",
+  "Data": {
+    "currentMonthCost": 253703.31941104392,
+    "currentMonthEstimatedCost": 278833.81,
+    "lastMonthTotalCost": 278496.6294723971,
+    "increaseDecreaseRate": 0.1210716726596246,
+    "selectedVendor": "AWS"
+  }
+}

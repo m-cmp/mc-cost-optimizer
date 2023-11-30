@@ -1,0 +1,37 @@
+{
+  "status": "OK",
+  "Data": {
+    "currencies": {
+      "KRW": 1338.0,
+      "MXN": 17.06,
+      "IDR": 152.91,
+      "USD": 1.0,
+      "VND": 26760.0,
+      "CNY": 7.3
+    },
+    "selectedVendors": [
+      "AWS"
+    ],
+    "selectedCurrency": "USD",
+    "defaultCurrency": "USD",
+    "vendorCurrencies": {
+      "aws": [
+        {
+          "siteCode": null,
+          "companyId": "1",
+          "vendor": null,
+          "currency": null,
+          "rate": "1.0",
+          "billYear": "2023",
+          "billMonth": "08"
+        }
+      ],
+      "azure": null,
+      "gcp": null,
+      "ali": null,
+      "oci": null,
+      "ncp": null
+    },
+    "exchangeRateDate": "2023-08-24"
+  }
+}

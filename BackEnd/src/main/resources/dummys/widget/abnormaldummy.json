@@ -1,0 +1,76 @@
+{
+  "status": "OK",
+  "Data": {
+    "totalIncreaseDecreaseCost": 7858.139999999999,
+    "totalIncreaseDecreaseRate": 19.05,
+    "latestSummarizedBillDate": "20230819",
+    "abnormalList": [
+      {
+        "item": "748665785761",
+        "itemAlias": "Data - DEV",
+        "currentCost": 17.545093470799994,
+        "lastCost": 15.617174184400001,
+        "increaseDecreaseRate": 12.35595390524969,
+        "costChanges": null,
+        "vendor": "AWS",
+        "alarmLevel": "Minor",
+        "levelStates": null
+      },
+      {
+        "item": "216093335544",
+        "itemAlias": "MCMP - PRD",
+        "currentCost": 39198.68277185916,
+        "lastCost": 30765.227172690564,
+        "increaseDecreaseRate": 27.41227678128849,
+        "costChanges": null,
+        "vendor": "AWS",
+        "alarmLevel": "Critical",
+        "levelStates": null
+      },
+      {
+        "item": "099888603232",
+        "itemAlias": "Shield Test1",
+        "currentCost": 240.2240656902998,
+        "lastCost": 6940.041483050399,
+        "increaseDecreaseRate": -96.53863666491836,
+        "costChanges": null,
+        "vendor": "AWS",
+        "alarmLevel": "Critical",
+        "levelStates": null
+      },
+      {
+        "item": "338715797467",
+        "itemAlias": "Fin - MEA1",
+        "currentCost": 4094.4508716369055,
+        "lastCost": 2949.0349747332007,
+        "increaseDecreaseRate": 38.84056791555188,
+        "costChanges": null,
+        "vendor": "AWS",
+        "alarmLevel": "Critical",
+        "levelStates": null
+      },
+      {
+        "item": "971924526134",
+        "itemAlias": "MCMP - COM",
+        "currentCost": 365.76405636469997,
+        "lastCost": 463.62689425100007,
+        "increaseDecreaseRate": -21.10950542458426,
+        "costChanges": null,
+        "vendor": "AWS",
+        "alarmLevel": "Minor",
+        "levelStates": null
+      },
+      {
+        "item": "557892227155",
+        "itemAlias": "MCMP - NOS",
+        "currentCost": 5189.9732218502,
+        "lastCost": 114.94884659600018,
+        "increaseDecreaseRate": 4414.980426272293,
+        "costChanges": null,
+        "vendor": "AWS",
+        "alarmLevel": "Critical",
+        "levelStates": null
+      }
+    ]
+  }
+}

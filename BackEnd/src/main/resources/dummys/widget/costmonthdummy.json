@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "Data": {
+    "currentMonthDate": "2023-08-21",
+    "currentMonthCost": 253703.31941104392,
+    "lastMonthDate": "2023-07-21",
+    "lastMonthCost": 204854.45871085938,
+    "increaseDecreaseRate": 23.84564192919617,
+    "selectedVendor": null
+  }
+}

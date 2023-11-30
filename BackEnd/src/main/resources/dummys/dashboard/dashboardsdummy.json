@@ -1,0 +1,293 @@
+{
+  "status": "OK",
+  "Data": {
+    "batchTime": {
+      "TENCENT": "2023-02-02  12:00:13",
+      "AZURE": "2023-08-31 19:26:51",
+      "OCI": "2023-09-01T03:28:22.0",
+      "GCP": "2023-09-01  01:28:25",
+      "NCP": "2023-08-31",
+      "AWS": "2023-08-31T23:45:34.0"
+    },
+    "widgetType": [
+      "dashboard_abnormal_change_widget",
+      "dashboard_compare_cost_trend_widget",
+      "dashboard_cost_by_widget",
+      "dashboard_cost_month_to_date_widget",
+      "dashboard_estimated_cost_widget",
+      "dashboard_product_portion_by_widget",
+      "dashboard_top_5_widget"
+    ],
+    "widgetValues": {
+      "dashboard_compare_cost_trend_widget": {
+        "timeFrame": [
+          "last_2_months",
+          "last_3_months",
+          "last_6_months"
+        ]
+      },
+      "dashboard_abnormal_charge_widget": {
+        "threshold": [
+          5,
+          10,
+          15
+        ],
+        "timeFrame": [
+          "compare_last_3_days",
+          "compare_last_7_days",
+          "compare_latest_day_vs_average_of_7_days",
+          "compare_this_month_vs_last_month"
+        ],
+        "viewBy": [
+          "account",
+          "product",
+          "region"
+        ]
+      },
+      "dashboard_cost_by_widget": {
+        "filter": [
+          "top_10_by_cost",
+          "custom"
+        ],
+        "dateType": [
+          "monthly",
+          "weekly"
+        ],
+        "chartType": [
+          "stack",
+          "line"
+        ],
+        "scale": [
+          "value",
+          "percentage"
+        ],
+        "timeFrame": {
+          "monthly": [
+            "last_12_months",
+            "last_6_months",
+            "last_3_months",
+            "year_to_month"
+          ],
+          "weekly": [
+            "last_24_weeks",
+            "last_16_weeks",
+            "last_8_weeks",
+            "last_4_weeks",
+            "year_to_week"
+          ]
+        },
+        "viewBy": [
+          "account",
+          "product",
+          "region"
+        ]
+      },
+      "dashboard_product_portion_by_widget": {
+        "dateType": [
+          "monthly",
+          "weekly"
+        ],
+        "scale": [
+          "value",
+          "percentage"
+        ]
+      },
+      "dashboard_top_5_widget": {
+        "chartType": [
+          "pie"
+        ],
+        "timeFrame": [
+          "last_60_days",
+          "last_30_days",
+          "last_14_days",
+          "last_10_days",
+          "last_7_days",
+          "month_to_date"
+        ],
+        "viewBy": [
+          "account",
+          "product",
+          "region"
+        ]
+      }
+    },
+    "widgetDefaultValue": {
+      "dashboard_cost_by_widget": {
+        "filter": "top_10_by_cost",
+        "dateType": "monthly",
+        "chartType": "stack",
+        "scale": "value",
+        "timeFrame": "last_12_months",
+        "viewBy": "account"
+      },
+      "dashboard_compare_cost_trend_widget": {
+        "timeFrame": "last_2_months"
+      },
+      "dashboard_abnormal_charge_widget": {
+        "threshold": 10,
+        "timeFrame": "compare_this_month_vs_last_month",
+        "viewBy": "account"
+      },
+      "dashboard_product_portion_by_widget": {
+        "dateType": "monthly",
+        "scale": "percentage"
+      },
+      "dashboard_top_5_widget": {
+        "chartType": "pie",
+        "timeFrame": "last_14_days",
+        "viewBy": "account"
+      }
+    },
+    "userData": {
+      "dashboardData": [
+        {
+          "siteCode": null,
+          "companyId": null,
+          "userId": null,
+          "index": 0,
+          "isTemplate": false,
+          "isDashboardSelected": true,
+          "dashboardName": "MCMP",
+          "widgets": [
+            {
+              "dashboardIndex": 0,
+              "index": 4,
+              "x": 0,
+              "y": 4,
+              "width": 24,
+              "height": 13,
+              "widgetType": "dashboard_compare_cost_trend_widget",
+              "timeFrame": "last_2_months",
+              "selectedVendorsByWidget": [
+                "AWS"
+              ],
+              "useYn": "Y",
+              "isAbnormalNotiOn": false
+            },
+            {
+              "dashboardIndex": 0,
+              "index": 6,
+              "x": 12,
+              "y": 17,
+              "width": 12,
+              "height": 13,
+              "widgetType": "dashboard_cost_by_widget",
+              "viewBy": "account",
+              "dateType": "monthly",
+              "timeFrame": "year_to_month",
+              "chartType": "line",
+              "scale": "value",
+              "filter": "top_10_by_cost",
+              "selectedVendorsByWidget": [
+                "AWS"
+              ],
+              "useYn": "Y",
+              "isAbnormalNotiOn": false
+            },
+            {
+              "dashboardIndex": 0,
+              "index": 7,
+              "x": 12,
+              "y": 30,
+              "width": 12,
+              "height": 13,
+              "widgetType": "dashboard_product_portion_by_widget",
+              "dateType": "monthly",
+              "timeFrame": "202305",
+              "scale": "value",
+              "selectedAccount": "000885530975",
+              "selectedVendorsByWidget": [
+                "AWS"
+              ],
+              "useYn": "Y",
+              "isAbnormalNotiOn": false
+            },
+            {
+              "dashboardIndex": 0,
+              "index": 9,
+              "x": 0,
+              "y": 30,
+              "width": 12,
+              "height": 13,
+              "widgetType": "dashboard_abnormal_change_widget",
+              "viewBy": "account",
+              "timeFrame": "compare_this_month_vs_last_month",
+              "threshold": 10,
+              "selectedVendorsByWidget": [
+                "AWS"
+              ],
+              "useYn": "Y",
+              "colId": "increaseDecreaseRate",
+              "sortType": "desc",
+              "columnState": "",
+              "isAbnormalNotiOn": false,
+              "minAlert": 100.0,
+              "maxAlert": 1000.0,
+              "mailSendCond": {
+                "alarmCond": "I",
+                "isIncludeLowerLevel": false,
+                "mailReceivers": {
+                  "normal": [],
+                  "minor": [],
+                  "critical": []
+                }
+              },
+              "mailReceivers": {
+                "normal": [],
+                "minor": [],
+                "critical": []
+              },
+              "alarmCondition": "I",
+              "isIncludeLowerLevel": false
+            },
+            {
+              "dashboardIndex": 0,
+              "index": 10,
+              "x": 0,
+              "y": 17,
+              "width": 12,
+              "height": 13,
+              "widgetType": "dashboard_top_5_widget",
+              "viewBy": "account",
+              "timeFrame": "last_14_days",
+              "chartType": "pie",
+              "selectedVendorsByWidget": [
+                "AWS"
+              ],
+              "useYn": "Y",
+              "isAbnormalNotiOn": false
+            },
+            {
+              "dashboardIndex": 0,
+              "index": 11,
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 4,
+              "widgetType": "dashboard_cost_month_to_date_widget",
+              "selectedVendorsByWidget": [
+                "AWS"
+              ],
+              "useYn": "Y",
+              "isAbnormalNotiOn": false
+            },
+            {
+              "dashboardIndex": 0,
+              "index": 12,
+              "x": 12,
+              "y": 0,
+              "width": 12,
+              "height": 4,
+              "widgetType": "dashboard_estimated_cost_widget",
+              "selectedVendorsByWidget": [
+                "AWS"
+              ],
+              "useYn": "Y",
+              "isAbnormalNotiOn": false
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

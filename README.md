@@ -18,8 +18,13 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
 
 - clone this repo
 - update submodule (git submodule init; git submodule update)
+
+### Frontend
 - node version : 10.24.1
-- run script param : dev
+- run command : npm run dev
+
+### Backend
+- java version : 8
 
 ## How to Contribute
 

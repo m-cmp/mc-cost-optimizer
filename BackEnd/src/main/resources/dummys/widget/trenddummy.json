@@ -1,0 +1,266 @@
+{
+  "status": "OK",
+  "Data": {
+    "trendCost": [
+      {
+        "date": "202307",
+        "monthlyCost": [
+          {
+            "dailyDate": "d01",
+            "cost": 63059.19118929784
+          },
+          {
+            "dailyDate": "d02",
+            "cost": 6757.836320771796
+          },
+          {
+            "dailyDate": "d03",
+            "cost": 6708.055192821194
+          },
+          {
+            "dailyDate": "d04",
+            "cost": 6758.279491264794
+          },
+          {
+            "dailyDate": "d05",
+            "cost": 6852.8288725196
+          },
+          {
+            "dailyDate": "d06",
+            "cost": 6581.086671718495
+          },
+          {
+            "dailyDate": "d07",
+            "cost": 6966.102333215796
+          },
+          {
+            "dailyDate": "d08",
+            "cost": 6602.3398200169
+          },
+          {
+            "dailyDate": "d09",
+            "cost": 6631.3300319344
+          },
+          {
+            "dailyDate": "d10",
+            "cost": 6569.666090809698
+          },
+          {
+            "dailyDate": "d11",
+            "cost": 6853.448337042895
+          },
+          {
+            "dailyDate": "d12",
+            "cost": 6827.650861243502
+          },
+          {
+            "dailyDate": "d13",
+            "cost": 7447.914232878198
+          },
+          {
+            "dailyDate": "d14",
+            "cost": 7722.157109623896
+          },
+          {
+            "dailyDate": "d15",
+            "cost": 7278.287891776698
+          },
+          {
+            "dailyDate": "d16",
+            "cost": 7273.500486956099
+          },
+          {
+            "dailyDate": "d17",
+            "cost": 7232.410119351896
+          },
+          {
+            "dailyDate": "d18",
+            "cost": 7341.1274859646
+          },
+          {
+            "dailyDate": "d19",
+            "cost": 7749.078191876004
+          },
+          {
+            "dailyDate": "d20",
+            "cost": 7879.225977935696
+          },
+          {
+            "dailyDate": "d21",
+            "cost": 7762.942001839396
+          },
+          {
+            "dailyDate": "d22",
+            "cost": 7500.5481399324
+          },
+          {
+            "dailyDate": "d23",
+            "cost": 7571.5529723537
+          },
+          {
+            "dailyDate": "d24",
+            "cost": 7872.705900367203
+          },
+          {
+            "dailyDate": "d25",
+            "cost": 7659.225333028399
+          },
+          {
+            "dailyDate": "d26",
+            "cost": 7657.587491970697
+          },
+          {
+            "dailyDate": "d27",
+            "cost": 7377.2446399732
+          },
+          {
+            "dailyDate": "d28",
+            "cost": 6907.203683473896
+          },
+          {
+            "dailyDate": "d29",
+            "cost": 6993.646253884698
+          },
+          {
+            "dailyDate": "d30",
+            "cost": 6899.082573164301
+          },
+          {
+            "dailyDate": "d31",
+            "cost": 7203.373773389596
+          }
+        ]
+      },
+      {
+        "date": "202308",
+        "monthlyCost": [
+          {
+            "dailyDate": "d01",
+            "cost": 69197.94153962677
+          },
+          {
+            "dailyDate": "d02",
+            "cost": 7207.737944838112
+          },
+          {
+            "dailyDate": "d03",
+            "cost": 7239.25009722341
+          },
+          {
+            "dailyDate": "d04",
+            "cost": 7085.000213749808
+          },
+          {
+            "dailyDate": "d05",
+            "cost": 7591.470121759812
+          },
+          {
+            "dailyDate": "d06",
+            "cost": 9599.538011121414
+          },
+          {
+            "dailyDate": "d07",
+            "cost": 6779.030612451385
+          },
+          {
+            "dailyDate": "d08",
+            "cost": 6996.082472458308
+          },
+          {
+            "dailyDate": "d09",
+            "cost": 6881.277473275609
+          },
+          {
+            "dailyDate": "d10",
+            "cost": 6967.481339167009
+          },
+          {
+            "dailyDate": "d11",
+            "cost": 6665.665010509213
+          },
+          {
+            "dailyDate": "d12",
+            "cost": 6949.234941825106
+          },
+          {
+            "dailyDate": "d13",
+            "cost": 6889.60452713891
+          },
+          {
+            "dailyDate": "d14",
+            "cost": 6775.686420211286
+          },
+          {
+            "dailyDate": "d15",
+            "cost": 6757.318138590611
+          },
+          {
+            "dailyDate": "d16",
+            "cost": 6955.641246200006
+          },
+          {
+            "dailyDate": "d17",
+            "cost": 6893.323868419511
+          },
+          {
+            "dailyDate": "d18",
+            "cost": 6887.430176601898
+          },
+          {
+            "dailyDate": "d19",
+            "cost": 6589.533530936994
+          },
+          {
+            "dailyDate": "d20",
+            "cost": 6761.7916876600975
+          },
+          {
+            "dailyDate": "d21",
+            "cost": 4680.8800372785
+          },
+          {
+            "dailyDate": "d22",
+            "cost": 4680.84
+          },
+          {
+            "dailyDate": "d23",
+            "cost": 4568.84
+          },
+          {
+            "dailyDate": "d24",
+            "cost": 4512.84
+          },
+          {
+            "dailyDate": "d25",
+            "cost": 4512.84
+          },
+          {
+            "dailyDate": "d26",
+            "cost": 4512.84
+          },
+          {
+            "dailyDate": "d27",
+            "cost": 4512.84
+          },
+          {
+            "dailyDate": "d28",
+            "cost": 4512.84
+          },
+          {
+            "dailyDate": "d29",
+            "cost": 4512.84
+          },
+          {
+            "dailyDate": "d30",
+            "cost": 4512.84
+          },
+          {
+            "dailyDate": "d31",
+            "cost": 4512.84
+          }
+        ]
+      }
+    ],
+    "endDate": "2023-08-31"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "status": "OK",
+  "Data": {
+    "cost": [
+      {
+        "cost": 183570.86395329036,
+        "item": "875531359846",
+        "itemAlias": "Memory DB 사용자",
+        "vendor": "AWS",
+        "isOthers": false,
+        "order": 1,
+        "serviceGroup": false
+      },
+      {
+        "cost": 58541.400496995746,
+        "item": "216093335544",
+        "itemAlias": "MCMP - PRD",
+        "vendor": "AWS",
+        "isOthers": false,
+        "order": 2,
+        "serviceGroup": false
+      },
+      {
+        "cost": 9102.602031606999,
+        "item": "370166107047",
+        "itemAlias": "dsfd",
+        "vendor": "AWS",
+        "isOthers": false,
+        "order": 3,
+        "serviceGroup": false
+      },
+      {
+        "cost": 6077.286439557804,
+        "item": "338715797467",
+        "itemAlias": "Fin - MEA1",
+        "vendor": "AWS",
+        "isOthers": false,
+        "order": 4,
+        "serviceGroup": false
+      },
+      {
+        "cost": 5667.6818649724955,
+        "item": "557892227155",
+        "itemAlias": "MCMP - NOS",
+        "vendor": "AWS",
+        "isOthers": false,
+        "order": 5,
+        "serviceGroup": false
+      },
+      {
+        "cost": 11532.707246225898,
+        "item": "others",
+        "itemAlias": "others",
+        "vendor": "AWS",
+        "isOthers": true,
+        "numberOfOthers": 11,
+        "order": 6,
+        "serviceGroup": false
+      }
+    ],
+    "latestSummarizedBillDate": "20230821"
+  }
+}

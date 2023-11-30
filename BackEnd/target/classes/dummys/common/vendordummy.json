@@ -1,0 +1,73 @@
+{
+  "status": "OK",
+  "Data": {
+    "result": [
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "aws",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "azu",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "azu-csp",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "gcp",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "ncp",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "idc",
+        "mspVndrStatus": "N"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "oci",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "kt",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "nhn",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "openstack",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "tencent",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "ali",
+        "mspVndrStatus": "Y"
+      },
+      {
+        "siteCd": "MCMP",
+        "mspVndrId": "huawei",
+        "mspVndrStatus": "N"
+      }
+    ],
+    "status": "ok"
+  }
+}

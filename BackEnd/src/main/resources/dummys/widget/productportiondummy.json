@@ -1,0 +1,609 @@
+{
+  "status": "OK",
+  "Data": {
+    "portion": [
+      {
+        "cost": 12.1314314295,
+        "familyCode": "Compute",
+        "familyItems": [
+          {
+            "cost": 12.1314314295,
+            "item": "Amazon Elastic Compute Cloud",
+            "itemAlias": "Amazon Elastic Compute Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "Compute",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 0.0,
+            "item": "AWS Lambda",
+            "itemAlias": "AWS Lambda",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "Compute",
+            "order": 0,
+            "serviceGroup": false
+          }
+        ],
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "cost": 1.1055909051000001,
+        "item": "others",
+        "itemAlias": "others",
+        "isOthers": true,
+        "numberOfOthers": 4,
+        "familyCode": "others",
+        "familyItems": [
+          {
+            "cost": 0.41991646880000005,
+            "item": "AWS Data Transfer",
+            "itemAlias": "AWS Data Transfer",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "others",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 0.68,
+            "item": "AWS Security Hub",
+            "itemAlias": "AWS Security Hub",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "others",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 0.005666436299999999,
+            "item": "Amazon Simple Storage Service",
+            "itemAlias": "Amazon Simple Storage Service",
+            "vendor": "AWS",
+            "isOthers": true,
+            "familyCode": "Storage",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 0.0,
+            "item": "Amazon Simple Notification Service",
+            "itemAlias": "Amazon Simple Notification Service",
+            "vendor": "AWS",
+            "isOthers": true,
+            "familyCode": "Application Integration",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 8.0E-6,
+            "item": "Amazon Simple Queue Service",
+            "itemAlias": "Amazon Simple Queue Service",
+            "vendor": "AWS",
+            "isOthers": true,
+            "familyCode": "Application Integration",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 0.0,
+            "item": "AWS Glue",
+            "itemAlias": "AWS Glue",
+            "vendor": "AWS",
+            "isOthers": true,
+            "familyCode": "Analytics",
+            "order": 0,
+            "serviceGroup": false
+          }
+        ],
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "cost": 0.1512397187,
+        "familyCode": "Management & Governance",
+        "familyItems": [
+          {
+            "cost": 0.1282272187,
+            "item": "AmazonCloudWatch",
+            "itemAlias": "AmazonCloudWatch",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "Management & Governance",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 0.0230125,
+            "item": "AWS CloudTrail",
+            "itemAlias": "AWS CloudTrail",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "Management & Governance",
+            "order": 0,
+            "serviceGroup": false
+          }
+        ],
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "cost": 0.0782136534,
+        "familyCode": "Security, Identity, & Compliance",
+        "familyItems": [
+          {
+            "cost": 0.0772736534,
+            "item": "Amazon GuardDuty",
+            "itemAlias": "Amazon GuardDuty",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "Security, Identity, & Compliance",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 8.400000000000003E-4,
+            "item": "AWS Key Management Service",
+            "itemAlias": "AWS Key Management Service",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "Security, Identity, & Compliance",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 1.0E-4,
+            "item": "AWS Secrets Manager",
+            "itemAlias": "AWS Secrets Manager",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "Security, Identity, & Compliance",
+            "order": 0,
+            "serviceGroup": false
+          }
+        ],
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "cost": 0.0355161425,
+        "familyCode": "Networking & Content Delivery",
+        "familyItems": [
+          {
+            "cost": 0.0237895,
+            "item": "Amazon API Gateway",
+            "itemAlias": "Amazon API Gateway",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "Networking & Content Delivery",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 0.0117266425,
+            "item": "Amazon CloudFront",
+            "itemAlias": "Amazon CloudFront",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "Networking & Content Delivery",
+            "order": 0,
+            "serviceGroup": false
+          },
+          {
+            "cost": 0.0,
+            "item": "Amazon Virtual Private Cloud",
+            "itemAlias": "Amazon Virtual Private Cloud",
+            "vendor": "AWS",
+            "isOthers": false,
+            "familyCode": "Networking & Content Delivery",
+            "order": 0,
+            "serviceGroup": false
+          }
+        ],
+        "order": 0,
+        "serviceGroup": false
+      }
+    ],
+    "accounts": [
+      {
+        "item": "724342",
+        "itemAlias": "yijeong-test1",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "325436",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "23454",
+        "itemAlias": "Testaccount",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "865457",
+        "itemAlias": "CUR 비용수집 테스트",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "2354364",
+        "itemAlias": "Fin - PRD",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "768574",
+        "itemAlias": "Shield Test1",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "346565",
+        "itemAlias": "SSDonghee-3",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "22334",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "76454234",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "54233234",
+        "itemAlias": "key_test2",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "43524",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "54233234",
+        "itemAlias": "MCMP - PRD",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "4763542",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "324534",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "2314543",
+        "itemAlias": "guide",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "4635745",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "243543",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "42356",
+        "itemAlias": "Fin - MEA1",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "6432",
+        "itemAlias": "Sec - PRD",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "453678",
+        "itemAlias": "Chat - DEV",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "435623",
+        "itemAlias": "dsfd",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "382377105752",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "410362304746",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "421486388841",
+        "itemAlias": "Memory DB 실적용자",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "431689225654",
+        "itemAlias": "Sec - DEV",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "448291620067",
+        "itemAlias": "CADACKTEST",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "490518552534",
+        "itemAlias": "SSDonghee-4",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "504963237656",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "517621134517",
+        "itemAlias": "Marketplace - DEV",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "540298831859",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "557892227155",
+        "itemAlias": "MCMP - NOS",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "583660770375",
+        "itemAlias": "Alert - PRD",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "602331120558",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "607404727960",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "650032202665",
+        "itemAlias": "Chat - PRD",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "702147360356",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "728040812910",
+        "itemAlias": "Fin - STG",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "735209500943",
+        "itemAlias": "Alert - DEV",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "748665785761",
+        "itemAlias": "Data - DEV",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "752124472974",
+        "itemAlias": "Data - PRD",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "762045528333",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "785463",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "3452",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "324",
+        "itemAlias": "Marketplace - PRD",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "312",
+        "itemAlias": "Memory DB 사용자",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "435434",
+        "itemAlias": "SSDonghee-2",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "456342",
+        "itemAlias": "MCMP - COM",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "98675",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      },
+      {
+        "item": "4235",
+        "itemAlias": "",
+        "vendor": "AWS",
+        "order": 0,
+        "serviceGroup": false
+      }
+    ],
+    "selectedAccount": "000885530975",
+    "selectedTimeFrame": "202308",
+    "timeFrameList": [
+      {
+        "isCurrent": true,
+        "time": "202308"
+      },
+      {
+        "isCurrent": false,
+        "time": "202307"
+      },
+      {
+        "isCurrent": false,
+        "time": "202306"
+      },
+      {
+        "isCurrent": false,
+        "time": "202305"
+      },
+      {
+        "isCurrent": false,
+        "time": "202304"
+      },
+      {
+        "isCurrent": false,
+        "time": "202303"
+      },
+      {
+        "isCurrent": false,
+        "time": "202302"
+      },
+      {
+        "isCurrent": false,
+        "time": "202301"
+      },
+      {
+        "isCurrent": false,
+        "time": "202212"
+      },
+      {
+        "isCurrent": false,
+        "time": "202211"
+      },
+      {
+        "isCurrent": false,
+        "time": "202210"
+      },
+      {
+        "isCurrent": false,
+        "time": "202209"
+      }
+    ],
+    "latestSummarizedBillDate": "20230821"
+  }
+}

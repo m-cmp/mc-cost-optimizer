@@ -1,0 +1,12 @@
+{
+  "status": "OK",
+  "Data": {
+    "vendors": [
+      "GCP",
+      "AWS",
+      "AZURE",
+      "OCI",
+      "NCP"
+    ]
+  }
+}
