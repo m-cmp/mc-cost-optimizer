@@ -1,0 +1,14 @@
+
+
+@mixin eachColorPicker($property, $value){
+	#{$property} : $value;
+}
+
+
+@mixin clearBoth {
+	content: ''; display: table; clear: both;
+}
+
+@mixin colorPicker($property, $value){
+	#{$property} : colorSet($value);
+}

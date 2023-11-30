@@ -1,0 +1,3116 @@
+{
+  "common": {
+    "button": {
+      "cancel": "취소",
+      "ok": "확인"
+    },
+    "popup": {
+      "title" : {
+        "notify": "알림",
+        "concurrent_login": "중복된 계정 접속"
+      },
+      "content" : {
+        "token_expiration": "접속 기한이 만료되었습니다. <br>잠시(3초)후 로그인화면으로 이동합니다.",
+        "concurrent_login": "<p>다른 기기에서 동일한 계정으로 로그인이 시도되었습니다.<br> 로그아웃하고 현재 기기에서 다시 로그인 하시겠습니까?</p>"
+      },
+      "redirect": {
+        "title": "미지원 클라우드 서비스",
+        "content": "'비용 분석'은 현재 {supportVendors}만 지원하고 있습니다.<br/><br/>※ 타 CSP를 사용하는 경우 '뒤로 가기' 버튼을 클릭하여 이전 메뉴로 돌아갑니다. 다른 CSP도 곧 지원될 예정입니다.",
+        "goBack": "뒤로 가기",
+        "move": "이동",
+        "selectOthers": "AWS 비용 분석 보기"
+      }
+    },
+    "search": {
+      "placeholder": "검색어 입력"
+    }
+  },
+  "popularLinks": "Popular Links",
+  "ecosystem": "Ecosystem",
+  "header": {
+    "billingTitle": "빌링 인보이스",
+    "displaying": "클라우드 서비스",
+    "currency": "통화",
+    "fixed": "고정",
+    "aws": "AWS",
+    "azure": "Azure",
+    "gcp": "GCP",
+    "oci": "OCI",
+    "ncp": "Ncloud",
+    "azureBillingInvoiceGuide": "청구 내역과 빌링 인보이스는 데이터를 보여주는 방식이 다르기 때문에 두 메뉴 간의 금액이 상이할 수 있습니다. 청구 내역은 사용량 기반의 금액을, 빌링 인보이스는 인보이스 기반의 금액을 보여줍니다.",
+    "tencent": "Tencent",
+    "searchBar": {
+      "searchAnything": "검색어 입력",
+      "nothingFound": "검색된 결과 없음",
+      "searchLimitFirst": "10개가 넘는 항목을 추가할 수 없습니다.",
+      "searchLimitLast": "필터 더 보기",
+      "options": {
+        "moreFilters": "필터 더 보기",
+        "title": {
+          "suggestion": "추천 검색어",
+          "savedFilters": "저장된 필터",
+          "account": "계정",
+          "product": "제품",
+          "region": "리전",
+          "tag": "태그",
+          "recentSearch": "최근 검색",
+          "results": "개 결과",
+          "found": "검색됨"
+        },
+        "suggestion": {
+          "costOfThisMonth": "이번달 비용",
+          "costOfThisMonthByAccount": "이번달 계정별 비용",
+          "CostOfThisMonthByProduct": "이번달 제품별 비용"
+        },
+        "recentSearch": {
+          "account": "계정",
+          "product": "제품",
+          "region": "리전",
+          "tag": "태그"
+        }
+      }
+    },
+    "tooltipTitle": {
+      "notice": {
+        "title": "공지사항",
+        "more": "전체보기",
+        "noData": "등록된 공지사항이 없습니다.",
+        "TYPE":{
+          "view_header_notice_type_event":"이벤트",
+          "view_header_notice_type_check":"점검",
+          "view_header_notice_type_new":"새소식",
+          "view_notice_NTCE_TYPE_010" : "새소식",
+          "view_notice_NTCE_TYPE_020" : "이벤트",
+          "view_notice_NTCE_TYPE_030" : "점검"
+        }
+      },
+      "support": "기술 지원",
+      "userGuide": "사용자 가이드",
+      "trial": {
+        "expired_remain_msg": "무료 평가판 기간이 {{reamainDays}}일 남았습니다.",
+        "expired_remain_btn": "업그레이드 안내"
+      },
+      "submenu": {
+        "recent_history": "최근 방문 기록"
+      }
+    },
+    "dropdownMenu": {
+      "goBackToClassic": "클래식 버전으로 전환",
+      "myAccount": "내 계정",
+      "companyInfo": "회사 정보 관리",
+      "securitySetting": "보안 설정",
+      "myRequest": "나의 문의내역",
+      "logout": "로그아웃"
+    },
+    "currencyTooltip": {
+      "representativeExchangeRate": "예시 환율",
+      "actualChargeCanBeChanged": "청구일에 따라 실제 요금이 변경될 수 있습니다.",
+      "currentExchangeRateTime": "적용된 환율의 조회 일자: {applyExchangeRateDate}",
+      "provider#1" : "<br/>한국수출입은행 매매 기준율 사용",
+      "provider#2" : "* 중국 위안(CNY)환율은 홍콩시장에서",
+      "provider#3" : "거래되는 위안화 환율이 적용됩니다."
+    },
+    "costSubMenu": {
+      "budget": {
+        "overView": "예산 관리",
+        "setting": "설정",
+        "alarmList": "알람 목록",
+        "receiver": "알람 수신인"
+      },
+      "costOptimization": {
+        "riAnalysis": "RI 최적화",
+        "riStatus": "RI 인벤토리"
+      },
+      "payment": {
+        "history": "지불 이력",
+        "discount": "할인 이력",
+        "creditInfo": "잔여 크레딧"
+      },
+      "report" : {
+        "staticReport" : "기본 리포트",
+        "customReport" : "사용자 지정 리포트"
+      },
+      "savingsPlans" : {
+        "utilization" : "사용률",
+        "coverage" : "충당률",
+        "inventory" : "인벤토리"
+      },
+      "misOperationStatus" : {
+        "csp" : "CSP별 운영 현황"
+      }
+    }
+  },
+  "pageTitle": {
+    "about": "About Page",
+    "home": "Cost management Client",
+    "billing": "청구 내역",
+    "costAnalytics": "비용 분석",
+    "dashboard": "사용자 대시보드",
+    "SavingsPlans": {
+      "title": "Savings Plans",
+      "subMenu": {
+        "overview": "개요",
+        "utilization": "사용률",
+        "coverage": "충당률",
+        "inventory": "인벤토리"
+      }
+    },
+    "misOperationStatus": {
+      "title": "MIS 클라우드 운영 현황",
+      "subMenu": {
+        "csp": "CSP별 운영 현황",
+        "roi": "클라우드 전환 ROI 산출"
+      }
+    },
+    "reserved": {
+      "title": "예약 인스턴스",
+      "subMenu": {
+        "overview": "개요",
+        "utilization": "사용률",
+        "coverage": "충당률",
+        "inventory": "인벤토리"
+      }
+    },
+    "AzureReserved": {
+      "title": "Reservations",
+      "subMenu": {
+        "inventory": "인벤토리",
+        "utilization": "사용률",
+        "recommendations": "RI 추천"
+      }
+    }
+  },
+  "pagination": {
+    "of": "/",
+    "perPage": "한 페이지 당",
+    "total": "총"
+  },
+  "pageDescription": {
+    "about": "About Page",
+    "home": "Home Page",
+    "billing": "Billing Page",
+    "costAnalytics": "Cost Analytics Page",
+    "dashboard": "Dashboard Page",
+    "savingsPlans": "Savings Plans",
+    "reserved": "Reservations",
+    "abnormal": "Abnormal Cost Detection",
+    "misOperationStatus": "MIS Cloud Operation Status Page"
+  },
+  "download": "다운로드",
+  "comingSoon": "서비스 예정",
+  "noData": {
+    "title": "데이터가 없습니다.",
+    "content": "찾는 항목의 데이터가 없는 경우 필터를 변경해 보세요.",
+    "noAccountAuth": "이 사용자에게는 사용 권한이 없습니다."
+  },
+  "noAuth" : {
+    "title": "메뉴 권한 없음",
+    "content": "해당 메뉴에 권한이 없습니다. <br/>조직 관리자에게 문의해 주세요."
+  },
+  "noResultsFound": {
+    "title": "데이터가 없습니다.",
+    "content": "찾는 항목이 없는 경우 필터를 변경해 보세요."
+  },
+  "default": "기본값",
+  "loadingChart": "로딩 중",
+  "loadingTable": "로딩 중",
+  "loadingData": "로딩 중",
+  "delayLoadingMessage": "데이터가 많은 경우, 최대 5분이 소요될 수 있습니다.",
+  "multiSelectBox": {
+    "allSelectOption": "전체 선택",
+    "noData": "데이터 없음",
+    "placeholder": "선택",
+    "placeholderSelect": "검색어 입력"
+  },
+  "lastCollectDateTime": "최종 수집 일시",
+  "lastCollectDate": "최종 수집일",
+  "billing": {
+    "chargeList": {
+      "download": {
+        "columnHeader": {
+          "cloudAccount": "클라우드 계정",
+          "cloudAccountId": "계정 ID",
+          "cloudAccountName": "계정 Name",
+          "subscriptionId": "구독 ID",
+          "subscriptionName": "구독 Name",
+          "projectId": "프로젝트 ID",
+          "projectName": "프로젝트 Name",
+          "compartmentId": "Compartment ID",
+          "compartmentName": "Compartment Name",
+          "cloudService": "서비스",
+          "cloudProject": "프로젝트 계정",
+          "cloudCompartment": "Compartment",
+          "exchangedCloudServiceCharge": "클라우드 서비스 요금({currency})",
+          "cloudServiceCharge": "클라우드 서비스 요금({currency})",
+          "cloudCost": "클라우드 사용 요금({currency})",
+          "supportFee": "지원 요금({currency})",
+          "salesDiscount": "영업 할인 요금({currency})",
+          "ncpDiscount": "Ncloud 할인 요금({currency})",
+          "credit": "크레딧({currency})",
+          "vat": "VAT({currency})",
+          "cloudOriginalCost": "클라우드 원가({currency})",
+          "onDemandDiscount": "온디맨드 할인 요금({currency})",
+          "cFDiscount": "CF 할인 요금({currency})",
+          "total": "총계({currency})"
+        },
+        "option": {
+          "chargeListOnCurrentView(CSV)": "계정별 비용(CSV)",
+          "azureChargeListOnCurrentView(CSV)": "구독별 비용(CSV)",
+          "openstackServiceListOnCurrentView(CSV)": "서비스별 비용(CSV)",
+          "ociChargeListOnCurrentView(CSV)": "Compartment별 비용(CSV)",
+          "gcpChargeListOnCurrentView(CSV)": "프로젝트별 비용(CSV)"
+        }
+      },
+      "searchAnything": "검색어 입력",
+      "noResultsFound": "검색된 결과 없음",
+      "total": "총계",
+      "additionalService1Charge": "Additional Service 1 Charge",
+      "MCMPUsageCharge": "MCMP 사용 요금",
+      "autospotUsageCharge": "AutoSpot 사용 요금",
+      "additionalServiceFee": "부가 서비스 요금",
+      "credit": "크레딧",
+      "cloudAccount": "클라우드 계정",
+      "cloudService": "클라우드 서비스 요금",
+      "cloudCost": "클라우드 사용 요금",
+      "supportFee": "지원 요금",
+      "salesDiscount": "영업 할인 요금",
+      "ncpDiscount": "Ncloud 할인 요금",
+      "cloudOriginalCost": "클라우드 원가",
+      "onDemandDiscount": "온디맨드 할인 요금",
+      "cFDiscount": "CF 할인 요금",
+      "discount": "할인",
+      "usageSection": "UsageSection",
+      "cloudServiceCharge": "클라우드 서비스 요금",
+      "vat": "VAT",
+      "cloudSubscription": "클라우드 구독",
+      "cloudCompartment": "클라우드 Compartment",
+      "cloudProject": "프로젝트 ID"
+    },
+    "invoiceList": {
+      "download": {
+        "columnHeader": {
+          "invoiceId": "청구서 ID",
+          "cloudAccount": "클라우드 계정",
+          "cloudAccountId": "계정 ID",
+          "cloudAccountName": "계정 Name",
+          "subscriptionId": "구독 ID",
+          "subscriptionName": "구독 Name",
+          "projectId": "프로젝트 ID",
+          "projectName": "프로젝트 Name",
+          "compartmentId": "Compartment ID",
+          "compartmentName": "Compartment Name",
+          "cloudCompartment": "Compartment",
+          "cloudCost": "클라우드 사용 요금({currency})",
+          "supportFee": "지원 요금({currency})",
+          "ncpDiscount": "Ncloud 할인 요금({currency})",
+          "salesDiscount": "영업 할인 요금({currency})",
+          "credit": "크레딧({currency})",
+          "vat": "VAT({currency})",
+          "total": "총계({currency})",
+          "chargeDate": "청구일",
+          "exchangeRate": "환율"
+        },
+        "option": {
+          "cloudInvoiceListOnCurrentView(CSV)": "클라우드 청구서 목록(CSV)"
+        }
+      },
+      "searchAnything": "검색어 입력",
+      "noResultsFound": "검색된 결과 없음",
+      "invoiceId": "청구서 ID",
+      "totalUSD": "총계(USD)",
+      "totalKRW": "총계(KRW)",
+      "totalCNY": "총계(CNY)",
+      "totalJPY": "총계(JPY)",
+      "totalMXN": "총계(MXN)",
+      "chargeDate": "청구일",
+      "credit": "크레딧",
+      "cloudAccount": "클라우드 계정",
+      "cloudService": "클라우드 서비스 요금",
+      "cloudCost": "클라우드 사용 요금",
+      "supportFee": "지원 요금",
+      "ncpDiscount": "Ncloud 할인 요금",
+      "salesDiscount": "영업 할인 요금",
+      "total": "총계",
+      "vat": "VAT",
+      "paidUpDate": "지불일시",
+      "cloudSubscription": "클라우드 구독"
+    },
+    "cloudBillDetails": {
+      "header": {
+        "usage": "사용량",
+        "totalUSD": "총계(USD)",
+        "totalKRW": "총계(KRW)",
+        "totalCNY": "총계(CNY)",
+        "totalJPY": "총계(JPY)",
+        "totalMXN": "총계(MNX)",
+        "description": "설명"
+      },
+      "download": {
+        "detailedUsageChargesTitle": {
+          "accountId": "계정 ID",
+          "compartmentId": "Compartment ID",
+          "invoiceId": "청구서 ID",
+          "tagValue": "태그",
+          "serviceGroup": "서비스 그룹",
+          "productName": "제품",
+          "region": "리전",
+          "useType": "사용 유형",
+          "description": "설명",
+          "useQnt": "사용량",
+          "totalCost": "총 비용",
+          "invoiceSummary": "클라우드 청구서 목록",
+          "accountIdGcp": "프로젝트 ID"
+        },
+        "option": {
+          "cloudBillDetails(CSV)": "클라우드 빌링 상세 내역(엑셀)"
+        }
+      },
+      "invoiceSummary": "클라우드 청구서 목록",
+      "searchAnything": "검색어 입력",
+      "noResultsFound": "검색된 결과 없음",
+      "cloudBillDetails": "클라우드 빌링 상세 내역",
+      "accountId": "계정 ID",
+      "compartmentId": "Compartment ID",
+      "invoiceId": "청구서 ID",
+      "regionName": "리전",
+      "tagValue": "태그",
+      "serviceGroup": "서비스 그룹",
+      "totalAmount": "총계",
+      "detailedUsageCharges": "상세 사용 요금",
+      "subTotal": "소계",
+      "usageDescription": "{usage} 사용됨",
+      "totalUsageDescription": "총 {usage} 사용됨",
+      "noData": "데이터 없음",
+      "expandAll": "모두 펼치기",
+      "collapseAll" : "모두 접기",
+      "accountIdGcp": "프로젝트 ID",
+      "cloudSubscription": "클라우드 구독"
+    },
+    "invoiceInsight":{
+      "tooltip": {
+        "currentMonth": "이번달: 이번 달에 대한 인보이스 인사이트 데이터는 인보이스가 발행된 후(다음 달 6일 전후), 분석을 거쳐 제공됩니다.",
+        "lastMonth": "지난달: 당월에 대한 분석 결과 표시",
+        "nonDataInLastMonth": "이전 데이터가 없을 경우: 이번달 분석 결과만 표시",
+        "DataInLastMonth": "이전 데이터가 있을 경우: 이번달 분석 결과 및 전월 비교 표시"
+      },
+      "header": {
+        "title": "인보이스 인사이트가 <span class=\"-color-sk-green\">{month}월 청구서</span>의 <span class=\"-color-sk-green\">비용 변화</span>를 알려드립니다.",
+        "description": "인보이스 인사이트는 과거의 청구서와 신규로 발행된 청구서를 비교 분석해 비용 패턴 변화가 큰 제품과 예상되는 원인을 알려드립니다."
+      },
+      "chart": {
+        "title": "청구 비용 변화 큰 Top {number} 제품",
+        "tooltip": {
+          "currentMonth": "이번달",
+          "previousMonth": "지난달",
+          "max": "최대",
+          "avg": "평균"
+        },
+        "changeInInvoice": "청구 비용 변화"
+      },
+      "detectionAlert": {
+        "summary": "{itemName} 제품은 과거 패턴과 비교해보니 <span class=\"-color-sk-green\">{percent}%의 청구 비용 변화가 감지</span>되었습니다.",
+        "increase": "이번 달 비용이 실제 <span class=\"-color-sk-green\">{costType}</span>보다 높습니다.",
+        "decrease": "이번 달 비용이 실제 <span class=\"-color-sk-green\">{costType}</span>보다 낮습니다.",
+        "mix": "이번 달 비용이 실제 <span class=\"-color-sk-green\">{increaseType}</span>보다 높고, <span class=\"-color-sk-green\">{decreaseType}</span>보다 낮습니다.",
+        "checkReason": "아래 예상 원인을 보시고, 비용 분석 서비스에서 상세 내역도 확인해보세요."
+      },
+      "gridTitle": " {itemName} 청구 비용 변화의 예상 원인",
+      "searchAnything": "검색어 입력",
+      "noResultsFound": "검색된 결과 없음",
+      "download": {
+        "columnHeader": {
+          "linkedAccountId": "계정",
+          "productName": "제품",
+          "region": "리전",
+          "thisMonthCost": "이번달 비용",
+          "lastMonthCost": "지난달 비용",
+          "averageCost": "평균 비용",
+          "maxCost": "최대 비용",
+          "usageType": "사용 유형",
+          "details": "상세"
+        }
+      },
+      "linkedAccountId": "계정",
+      "productName": "제품",
+      "region": "리전",
+      "thisMonthCost": "이번달 비용",
+      "lastMonthCost": "지난달 비용",
+      "averageCost": "평균 비용",
+      "maxCost": "최대 비용",
+      "usageType": "사용 유형",
+      "details": "상세",
+      "bottomLink": {
+        "#1": "잠깐, ",
+        "#2": "이상 비용 탐지 > 알람목록",
+        "#3": "에서 놓친 정보가 있는지 확인해보세요."
+      }
+    },
+    "computingResources": {
+      "download": {
+        "columnHeader": {
+          "productName": "제품",
+          "cloudAccount": "클라우드 계정",
+          "cloudAccountId": "계정 ID",
+          "cloudAccountName": "계정 Name",
+          "alias": "계정 Name",
+          "region": "리전",
+          "resourceType": "리소스 유형",
+          "os": "OS",
+          "cpu": "CPU",
+          "memory": "메모리",
+          "resourceName": "리소스 이름",
+          "charges": "리소스 이용 요금",
+          "dataTransfer": "Data Transfer 요금",
+          "ebs": "EBS 요금",
+          "ebsSnap": "EBS Backup",
+          "etcCost": "기타 요금",
+          "total": "총계",
+          "exchangeRate": "환율",
+          "serviceGroup": "서비스 그룹"
+        },
+        "option": {
+          "computingResourcesOnCurrentView(CSV)": "컴퓨팅 리소스 요금(CSV)"
+        }
+      },
+      "searchAnything": "검색어 입력",
+      "noResultsFound": "검색된 결과 없음",
+      "productName": "제품",
+      "cloudAccount": "클라우드 계정",
+      "alias": "별칭",
+      "region": "리전",
+      "resourceType": "리소스 유형",
+      "os": "OS",
+      "cpu": "CPU",
+      "memory": "메모리",
+      "resourceName": "리소스 이름",
+      "charges": "리소스 이용 요금",
+      "dataTransfer": "Data Transfer 요금",
+      "ebs": "EBS 요금",
+      "ebsSnap": "EBS Backup",
+      "etcCost": "기타 요금",
+      "total": "총계(USD)",
+      "totalKRW": "총계(KRW)",
+      "exchangeRate": "환율",
+      "serviceGroup": "서비스 그룹"
+    },
+    "additionalServices": {
+      "download": {
+        "columnHeader": {
+          "cloudAccount": "클라우드 계정",
+          "alias": "별칭",
+          "additionalServiceName": "부가서비스명",
+          "additionalServiceDescription": "부가서비스 설명",
+          "additionalServiceCharges": "부가서비스 요금",
+          "total": "총계(USD)",
+          "totalKRW": "총계(KRW)",
+          "exchangeRate": "환율",
+          "serviceGroup": "서비스 그룹"
+        },
+        "option": {
+          "computingResourcesOnCurrentView(CSV)": "컴퓨팅 리소스 요금(CSV)"
+        }
+      },
+      "searchAnything": "검색어 입력",
+      "noResultsFound": "검색된 결과 없음",
+      "cloudAccount": "클라우드 계정",
+      "alias": "별칭",
+      "additionalServiceName": "부가서비스명",
+      "additionalServiceDescription": "부가서비스 설명",
+      "additionalServiceCharges": "부가서비스 요금",
+      "total": "총계(USD)",
+      "totalKRW": "총계(KRW)",
+      "exchangeRate": "환율",
+      "serviceGroup": "서비스 그룹"
+    },
+    "autoSpot": {
+      "searchAnything": "검색어 입력",
+      "noResultsFound": "검색된 결과 없음",
+      "accAlias" : "Account",
+      "elstGrpId" : "Group",
+      "runHour": "Running Hours",
+      "ptlCost": "Potential Cost",
+      "actlCost": "Actual Cost",
+      "savingPct": "Amount Saved",
+      "currencyRate": "Currency Rate",
+      "download": {
+        "option": {
+          "autoSpotOnCurrentView(CSV)": "AutoSpot 상세 비용(CSV)"
+        }
+      }
+    },
+    "monthlyBillTrend": {
+      "download": {
+        "columnHeader": {
+          "chargeYear": "ChargeYear",
+          "chargeMonth": "ChargeMonth",
+          "total": "총계({currency})",
+          "cloudServiceCharge": "클라우드 서비스 요금({currency})",
+          "additionalServiceFee": "부가 서비스 요금({currency})"
+        },
+        "option": {
+          "monthlyBillAmountForCurrentView(CSV)": "월별 비용(XLSX)"
+        }
+      },
+      "monthlyBillTrendTitle": "월별 비용 트렌드",
+      "showsMonthlyBillTrendChartWithActualCost": "실제 비용 월별 차트",
+      "actualBillCost": "비용",
+      "currentMonth": "Current Month",
+      "nowShowing": "현재 표시 중",
+      "additionalServiceCharge": "부가 서비스 요금",
+      "cloudServiceCharge": "클라우드 서비스 요금",
+      "total": "총계",
+      "additionalServiceFee": "부가 서비스 요금"
+    },
+    "billingSummary": {
+      "cloudInvoiceBanner": "클라우드 청구서 목록은 '클라우드 서비스 요금'만 보여줍니다.",
+      "cloudBillDetailBanner": "클라우드 빌링 상세 내역은 '클라우드 서비스 요금'만 보여줍니다.",
+      "cloudInvoiceInsightBanner": "전월과의 비교 데이터는 AI가 인보이스 데이터를 매달 학습 및 분석하여 제공되는 데이터로, 학습 기간이 길수록 정확도가 높아집니다.",
+      "computingResourceBanner": "컴퓨팅 리소스별 사용 요금을 보여줍니다.",
+      "invoiceInsightNoData": "이번 달에는 아직 수집된 청구 비용이 없습니다. 비용 수집이 완료된 달을 선택해주세요.",
+      "representativeExchangeRate": "예시 환율",
+      "actualChargeCanBeChanged": "청구일에 따라 실제 요금이 변경될 수 있습니다.",
+      "currentExchangeRateTime": "적용된 환율의 조회 일자: {applyExchangeRateDate}",
+      "reportedExchangeRateTime": "적용된 환율의 조회 일자: {applyExchangeRateDate}",
+      "provider#1" : "<br/>한국수출입은행 매매 기준율 사용",
+      "provider#2" : "* 중국 위안(CNY)환율은 홍콩시장에서",
+      "provider#3" : "거래되는 위안화 환율이 적용됩니다.",
+      "billingSummary": "요약",
+      "additionalServiceFee": "부가 서비스 요금",
+      "currentMonth": "Current Month",
+      "invalidDate": "Date is invalid",
+      "additionalService1Fee": "부가 서비스명 1 요금",
+      "MCMPUsageCharge": "MCMP 사용 요금",
+      "autospotUsageCharge": "AutoSpot 사용 요금",
+      "additionalService": "부가 서비스",
+      "credit": "크레딧",
+      "cloudAccount": "클라우드 계정",
+      "cloudServiceCharges": "클라우드 서비스 요금",
+      "cloudCost": "클라우드 사용 요금",
+      "supportFee": "지원 요금",
+      "salesDiscount": "영업 할인 요금",
+      "ncpDiscount": "Ncloud 할인 요금",
+      "dateOfInvoice": "청구서 발행일",
+      "vatExcluded": "VAT 미포함",
+      "vatIncluded": "VAT 포함",
+      "lastUpdated": "마지막 업데이트",
+      "exchangeRate": "환율",
+      "account": "계정",
+      "subscription" : "구독",
+      "project" : "프로젝트",
+      "invoices": "청구서",
+      "serviceGroups": "서비스 그룹",
+      "region": "리전",
+      "tag": "태그",
+      "cloudOriginalCost": "클라우드 원가",
+      "onDemandDiscount": "온디맨드 할인 요금",
+      "cFDiscount": "CF 할인 요금",
+      "unconfirmed": "미확정",
+      "confirmed": "확정",
+      "selected": "선택됨",
+      "compartment": "Compartment"
+    },
+    "billingChargeDetailChart": {
+      "totalCostOf": "Total cost of",
+      "subTotal": "소계"
+    },
+    "billingDetailTableTabs": {
+      "aws" : {
+        "chargeList": "계정별 비용",
+        "cloudInvoiceList": "클라우드 청구서 목록",
+        "cloudInvoiceInsight": "인보이스 인사이트",
+        "computingResources": "컴퓨팅 리소스별 비용",
+        "autoSpot": "AutoSpot 상세 비용",
+        "serviceGroups" : "서비스그룹별 비용"
+      },
+      "azure" : {
+        "chargeList": "구독별 비용",
+        "cloudInvoiceList": "클라우드 청구서 목록",
+        "additionalServiceList": "부가 서비스별 비용"
+      },
+      "gcp" : {
+        "chargeList": "프로젝트별 비용",
+        "additionalServiceList": "부가 서비스별 비용",
+        "cloudInvoiceList": "클라우드 청구서 목록"
+      },
+      "ali" : {
+        "chargeList": "계정별 비용",
+        "cloudInvoiceList": "클라우드 청구서 목록",
+        "cloudBillDetails": "클라우드 빌링 상세 내역"
+      },
+      "oci" : {
+        "chargeList": "Compartment별 비용",
+        "cloudInvoiceList": "클라우드 청구서 목록"
+      },
+      "ncp" : {
+        "chargeList": "계정별 비용",
+        "cloudInvoiceList": "클라우드 청구서 목록"
+      },
+      "tencent" : {
+        "chargeList": "계정별 비용",
+        "cloudInvoiceList": "클라우드 청구서 목록"
+      },
+      "openstack": {
+        "chargeList": "서비스별 비용"
+      },
+      "cloudBillDetails": "클라우드 빌링 상세 내역",
+      "additionalServices": "부가서비스별 비용"
+    },
+    "billingChargeDetail": {
+      "title": "빌링 상세 정보",
+      "backBtn": "뒤로",
+      "chargeAccountList": {
+        "chargeList": "계정별 비용",
+        "searchAccount": "계정 검색",
+        "subscriptionSearch": "구독 검색",
+        "openStackSearch": "서비스 검색",
+        "compartmentSearch": "Compartment 검색",
+        "all": "전체",
+        "RISharing": "RISharing {numberOfRISharing}",
+        "sortBy": "보기 기준",
+        "totalAZ": "총계 (A-Z)",
+        "totalZA": "총계 (Z-A)",
+        "nameAZ": "Name (A-Z)",
+        "nameZA": "Name (Z-A)",
+        "selected": "선택됨",
+        "chargeListGcp": "프로젝트별 비용",
+        "searchAccountProject": "프로젝트 검색"
+      },
+      "chart": {
+        "legendName": {
+          "cost": "비용",
+          "discount": "할인",
+          "subTotal": "소계"
+        },
+        "categoryName": {
+          "cloudOriginalCost": "클라우드 원가",
+          "onDemandDiscount": "온디맨드 할인 요금",
+          "cfDiscount": "CF 할인 요금",
+          "cloudCost": "클라우드 사용 요금",
+          "supportFee": "지원 요금",
+          "ncpDiscount": "Ncloud 할인 요금",
+          "salesDiscount": "영업 할인 요금",
+          "credit": "크레딧",
+          "cloudServiceCharge": "클라우드 서비스 요금",
+          "subTotal": "소계",
+          "vat": "VAT"
+        }
+      },
+      "priceBreakDown": {
+        "priceBreakDown": "비용 세부 내역",
+        "enterSearchTexts": "검색어 입력",
+        "noResultsFound": "검색된 결과 없음",
+        "total": "금액",
+        "description": "설명",
+        "cloudCost": "클라우드 사용 요금",
+        "cloudOriginalCost": "클라우드 원가",
+        "onDemandDiscount": "온디맨드 할인 요금",
+        "cfDiscount": "CF 할인 요금",
+        "cfDtoDiscount": "CF 데이터 전송 할인 요금",
+        "cfReqDiscount": "CF 요청 할인 요금",
+        "supportFee": "지원 요금",
+        "ncpDiscount": "Ncloud 할인 요금",
+        "salesDiscount": "영업 할인 요금",
+        "credit": "크레딧",
+        "additionalServiceCharge": "부가 서비스 요금",
+        "alertNowServiceFee": "AlertNow 사용 요금",
+        "autospotUsageCharge": "AutoSpot 사용 요금",
+        "additionalService1Fee": "Additional Service 1 요금",
+        "subTotal(KRW)": "총계 (KRW)",
+        "subTotal(USD)": "총계 (USD)",
+        "subTotal(CNY)": "총계 (CNY)",
+        "subTotal(MXN)": "총계 (MXN)",
+        "vat": "VAT",
+        "cloudServiceCharge": "클라우드 서비스 요금"
+      },
+      "download": {
+        "excelFileName": "Billing Data",
+        "columnHeader": {
+          "date": "일자",
+          "account": "계정 이름(별칭)",
+          "accountId": "계정 ID",
+          "accountAlias": "계정 Name",
+          "compartment": "Compartment",
+          "costType":"유형",
+          "costName":"설명",
+          "costCurrency":"통화",
+          "costAmount":"금액"
+        },
+        "costNames": {
+          "cloudOriginalCost": "클라우드 원가",
+          "cloudCost": "클라우드 사용 요금",
+          "onDemandDiscount": "온디맨드 할인 요금",
+          "cfDiscount": "CF 할인 요금",
+          "cfDtoDiscount": "CF 데이터 전송 할인 요금",
+          "cfReqDiscount": "CF 요청 할인 요금",
+          "supportFee": "지원 요금",
+          "ncpDiscount": "Ncloud 할인 요금",
+          "salesDiscount": "영업 할인 요금",
+          "credit": "크레딧",
+          "vat": "VAT",
+          "COMMITTED_USAGE_DISCOUNT": "약정 사용 할인(리소스 기반)",
+          "COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE": "약정 사용 할인(지출 기반)",
+          "DISCOUNT": "지출 기반 할인(계약)",
+          "FREE_TIER": "무료 등급",
+          "PROMOTION": "프로모션",
+          "RESELLER_MARGIN": "리셀러 마진",
+          "SUBSCRIPTION_BENEFIT": "구독",
+          "SUSTAINED_USAGE_DISCOUNT": "지속 사용 할인"
+        },
+        "costTypes": {
+          "cloud": "클라우드 서비스",
+          "cloud_credit": "클라우드 서비스 (크레딧)",
+          "additionalService": "부가 서비스"
+        }
+      }
+    },
+    "tourSteps": {
+      "headerTitle": {
+        "billSummary": "요약",
+        "chargeList": "계정별 비용",
+        "invoiceList": "클라우드 청구서 목록",
+        "cloudBillDetail": "클라우드 빌링 상세 내역",
+        "invoiceInsight": "인보이스 인사이트"
+      },
+      "content": {
+        "billSummary": "현재 선택된 월의 클라우드 서비스 요금과 부가 서비스 요금을 한눈에 확인할 수 있습니다.",
+        "chargeList": "비용 정보를 계정별로 제공합니다.",
+        "invoiceList": "클라우드 서비스 요금을 청구서별로 제공합니다.",
+        "cloudBillDetail": "클라우드 서비스 요금을 드릴다운할 수 있습니다.",
+        "invoiceInsight": "인보이스 인사이트는 과거의 청구서와 신규로 발행된 청구서를 비교 분석해 비용 패턴 변화가 큰 제품과 예상되는 원인을 알려드립니다."
+      },
+      "gotIt": "확인"
+    },
+    "viewByText": "보기 기준",
+    "viewBy": {
+      "tagKey": "Tag Key",
+      "serviceGroup": "Service Group",
+      "thereIsNoTagKey": "There is no tag key",
+      "thereIsNoTag": "There is no tag",
+      "thereIsNoServiceGroupSet": "There is no Service Group set",
+      "thereIsNoServiceGroup": "There is no Service Group"
+    },
+    "serviceGroups" : {
+      "searchAnything" : "검색어 입력",
+      "noResultsFound" : "검색된 결과 없음",
+      "serviceGroupSetNm" : "서비스그룹 뷰",
+      "serviceGroupNm": "서비스그룹",
+      "totCost": "클라우드 서비스 요금",
+      "excgCost": "클라우드 서비스 요금(KRW)",
+      "useCost": "클라우드 사용 요금",
+      "cfrcStdCost": "CF 표준 요금",
+      "cfrcGabCost": "CF 할인 요금",
+      "cfrcAplyCost": "CF 요금",
+      "discCost": "영업 할인 요금",
+      "suppCost": "지원 요금",
+      "crdtCost": "크레딧",
+      "totSumCost": "총요금",
+      "download": {
+        "option": {
+          "serviceGroupOnCurrentView(CSV)": "서비스그룹별 비용(CSV)"
+        }
+      }
+    },
+    "sendInvoiceModal": {
+      "sendInvoiceOptions": {
+        "onlyOnce": "한번만 보내기(즉시)",
+        "repeatedly": "반복 보내기(매월)"
+      },
+      "title": "청구서 보내기",
+      "subTitle": "선택한 {selectedMonth}월 청구서를 아래의 수신인에게 전송합니다.",
+      "accountLabel": "계정 정보",
+      "recipientsTitle": "받는 사람 (최대 10명까지 선택 가능)",
+      "recipientsSelectHint": "이메일 주소 선택 (필수)",
+      "emailSelectedCautionInfo": "Service Portal에 등록된 서비스 사용자에게만 청구서를 전송할 수 있도록 정책이 변경되었습니다. 수신인이 계속해서 청구서를 받아보기 위해서는 Service Portal에서 가입해야 합니다.",
+      "descTitle": "설명",
+      "descTextHint": "청구서에 대한 추가 설명을 입력해 주세요. (선택 사항)",
+      "fileType": "파일 형식",
+      "langLabel": "언어",
+      "cautionInfoForDate": {
+        "#1": "요금은 지난 달 기준으로 산정됩니다.",
+        "#2": "전송 일자를 11일 이전으로 설정하는 경우, 요금이 확정되기 이전 날짜이므로 요금이 확정 완료된 이후 요금과 다를 수 있습니다."
+      },
+      "timezoneLabel": "표준 시간대",
+      "timezone": {
+        "kst": "KST(UTC+09, 한국 표준시)",
+        "pst": "PST(UTC-08, 태평양 표준시)",
+        "mst": "MST(UTC-07, 산악 표준시)",
+        "cst": "CST(UTC-06, 중부 표준시)",
+        "est": "EST(UTC-05, 동부 표준시)",
+        "akst": "AKST(UTC-09, 알래스카 표준시)",
+        "hst": "HST(UTC-10, 하와이 표준시)",
+        "chst": "CST(UTC+08, 중국 표준시)",
+        "gst": "GST(UTC+04, 걸프 표준시)"
+      },
+      "dateTime": "전송 일자 및 시간",
+      "noticeModal": {
+        "title": "알림",
+        "selectRecipientContent": "수신인을 한 명 이상 선택하세요.",
+        "detailDescContent": "설명 내용이 너무 깁니다. 255자 이내로 입력해 주세요."
+      },
+      "regularReservations": {
+        "subTile": "청구서가 매달 발송됩니다. 청구서는 설정한 발송일의 이전 달을 기준으로 작성됩니다.",
+        "sendTimeGuide": "매월 {cyleMonth}일 {cyleTime}에 청구서가 발송됩니다."
+      },
+      "submitButton": {
+        "editReservation": "수정",
+        "invoiceRepSend": "보내기"
+      },
+      "deleteInvoiceConfirmModal": {
+        "title": "구독 삭제",
+        "content": "청구서 구독을 삭제하시겠습니까?",
+        "confirmBtnText": "삭제"
+      },
+      "recipientEmailOverflow": "최대 {maxRecipientSize}명 까지 추가 가능합니다."
+    }
+  },
+  "dashboard": {
+    "others": "others",
+    "othersUpper": "Others",
+    "editWidget": "위젯 편집",
+    "noCollectedData": "선택한 클라우드 서비스에 대해 조회할 데이터가 없습니다.",
+    "dashboardHeader": {
+      "save": "저장",
+      "apply": "적용",
+      "overviewDashboard": "대시보드",
+      "displaying": "클라우드 서비스",
+      "template": "템플릿",
+      "monthlyDashboard": "Monthly Dashboard",
+      "dashboardByUser": "Dashboard by user",
+      "copy": "복제",
+      "edit": "편집",
+      "share": "공유",
+      "addWidget": "+ 위젯 추가",
+      "gotit": "확인",
+      "cancel": "취소",
+      "saveAs": "다른 이름으로 저장",
+      "saveDashboard": "대시보드 저장",
+      "delete": "삭제",
+      "saveAsNewDashboard": "새 대시보드로 저장",
+      "duplicateName": "Duplicate Name",
+      "limiteCreate" : "대시보드는 최대 10개까지 생성할 수 있습니다.",
+      "needToEnterDashboardName": "Need to enter Dashboard's name",
+      "confirmDeleteDashboardPopup": {
+        "title": "대시보드 삭제",
+        "content": "{dashboardName}을(를) 삭제하려고 합니다. <br>대시보드를 삭제하면 복원할 수 없습니다.<br> <br>해당 대시보드를 삭제하시겠습니까?"
+      },
+      "cannotDelDashboardPopup": {
+        "content": "적어도 하나 이상의 대시보드가 있어야 합니다.<br>따라서 해당 대시보드를 삭제할 수 없습니다."
+      },
+      "saveAsNewDashboardPopup": {
+        "title": "새 대시보드로 저장",
+        "inputLabel": "새 대시보드 이름",
+        "placeHolder": "새 대시보드 이름을 입력하세요."
+      }
+    },
+    "dashboardCommon": {
+      "overLastMonth":{
+        "#1" : "지난달 대비 ",
+        "#2" : ""
+      },
+      "comparedTo":"{yearMonth} 대비",
+      "equalsInComparison":"{yearMonth} 대비 동일",
+      "equalsLastMonth":"지난달 대비 동일",
+      "costMonthToDate": "이번달 누적 비용",
+      "forecastThisMonth": "이번달 예상 비용",
+      "forecastThisMonthTooltip": "사용 패턴을 기준으로 추정한 예상 비용입니다.",
+      "cloudBudget": "예산",
+      "totalSavings": "총 절감액",
+      "totalOfLastMonth": "Total of last month",
+      "comingSoon": "서비스 예정",
+      "used#1": "",
+      "used#2": " 사용"
+    },
+    "yearCostFcst": {
+      "forecastOneYear": "1년 후 예상 비용",
+      "forecastOneYearTooltip": "과거 비용 패턴을 학습하여 추정한 1년 후 예상 비용입니다."
+    },
+    "dashboardCostMonthToDate": {
+      "editCostMonthToDate": "이번달 누적 비용 위젯 편집",
+      "cloudService": "클라우드 서비스",
+      "title": "이번달 누적 비용 위젯",
+      "desc": "이번 달 1일부터 현재까지 누적된 클라우드 서비스의 총 비용을 보여주며, 지난 달 같은 기간 대비 얼마나 증가/감소했는지 알려줍니다. 멀티 클라우드를 사용하는 경우, 여러 개의 위젯을 추가하여 클라우드 서비스별 이번 달 누적 비용을 쉽게 확인할 수 있습니다."
+    },
+    "dashboardEstimatedCost": {
+      "editEstimatedCost": "이번달 예상 비용 위젯 편집",
+      "cloudService": "클라우드 서비스",
+      "title": "이번달 예상 비용 위젯",
+      "desc": "이번 달 1일부터 현재까지의 사용량 패턴을 바탕으로 한 달 치 사용량을 추정하여 이번 달 예상 비용을 계산해 보여주며, 지난 달 같은 기간 대비 얼마나 증가/감소했는지 알려줍니다. 멀티 클라우드를 사용하는 경우, 여러 개의 위젯을 사용하여 클라우드 서비스별 이번 달 예상 비용을 편리하게 확인할 수 있습니다."
+    },
+    "dashboardYearCostFcst": {
+      "cloudService": "클라우드 서비스",
+      "title": "1년 후 예상 비용 위젯",
+      "desc1": "AWS의 시계열 예측 알고리즘인 AWS SageMaker DeepAR로 과거 클라우드 사용 비용을 학습합니다. 이를 바탕으로 1년 후 클라우드 예상 비용을 위젯에서 보여줍니다.",
+      "desc2": "멀티 클라우드를 사용하는 경우, 각 클라우드 서비스별로 1년 후 예상 비용 위젯을 추가하여 사용자 대시보드에서 예상 비용을 편리하게 확인하세요.",
+      "desc3": "현재 이 위젯은 AWS 클라우드 서비스만 지원합니다."
+    },
+    "dashboardSharing": {
+      "sharingModalHeader": "대시보드 공유",
+      "sharingModalContent1": "아래 링크를 복사한 후 공유하려는 사용자에게 메신저 또는 이메일 등으로 전달하세요.",
+      "sharingModalContent2": "링크를 전달 받은 사용자는 해당 링크에 액세스하여 공유된 대시보드를 확인할 수 있습니다.",
+      "copyUrl": "링크 복사",
+      "cancel": "취소",
+      "copySuccessMsg": "링크가 복사되었습니다.",
+      "copyFailMsg": "링크를 복사하지 못했습니다.",
+      "copyErr": "링크를 복사하는 동안 오류가 발생했습니다.",
+      "shareRange": "공유 범위",
+      "shareTooltip1": "선택한 대시보드의 공유 범위를 설정할 수 있습니다.",
+      "shareTooltip2": "필터 포함: 위젯에 적용된 필터를 포함한 모든 설정이 공유됩니다.",
+      "shareTooltip3": "필터 미포함: 위젯에 적용된 필터를 제외한 나머지 설정이 공유됩니다.",
+      "shareTooltip4": "*'필터 포함'을 선택한 경우 동일한 회사의 사용자에게만 대시보드를 공유할 수 있습니다.",
+      "withShareFilter": "필터 포함",
+      "withoutShareFilter": "필터 미포함",
+      "generateDashboard": {
+        "notifyTitle": "알림",
+        "accessDenied": "공유된 대시보드에 대한 권한이 없어 해당 대시보드를 생성할 수 없습니다. 관리자에게 문의해 주세요.",
+        "uuidIsEmpty": "공유된 대시보드의 URL 형식이 잘못되었습니다.",
+        "sharedDashboardNotExist": "열려고 하는 대시보드가 존재하지 않습니다. 링크 주소가 잘못되었거나 대시보드가 삭제되었을 수 있습니다.",
+        "overMaxDashboardCount": "최대 생성 개수를 초과하여 대시보드를 생성할 수 없습니다.",
+        "unknownCase": "대시보드를 생성하지 못하였습니다. 관리자에게 문의하세요."
+      }
+    },
+    "dashboardCost": {
+      "costBy": {
+        "#1":"비용",
+        "#2":""
+      },
+      "editWidgetForm": {
+        "cloudService": "클라우드 서비스",
+        "title": "비용 위젯 편집",
+        "previews": "미리 보기",
+        "viewBy": "보기 기준",
+        "dateRange": "기간 설정(이번달 또는 이번주가 포함된 기간입니다.)",
+        "chartType": "차트 유형",
+        "setScale": "단위 설정",
+        "setFilter": "필터 설정",
+        "customFilter": {
+          "placeholder": {
+            "selectItem": "선택",
+            "reachedMax": "{max}개가 넘는 항목을 추가할 수 없습니다.",
+            "searchAnything": "검색"
+          }
+        },
+        "cancel": "취소",
+        "save": "저장"
+      },
+      "download": {
+        "monthly": "월별",
+        "weekly": "주별",
+        "costBy": "{viewBy} 별 비용",
+        "vendor": "클라우드 서비스",
+        "cloud": "Cloud"
+      },
+      "title": "비용 위젯",
+      "desc1": "조회 필터 조건을 다양하게 설정해 클라우드 비용을 쉽게 파악할 수 있게 도와줍니다. 위젯 편집창을 열지 않더라도 위젯 카드뷰에서 바로 조회 필터 변경 및 조회가 가능합니다. 차트에서 비용을 실제 값 단위로 조회할지, 총 비용 대비 해당 비용에 대한 백분율 단위로 조회할지도 선택할 수 있으며, 비용이 높은 순서대로 상위 10개 항목을 조회할지, 사용자가 지정한 항목만 선별하여 조회할지도 선택 가능합니다.",
+      "desc2": "조회를 원하는 클라우드 서비스에 따라 비용 세부 필터 조건은 다음과 같습니다.",
+      "descCommon": "공통: 주별, 월별",
+      "descAWS": "AWS: 계정별, 제품별, 리전별",
+      "descGCP": "GCP: 프로젝트별, 제품별",
+      "descAzure": "Azure: 계정별, 제품별, 리전별",
+      "descTencent": "Tencent: 계정별, 제품별, 리전별"
+    },
+    "productPortion": {
+      "title": "제품 비용 분석 위젯",
+      "desc": "클라우드 서비스의 계정별 비용을 제품 카테고리에 따라 분류하여 보여주며, 실제 비용의 값 단위 또는 총 비용에서 해당 제품 카테고리의 비용을 백분율 단위로 분석해 보여줍니다."
+    },
+    "portionBy": {
+      "title": "비용 분석 위젯",
+      "desc1": "비용 위젯과 비슷하게 조회 필터 조건을 다양하게 설정해 클라우드 비용을 쉽게 파악할 수 있게 도와주며, 실제 비용의 값 단위 또는 총 비용에서 해당 항목의 비용을 백분율 단위로 분석해 보여줍니다. 위젯 편집창을 열지 않더라도 위젯 카드뷰에서 바로 조회 필터 변경 및 조회가 가능합니다.",
+      "desc2": "조회를 원하는 클라우드 서비스에 따라 비용 분석 세부 필터 조건은 다음과 같습니다.",
+      "descCommon": "공통: 주별, 월별",
+      "descAWS": "AWS: 계정별, 제품별, 리전별, 태그별, 서비스그룹별",
+      "descGCP": "GCP: 프로젝트별, 제품별",
+      "descAzure": "Azure: 계정별, 제품별, 리전별",
+      "descTencent": "Tencent: 계정별, 제품별, 리전별"
+    },
+    "multiVendorDashboardCost": {
+      "multiVendorCostBy": {
+        "#1":"통합 비용",
+        "#2":""
+      },
+      "editWidgetForm": {
+        "cloudService": "클라우드 서비스",
+        "title": "위젯 편집",
+        "previews": "미리 보기",
+        "viewBy": "보기 기준",
+        "dateRange": "기간 설정(이번달 또는 이번주가 포함된 기간입니다.)",
+        "chartType": "차트 유형",
+        "setScale": "단위 설정",
+        "setFilter": "필터 설정",
+        "customFilter": {
+          "placeholder": {
+            "selectItem": "선택",
+            "reachedMax": "{max}개가 넘는 항목을 추가할 수 없습니다.",
+            "searchAnything": "검색"
+          }
+        },
+        "cancel": "취소",
+        "save": "저장"
+      },
+      "download": {
+        "monthly": "월별",
+        "weekly": "주별",
+        "costBy": "{viewBy} 별 비용",
+        "vendor": "클라우드 서비스",
+        "cloud": "Cloud"
+      },
+      "title": "통합 비용 위젯",
+      "desc": "하나 이상의 클라우드 서비스를 사용하는 경우, 아래 필터 조건에 따른 통합 비용을 하나의 위젯에서 한 눈에 파악할 수 있게 분석하여 보여줍니다.",
+      "descCommon": "공통: 월별, 주별",
+      "descWithGCP": "조회를 원하는 클라우드 서비스에 GCP가 포함된 경우: 계정별, 제품별",
+      "descExceptGCP": "GCP가 포함되지 않은 경우: 계정별, 제품별, 리전별"
+    },
+    "compareCostTrend": {
+      "cloudService": "클라우드 서비스",
+      "compareCostTrend": "비용 트렌드",
+      "cost": "비용",
+      "editCompareCostTrendByWidget": "비용 트렌드 위젯 편집",
+      "previews": "미리 보기",
+      "dateRange": "기간 설정",
+      "timeFrameOptions": {
+        "twoMonths": "2개월",
+        "threeMonths": "3개월",
+        "sixMonths": "6개월"
+      },
+      "apply": "적용",
+      "cancel": "취소",
+      "thisMonth": "이번달",
+      "date": "Date",
+      "total": "총계",
+      "budget": "예산",
+      "title": "비용 트렌드 위젯",
+      "desc": "과거 2개월, 3개월, 6개월의 조회 기간을 선택해 클라우스 서비스의 월 단위 비용 변화를 한 눈에 파악할 수 있도록 그래프로 보여줍니다. 가로 X축에는 날짜가, 세로 Y축에는 비용이 표시됩니다. 특이사항이 두드러지는 일자나 지점의 그래프 위로 마우스를 가져가면 해당 일자에 대한 월별 클라우스 서비스 비용을 확인할 수 있습니다. 멀티 클라우드를 사용하는 경우, 여러 개의 위젯을 사용하여 클라우드 서비스별 비용 트렌드를 한 눈에 확인할 수 있습니다."
+    },
+    "monthlyCost": {
+      "thisMonthSoFar": "이번달",
+      "timeFrameOptions": {
+        "last12Months": "지난 12개월",
+        "last6Months": "지난 6개월",
+        "last3Months": "지난 3개월",
+        "yearToMonth": "올해 이번달까지"
+      }
+    },
+    "weeklyCost": {
+      "timeFrameOptions": {
+        "last8Weeks": "지난 8주",
+        "last24Weeks": "지난 24주",
+        "last16Weeks": "지난 16주",
+        "last4Weeks": "지난 4주",
+        "yearToWeek": "올해 이번주까지"
+      }
+    },
+    "topCost": {
+      "download": {
+        "account": "계정",
+        "product": "제품",
+        "region": "리전",
+        "project": "프로젝트",
+        "vendor": "클라우드 서비스",
+        "percentage": "백분율 단위"
+      },
+      "top5CostBy": {
+        "#1":"상위 5개 비용",
+        "#2":""
+      },
+      "timeFrameOptions": {
+        "last60Days": "지난 60일",
+        "last30Days": "지난 30일",
+        "last14Days": "지난 14일",
+        "last10Days": "지난 10일",
+        "last7Days": "지난 7일",
+        "monthToDate": "이번달 현재까지"
+      },
+      "editTop5CostWidget": "상위 5개 비용 위젯 편집",
+      "previews": "미리 보기",
+      "viewBy": "보기 기준",
+      "dateRange": "기간 설정",
+      "cancel": "취소",
+      "save": "저장",
+      "cloudService": "클라우드 서비스",
+      "title": "상위 5개 비용 위젯",
+      "desc1": "사용자가 설정한 필터 조건 및 기간 중 가장 높은 비용이 나온 항목 5가지를 파이 차트 형식으로 한 눈에 파악하기 쉽게 보여줍니다. 위젯 편집창을 열지 않더라도 위젯 카드뷰에서 바로 조회 필터 변경 및 조회가 가능합니다.",
+      "desc2": "조회를 원하는 클라우드 서비스에 따라 상위 5개 비용 세부 필터 조건은 다음과 같습니다.",
+      "descAWS": "AWS: 계정별, 제품별, 리전별",
+      "descGCP": "GCP: 프로젝트별, 제품별",
+      "descAzure": "Azure: 계정별, 제품별, 리전별",
+      "descTencent": "Tencent: 계정별, 제품별, 리전별"
+    },
+    "abnormalChange": {
+      "widgetTitle": {
+        "userRule": "사용자 지정 기반 이상 비용 탐지",
+        "ai": "AI 기반 이상 비용 탐지"
+      },
+      "abnormalChangeBy": {
+        "#1":"이상 비용 탐지",
+        "#2":""
+      },
+      "download": {
+        "account": "계정",
+        "product": "제품",
+        "region": "리전",
+        "project": "프로젝트"
+      },
+      "vendor": "클라우드 서비스",
+      "service": "서비스",
+      "lastMonth": "지난달",
+      "thisMonth": "이번달",
+      "latest3DayTotal": "지난 3일",
+      "threeDaysBeforeThat": " 이전 3일",
+      "latest7DaysTotal": "지난 7일",
+      "sevenDaysBeforeThat": " 이전 7일",
+      "latestTotalCost": "최종 수집일",
+      "averageCostOfLatest7Days": "지난 7일 평균",
+      "thisMonthSoFar": "이번달",
+      "samePeriodOfLastMonth": "지난달",
+      "latest3DaysTotalAnd3DaysBeforeThat": "지난 3일 vs. 이전 3일 ",
+      "latest7DaysTotalAnd7DaysBeforeThat": "지난 7일 vs. 이전 7일 ",
+      "latestTotalCostAndAverageCostOfLatest7Days": "최종 수집일 vs. 지난 7일 평균",
+      "thisMonthSoFarAndSamePeriodOfLastMonth": "이번달 현재까지 vs. 지난달 동일 기간",
+      "timeFrameOptions": {
+        "latest3DayTotalVs3DaysBeforeWithTime":
+        {
+          "#1": "최종 수집일을 기준으로 지난 3일과 그 이전 3일간을 비교한 결과를 표시합니다.",
+          "#2": "({first}) ~ ({second})"
+        },
+        "latest3DayTotalVs3DaysBefore": "지난 3일 vs. 이전 3일 ",
+        "latest7DayTotalVs7DaysBeforeWithTime":
+        {
+          "#1": "최종 수집일을 기준으로 지난 7일과 그 이전 7일간을 비교한 결과를 표시합니다.",
+          "#2": "({first}) ~ ({second})"
+        },
+        "latest7DayTotalVs7DaysBefore": "지난 7일 vs. 이전 7일 ",
+        "latestTotalCostVsAverageCostOfLatest7DaysWithTime":
+        {
+          "#1": "최종 수집일과 지난 7일간의 평균을 비교한 결과를 표시합니다.",
+          "#2": "({first}) ~ ({second})"
+        },
+        "latestTotalCostVsAverageCostOfLatest7Days": "최종 수집일 vs. 지난 7일 평균 ",
+        "thisMonthSoFarVsSamePeriodOfLastMonthWithTime":
+        {
+          "#1": "이번달 현재까지와 지난달 동일 기간을 비교한 결과를 표시합니다.",
+          "#2": "({first}) ~ ({second})"
+        },
+        "thisMonthSoFarVsSamePeriodOfLastMonth": "이번달 현재까지 vs. 지난달 동일 기간 "
+      },
+      "change": "변동률",
+      "noData": "데이터가 없습니다.",
+      "tryChangingYourFilters": "찾는 항목이 없는 경우 필터를 변경해 보세요.",
+      "vsLastMonth": "vs last month",
+      "editAIAbnormalChangeByWidget": "AI 기반 이상 비용 탐지 편집",
+      "editUserRuleAbnormalChangeByWidget": "사용자 지정 기반 이상 비용 탐지 편집",
+      "viewBy": "보기 기준",
+      "dateRange": "기간 설정",
+      "cancel": "취소",
+      "save": "저장",
+      "sortBy": "정렬 기준",
+      "asc": "오름차순",
+      "desc": "내림차순",
+      "saveColumnStatus": "열 설정 저장",
+      "abnormalChangeColumnSaveTooltip": "설정한 열 순서가 저장됩니다.",
+      "cloudService": "클라우드 서비스",
+      "alarm": "이상 비용 알람",
+      "abnormalChangeNotiTooltip": "위젯 설정에 따라 이상 비용 알람이 발송됩니다.",
+      "notiOff": "받지 않음",
+      "notiOn": "받음",
+      "noAnomalyData": "탐지된 이상 비용이 없습니다.",
+      "anomalyDetectIncreasedTextOptions": {
+        "latest3DayTotalVs3DaysBefore": "총 {count}개의 {viewBy}에서 지난 3일 평균 비용이 이전 3일 평균 대비 {cost}({rate}%) 증가했습니다.",
+        "latest7DayTotalVs7DaysBefore": "총 {count}개의 {viewBy}에서 지난 7일 평균 비용이 이전 7일 평균 대비 {cost}({rate}%) 증가했습니다.",
+        "latestTotalCostVsAverageCostOfLatest7Days": "총 {count}개의 {viewBy}에서 최근 수집일 비용이 지난 7일 평균 대비 {cost}({rate}%) 증가했습니다.",
+        "thisMonthSoFarVsSamePeriodOfLastMonth": "총 {count}개의 {viewBy}에서 이번달 현재까지 비용이 지난달 동일 기간 대비 {cost}({rate}%) 증가했습니다."
+      },
+      "anomalyDetectDecreasedTextOptions": {
+        "latest3DayTotalVs3DaysBefore": "총 {count}개의 {viewBy}에서 지난 3일 평균 비용이 이전 3일 평균 대비 {cost}({rate}%) 감소했습니다.",
+        "latest7DayTotalVs7DaysBefore": "총 {count}개의 {viewBy}에서 지난 7일 평균 비용이 이전 7일 평균 대비 {cost}({rate}%) 감소했습니다.",
+        "latestTotalCostVsAverageCostOfLatest7Days": "총 {count}개의 {viewBy}에서 최근 수집일 비용이 지난 7일 평균 대비 {cost}({rate}%) 감소했습니다.",
+        "thisMonthSoFarVsSamePeriodOfLastMonth": "총 {count}개의 {viewBy}에서 이번달 현재까지 비용이 지난달 동일 기간 대비 {cost}({rate}%) 감소했습니다."
+      },
+      "alarmLevel": "알람 등급",
+      "alarmLevels": {
+        "minor": "보통",
+        "major": "중요",
+        "critical": "심각"
+      },
+      "userRule": "사용자 지정",
+      "ai": "AI",
+      "costAnomalyDetection": "이상 비용 탐지",
+      "aiPredictionCostVsActualcost": "AI 예측 비용 vs. 실제 비용",
+      "sensitivity": "민감도",
+      "sensitivityGroup": {
+        "high" : "높음",
+        "middle" : "중간",
+        "low" : "낮음"
+      },
+      "sensitivityTooltip": "AI 예측 비용이 민감도 범위를 벗어나면 이상을 감지하고 경고를 보냅니다. 민감도가 낮으면 더 적은 알람을 받고, 민감도가 높으면 더 많은 알람을 수신합니다.",
+      "aiAnomalyDetectionIncreased": "{vendor}의 실제 비용이 AI 예측 비용 대비 {cost}({rate}%) 증가했습니다.",
+      "aiAnomalyDetectionDecreased": "{vendor}의 실제 비용이 AI 예측 비용 대비 {cost}({rate}%) 감소했습니다.",
+      "influence": "영향도",
+      "aiPredictioncost": "AI 예측 비용",
+      "actualCost": "실제 비용",
+      "costAnomaly": "이상 비용",
+      "haveNoPermissions": {
+        "pattern01": {
+          "message": {
+            "#1": "자신도 모르게 클라우드 비용이 너무 많이 청구된 경험이 있으신가요?",
+            "#2": "AI 이상 비용 탐지를 사용하면 평소와 다른 비용 패턴을 탐지하여 바로 알람을 발송하여",
+            "#3": "알려 드리기 때문에 비용을 세밀하게 모니터링할 수 있습니다.",
+            "#4": "(MCMP 유료 버전에서 제공되는 기능입니다.)"
+          },
+          "button": "MCMP 유료 버전 신청하기"
+        },
+        "pattern02": {
+          "message": {
+            "#1": "사용 가능한 클라우드 비용 및 사용량 데이터가 없습니다.",
+            "#2": "클라우드를 사용한 후 최대 14일 이후부터 AI 이상 비용 탐지 서비스를 사용할 수 있습니다.",
+            "#3": "사용 가능 날짜: {year}년 {month}월 {day}일",
+            "#4": ""
+          },
+          "button": "AI 이상 비용 탐지 서비스 문의하기"
+        },
+        "pattern03": {
+          "message": {
+            "#1": "사용 패턴을 학습하는 중입니다.",
+            "#2": "서비스를 신청한 후 최대 7일 이후부터 서비스를 사용할 수 있습니다.",
+            "#3": "사용 가능 날짜: {year}년 {month}월 {day}일"
+          },
+          "button": "AI 이상 비용 탐지 서비스 문의하기"
+        },
+        "pattern04": {
+          "message": {
+            "#1": "AI가 비용 데이터를 학습하고 있습니다.",
+            "#2": "학습 완료 예정일: {year}년 {month}월 {day}일",
+            "#3": "",
+            "#4": ""
+          }
+        }
+      },
+      "alertDetail": {
+        "title": "알람 상세 정보",
+        "tooltip": "AI 알고리즘으로 감지된 알람의 세부 사항을 확인하고, 분석 결과 및 이상 감지 요인을 파악할 수 있습니다.",
+        "emailNotification": "이상 비용 탐지에 대해 자세히 알아 보려면 'AI 이상 비용 탐지 서비스 문의하기'를 이용해 주세요.",
+        "back": "뒤로",
+        "alarmDate": "알람 발송 일시"
+      },
+      "dontSupportVendorTitle": "지원되지 않습니다.",
+      "dontSupportVendorContent": "해당 위젯은 현재 AWS만 지원합니다. 다른 클라우드 서비스도 곧 지원될 예정입니다.",
+      "dontSupportVendorContent1": "해당 위젯은 현재 {supportVendors}만 지원합니다.",
+      "dontSupportVendorContent2": "다른 클라우드 서비스도 곧 지원될 예정입니다.",
+      "whatIsAIAnomalyDetection": "AI 기반 이상 비용 탐지 서비스란?",
+      "whatIsUserRuleAnomalyDetection": "사용자 지정 기반 이상 비용 탐지 서비스란?",
+      "explainAIAnomalyDetection": "클라우드 사용량과 비용 데이터를 학습한 후 머신러닝 알고리즘으로 클라우드 사용량과 비용을 실시간으로 분석하고, 평소와 다른 사용 패턴을 매일 탐지하여 사용자가 설정한 AI 탐지 민감도에 따라 알람을 발송하는 서비스입니다.",
+      "explainUserRuleAnomalyDetection": "클라우드 사용량과 비용을 사용자가 설정한 규칙을 통해 분석하고 규칙에 맞지 않는 경우 매일 탐지하여 알람을 발송하는 서비스입니다.",
+      "anomalyDetectionTitle": "이상 비용 탐지 제목",
+      "anomalyDetectionTitlePlaceholder": "제목 입력",
+      "unsupportedCharacters": "지원하지 않는 특수 문자가 포함되어 있습니다.",
+      "analyzeBy": "분석 기준",
+      "comparisonPeriod": "비교 기간",
+      "alertBand": "알람 구간",
+      "aiAlertBandTooltip": "실제 비용과 AI 예측 비용 간의 차이를 기반으로 등급을 구분하여 알람을 설정할 수 있습니다.",
+      "userRuleAlertBandTooltip": "두 기간의 비용을 비교한 후 비정상적인 차이가 날 경우, 알람을 받아볼 수 있도록 설정합니다. 차이가 나는 금액에 따라 심각, 중요, 보통 등으로 설정하고, 사용자에게 알람을 전송합니다.",
+      "anomalyDetectAlertSend": "이상 탐지 시 알람 발송",
+      "alertSendType": "발송 옵션",
+      "sendAllAlertLevel": "전체 발송",
+      "sendByAlertLevel": "등급별 발송",
+      "recipient": "수신자",
+      "addRecipient": "수신자 추가",
+      "add": "추가",
+      "includeLowerLevel": "알람 발송 시 하위 알람 등급 수신자 포함",
+      "channel": "채널",
+      "channels": {
+        "email": "이메일",
+        "sms": "SMS",
+        "alertNow": "AlertNow"
+      },
+      "invalidValue" : "이상 비용 알람 구간 설정이 올바르지 않습니다.",
+      "aiAnomalyDetectionDescriptions": {
+        "#1": "최소 7일 이상 경과해야 AI 서비스를 사용할 수 있습니다.",
+        "#2": "지난 14일 간(최초 설정 시 7일)의 사용 패턴을 분석하여 모델을 생성합니다.",
+        "#3": "매일 사용 패턴을 분석하여 재학습합니다."
+      },
+      "viewBySingular": {
+        "account": "계정",
+        "product": "제품",
+        "region": "리전",
+        "project": "프로젝트"
+      },
+      "viewByPlurals": {
+        "account": "계정",
+        "product": "제품",
+        "region": "리전",
+        "project": "프로젝트"
+      },
+      "viewByOptions": {
+        "account": "계정별",
+        "product": "제품별",
+        "region": "리전별",
+        "project": "프로젝트별"
+      },
+      "viewAlertList": "이상 비용 탐지 보기"
+    },
+    "dropdown": {
+      "option": {
+        "editWidget": "위젯 편집",
+        "download": "다운로드",
+        "exportAsCSV": "CSV로 내보내기",
+        "duplicateWidget": "복제",
+        "deleteWidget": "삭제"
+      }
+    },
+    "tooltipText": {
+      "costIn": "비용",
+      "total": "총계"
+    },
+    "viewByOption": {
+      "account": "계정별",
+      "product": "제품별",
+      "region": "리전별",
+      "tag": "태그별",
+      "serviceGroup": "서비스그룹별",
+      "category": {
+        "product": "제품 카테고리별",
+        "region": "리전 카테고리별"
+      },
+      "project": "프로젝트별"
+    },
+    "dateTypeOptions": {
+      "monthly": "월별",
+      "weekly": "주별"
+    },
+    "scaleOption": {
+      "value": "값 단위",
+      "percentage": "백분율 단위"
+    },
+    "chartTypeOption": {
+      "stack": "누적",
+      "line": "선"
+    },
+    "filterOption": {
+      "top10ByCost": "상위 10개 비용",
+      "top5ByCost": "상위 5개 비용",
+      "custom": "사용자 지정"
+    },
+    "portionByAccount": {
+      "productPortionOf": {
+        "#1":"제품 비용 분석",
+        "#2":""
+      },
+      "previews": "미리 보기",
+      "account": "계정",
+      "project": "프로젝트",
+      "dateRange": "기간 설정",
+      "productPortionOfAccountWidget": "제품 비용 분석 위젯 편집"
+    },
+    "integratedProductPortion": {
+      "title": "카테고리별 통합 비용 분석",
+      "edit" : {
+        "title" : "카테고리별 통합 비용 분석 위젯",
+        "desc" : "하나 이상의 클라우드 서비스를 사용하는 경우, 제품 카테고리별 통합 비용을 하나의 위젯에서 한 눈에 파악할 수 있게 분석하여 바 차트로 보여줍니다."
+      }
+    },
+    "portionByWidget": {
+      "download": {
+        "account": "계정",
+        "product": "제품",
+        "region": "리전",
+        "project": "프로젝트",
+        "vendor": "클라우드 서비스",
+        "percentage": "백분율 단위",
+        "tagValue": "태그",
+        "cost": "비용",
+        "productFamily": "제품 패밀리",
+        "serviceGroup": "서비스 그룹"
+      },
+      "portionBy": {
+        "#1":"비용 분석",
+        "#2":""
+      },
+      "previews": "미리 보기",
+      "account": "계정",
+      "dateRange": "기간 설정",
+      "editPortionByWidget": "비용 분석 위젯 편집",
+      "viewBy": {
+        "#1":"보기 기준",
+        "#2":""
+      }
+    },
+    "multiVendorPortionByServiceGroupWidget": {
+      "title": "서비스 그룹별 통합 비용 분석",
+      "viewByServiceGroup": "서비스 그룹별",
+      "edit" : {
+        "title" : "서비스 그룹별 통합 비용 분석 위젯",
+        "desc" : "하나 이상의 클라우드 서비스를 사용하는 경우, 서비스 그룹별 통합 비용을 하나의 위젯에서 한 눈에 파악할 수 있게 분석하여 바 차트로 보여줍니다."
+      }
+    },
+    "popup": {
+      "cancel": "취소",
+      "confirm": "확인"
+    },
+    "addWidget": {
+      "addWidget": "위젯 추가",
+      "add": "추가",
+      "costMonthToDate": "이번달 누적 비용",
+      "estimatedCost": "이번달 예상 비용",
+      "compareTotalCostTrend": "비용 트렌드",
+      "costBy": "비용",
+      "multiVendorCostBy": "통합 비용",
+      "productPortionOfAccount": "제품 비용 분석",
+      "portionBy": "비용 분석",
+      "abnormalChangeBy": "사용자 지정 기반 이상 비용 탐지",
+      "abnormalDetection": "AI 기반 이상 비용 탐지",
+      "top5CostBy": "상위 5개 비용",
+      "integratedProductPortion": "카테고리별 통합 비용 분석",
+      "multiVendorPortionByServiceGroup": "서비스 그룹별 통합 비용 분석",
+      "yearCostFcst": "1년 후 예상 비용",
+      "isAdded!": " 위젯이 추가되었습니다.",
+      "added": " 추가되었습니다."
+    },
+    "alert": {
+      "alerts": "경고",
+      "comingSoon": "서비스 예정"
+    },
+    "lastUpdated": {
+      "lastUpdated": "마지막 업데이트",
+      "hoursAgo": "시간 전",
+      "daysAgo": "일 전",
+      "hourAgo": "시간 전",
+      "dayAgo": "일 전"
+    },
+    "portionTimeFrame": {
+      "thisMonthSoFar": "이번달 현재까지",
+      "thisWeekSoFar": "이번주 현재까지 "
+    },
+    "noAccount": {
+      "title": "계정이 없습니다.",
+      "noAccountMessage": "등록된 계정이 없습니다. ",
+      "pleaseAddAccount": "계정을 추가해 주세요.",
+      "addAccount": "계정 추가"
+    },
+    "tourSteps": {
+      "headerTitle": {
+        "editWidget": "위젯 편집",
+        "dashboardTemplateSelection": "특정 용도를 위한 멀티 대시보드",
+        "createDashboard": "새 대시보드 만들기",
+        "addWidget": "원하는 위젯 추가하기",
+        "customizeWidget": "위젯 편집, 복제, 삭제 및 이동"
+      },
+      "content": {
+        "editWidget": "사용자의 필요에 맞게 위젯을 변경할 수 있는 편집 기능을 제공합니다. <br> 위젯을 편집하여 중요한 콘텐츠와 정보를 추적할 수 있습니다.",
+        "dashboardTemplateSelection": "멀티 대시보드 기능을 제공합니다. <br> 다양한 용도에 맞게 여러 개의 대시보드를 만들 수 있습니다.",
+        "createDashboard": "템플릿을 기반으로 새로운 대시보드를 만들었습니다.<br> 이제 대시보드를 사용자의 필요에 맞게 편집할 수 있습니다.",
+        "addWidget": "다양한 위젯을 제공하고 있습니다. <br> 필요에 따라 여러 개의 위젯을 추가하여 사용할 수 있습니다.",
+        "customizeWidget": "위젯을 편집, 복제, 삭제하거나 끌어서 놓아 위치를 변경할 수 있습니다."
+      },
+      "gotIt": "확인"
+    }
+  },
+  "anomaly": {
+    "aiModelAnalysisResult": {
+      "title": "이상 탐지 방법",
+      "viewSetting": "알람 설정 정보 보기",
+      "summary": "{forecastDate}의 클라우드 사용량과 비용을 분석한 결과 <span class=\"-color-red-1\">{n}개의 AI 모델에서 이상 비용이 탐지</span>되었습니다.",
+      "ARIMA": "ARIMA(Autoregressive Integrated Moving Average)",
+      "descARIMA" : "AR(Autoregression) 모델과 MA(Moving Average) 모델을 결합하여 트렌드와 계절성을 예측하는 시계열 모델입니다.",
+      "ETS": "ETS(Exponential Smoothing)",
+      "descETS": "최근 데이터에 가장 큰 가중치를 부여하여 과거 데이터일수록 가중치가 지수적으로 감소하는 시계열 모델입니다.",
+      "PCR": "PCR(Principal Component Regression)",
+      "descPCR": "주성분 분석을 이용하여 이상 현상을 유발하는 패턴을 찾고 회귀 분석을 통해 그 영향도를 추정하는 모델입니다.",
+      "costChange": "변동 비용",
+      "rateOfChange": "변동률",
+      "aiPredictionCost" : "AI 예측 비용",
+      "actualCost" : "실제 비용",
+      "tooltip" : "2개 이상의 AI 모델에서 이상 비용이 탐지되면 AI 이상 비용으로 도출됩니다."
+    },
+    "aiAnomalyChangeTop5": {
+      "title": "AI 누적 변동률 Top 5",
+      "tooltip": "누적 변동률은 전체 변동 비용 중 해당 서비스에서 발생한 비용을 백분율로 표시합니다.",
+      "accumulatedChangeCost" : "누적 서비스 변동 비용",
+      "totalChangeCost" : "전체 서비스 변동 비용"
+    },
+    "userAnomalyAlertTop5": {
+      "title": "사용자 지정 규칙별 누적 알람 Top 5",
+      "tooltip": "분석 기준은 계정, 제품, 리전으로 설정할 수 있습니다.",
+      "countUnit": "개",
+      "product": "제품",
+      "region": "리전",
+      "account": "계정"
+    },
+    "anomalyListTitle": "이상 비용 탐지",
+    "anomalyList": "이상 비용 탐지 목록",
+    "anomalyListTooltip": "사용자가 설정한 사용자 지정 또는 AI 분석에 따라 이상 비용이 탐지되어 알람을 발송한 내역입니다. 상세 보기를 클릭하면 상세 내용을 확인할 수 있습니다.",
+    "totalAlerts": {
+      "title": "전체 이상 비용 탐지 알람 수",
+      "total": "전체"
+    },
+    "aiPossibleCause": {
+      "title": "이상 탐지 요인",
+      "tooltip": {
+        "gridInfo": "이상 탐지 요인은 '영향도'가 높은 서비스 순으로 표시됩니다.",
+        "propInfo": "AI가 각 서비스의 사용량 변동과 연관성을 <br>분석하여 이상 탐지 요인을 도출하고,<br> 각 요인이 이상 비용에 미치는 영향도를 백분율로 표시합니다."
+      },
+      "Information": "AI 예상 원인은 이상 탐지 영향도순으로 상위 90%까지 서비스별로 목록에 표시되고 나머지 10%는 Others에 포함하여 제공합니다.",
+      "grid": {
+        "anomalyProp": "영향도",
+        "service": "서비스",
+        "account": "계정",
+        "region" : "리전",
+        "forecastCost": "AI 예측비용",
+        "realCost": "실제 비용",
+        "changeRate": "변동률",
+        "usageType": "사용 유형",
+        "operation": "작업",
+        "detail": "상세 보기",
+        "noResultsFound": "검색된 결과 없음",
+        "loading": "로딩 중..."
+      }
+    },
+    "detectList": {
+      "header": {
+        "rowNum": "번호",
+        "level": "알람 등급",
+        "detectType": "탐지 유형",
+        "cloudService": "클라우드 서비스",
+        "analysisDate": "분석 기준일",
+        "message": "탐지 메시지",
+        "detectDate": "탐지 일시",
+        "alarmReceive": "알람 수신",
+        "hideList": "목록 숨기기",
+        "importantDetect": "중요 표시",
+        "detail": "상세 보기"
+      },
+      "cell": {
+        "asOfDate": "{year}/{month}/{day}",
+        "aiAnomalyVsRealCostContent": "AI 예측 비용 VS 실제비용",
+        "anomalyDetectTimeFrameVSContent": {
+          "latest3DaysTotalAnd3DaysBeforeThat": "지난 3일 vs. 이전 3일 ",
+          "latest7DaysTotalAnd7DaysBeforeThat": "지난 7일 vs. 이전 7일 ",
+          "latestTotalCostAndAverageCostOfLatest7Days": "최종 수집일 vs. 지난 7일 평균",
+          "thisMonthSoFarAndSamePeriodOfLastMonth": "이번달 현재까지 vs. 지난달 동일 기간"
+        },
+        "anomalyDetectIncreasedTextOptions": {
+          "latest3DayTotalVs3DaysBefore": "총 {count}개의 {viewBy}에서 지난 3일 평균 비용이 이전 3일 평균 대비 {cost} 증가했습니다.",
+          "latest7DayTotalVs7DaysBefore": "총 {count}개의 {viewBy}에서 지난 7일 평균 비용이 이전 7일 평균 대비 {cost} 증가했습니다.",
+          "latestTotalCostVsAverageCostOfLatest7Days": "총 {count}개의 {viewBy}에서 최근 수집일 비용이 지난 7일 평균 대비 {cost} 증가했습니다.",
+          "thisMonthSoFarVsSamePeriodOfLastMonth": "총 {count}개의 {viewBy}에서 이번달 현재까지 비용이 지난달 동일 기간 대비 {cost} 증가했습니다."
+        },
+        "anomalyDetectDecreasedTextOptions": {
+          "latest3DayTotalVs3DaysBefore": "총 {count}개의 {viewBy}에서 지난 3일 평균 비용이 이전 3일 평균 대비 {cost} 감소했습니다.",
+          "latest7DayTotalVs7DaysBefore": "총 {count}개의 {viewBy}에서 지난 7일 평균 비용이 이전 7일 평균 대비 {cost} 감소했습니다.",
+          "latestTotalCostVsAverageCostOfLatest7Days": "총 {count}개의 {viewBy}에서 최근 수집일 비용이 지난 7일 평균 대비 {cost} 감소했습니다.",
+          "thisMonthSoFarVsSamePeriodOfLastMonth": "총 {count}개의 {viewBy}에서 이번달 현재까지 비용이 지난달 동일 기간 대비 {cost} 감소했습니다."
+        },
+        "aiAnomalyDetectionIncreased": "{vendor}의 실제 비용이 AI 예측 비용 대비 {cost} 증가했습니다.",
+        "aiAnomalyDetectionDecreased": "{vendor}의 실제 비용이 AI 예측 비용 대비 {cost} 감소했습니다."
+      }
+    }
+  },
+  "costAnalytics": {
+    "optionText": {
+      "noValue": "아니오 {field}"
+    },
+    "chartNames": {
+      "project": "프로젝트",
+      "account": "계정",
+      "product": "제품",
+      "region": "리전",
+      "usageType": "사용 유형",
+      "infraType": "Infra Type",
+      "skuId": "SKU ID",
+      "tag": "태그"
+    },
+    "costAnalyticsDate": {
+      "date": "기간",
+      "totalCost": "총 비용",
+      "vs": "vs",
+      "vsAverage": "vs 평균"
+    },
+    "costAnalyticsTrend": {
+      "compareLabel": "비교",
+      "costTrendBy": "비용 트렌드",
+      "showCostAsAmortizedCost": "분할 상환 요금 표시",
+      "trendByOption": {
+        "project": "프로젝트별",
+        "account": "계정별",
+        "product": "제품별",
+        "region": "리전별",
+        "serviceGroup": "서비스 그룹별",
+        "tag": "태그별"
+      },
+      "tooltipText": {
+        "total": "총계",
+        "vs": "vs",
+        "vsAverage": "vs 평균"
+      },
+      "download": {
+        "dailyCostTrend": "DailyCostTrend",
+        "vendor": "클라우드 서비스",
+        "total": "총계"
+      },
+      "chartDesc": "조회 기준별로 비용 총합이 높은 순서대로 최대 10개를 표시하고, 범례를 선택해 더 추가할 수 있습니다."
+    },
+    "costAnalyticsExportPopup": {
+      "title": "상세데이터 내보내기",
+      "content": "비용 상세 데이터를 이메일로 내보내기 요청이 완료되었습니다.<br>이메일로 데이터를 수신하는데 약간의 시간이 걸릴 수 있습니다.",
+      "currency": "{vendor}는 현재 {selectedCurrency}만 지원 합니다.",
+      "period": "기간 : {exportStartDate} ~ {exportEndDate}",
+      "email": "이메일 주소 : {exportUserEmail}"
+    },
+    "accountCostTable": {
+      "account": "계정",
+      "searchAnything": "검색어 입력",
+      "total": "총계"
+    },
+    "costAnalyticsDetail": {
+      "noAmountUsed": "사용한 금액이 없습니다.",
+      "costByDate": "Cost by Date",
+      "costToDate": "현재까지의 비용",
+      "totalCost": "총 비용",
+      "usage": "사용",
+      "portion": "백분율 값",
+      "absolute": "절대값",
+      "resetFilter": "필터 재설정",
+      "compare": "비교",
+      "tableDetail": {
+        "enterSearchTexts": "검색어 입력",
+        "viewOption": "보기 옵션",
+        "vendor": "클라우드 서비스",
+        "project": "프로젝트",
+        "account": "계정",
+        "region": "리전",
+        "product": "제품",
+        "resourceId": "리소스 ID",
+        "usageType": "사용 유형",
+        "apiOperation": "API 작업",
+        "description": "설명",
+        "usage": "사용",
+        "cost": "비용",
+        "usageDate": "사용 날짜",
+        "resourceName": "리소스 이름",
+        "serviceGroup": "서비스 그룹",
+        "transferType": "전송 유형",
+        "availabilityZone": "가용 영역",
+        "platform": "플랫폼",
+        "databaseEngine": "데이터베이스 엔진",
+        "invoiceId": "인보이스 ID",
+        "chargeType": "요금 유형",
+        "infraType" : "Infra Type",
+        "unitPrice" : "Unit Price",
+        "skuId": "SKU ID",
+        "skuDesc": "SKU 설명",
+        "useUnit": "사용 단위",
+        "download": {
+          "raw": "RAW",
+          "usage": "사용",
+          "cost": "비용",
+          "account": "계정",
+          "linkedAccountId": "연결 계정 ID",
+          "alias": "Alias",
+          "region": "리전",
+          "unitPrice" : "unitPrice",
+          "project": "프로젝트"
+        }
+      }
+    },
+    "costAnalyticsTable": {
+      "vendor": "클라우드 서비스",
+      "project": "프로젝트",
+      "account": "계정",
+      "product": "제품",
+      "region": "리전",
+      "tag": "태그",
+      "serviceGroup": "서비스 그룹",
+      "enterSearchTexts": "검색어 입력",
+      "total": "총계",
+      "noResultsFound": "검색된 결과 없음",
+      "loading": "로딩 중..."
+    },
+    "header": {
+      "search": "검색",
+      "moreFilters": "필터 더 보기",
+      "timeFrameOptions": {
+        "thisMonthMtd": "이번달(MTD)",
+        "lastMonth": "지난달",
+        "last7Days": "지난 7일",
+        "last14Days": "지난 14일",
+        "last60Days": "지난 60일",
+        "last3Months": "지난 3개월",
+        "last6Months": "지난 6개월",
+        "last12Months": "지난 12개월",
+        "thisYearYtd": "올해(YTD)",
+        "custom": "사용자 지정"
+      },
+      "currency": "통화",
+      "dateRange": "기간 설정",
+      "compare": "비교",
+      "individual": "Individual",
+      "individualCost": "개별 비용",
+      "average": "평균",
+      "cancel": "취소",
+      "ok": "확인",
+      "date": "기간 설정",
+      "compareOptions": {
+        "lastPeriod": "이전 기간",
+        "custom": "사용자 지정"
+      },
+      "searchField": {
+        "all": "전체",
+        "product": "제품",
+        "account": "계정",
+        "region": "리전"
+      },
+      "advancedFilter": {
+        "searchAdvancedFilterInput": {
+          "placeholder": "검색어 입력"
+        },
+        "searchAdditionalFilterInput": {
+          "placeholder": "{field} 선택",
+          "searchDoesNotMatch": "검색된 결과 없음"
+        },
+        "additionalFilter": "추가 필터",
+        "clearAllFilters": "모든 필터 선택 해제",
+        "apply": "적용",
+        "saveAndApply": "저장 및 적용",
+        "cancel": "취소",
+        "saveFilter": "필터 저장",
+        "delete": "삭제",
+        "add": "추가",
+        "deleteFilterPopup": {
+          "title": "필터 삭제",
+          "content": "{deletedFilterName}을(를) 삭제하려고 합니다. <br> 필터를 삭제하면 복원할 수 없습니다. <br> <br> 해당 필터를 삭제하시겠습니까?",
+          "delete": "삭제"
+        },
+        "saveFilterPopup": {
+          "title": "필터 저장",
+          "inputLabel": "필터 이름",
+          "save": "저장",
+          "saveAs": "다른 이름으로 저장",
+          "cancel": "취소",
+          "inputPlaceholder": "필터 이름 입력",
+          "duplicateNameWarning": "이미 사용 중인 이름입니다. 다른 이름을 입력하세요.",
+          "emptyNameWarning": "필터 이름을 입력하세요."
+        },
+        "filterNameInput": {
+          "inputPlaceholder": "필터 이름 입력",
+          "duplicateNameWarning": "이미 사용 중인 이름입니다. 다른 이름을 입력하세요.",
+          "emptyNameWarning": "필터 이름을 입력하세요."
+        },
+        "toastMessage": {
+          "isSaved": "{filterName}이(가) 저장되었습니다."
+        },
+        "filterField": {
+          "product": "제품",
+          "project": "프로젝트",
+          "account": "계정",
+          "region": "리전",
+          "serviceGroup": "서비스 그룹",
+          "tag": "태그",
+          "instanceType": "인스턴스 유형",
+          "usageType": "사용 유형",
+          "APIOperation": "API 작업",
+          "chargeType": "요금 유형",
+          "availabilityZone": "가용 영역",
+          "platform": "플랫폼",
+          "purchaseOption": "구매 옵션",
+          "databaseEngine": "데이터베이스 엔진",
+          "cacheEngine": "캐시 엔진",
+          "instanceFamily": "인스턴스 패밀리",
+          "resourceID": "리소스 ID(이름)",
+          "productFamily": "제품 패밀리",
+          "invoiceID": "인보이스 ID",
+          "transferType": "전송 유형"
+        }
+      },
+      "additionalFilter": {
+        "cancel": "취소",
+        "back": "뒤로",
+        "add": "추가",
+        "searchAdditionalFilterInput": {
+          "placeholder": "{field} 검색"
+        }
+      },
+      "savedFilters": {
+        "savedFilters": "저장된 필터",
+        "edit": "편집"
+      },
+      "exceeded12MonthsWarningMessage": "12개월까지만 선택 가능합니다.",
+      "exceeded93daysWarningMessage": "Maximum 93 days",
+      "endDateIsLessThanStartDateWarningMessage": "종료 날짜가 시작 날짜보다 이전일 수 없습니다."
+    },
+    "dropdown": {
+      "option": {
+        "csvDownload": "CSV 다운로드",
+        "emailExport": "상세데이터 내보내기"
+      }
+    },
+    "filterInteraction": {
+      "field": {
+        "product": "제품",
+        "project": "프로젝트",
+        "account": "계정",
+        "region": "리전",
+        "serviceGroup": "서비스 그룹",
+        "tag": "태그",
+        "instanceType": "인스턴스 유형",
+        "usageType": "사용 유형",
+        "APIOperation": "API 작업",
+        "chargeType": "요금 유형",
+        "availabilityZone": "가용 영역",
+        "platform": "플랫폼",
+        "purchaseOption": "구매 옵션",
+        "databaseEngine": "데이터베이스 엔진",
+        "cacheEngine": "캐시 엔진",
+        "instanceFamily": "인스턴스 패밀리",
+        "resourceID": "리소스 ID(이름)",
+        "productFamily": "제품 패밀리",
+        "invoiceID": "인보이스 ID",
+        "transferType": "전송 유형"
+      },
+      "dropdown": {
+        "searchPlaceholder": "{field} 검색"
+      },
+      "clearAllFilters": "모든 필터 선택 해제",
+      "includeAll": "전체"
+    },
+    "tourSteps": {
+      "headerTitle": {
+        "date": "기간 설정",
+        "moreFilters": "필터 더 보기",
+        "viewByOption": "보기 옵션",
+        "drillDownToTheCostOfTheDay": "비용 드릴다운"
+      },
+      "content": {
+        "date": "기간을 선택할 수 있습니다.",
+        "moreFilters": "비용 변화에 실제로 영향을 미치는 요인을 확인할 수 있도록 추가 필터 옵션을 제공합니다.",
+        "viewByOption": "계정별, 제품별, 리전별로 비용 트렌드를 확인할 수 있습니다.",
+        "drillDownToTheCostOfTheDay": "특정 날짜의 비용을 선택하여 해당 비용에 대한 상세 데이터를 확인할 수 있습니다."
+      },
+      "gotIt": "확인"
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "welcomeTitle": {
+        "dashboard":  "사용자 대시보드 소개",
+        "billing":  "빌링 인보이스 소개",
+        "costAnalytics":  "비용 분석 소개",
+        "anomalyAlarm": "이상 비용 탐지",
+        "anomalyAlarm2": "이상 비용 탐지 서비스로 이상 비용을 탐지하여 클라우드 비용을 <br>절감하세요.",
+        "savingsPlans": "Savings Plans 소개"
+      },
+      "welcomeContent": "새로운 기능을 빠르게 둘러볼 수 있습니다.<br>{serviceName} 살펴보시겠습니까?",
+      "awsAvailablePrepareForOthers" : "{serviceName} 현재 {availableVendors}만 지원합니다.<br>다른 클라우드 서비스는 곧 지원될 예정입니다.",
+      "newUpdatesText": "새 업데이트",
+      "buttonText": {
+        "dontShowItAgain": "이 메시지를 다시 표시 안 함",
+        "gotIt": "확인",
+        "skipForNow": "나중에"
+      },
+      "pageName": {
+        "billing": "빌링",
+        "dashboard": "대시보드",
+        "costAnalytics": "비용 분석",
+        "savingsPlans": "Savings Plans",
+        "reserved": "Reservations"
+      },
+      "newUpdates": {
+        "costAnalytics": {
+          "date": "기간 설정",
+          "moreFilters": "필터 더 보기",
+          "viewByOption": "보기 옵션",
+          "drillDownToTheCostOfTheDay": "비용 드릴다운"
+        },
+        "billing": {
+          "billSummary": "요약",
+          "chargeList": "계정별 요금",
+          "invoiceList": "클라우드 청구서 목록",
+          "cloudBillDetail": "클라우드 빌링 상세 내역",
+          "invoiceInsight": "인보이스 인사이트",
+          "computingResources": "컴퓨팅 리소스별 요금",
+          "additionalServices": "부가서비스별 요금"
+        },
+        "dashboard": {
+          "editWidget": "위젯 편집",
+          "dashboardTemplateSelection": "특정 용도를 위한 멀티 대시보드",
+          "createDashboard": "새 대시보드 만들기",
+          "addWidgetGuide": "원하는 위젯 추가하기",
+          "customizeWidget": "위젯 편집, 복제, 삭제 및 이동"
+        }
+      },
+      "anomalyAlarm": {
+        "userRuleDescription" : "클라우드 사용량과 비용을 사용자가 지정한 규칙으로 분석하고<br>평소와 다른 사용 패턴을 탐지하여 알람을 발송하는 서비스입니다.",
+        "userRuleContent" : "• 위젯에서 원하는 규칙을 설정합니다.<br>• 설정한 규칙에 맞지 않는 경우 알람을 발송합니다.<br>• 계정별, 제품별, 리전별로 클라우드 비용을 모니터링합니다.",
+        "aiDescription" : "클라우드 사용량과 비용 데이터를 학습한 후 학습된 머신러닝 알고리즘으로 사용량과 비용을 분석하고<br>평소와 다른 사용 패턴을 탐지하여 알람을 발송하는 서비스입니다.",
+        "aiContent" : "• 머신러닝 알고리즘으로 클라우드 사용량과 비용을 분석합니다.<br>• 예측한 비용의 범위를 초과하는 비용은 즉시 탐지하여 알람을 발송합니다.<br>• AI 가 탐지한 이상 비용은 상세 내역을 파악해 원인 및 해결 방안을 손쉽게 파악할 수 있습니다.<br>(AI 이상 비용 탐지는 유료 서비스입니다.)",
+        "subtitle" : {
+          "userRule": "사용자 지정 기반 이상 비용 탐지",
+          "ai": "AI 기반 이상 비용 탐지"
+        }
+      }
+    },
+    "survey": {
+      "content": "도움이 되셨나요?",
+      "title": "평가 및 의견",
+      "submit": "제출",
+      "later": "나중에",
+      "yes": "예",
+      "no": "아니오",
+      "placeHolder": "의견",
+      "switchToClassicVersion": "클래식 버전으로 전환",
+      "dontShowItAgain": "이 메시지를 다시 표시 안 함",
+      "close": "나중에"
+    }
+  },
+  "savingsPlans": {
+    "fields": {
+      "id": "Savings Plan ID",
+      "arn": "Savings Plan ARN",
+      "linkedAccountId": "연결 계정",
+      "payerAccountId": "지급인 계정",
+      "accountId": "계정",
+      "instanceFamily": "인스턴스 패밀리",
+      "regionCode": "리전 코드",
+      "regionName": "리전",
+      "typeCode": "구매 유형 코드",
+      "typeName": "구매 유형",
+      "serviceCode": "서비스 코드",
+      "serviceName": "서비스",
+      "paymentOption": "결제 옵션",
+      "remainingPeriod": "만료 일자",
+      "startDate": "시작 날짜(UTC)",
+      "endDate": "종료 날짜(UTC)",
+      "duration": "구매 기간",
+      "upfrontCost": "선불 비용",
+      "recurringCost": "후불 비용",
+      "status": "상태",
+      "currency": "통화",
+      "engineCode": "엔진 코드",
+      "engineName": "엔진",
+      "platform": "플랫폼",
+      "usageDate": "사용일",
+      "utilizationRate": "사용률",
+      "totalCommitmentCost": "약정",
+      "usedCommitmentCost": "사용된 약정",
+      "perHourCommitmentCost": "시간당 약정",
+      "netSavingRate": "절감률",
+      "onDemandCost": "온디맨드 요금",
+      "OnDemandCostEquivalent": "온디맨드 환산 요금",
+      "OnDemandSpendNotCoveredCost": "SP 미적용 온디맨드 비용",
+      "netSavingCost": "총 순 절감액",
+      "coverageRate": "충당률",
+      "totalCost": "총 비용",
+      "savingsPlanCost": "Savings Plan 비용",
+      "totalUsage": "전체 사용량",
+      "savingsPlanUsage": "Savings Plan 사용량",
+      "reservedUsage": "예약 인스턴스 사용량",
+      "onDemandUsage": "SP 미적용 온디맨드 사용량"
+    },
+    "titles": {
+      "filter": {
+        "title": "필터",
+        "termDate": "기간",
+        "account": "계정",
+        "linkedAccount": "연결 계정",
+        "type": "구매 유형",
+        "service": "서비스",
+        "region": "리전",
+        "instanceFamily": "인스턴스 패밀리"
+      },
+      "inventory": {
+        "inventoryList": "인벤토리 목록",
+        "inventoryDesc": "Savings Plans 인벤토리는 현재 보유한 Savings Plans와 만료된 Savings Plans의 목록을 보여줍니다."
+      },
+      "utilization": {
+        "totalSummary": {
+          "title": "요약",
+          "description": "Savings Plan 사용률은 사용자가 Savings Plans을 컴퓨팅 사용에 얼마나 활용하고 있는지 백분율로 보여줍니다.",
+          "subTitle": {
+            "savingsStatus": {
+              "title": "절감 현황",
+              "netSavingRate": "절감률",
+              "onDemandCost": "온디맨드 환산 요금",
+              "netSavingCost": "총 순 절감액"
+            },
+            "utilizationStatus": {
+              "title": "사용률 현황",
+              "utilizationRate": "사용률",
+              "totalCommitmentCost": "약정",
+              "usedCommitmentCost": "사용된 약정"
+            },
+            "toolTips": {
+              "netSavingRate": {
+                "description": "선택한 기간 동안에 Savings Plans이 적용된 사용량과 해당 사용량에 대한 온디맨드 비용을 기반으로 계산합니다.",
+                "formula": " ● {netSavingsRate} = 100 × {netSavingCost} / {onDemandCost}",
+                "value": " ● {netSavingsRate} = 100 × {netSavingCost} / {onDemandCost}"
+              },
+              "netSavingCost": {
+                "description": "선택한 기간 동안에 Savings Plans이 적용되는 사용량의 비용을 온디맨드 단가로 환산한 요금입니다.",
+                "formula": " ● {netSavingCost} = {onDemandSpend} - {totalPayment}",
+                "value": " ● {netSavingCost} = {onDemandSpend} - {totalPayment}"
+              },
+              "onDemandCost": "Savings Plans 사용량을 온디맨드로 환산한 요금입니다.",
+              "utilizationRate": {
+                "description": "선택한 기간 동안의 약정 중 사용된 약정 비용의 비율입니다.",
+                "formula": " ● {utilization} = 100 × {usePayment} / {totalPayment}",
+                "value": " ● {utilization} = 100 × {usePayment} / {totalPayment}"
+              },
+              "totalCommitmentCost": "선택된 기간 동안의 계약된 약정 요금입니다.",
+              "usedCommitmentCost": "선택된 기간 동안에 사용된 약정 비용입니다."
+            }
+          }
+        },
+        "transitionStatus": {
+          "title": "사용률 트렌드",
+          "description": "기간별 사용률을 보여줍니다."
+        },
+        "utilizationList": {
+          "title": "계약별 사용률"
+        }
+      },
+      "coverage": {
+        "totalSummary": {
+          "title": "요약",
+          "description": "충당률은 컴퓨팅 리소스에 Savings Plans이 적용된 현황을 보여줍니다.",
+          "subTitle": {
+            "coverageStatus": {
+              "title": "충당률 현황",
+              "coverageRate": "충당률",
+              "totalCost": "총 비용",
+              "savingsPlanCost": "Savings Plan 비용",
+              "onDemandCost": "SP 미적용 온디맨드 비용"
+            },
+            "usageStatus": {
+              "title": "Savings Plan이 적용된 사용량",
+              "description": "사용량은 비용(USD)이 아닌 사용 시간 단위로 보여줍니다.",
+              "savingsPlanUsage": "Savings Plan 사용량",
+              "reservedUsage": "예약인스턴스 사용량",
+              "onDemandUsage": "SP 미적용 온디맨드 사용량"
+            },
+            "toolTips": {
+              "coverageRate": {
+                "description": "선택된 기간 동안의 컴퓨팅 리소스에 사용된 비용 중 Savings Plan이 차지하는 비율입니다.",
+                "formula": " ● {coverageRate} = 100 × {savingsPlansCost} / {totalCost}",
+                "value": " ● {coverageRate} = 100 × {savingsPlansCost} / {totalCost}"
+              },
+              "totalCost": {
+                "description": "선택된 기간 동안 Savings Plans 적용 대상 컴퓨팅 리소스에 사용된 총비용입니다.",
+                "formula": " ● {totalCost} = {savingsPlansCost} + {onDemandCost}",
+                "value": " ● {totalCost} = {savingsPlansCost} + {onDemandCost}"
+              },
+              "savingsPlanCost": "선택된 기간 동안에 Savings Plan으로 사용된 비용입니다.",
+              "onDemandCost": "선택된 기간 동안에 Savings Plans이 적용되지 않은 컴퓨팅 리소스의 온디맨드 비용입니다."
+            }
+          }
+        },
+        "transitionStatus": {
+          "title": "충당률 트렌드",
+          "description": "기간별 충당률을 보여줍니다."
+        },
+        "coverageList": {
+          "title": "Savings Plans 적용 현황"
+        }
+      }
+    },
+    "alert": {
+      "badFilterTermDate": "잘못된 날짜 범위를 지정했습니다. 기간을 다시 선택하여 주세요."
+    },
+    "buttons": {
+      "daily": "일별",
+      "weekly": "주별",
+      "monthly": "월별",
+      "filterSubmit": "적용",
+      "filterCancel": "취소",
+      "isExpired": "만료된 SP 계약 포함",
+      "calendarSubmit": "확인",
+      "calendarCancel": "취소"
+    },
+    "units": {
+      "second": "초",
+      "minute": "분",
+      "hour": "시간",
+      "hours": "시간",
+      "day": "일",
+      "month": "월",
+      "year": "년",
+      "perHour": "시간당",
+      "paymentOption": {
+        "allUpfront": "전체 선결제",
+        "noUpfront": "선결제 없음",
+        "partialUpfront": "부분 선결제"
+      }
+    },
+    "timeFrameOptions": {
+      "thisMonthMtd": "이번 달 현재까지",
+      "lastMonth": "지난 달",
+      "last7Days": "지난 7일",
+      "last14Days": "지난 14일",
+      "last60Days": "지난 60일",
+      "last3Months": "지난 3개월",
+      "last6Months": "지난 6개월",
+      "last1Year": "지난 1년",
+      "last3Year": "지난 3년",
+      "custom": "사용자 지정"
+    }
+  },
+  "spRecommendation": {
+    "fields": {
+      "accountId": "계정",
+      "analPeriod": "데이터 분석 기간",
+      "instanceType": "인스턴스 패밀리",
+      "analType": "SP 유형",
+      "purchaseType": "구매 유형",
+      "regionName": "리전",
+      "perHourCommitmentCost": "SP 약정 추천",
+      "SavingRate": "절감률",
+      "onDemandCost": "매달 온디맨드 금액",
+      "expectedSavingCost": "매달 절약 가능 금액",
+      "sort": "정렬",
+      "filter": "필터"
+    },
+    "titles": {
+      "title": "SP 추천"
+    },
+    "filter": {
+      "buttons": {
+        "recommend": "추천",
+        "lowest": "최저 가격",
+        "mostPopular": "가장 많이 사용",
+        "selectOption": "SP 옵션 선택",
+        "filterCancel": "취소",
+        "filterSelect": "적용"
+      },
+      "toolTips": {
+        "selectPeriod": {
+          "oneYear": "1년",
+          "threeYear": " 3년"
+        },
+        "selectOption": {
+          "noUpfront": "선결제 없음",
+          "partialUpfront": "부분 선결제",
+          "allUpfront": "전체 선결제"
+        },
+        "fee": "선결제 요금",
+        "period": "월간"
+      },
+      "dropDown": {
+        "descCost": "월별 절약 금액(높은 순)",
+        "ascCost": "월별 절약 금액(낮은 순)",
+        "azOrder": "계정 이름순(A to Z)",
+        "zaOrder": "계정 이름순(Z to A)"
+      },
+      "timeFrameOptions": {
+        "last14Days": "14일",
+        "last30Days": "30일",
+        "last60Days": "60일"
+      }
+    },
+    "totalSummary": {
+      "savingCost": {
+        "title": "매달 절약 가능 금액",
+        "description": "추천하는 SP 요금대로 약정할 경우, 현재 요금 대비 예상 절감 금액"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "SP 추천대로 구매할 경우, 예상되는 충당률"
+      },
+      "commitment": {
+        "title": "SP 약정 추천",
+        "description#1": "비용 절약을 최대화하기 위해 필요한 시간당 약정 금액",
+        "description#2": "SP는 AWS 비용 관리 콘솔의",
+        "link": "Savings Plans",
+        "description#3": "에서 구매할 수 있습니다."
+      },
+      "notice#1": "지난 #일 간의 EC2/Lambda/Fargate 사용량 분석 결과 $##.##/hour의 금액을 약정할 경우 매달 $##.##을(를) 절약 가능합니다.",
+      "notice#2": "현재 요금 대비 ##.##%의 비용을 절약할 수 있으며, AWS의 Purchase Savings Plans Console에서 구매 가능합니다.",
+      "notice#3": "표시되는 모든 금액은 예상 금액이며, 실제 청구 금액과 다를 수 있습니다."
+    },
+    "modal": {
+      "title": "SP 옵션 선택",
+      "description#1": "결제 옵션, 약정 기간, Savings Plans 유형에 따른 절감액 및 월 비용 정보를 보여줍니다.",
+      "description#2": "SP 옵션을 선택하면 SP 추천 분석 결과에 반영됩니다."
+    }
+  },
+  "reserved": {
+    "fields": {
+      "id": "예약 인스턴스 ID",
+      "arn": "예약 인스턴스 ARN",
+      "linkedAccountId": "연결 계정",
+      "linkedAccountName": "연결 계정 이름",
+      "payerAccountId": "지급인 계정",
+      "accountId": "계정",
+      "usageAccountId": "사용 계정",
+      "instanceFamily": "인스턴스 패밀리",
+      "instanceType": "인스턴스 유형",
+      "regionCode": "리전코드",
+      "regionName": "리전",
+      "typeCode": "서비스 유형 코드",
+      "typeName": "서비스 유형",
+      "serviceCode": "서비스 코드",
+      "serviceName": "서비스",
+      "paymentOption": "결제 옵션",
+      "remainingPeriod": "만료 일자",
+      "startDate": "시작 날짜(UTC)",
+      "endDate": "종료 날짜(UTC)",
+      "duration": "구매 기간",
+      "upfrontCost": "선불 비용",
+      "recurringCost": "후불 비용",
+      "status": "상태",
+      "currency": "통화",
+      "engineCode": "엔진 코드",
+      "engineName": "엔진",
+      "usageDate": "사용일",
+      "utilizationRate": "사용률",
+      "totalCommitmentCost": "약정",
+      "usedCommitmentCost": "사용된 약정",
+      "netSavingRate": "절감률",
+      "netSavingCost": "총 순 절감액",
+      "coverageRate": "충당률",
+      "platform": "플랫폼",
+      "commitment": "약정",
+      "fixPrice": "선불 비용",
+      "usePrice": "사용 비용",
+      "chargeAmount": "후불 비용",
+      "riCount": "RI 갯수",
+      "availabilityZone": "가용 영역",
+      "instanceTenancy": "인스턴스 테넌시",
+      "chargeFrequency": "청구 단위",
+      "multipleAvailabilityZone": "다중 가용 영역",
+      "offerClass": "제공 클래스",
+      "useType": "서비스 유형",
+      "operationName": "Operation Name",
+      "normalizationFactor": "정규화 인자",
+      "normalizationFactorUnit": "정규화 단위",
+      "tenancy": "인스턴스 테넌시",
+      "onDemandCost": "온디맨드 비용",
+      "savingsPlansCost": "Savings Plans 비용",
+      "reservedOnDemandCost": "온디맨드 환산 요금",
+      "reservedCost": "예약 인스턴스 비용",
+      "totalCost": "총 비용",
+      "onDemandUsage": "온디맨드 사용량",
+      "OnDemandSpendNotCoveredCost": "예약 인스턴스 미적용 온디맨드 비용",
+      "reservedUsage": "예약 인스턴스 사용량",
+      "savingsPlansUsage": "Savings Plans 사용량",
+      "totalUsage": "전체 사용량",
+      "totalUsageWithSp": "전체 사용량 (SP 포함)",
+      "reservedCoverage": "충당률",
+      "reservedCoverageWithSp": "예약 충당률 (SP 포함)",
+      "onDemandNfUsage": "온디맨드 사용량 (NF)",
+      "reservedNfUsage": "예약 사용량 (NF)",
+      "savingsPlansNfUsage": "Savings Plans 사용량 (NF)",
+      "totalNfUsage": "전체 사용량 (NF)",
+      "totalNfUsageWithSp": "전체 사용량 (SP 포함) (NF)",
+      "reservedCostCoverage": "충당률",
+      "reservedNfCoverage": "충당률 (NF)",
+      "reservedNfCoverageWithSp": "충당률 (SP 포함) (NF)",
+      "instanceSize": "크기",
+      "rate": "비율"
+    },
+    "titles": {
+      "filter": {
+        "title": "필터",
+        "termDate": "기간",
+        "account": "계정",
+        "linkedAccount": "연결 계정",
+        "type": "서비스 유형",
+        "service": "서비스",
+        "region": "리전",
+        "instanceFamily": "인스턴스 패밀리",
+        "instanceType": "인스턴스 유형"
+      },
+      "inventory": {
+        "inventoryList": "인벤토리 목록",
+        "inventoryDesc": "예약 인스턴스 인벤토리는 현재 보유하고 있는 예약 인스턴스와 만료된 예약 인스턴스의 목록을 보여줍니다."
+      },
+      "utilization": {
+        "totalSummary": {
+          "title": "요약",
+          "description": "예약 인스턴스 사용률은 사용자가 예약 인스턴스 약정을 컴퓨팅 사용에 얼마나 활용하고 있는지 백분율로 보여줍니다.",
+          "subTitle": {
+            "savingsStatus": {
+              "title": "절감 현황",
+              "netSavingRate": "절감률",
+              "onDemandCost": "온디맨드 환산 요금",
+              "netSavingCost": "총 순 절감액"
+            },
+            "utilizationStatus": {
+              "title": "사용률 현황",
+              "utilizationRate": "사용률",
+              "totalCommitmentCost": "약정",
+              "usedCommitmentCost": "사용된 약정"
+            },
+            "toolTips": {
+              "netSavingRate": {
+                "description": "선택된 기간 동안 온디맨드 사용 대비 절감된 요금 비율입니다.",
+                "formula": " ● {netSavingsRate} = 100 × {netSavingCost} / {onDemandCost}",
+                "value": " ● {netSavingsRate} = 100 × {netSavingCost} / {onDemandCost}"
+              },
+              "netSavingCost": {
+                "description": "선택된 기간 동안 예약 인스턴스 약정을 통해 온디맨드 사용 대비 절감된 금액입니다.",
+                "formula": " ● {netSavingCost} = {onDemandSpend} - {totalPayment}",
+                "value": " ● {netSavingCost} = {onDemandSpend} - {totalPayment}"
+              },
+              "onDemandCost": "예약이 아닌 온디맨드 인스턴스를 사용했을 시 예상되는 금액으로 예약 사용량을 온디맨드 요금으로 환산한 비용입니다.",
+              "utilizationRate": {
+                "description": "선택된 기간 동안 총 약정 중 사용된 약정 요금의 비율입니다.",
+                "formula": " ● {utilization} = 100 × {usePayment} / {totalPayment}",
+                "value": " ● {utilization} = 100 × {usePayment} / {totalPayment}"
+              },
+              "totalCommitmentCost": "선택된 기간 동안 계약된 약정 요금입니다.",
+              "usedCommitmentCost": "선택된 기간 동안 사용된 약정 비용입니다."
+            }
+          }
+        },
+        "transitionStatus": {
+          "title": "사용률 트렌드",
+          "description": "기간별 사용률을 보여줍니다."
+        },
+        "utilizationList": {
+          "title": "계약별 사용률"
+        },
+        "details": {
+          "agreement" : {
+            "title" : "인벤토리 세부 정보",
+            "inventoryDetail": "인벤토리 정보",
+            "usageChart": "사용량 정규화 차트",
+            "usageInstanceTypes": "사용량 정규화 인스턴스 유형"
+          },
+          "instanceFamily" : {
+            "title" : "인스턴스 패밀리별 상세"
+          },
+          "serviceType" : {
+            "title" : "서비스 유형별 세부 정보"
+          }
+        }
+      },
+      "coverage": {
+        "totalSummary": {
+          "title": "요약",
+          "description": "예약 인스턴스 충당률은 특정 기간 동안 사용한 총 리소스 중에서 예약 인스턴스의 비용 및 상세 내역을 보여줍니다.",
+          "subTitle": {
+            "coverageStatus": {
+              "title": "충당률 현황",
+              "reservedCoverage": "충당률",
+              "totalNfUsage": "전체 사용량",
+              "reservedNfUsage": "예약 인스턴스 사용량",
+              "onDemandNfUsage": "온디맨드 사용량",
+
+              "reservedCostTotal": "총 비용",
+              "reservedOnDemandCost": "예약 인스턴스 비용",
+              "onDemandCost": "예약 인스턴스 미적용 온디맨드 비용"
+            },
+            "costStatus": {
+              "title": "금액 현황",
+              "description": "사용된 금액 및 예약 사용량을 온디맨드 가격으로 환산한 금액을 보여줍니다.",
+              "totalCost": "총 비용",
+              "reservedOnDemandCost": "온디맨드 환산된 요금",
+              "onDemandCost": "온디맨드 비용"
+            },
+            "toolTips": {
+              "reservedNfCoverage": {
+                "description": "선택된 기간 동안 사용된 예약 인스턴스가 총 사용량에서 차지하는 비율입니다.",
+                "formula": " ● {reservedNfCoverage} = 100 × {reservedNfUsage} / {totalNfUsage}",
+                "value": " ● {reservedNfCoverage} = 100 × {reservedNfUsage} / {totalNfUsage}"
+              },
+              "reservedCostCoverage": {
+                "description": "선택된 기간 동안의 예약 인스턴스 대상 리소스에 사용된 비용 중 예약 인스턴스가 차지하는 비율입니다.",
+                "formula": " ● {reservedCoverage} = 100 × {reservedOnDemandCost} / {reservedCostTotal}",
+                "value": " ● {reservedCoverage} = 100 × {reservedOnDemandCost} / {reservedCostTotal}"
+              },
+              "totalNfUsage": {
+                "description": "선택된 기간 동안의 전체 예약 사용량",
+                "formula": " ● {totalNfUsage} = {reservedNfUsage} + {onDemandNfUsage}",
+                "value": " ● {totalNfUsage} = {reservedNfUsage} + {onDemandNfUsage}"
+              },
+              "reservedCostTotal": {
+                "description": "선택된 기간 동안 예약 인스턴스 대상 컴퓨팅 리소스에 사용된 총 비용입니다.",
+                "formula": " ● {reservedCostTotal} = {reservedOnDemandCost} + {onDemandCost}",
+                "value": " ● {reservedCostTotal} = {reservedOnDemandCost} + {onDemandCost}"
+              },
+              "reservedNfUsage": "선택된 기간 동안의 예약 인스턴스 사용량",
+              "onDemandNfUsage": "선택된 기간 동안의 온디맨드 인스턴스 사용량",
+              "reservedOnDemandCost": "선택된 기간 동안 사용된 예약 인스턴스의 비용입니다.",
+              "onDemandCost": "선택한 기간 동안의 실제 온디맨드 인스턴스 비용입니다."
+            }
+          }
+        },
+        "transitionStatus": {
+          "title": "충당률 트렌드",
+          "description": "기간별 충당률을 보여줍니다."
+        },
+        "coverageList": {
+          "title": "예약 인스턴스 적용 현황"
+        }
+      }
+    },
+    "alert": {
+      "badFilterTermDate": "잘못된 날짜 범위를 지정했습니다. 기간을 다시 선택하여 주세요."
+    },
+    "tabs": {
+      "utilization": {
+        "inventory": "인벤토리",
+        "instanceFamily": "인스턴스 패밀리",
+        "service": "서비스 유형"
+      }
+    },
+    "buttons": {
+      "daily": "일별",
+      "weekly": "주별",
+      "monthly": "월별",
+      "filterSubmit": "적용",
+      "filterCancel": "취소",
+      "isExpired": "만료된 예약 인스턴스 포함",
+      "calendarSubmit": "확인",
+      "calendarCancel": "취소"
+    },
+    "units": {
+      "second": "초",
+      "minute": "분",
+      "hour": "시간",
+      "hours": "시간",
+      "day": "일",
+      "month": "월",
+      "year": "년",
+      "perHour": "시간당",
+      "paymentOption": {
+        "allUpfront": "전체 선결제",
+        "noUpfront": "선결제 없음",
+        "partialUpfront": "부분 선결제"
+      }
+    },
+    "timeFrameOptions": {
+      "thisMonthMtd": "이번 달 현재까지",
+      "lastMonth": "지난 달",
+      "last7Days": "지난 7일",
+      "last14Days": "지난 14일",
+      "last60Days": "지난 60일",
+      "last3Months": "지난 3개월",
+      "last6Months": "지난 6개월",
+      "last1Year": "지난 1년",
+      "last3Year": "지난 3년",
+      "custom": "사용자 지정"
+    }
+  },
+  "sidebarMenu": {
+    "costManagement": "Cost Management",
+    "dashboard": "사용자 대시보드",
+    "costAnalytics": "비용 분석",
+    "billing": "청구 내역"
+  },
+  "footer": {
+    "agreement": "서비스 약관",
+    "privacyPolicy": "개인정보 처리방침",
+    "technicalSupport": "기술 지원"
+  },
+  "azure-reserved" : {
+    "titles": {
+      "filter": {
+        "displayName": "예약 이름",
+        "billingPlan": "청구 주기",
+        "term": "약정 기간",
+        "productName": "제품명",
+        "title": "필터",
+        "termDate": "기간"
+      },
+      "inventory": {
+        "inventoryList": "인벤토리 목록",
+        "inventoryDesc": "예약 인스턴스 인벤토리는 현재 보유하고 있는 예약 인스턴스와 만료된 예약 인스턴스의 목록을 보여줍니다."
+      },
+      "utilization": {
+        "transitionStatus": {
+          "title": "사용률 트렌드",
+          "description": "사용률 트렌드를 백분율(%)로 환산하여 보여줍니다."
+        },
+        "totalSummary": {
+          "title": "요약",
+          "description": "예약 인스턴스 사용률은 사용자가 예약 인스턴스 약정을 컴퓨팅 사용에 얼마나 활용하고 있는지 백분율로 보여줍니다.",
+          "subTitle": {
+            "savingsStatus": {
+              "title": "절감 현황",
+              "netSavingRate": "절감률",
+              "onDemandCost": "온디맨드 비용",
+              "netSavingCost": "절감된 비용"
+            },
+            "utilizationStatus": {
+              "title": "사용률 현황",
+              "utilizationRate": "사용률",
+              "totalCommitmentCost": "약정",
+              "usedCommitmentCost": "사용된 약정"
+            },
+            "toolTips": {
+              "netSavingRate": {
+                "description": "지정된 기간 동안의 절감된 요금 비율입니다.",
+                "formula": " ● {netSavingsRate} = 100 × {netSavingCost} / {onDemandCost}",
+                "value": " ● {netSavingsRate} = 100 × {netSavingCost} / {onDemandCost}"
+              },
+              "netSavingCost": {
+                "description": "지정된 기간 동안의 절감된 온디맨드 사용 대비 절감된 요금입니다.",
+                "formula": " ● {netSavingCost} = {onDemandSpend} - {totalPayment}",
+                "value": " ● {netSavingCost} = {onDemandSpend} - {totalPayment}"
+              },
+              "onDemandCost": "예약 사용량을 온디맨드로 환산한 요금입니다.",
+              "utilizationRate": {
+                "description": "지정된 기간 동안의 약정 중 사용된 약정 요금의 비율입니다.",
+                "formula": " ● {utilization} = 100 × {usePayment} / {totalPayment}",
+                "value": " ● {utilization} = 100 × {usePayment} / {totalPayment}"
+              },
+              "totalCommitmentCost": "지정된 기간 동안의 계약된 약정 요금입니다.",
+              "usedCommitmentCost": "지정된 기간 동안에 사용된 약정 비용입니다."
+            }
+          }
+        },
+        "details": {
+          "agreement": {
+            "title": "인벤토리 상세 현황",
+            "inventoryDetail": "인벤토리 상세",
+            "usageChart": "Usage Chart",
+            "usageInstanceTypes": "Usage Instance Types"
+          },
+          "instanceFamily": {
+            "title": "인스턴스패밀리 상세"
+          },
+          "serviceType": {
+            "title": "유형별 상세"
+          }
+        }
+      },
+      "recommendations": {
+        "fields": {
+          "sbscId": "구독",
+          "sku": "이름",
+          "loc": "리전",
+          "instFlexGrp": "인스턴스 유연성 그룹",
+          "rcmdQnt": "권장 수량",
+          "savingsRate": "절감률",
+          "sort": "정렬",
+          "filter": "필터"
+        },
+        "totalSummary": {
+          "savingCost": {
+            "title": "매달 절약 가능 금액",
+            "description": "추천된 RI를 모두 구매할 경우, 현재 요금 대비 VM 예상 절감 금액"
+          },
+          "rcmdQnt": {
+            "title": "RI 구매 추천",
+            "description#1": "비용 절약을 최대화하기 위해 구매할 RI 수량",
+            "description#2": "RI는 <a href={portalUrl} target=\"_blank\">Azure VM Reservations Portal</a>에서 구매할 수 있습니다."
+          }
+        },
+        "notice#1": "지난 {lbkPd}일 간의 VM 사용량 분석 결과 <strong>{rcmdQnt}개</strong>의 RI 유형을 <strong>{term}년, 단일 구독</strong> 구매할 경우 매달 <strong>₩{netSavings}</strong> 절약할 수 있습니다.",
+        "notice#2": "현재 요금 대비 <strong>{savingsRate}%</strong>의 비용을 절약할 수 있으며, Azure의 <a href={portalUrl} target=\"_blank\">VM Reservations Portal</a>에서 구매할 수 있습니다.",
+        "notice#3": "표시되는 모든 금액은 예상 금액이며, 실제 청구 금액과 다를 수 있습니다.",
+        "filter": {
+          "lbkPd": "분석 기간",
+          "term": "기간"
+        },
+        "dropDown": {
+          "descCost" : "월별 절약 금액(높은 순)",
+          "ascCost" : "월별 절약 금액(낮은 순)",
+          "azOrder" : "구독 이름순(A-Z)",
+          "zaOrder" : "구독 이름순(Z-A)"
+        },
+        "timeFrameOptions": {
+          "last7Days": "7일",
+          "last30Days": "30일",
+          "last60Days": "60일"
+        },
+        "selectPeriod": {
+          "oneYear": "1년",
+          "threeYear": "3년"
+        },
+        "units": {
+          "year": "년",
+          "day": "일"
+        }
+      }
+    },
+    "buttons": {
+      "daily": "일별",
+      "weekly": "주별",
+      "monthly": "월별",
+      "filterSubmit": "적용",
+      "filterCancel": "취소",
+      "isExpired": "만료된 예약인스턴스 계약 포함",
+      "calendarSubmit": "확인",
+      "calendarCancel": "취소"
+    },
+    "fields": {
+      "referenceOrderId": "구매 ID",
+      "displayName": "예약 이름",
+      "reservationId": "예약 ID",
+      "scopeType": "범위",
+      "quantity": "수량",
+      "expiryDateTime": "예약 만료일",
+      "effectiveDateTime": "예약 시작일",
+      "term": "약정 기간",
+      "billingPlan": "청구 주기",
+      "id": "Reserved ID",
+      "arn": "Reserved ARN",
+      "linkedAccountId": "연결 계정",
+      "linkedAccountName": "연결 계정명",
+      "payerAccountId": "지급인 계정",
+      "accountId": "계정",
+      "usageAccountId": "사용 계정",
+      "instanceFamily": "인스턴스 패밀리",
+      "instanceType": "인스턴스 타입",
+      "regionCode": "리전코드",
+      "regionName": "리전",
+      "typeCode": "유형코드",
+      "typeName": "유형",
+      "serviceCode": "서비스코드",
+      "serviceName": "서비스",
+      "paymentOption": "결재 옵션",
+      "period": "남은 일자",
+      "startDate": "시작 날짜(UTC)",
+      "endDate": "종료 날짜(UTC)",
+      "duration": "구매 기간",
+      "upfrontCost": "선결재 요금",
+      "recurringCost": "후결재 요금",
+      "status": "상태",
+      "currency": "통화",
+      "usageDate": "사용일",
+      "utilizationRate": "사용률",
+      "totalCommitmentCost": "약정",
+      "usedCommitmentCost": "사용된 약정",
+      "netSavingRate": "절감률",
+      "netSavingCost": "절감된 비용",
+      "coverageRate": "적용률",
+      "reservedCost": "Reserved 요금",
+      "platform": "Platform",
+      "commitment": "약정",
+      "fixPrice": "선결재 비용",
+      "usePrice": "사용 비용",
+      "chargeAmount": "후결재 비용",
+      "riCount": "RI 갯수",
+      "availabilityZone": "Availability Zon",
+      "instanceTenancy": "Instance Tenancy",
+      "chargeFrequency": "청구 단위",
+      "multipleAvailabilityZone": "Multiple Availability Zone",
+      "offerClass": "제공 클래스",
+      "useType": "유형",
+      "operationName": "Operation Name",
+      "normalizationFactor": "정규화",
+      "normalizationFactorUnit": "정규화 유닛",
+      "tenancy": "Tenancy",
+      "onDemandCost": "온디맨드 비용",
+      "savingsPlansCost": "Savings Plans 금액",
+      "reservedOnDemandCost": "온디맨드 환산된 요금",
+      "totalCost": "총 비용",
+      "onDemandUsage": "온디맨드 사용량",
+      "reservedUsage": "예약 사용량",
+      "savingsPlansUsage": "Savings Plans 사용량",
+      "totalUsage": "전체 사용량",
+      "totalUsageWithSp": "전체 사용량-Savings Plans 포함",
+      "reservedCoverage": "충당률",
+      "reservedCoverageWithSp": "예약 적용률-Savings Plans 포함",
+      "onDemandNfUsage": "온디맨드 사용량(정규화)",
+      "reservedNfUsage": "예약 사용량(정규화)",
+      "savingsPlansNfUsage": "Savings Plans 사용량(정규화)",
+      "totalNf량": "전체사용량(정규화)",
+      "totalNfUsageWithSp": "전체사용량-Savings Plans 포함(정규화)",
+      "reservedNfCoverage": "충당률(정규화)",
+      "reservedNfCoverageWithSp": "충당률-Savings Plans 포함(정규화)",
+      "subscriptionId": "구독 ID",
+      "alias": "별칭",
+      "productName": "제품명",
+      "skuId": "SKU ID",
+      "usageQuantity": "사용량",
+      "hourPrice" : "시간당 비용",
+      "totalPrice" : "총비용"
+    }
+  },
+  "rdsRi": {
+    "fields": {
+      "accountId": "계정",
+      "analPeriod": "데이터 분석 기간",
+      "instanceType": "인스턴스 유형",
+      "az": "AZ 배포 옵션",
+      "flexibility": "유연성",
+      "operationName": "데이터베이스 엔진",
+      "regionName": "리전",
+      "riPurchaseQty": "RI 구매 추천",
+      "SavingRate": "절감률",
+      "onDemandCost": "매달 온디맨드 금액",
+      "expectedSavingCost": "매달 절약 가능 금액",
+      "sort": "정렬",
+      "filter": "필터"
+    },
+    "titles": {
+      "title": "RDS RI 추천"
+    },
+    "filter": {
+      "buttons": {
+        "recommend": "추천",
+        "lowest": "최저 가격",
+        "mostPopular": "가장 많이 사용",
+        "selectOption": "RI 옵션 선택",
+        "filterCancel": "취소",
+        "filterSelect": "적용"
+      },
+      "toolTips": {
+        "selectPeriod": {
+          "oneYear": "1년",
+          "threeYear": " 3년"
+        },
+        "selectOption": {
+          "noUpfront": "선결제 없음",
+          "partialUpfront": "부분 선결제",
+          "allUpfront": "전체 선결제"
+        },
+        "fee": "선결제 요금",
+        "period": "월간"
+      },
+      "dropDown": {
+        "descCost": "월별 절약 금액(높은 순)",
+        "ascCost": "월별 절약 금액(낮은 순)",
+        "azOrder": "계정 이름순(A to Z)",
+        "zaOrder": "계정 이름순(Z to A)"
+      },
+      "timeFrameOptions": {
+        "last14Days": "14일",
+        "last30Days": "30일",
+        "last60Days": "60일"
+      }
+    },
+    "totalSummary": {
+      "savingCost": {
+        "title": "매달 절약 가능 금액",
+        "description": "추천하는 RI 수량대로 구매할 경우, 현재 요금 대비 예상 절감 금액"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "추천하는 RI 수량대로 구매할 경우, 예상되는 충당률"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "RI 추천대로 구매할 경우, 예상되는 충당률"
+      },
+      "commitment": {
+        "title": "RI 구매 추천 수량",
+        "description#1": "비용 절약을 최대화하기 위해 구매할 수량",
+        "description#2": "RI는 AWS 관리 콘솔의",
+        "link": "RDS 예약 인스턴스",
+        "description#3": "에서 구매할 수 있습니다."
+      }
+    },
+    "modal": {
+      "title": "RI 옵션 선택",
+      "description#1": "결제 옵션과 약정 기간에 따른 절감액 및 월 비용 정보를 보여줍니다.",
+      "description#2": "RI 옵션을 선택하면 RI 추천 분석 결과에 반영됩니다."
+    }
+  },
+  "ec2Ri": {
+    "fields": {
+      "accountId": "계정",
+      "analPeriod": "데이터 분석 기간",
+      "instanceType": "인스턴스 유형",
+      "offrClss": "제공 클래스",
+      "flexibility": "유연성",
+      "operationName": "OS명",
+      "regionName": "리전",
+      "riPurchaseQty": "RI 구매 추천",
+      "SavingRate": "절감률",
+      "onDemandCost": "매달 온디맨드 금액",
+      "expectedSavingCost": "매달 절약 가능 금액",
+      "sort": "정렬",
+      "filter": "필터"
+    },
+    "titles": {
+      "title": "RI 추천"
+    },
+    "filter": {
+      "buttons": {
+        "recommend": "추천",
+        "lowest": "최저 가격",
+        "mostPopular": "가장 많이 사용",
+        "selectOption": "RI 옵션 선택",
+        "filterCancel": "취소",
+        "filterSelect": "적용"
+      },
+      "toolTips": {
+        "selectPeriod": {
+          "oneYear": "1년",
+          "threeYear": " 3년"
+        },
+        "selectOption": {
+          "noUpfront": "선결제 없음",
+          "partialUpfront": "부분 선결제",
+          "allUpfront": "전체 선결제"
+        },
+        "offrClss": {
+          "standard": "표준",
+          "convertible": "컨버터블"
+        },
+        "fee": "선결제 요금",
+        "period": "월간"
+      },
+      "dropDown": {
+        "descCost": "월별 절약 금액(높은 순)",
+        "ascCost": "월별 절약 금액(낮은 순)",
+        "azOrder": "계정 이름순(A to Z)",
+        "zaOrder": "계정 이름순(Z to A)"
+      },
+      "timeFrameOptions": {
+        "last14Days": "14일",
+        "last30Days": "30일",
+        "last60Days": "60일"
+      }
+    },
+    "totalSummary": {
+      "savingCost": {
+        "title": "매달 절약 가능 금액",
+        "description": "추천하는 RI 수량대로 구매할 경우, 현재 요금 대비 예상 절감 금액"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "추천하는 RI 수량대로 구매할 경우, 예상되는 충당률"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "RI 추천대로 구매할 경우, 예상되는 충당률"
+      },
+      "commitment": {
+        "title": "RI 구매 추천 수량",
+        "description#1": "비용 절약을 최대화하기 위해 구매할 수량",
+        "description#2": "RI는 AWS 관리 콘솔의",
+        "link": "EC2 예약 인스턴스",
+        "description#3": "에서 구매할 수 있습니다."
+      }
+    },
+    "modal": {
+      "title": "RI 옵션 선택",
+      "description#1": "결제 옵션과 약정 기간에 따른 절감액 및 월 비용 정보를 보여줍니다.",
+      "description#2": "RI 옵션을 선택하면 RI 추천 분석 결과에 반영됩니다."
+    }
+  },
+  "opnsrchRi": {
+    "fields": {
+      "accountId": "계정",
+      "analPeriod": "데이터 분석 기간",
+      "instanceType": "인스턴스 유형",
+      "operationName": "operationName",
+      "regionName": "리전",
+      "riPurchaseQty": "RI 구매 추천",
+      "SavingRate": "절감률",
+      "onDemandCost": "매달 온디맨드 금액",
+      "expectedSavingCost": "매달 절약 가능 금액",
+      "sort": "정렬",
+      "filter": "필터"
+    },
+    "titles": {
+      "title": "OpenSearch RI 추천"
+    },
+    "filter": {
+      "buttons": {
+        "recommend": "추천",
+        "lowest": "최저 가격",
+        "mostPopular": "가장 많이 사용",
+        "selectOption": "RI 옵션 선택",
+        "filterCancel": "취소",
+        "filterSelect": "적용"
+      },
+      "toolTips": {
+        "selectPeriod": {
+          "oneYear": "1년",
+          "threeYear": " 3년"
+        },
+        "selectOption": {
+          "noUpfront": "선결제 없음",
+          "partialUpfront": "부분 선결제",
+          "allUpfront": "전체 선결제"
+        },
+        "fee": "선결제 요금",
+        "period": "월간"
+      },
+      "dropDown": {
+        "descCost": "월별 절약 금액(높은 순)",
+        "ascCost": "월별 절약 금액(낮은 순)",
+        "azOrder": "계정 이름순(A to Z)",
+        "zaOrder": "계정 이름순(Z to A)"
+      },
+      "timeFrameOptions": {
+        "last14Days": "14일",
+        "last30Days": "30일",
+        "last60Days": "60일"
+      }
+    },
+    "totalSummary": {
+      "savingCost": {
+        "title": "매달 절약 가능 금액",
+        "description": "추천하는 RI 수량대로 구매할 경우, 현재 요금 대비 예상 절감 금액"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "추천하는 RI 수량대로 구매할 경우, 예상되는 충당률"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "RI 추천대로 구매할 경우, 예상되는 충당률"
+      },
+      "commitment": {
+        "title": "RI 구매 추천 수량",
+        "description#1": "비용 절약을 최대화하기 위해 구매할 수량",
+        "description#2": "RI는 AWS 관리 콘솔의",
+        "link": "OpenSearch 예약 인스턴스",
+        "description#3": "에서 구매할 수 있습니다."
+      }
+    },
+    "modal": {
+      "title": "RI 옵션 선택",
+      "description#1": "결제 옵션과 약정 기간에 따른 절감액 및 월 비용 정보를 보여줍니다.",
+      "description#2": "RI 옵션을 선택하면 RI 추천 분석 결과에 반영됩니다."
+    }
+  },
+  "elasticacheRi": {
+    "fields": {
+      "accountId": "계정",
+      "analPeriod": "데이터 분석 기간",
+      "instanceType": "인스턴스 유형",
+      "operationName": "캐시 엔진",
+      "regionName": "리전",
+      "riPurchaseQty": "RI 구매 추천",
+      "SavingRate": "절감률",
+      "onDemandCost": "매달 온디맨드 금액",
+      "expectedSavingCost": "매달 절약 가능 금액",
+      "sort": "정렬",
+      "filter": "필터"
+    },
+    "titles": {
+      "title": "ElastiCache RI 추천"
+    },
+    "filter": {
+      "buttons": {
+        "recommend": "추천",
+        "lowest": "최저 가격",
+        "mostPopular": "가장 많이 사용",
+        "selectOption": "RI 옵션 선택",
+        "filterCancel": "취소",
+        "filterSelect": "적용"
+      },
+      "toolTips": {
+        "selectPeriod": {
+          "oneYear": "1년",
+          "threeYear": " 3년"
+        },
+        "selectOption": {
+          "noUpfront": "선결제 없음",
+          "partialUpfront": "부분 선결제",
+          "allUpfront": "전체 선결제"
+        },
+        "fee": "선결제 요금",
+        "period": "월간"
+      },
+      "dropDown": {
+        "descCost": "월별 절약 금액(높은 순)",
+        "ascCost": "월별 절약 금액(낮은 순)",
+        "azOrder": "계정 이름순(A to Z)",
+        "zaOrder": "계정 이름순(Z to A)"
+      },
+      "timeFrameOptions": {
+        "last14Days": "14일",
+        "last30Days": "30일",
+        "last60Days": "60일"
+      }
+    },
+    "totalSummary": {
+      "savingCost": {
+        "title": "매달 절약 가능 금액",
+        "description": "추천하는 RI 수량대로 구매할 경우, 현재 요금 대비 예상 절감 금액"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "추천하는 RI 수량대로 구매할 경우, 예상되는 충당률"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "RI 추천대로 구매할 경우, 예상되는 충당률"
+      },
+      "commitment": {
+        "title": "RI 구매 추천 수량",
+        "description#1": "비용 절약을 최대화하기 위해 구매할 수량",
+        "description#2": "RI는 AWS 관리 콘솔의",
+        "link": "ElastiCache 예약 인스턴스",
+        "description#3": "에서 구매할 수 있습니다."
+      }
+    },
+    "modal": {
+      "title": "RI 옵션 선택",
+      "description#1": "결제 옵션과 약정 기간에 따른 절감액 및 월 비용 정보를 보여줍니다.",
+      "description#2": "RI 옵션을 선택하면 RI 추천 분석 결과에 반영됩니다."
+    }
+  },
+  "redshiftRi": {
+    "fields": {
+      "accountId": "계정",
+      "analPeriod": "데이터 분석 기간",
+      "instanceType": "인스턴스 유형",
+      "operationName": "노드 유형",
+      "regionName": "리전",
+      "riPurchaseQty": "RI 구매 추천",
+      "SavingRate": "절감률",
+      "onDemandCost": "매달 온디맨드 금액",
+      "expectedSavingCost": "매달 절약 가능 금액",
+      "sort": "정렬",
+      "filter": "필터"
+    },
+    "titles": {
+      "title": "Redshift RI 추천"
+    },
+    "filter": {
+      "buttons": {
+        "recommend": "추천",
+        "lowest": "최저 가격",
+        "mostPopular": "가장 많이 사용",
+        "selectOption": "RI 옵션 선택",
+        "filterCancel": "취소",
+        "filterSelect": "적용"
+      },
+      "toolTips": {
+        "selectPeriod": {
+          "oneYear": "1년",
+          "threeYear": " 3년"
+        },
+        "selectOption": {
+          "noUpfront": "선결제 없음",
+          "partialUpfront": "부분 선결제",
+          "allUpfront": "전체 선결제"
+        },
+        "fee": "선결제 요금",
+        "period": "월간"
+      },
+      "dropDown": {
+        "descCost": "월별 절약 금액(높은 순)",
+        "ascCost": "월별 절약 금액(낮은 순)",
+        "azOrder": "계정 이름순(A to Z)",
+        "zaOrder": "계정 이름순(Z to A)"
+      },
+      "timeFrameOptions": {
+        "last14Days": "14일",
+        "last30Days": "30일",
+        "last60Days": "60일"
+      }
+    },
+    "totalSummary": {
+      "savingCost": {
+        "title": "매달 절약 가능 금액",
+        "description": "추천하는 RI 수량대로 구매할 경우, 현재 요금 대비 예상 절감 금액"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "추천하는 RI 수량대로 구매할 경우, 예상되는 충당률"
+      },
+      "coverage": {
+        "title": "예상 충당률",
+        "description": "RI 추천대로 구매할 경우, 예상되는 충당률"
+      },
+      "commitment": {
+        "title": "RI 구매 추천 수량",
+        "description#1": "비용 절약을 최대화하기 위해 구매할 수량",
+        "description#2": "RI는 AWS 관리 콘솔의",
+        "link": "Redshift 예약 인스턴스",
+        "description#3": "에서 구매할 수 있습니다."
+      }
+    },
+    "modal": {
+      "title": "RI 옵션 선택",
+      "description#1": "결제 옵션과 약정 기간에 따른 절감액 및 월 비용 정보를 보여줍니다.",
+      "description#2": "RI 옵션을 선택하면 RI 추천 분석 결과에 반영됩니다."
+    }
+  }
+}

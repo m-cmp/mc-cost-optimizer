@@ -1,0 +1,305 @@
+// Customize the look and feel of the grid with Sass variables
+// Up-to-date list of variables is available here: http://www.ag-grid.com/javascript-grid-styling/#customizing-sass-variables
+
+// changes the default icon color
+
+// changes the selected checkbox check mark color
+
+$header-background-color: #f6f8fa;
+$background-color: #ffffff;
+$primary-color: #ffffff;
+$hover-color: #ffffff;
+
+$ag-range-selected-border: #1772FF;
+$range-selection-highlight-color: #F2F8FF;
+$ag-range-selected-color-1: #F2F8FF;
+$ag-range-selected-color-2: darken($ag-range-selected-color-1, 10%);
+$ag-range-selected-color-3: darken($ag-range-selected-color-1, 20%);
+$ag-range-selected-color-4: darken($ag-range-selected-color-1, 30%);
+
+$header-height: 50px;
+$row-height: 40px;
+
+$font-family: "NotoSansCJKkr-Regular";
+$font-size: 14px;
+$font-weight:"normal" ;
+$secondary-font-size: 12px;
+$secondary-font-weight: 500;
+$row-border-width: 0.5px;
+$border-color: #e8ebef;
+$odd-row-background-color: #ffffff;
+
+
+.ag-root ::-webkit-scrollbar {
+  border: none;
+  height: 6px;
+  width: 6px;
+}
+
+.ag-root ::-webkit-scrollbar-button {
+  display: none;
+}
+
+.ag-root ::-webkit-scrollbar-track-piece {
+  background: #ffffff;
+}
+
+.ag-root ::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  background-color: #D5DAE0;
+  border-radius: 10px;
+  min-height: 50px;
+}
+
+.ag-body-horizontal-scroll {
+  cursor: pointer;
+}
+
+.ag-theme-bootstrap {
+  .ag-header-row .ag-header-cell-text {
+    white-space: nowrap !important;
+  }
+  .hidden-header {
+    display: none;
+  }
+  .ag-theme-balham .ag-header-cell::after, .ag-theme-balham .ag-header-group-cell::after {
+    border-right: unset;
+  }
+  .ag-header-cell {
+    background: #F6F8FA;
+  }
+  .ag-header-cell, .ag-header-group-cell {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .ag-header-group-cell-no-group {
+    background: #f6f8fa;
+  }
+  .ag-header-group-cell-with-group {
+    background: #e9ebf5;
+  }
+  .ag-cell-label-container {
+  }
+  .ag-header-cell-text {
+    color: #6c7994;
+  }
+  .ag-row-last {
+    border-bottom: none;
+  }
+
+  .ag-root {
+    &.ag-unselectable {
+      &.ag-layout-auto-height {
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+      }
+    }
+  }
+  .ag-row-group-indent-0 {
+    color:  #0672FF;
+  }
+  .ag-row-group {
+    margin-top: 10px;
+  }
+}
+
+.tree-map-5-layer {
+  .ag-ltr {
+    .ag-row-group-indent-0 {
+      padding-left: 10px;
+    }
+    .ag-row-group-indent-1 {
+      padding-left: 32px;
+    }
+    .ag-row-group-indent-2 {
+      padding-left: 54px;
+    }
+    .ag-row-group-indent-3 {
+      padding-left: 76px;
+    }
+    .ag-row-group-indent-4 {
+      padding-left: 77px;
+      color: #7b8088;
+      font-size: 12px;
+    }
+  }
+}
+
+.tree-map-4-layer {
+  .ag-ltr {
+    .ag-row-group-indent-0 {
+      padding-left: 10px;
+    }
+    .ag-row-group-indent-1 {
+      padding-left: 32px;
+    }
+    .ag-row-group-indent-2 {
+      padding-left: 54px;
+    }
+    .ag-row-group-indent-3 {
+      padding-left: 55px;
+      color: #7b8088;
+      font-size: 12px;
+    }
+  }
+}
+
+.charge-detail-price {
+  .ag-header-cell-label-center {
+    .ag-header-cell-label {
+      justify-content: flex-end;
+      margin-right: 50px;
+    }
+  }
+  .high-light-row {
+    color: #222222 !important;
+    font-family: 'NotoSansCJKkr-Bold', "Apple SD Gothic", sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+  }
+  .ag-header-cell-text {
+    font-size: 12px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #6c7994;
+    font-family: 'NotoSansCJKkr-Bold', "Apple SD Gothic", sans-serif;
+  }
+
+  .ag-ltr {
+    .ag-row-group-indent-0 {
+      color: #222222 !important;
+      font-family: 'NotoSansCJKkr-Bold', "Apple SD Gothic", sans-serif;
+      font-size: 14px;
+      margin-left: 5px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+    }
+    .ag-row-group-indent-1 {
+      color: #222222 !important;
+      font-family: 'NotoSansCJKkr-Regular', "Apple SD Gothic", sans-serif;
+      margin-left: -5px;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+    }
+  }
+  .ag-group-expanded {
+    .ag-icon-contracted:empty {
+      &:before {
+        visibility: hidden;
+        display: inline-block;
+        width: 12px;
+        height: 5px;
+      }
+    }
+  }
+
+  .ag-icon-expanded {
+    cursor: pointer;
+    &:before {
+      visibility: hidden;
+      display: inline-block;
+      width: 12px;
+      height: 5px;
+    }
+  }
+
+  .ag-row-group {
+    margin-left: -20px !important;
+  }
+
+  .ag-header-cell {
+    border-left: none !important;
+    border-right: none !important;
+  }
+}
+
+.tree-map-6-layer {
+  .ag-ltr {
+    .ag-row-group-indent-0 {
+      padding-left: 10px;
+    }
+    .ag-row-group-indent-1 {
+      padding-left: 32px;
+    }
+    .ag-row-group-indent-2 {
+      padding-left: 54px;
+    }
+    .ag-row-group-indent-3 {
+      padding-left: 76px;
+    }
+    .ag-row-group-indent-4 {
+      padding-left: 98px;
+    }
+    .ag-row-group-indent-5 {
+      padding-left: 97px;
+      color: #7b8088;
+      font-size: 12px;
+    }
+  }
+}
+
+
+.row-bg-opacity-faded {
+  opacity: 0.4;
+}
+
+.row-bg-opacity-active {
+  opacity: 1;
+}
+
+.ag-body-viewport {
+  &.ag-layout-auto-height {
+    .ag-center-cols-clipper, .ag-center-cols-container {
+      min-height: auto;
+    }
+  }
+}
+
+.ag-theme-bootstrap {
+  &.group {
+    .ag-row-group {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+
+    }
+    /*.ag-body-viewport {
+      .ag-center-cols-container {
+        .ag-row-group {
+          &:first-child {
+          .ag-group-expanded .ag-icon-contracted:empty:before {
+            display: flex;
+          }
+        }
+        }
+      }
+    }*/
+  }
+}
+
+// for example purposes, remove margin and padding of the grid and also removing the outline from focused items.
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+
+  *:focus {
+    outline: none;
+  }
+}

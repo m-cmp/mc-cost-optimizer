@@ -1,0 +1,40 @@
+@import './../function';
+@import './../var';
+@import './../mixin';
+.tabs{
+  &.custom-tabs{
+    .nav-tabs{
+      .nav-item{
+        margin-bottom:0;
+        &.show{
+          .nav-link{
+            border:0;
+            padding:0;
+          }
+        }
+        .nav-link{
+          border:0;
+          padding:0;
+          margin-left:1.25rem;
+          @include colorPicker(color,gray-1);
+          &.active{
+            border:0;
+            padding:0;
+            color:inherit;
+            position:relative;
+            @include colorPicker(color,darkgray-1);
+            &:before{
+              content:'';
+              bottom:0;
+              left:0;
+              position:absolute;
+              right:0;
+              height:2px;
+              @include colorPicker(background-color,blue-1);
+            }
+          }
+        }
+      }
+    }
+  }
+}

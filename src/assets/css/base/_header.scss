@@ -1,0 +1,27 @@
+.group-currency {
+  display: flex;
+  align-items: center;
+}
+.total-cost-arrow {
+  .material-icons {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    left: 4px;
+    top: 4px;
+    margin-left: 4px;
+    &.red {
+      color: #ff2d47;
+    }
+    &.green {
+      color: #6cb41e;
+    }
+    &.gray {
+      color: #b0b7bf;
+      font-size: 20px;
+    }
+  }
+}

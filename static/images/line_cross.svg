@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="11px" height="11px" viewBox="0 0 11 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon :: close or delete</title>
+    <desc>닫기 혹은 삭제에 쓰이는 'X' 모양의 오브제</desc>
+    <defs>
+        <style>
+        g { display: none }
+        g:first-child,
+        g:target { display: inline }
+        </style>
+    </defs>
+    <g id="closeBlack" transform="translate(-1144.000000, -228.000000)" fill="#000000">
+        <g transform="translate(931.000000, 204.000000)">
+            <g transform="translate(209.000000, 20.000000)">
+                <path d="M10.2513137,8.95131372 L10.2513137,2.98528137 L8.95131372,2.98528137 L8.95131372,8.95131372 L2.98528137,8.95131372 L2.98528137,10.2513137 L8.95131372,10.2513137 L8.95131372,15.9852814 L10.2513137,15.9852814 L10.2513137,10.2513137 L15.9852814,10.2513137 L15.9852814,8.95131372 L10.2513137,8.95131372 Z" id="Combined-Shape" transform="translate(9.485281, 9.485281) rotate(45.000000) translate(-9.485281, -9.485281) "></path>
+            </g>
+        </g>
+    </g>
+
+</svg>

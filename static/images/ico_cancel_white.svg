@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="13px" height="14px" viewBox="0 0 13 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.1 (47250) - http://www.bohemiancoding.com/sketch -->
+	<title>icon :: close or delete</title>
+    <desc>취소모양의 오브제</desc>
+    <defs>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="function-btn/undo" transform="translate(-9.000000, -8.000000)" fill="#FFFFFF">
+            <path d="M15.5,9.9912495 L15.5,9.9912495 L15.5,8 L11.1667172,10.9868743 L15.5,13.9736091 L15.5,11.9823596 L15.5,11.9823596 C17.8895163,11.9823596 19.8332828,13.7687136 19.8332828,15.9647192 C19.8332828,18.1607248 17.8895163,19.9371825 15.5,19.9371825 C13.1104837,19.9371825 11.1667172,18.1750815 11.1667172,15.9449266 L9,15.9449266 C9,19.2901589 11.9156497,21.9285714 15.5,21.9285714 C19.0843503,21.9285714 22,19.2539189 22,15.9598408 C22,12.6657627 19.0843503,9.9912495 15.5,9.9912495 Z" id="Shape"></path>
+        </g>
+    </g>
+</svg>

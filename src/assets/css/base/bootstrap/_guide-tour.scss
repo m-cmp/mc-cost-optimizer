@@ -1,0 +1,93 @@
+.base-hotspot-container {
+  position: absolute;
+}
+.base-welcome-popup {
+  &:before {
+    content: '';
+    width: 100%;
+    height: 100vh;
+    background: #000;
+    z-index: 999;
+    opacity: 0.2;
+    position: fixed;
+  }
+}
+@media only screen and (min-width: 1921px) {
+  .base-welcome-popup {
+    .left-menu-main {
+      max-width: 1910px;
+      position: absolute;
+      left: 0;
+      top: 8.375rem;
+    }
+  }
+}
+/*** Customize vue tour component style****/
+.v-step {
+  z-index: 999;
+  background-color: #1155cb !important;
+  padding: 25.6px 24px 24.2px 24px !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  &[x-placement^=bottom] {
+    .v-step__arrow {
+      border-color: #1155cb !important;
+      border-left-color: transparent !important;
+      border-right-color: transparent !important;
+      border-top-color: transparent !important;
+    }
+  }
+  &[x-placement^=top] {
+    .v-step__arrow {
+      border-color: #1155cb !important;
+      border-left-color: transparent !important;
+      border-right-color: transparent !important;
+      border-bottom-color: transparent !important;
+    }
+  }
+  &[x-placement^=left] {
+    .v-step__arrow {
+      border-color: #1155cb !important;
+      border-bottom-color: transparent !important;
+      border-right-color: transparent !important;
+      border-top-color: transparent !important;
+    }
+  }
+  &[x-placement^=right] {
+    .v-step__arrow {
+      border-color: #1155cb !important;
+      border-left-color: transparent !important;
+      border-bottom-color: transparent !important;
+      border-top-color: transparent !important;
+    }
+  }
+  .v-step__header {
+    background-color: #1155cb !important;
+    font-size: 16px;
+    text-align: left;
+    margin: 0 0 8px 0 !important;
+    padding: 0 !important;
+    font-family: "NotoSansCJKkr-Medium";
+  }
+  .v-step__content {
+    text-align: left;
+  }
+  button {
+    &.got-it-btn {
+      height: 32px;
+      border-radius: 4px;
+      text-align: left;
+      color: white;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.33;
+      letter-spacing: normal;
+      border: solid 1px #ffffff;
+      float: right;
+      font-family: NotoSansCJKkr-Medium;
+    }
+  }
+}

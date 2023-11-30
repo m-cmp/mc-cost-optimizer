@@ -2,9 +2,9 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fm-cmp%2Fmc-cost-optimizer.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fm-cmp%2Fmc-cost-optimizer?ref=badge_shield)
 
 
-This repository provides a Multi-Cloud Cost Management and Optimizing Framework. 
+This repository provides a Multi-Cloud Cost Management and Optimizing Framework.
 
-A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to deploy and manage Multi-Cloud Infrastructures. 
+A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to deploy and manage Multi-Cloud Infrastructures.
 
 ([Cloud-Barista/CB-Tumblebug](https://github.com/cloud-barista/cb-tumblebug) mirroring for M-CMP)
 
@@ -18,6 +18,8 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
 
 - clone this repo
 - update submodule (git submodule init; git submodule update)
+- node version : 10.24.1
+- run script param : dev
 
 ## How to Contribute
 

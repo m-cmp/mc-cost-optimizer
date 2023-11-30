@@ -1,0 +1,35 @@
+@import './function';
+@import './var';
+@import './mixin';
+
+.base-font-special{
+  font-family: $font-special-stack;
+}
+
+@each $color, $value in $theme-colors {
+  .color-#{$color} {
+    @include eachColorPicker(color,$value)
+  }
+}
+
+@each $weight, $value in $font-weight {
+  .#{$weight} {
+    font-weight:$value;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+p{
+  margin-bottom:0;
+}

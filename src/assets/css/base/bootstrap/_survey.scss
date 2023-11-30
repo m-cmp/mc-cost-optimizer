@@ -1,0 +1,46 @@
+.go-top {
+  -webkit-transition: width 0.2s;
+  position: fixed;
+  cursor: pointer;
+  bottom: 40px;
+  right: 30px;
+  width: 46px;
+  height: 46px;
+  border-radius: 23px;
+  background-color: #1155cb;
+  z-index: 500;
+
+  .exit-to-old-version-icon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+  }
+
+  .switch-old-version-content {
+    display: none;
+  }
+  &:hover {
+    width: 249px;
+    border-radius: 23px;
+    .exit-to-old-version-icon {
+      position: absolute;
+      left: 15%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+    }
+    .switch-old-version-content {
+      font-family: "NotoSansCJKkr-Regular", "Apple SD Gothic", sans-serif;
+      font-size: 14px;
+      display: block;
+      position: absolute;
+      left: 66%;
+      top: 50%;
+      width: 85%;
+      transform: translate(-50%, -50%);
+      color: white;
+    }
+  }
+}

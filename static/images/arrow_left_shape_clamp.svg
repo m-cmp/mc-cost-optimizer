@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+    <title>왼쪽 화살표. 안에 채운게 없음.</title>
+    <defs>
+    <style>
+        <!-- svg > svg { display: none } -->
+        <!-- svg > svg:target, -->
+        <!-- svg > svg:target g { display: inline } --> 
+        g {display:none}
+        g:target,
+        g:target g {display:inline}
+    </style>
+    </defs>
+
+        <g id="lightblue" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g transform="translate(-33.000000, -112.000000)" fill-rule="nonzero" fill="#2690F7">
+                <g transform="translate(25.000000, 104.000000)" fill="#1886FF" stroke="#1886FF">
+                    <polygon points="15.1434693 9 8 15.9997177 15.1434693 23 16.1516608 21.983871 10.7653254 16.7056452 24 16.7056452 24 15.2943548 10.7653254 15.2943548 16.1516608 10.016129"></polygon>
+                </g>
+            </g>
+        </g>
+
+        <g id="lightblue02" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g transform="translate(-34.000000, -100.000000)" fill-rule="nonzero" fill="#2690F7">
+                <g transform="translate(25.000000, 93.000000)">
+                    <polygon transform="translate(14.514286, 15.800000) rotate(-270.000000) translate(-14.514286, -15.800000) " points="13.3331735 19.8875966 14.1958836 20.8 15.0961002 19.9226857 22.7285714 12.4843917 21.0002086 10.8 13.3677374 18.2382941 15.130664 18.2733832 8.09749057 10.8350891 6.3 12.4493025"></polygon>
+                </g>
+            </g>
+        </g>
+
+        <g id="white" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g transform="translate(-34.000000, -114.000000)" fill-rule="nonzero" fill="#FFFFFF">
+                <g transform="translate(25.000000, 107.000000)">
+                    <polygon transform="translate(14.514286, 15.800000) rotate(-270.000000) translate(-14.514286, -15.800000) " points="13.3331735 19.8875966 14.1958836 20.8 15.0961002 19.9226857 22.7285714 12.4843917 21.0002086 10.8 13.3677374 18.2382941 15.130664 18.2733832 8.09749057 10.8350891 6.3 12.4493025"></polygon>
+                </g>
+            </g>
+        </g>
+</svg>

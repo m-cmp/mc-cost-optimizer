@@ -1,0 +1,10 @@
+/* eslint-disable */
+require('./icon_ai')
+require('./icon_ai_blue')
+require('./icon_download')
+require('./icon_material_equalize_custom')
+require('./icon_service_cost_management')
+require('./icon_vendor_alibaba')
+require('./icon_vendor_aws')
+require('./icon_vendor_azure')
+require('./icon_vendor_gcp')

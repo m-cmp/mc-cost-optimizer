@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="16px" viewBox="0 0 22 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>f</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M18.0140332,8.70470703 C21.0163918,10.6952545 23,14.1269075 23,18 L20.0666667,18 C20.0666667,15.2154057 18.6684882,12.7358245 16.5388961,11.2597195 L13.9901579,15.6742635 L11.4498167,14.2075968 L13.8478801,10.0540292 C13.2544658,9.91224062 12.6358236,9.83713176 12,9.83713176 C7.54490302,9.83713176 3.93333333,13.5246332 3.93333333,18 L1,18 C1,11.8972272 5.92486775,6.89045236 12,6.89045236 C13.174287,6.89045236 14.3055972,7.07751847 15.3666704,7.42340718 L17.3431755,4 L19.8835167,5.46666667 L18.0140332,8.70470703 Z M11.5,20 C10.6715729,20 10,19.3284271 10,18.5 C10,17.6715729 10.6715729,17 11.5,17 C12.3284271,17 13,17.6715729 13,18.5 C13,19.3284271 12.3284271,20 11.5,20 Z" id="path-1"></path>
+    </defs>
+    <g id="Iconography" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-2" transform="translate(-325.000000, -455.000000)">
+            <g id="4.MCMP_Product/Cost-Management_24px" transform="translate(324.000000, 451.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="ic_cost" fill="#000000" fill-rule="evenodd" xlink:href="#path-1"></use>
+                <g id="#MCMP-Brand/Management-Service" mask="url(#mask-2)" fill="#5D8BF8" fill-rule="evenodd">
+                    <rect id="Rectangle-Copy-356" x="0" y="0" width="24" height="24"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

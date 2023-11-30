@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="19px" viewBox="0 0 22 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>icon_warning_amber</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M12,5.99 L19.53,19 L4.47,19 L12,5.99 L12,5.99 Z M12,2 L1,21 L23,21 L12,2 L12,2 Z M13,16 L11,16 L11,18 L13,18 L13,16 L13,16 Z M13,10 L11,10 L11,14 L13,14 L13,10 L13,10 Z" id="path-1"></path>
+    </defs>
+    <g id="Iconography" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-1" transform="translate(-435.000000, -936.000000)">
+            <g id="1.material_custom/warning_outline" transform="translate(434.000000, 934.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="alert/warning_amber_24px" fill-rule="nonzero"></g>
+                <g id="colors" stroke-width="1" fill-rule="evenodd" mask="url(#mask-2)" fill="#898D94">
+                    <g id="#Palette/#Gray/*Gray-1">
+                        <rect id="Rectangle-Copy-340" x="0" y="2.84217094e-14" width="24" height="24"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

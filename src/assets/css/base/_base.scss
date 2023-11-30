@@ -1,0 +1,208 @@
+@import './function';
+@import './var';
+@import './mixin';
+
+/*
+ * Noto Sans Korean
+ */
+
+@font-face {
+  font-family: 'NotoSansCJKkr-Light';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Noto Sans Light'), local('NotoSans-Light'),
+  url(/static/fonts/eot/NotoSansKR-Light-Hestia.eot),
+  url(/static/fonts/eot/NotoSansKR-Light-Hestia.eot?#iefix) format('embedded-opentype'),
+  url(/static/fonts/woff/NotoSansKR-Light-Hestia.woff) format('woff'),
+  url(/static/fonts/otf/NotoSansKR-Light-Hestia.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'NotoSansCJKkr-Regular';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Noto Sans Regular'), local('NotoSans-Regular'),
+  url(/static/fonts/eot/NotoSansKR-Regular-Hestia.eot),
+  url(/static/fonts/eot/NotoSansKR-Regular-Hestia.eot?#iefix) format('embedded-opentype'),
+  url(/static/fonts/woff/NotoSansKR-Regular-Hestia.woff) format('woff'),
+  url(/static/fonts/otf/NotoSansKR-Regular-Hestia.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'NotoSansCJKkr-Medium';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Noto Sans Medium'), local('NotoSans-Medium'),
+  url(/static/fonts/eot/NotoSansKR-Medium-Hestia.eot),
+  url(/static/fonts/eot/NotoSansKR-Medium-Hestia.eot?#iefix) format('embedded-opentype'),
+  url(/static/fonts/woff/NotoSansKR-Medium-Hestia.woff) format('woff'),
+  url(/static/fonts/otf/NotoSansKR-Medium-Hestia.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'NotoSansCJKkr-Bold';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Noto Sans Bold'), local('NotoSans-Bold'),
+  url(/static/fonts/eot/NotoSansKR-Bold-Hestia.eot),
+  url(/static/fonts/eot/NotoSansKR-Bold-Hestia.eot?#iefix) format('embedded-opentype'),
+  url(/static/fonts/woff/NotoSansKR-Bold-Hestia.woff) format('woff'),
+  url(/static/fonts/otf/NotoSansKR-Bold-Hestia.otf) format('opentype');
+}
+
+
+/*
+ * Montserrat
+ */
+
+ @font-face {
+   font-family: 'Montserrat-Light';
+   font-style: normal;
+   font-weight: 300;
+   src: local('Montserrat light'), local('Montserrat-light'),
+   url(/static/fonts/woff/montserrat-light-webfont.woff) format('woff');
+ }
+
+@font-face {
+  font-family: 'Montserrat-Regular';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Montserrat Regular'), local('Montserrat-Regular'),
+  url(/static/fonts/eot/montserrat-regular-webfont.eot),
+  url(/static/fonts/eot/montserrat-regular-webfont.eot?#iefix) format('embedded-opentype'),
+  url(/static/fonts/woff/montserrat-regular-webfont.woff2) format('woff2'),
+  url(/static/fonts/woff/montserrat-regular-webfont.woff) format('woff'),
+  url(/static/fonts/ttf/montserrat-regular-webfont.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Montserrat-Medium';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Montserrat medium'), local('Montserrat-medium'),
+  url(/static/fonts/woff/montserrat-medium-webfont.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Montserrat-Bold';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Montserrat Bold'), local('Montserrat-Bold'),
+  url(/static/fonts/eot/montserrat-bold-webfont.eot),
+  url(/static/fonts/eot/montserrat-bold-webfont.eot?#iefix) format('embedded-opentype'),
+  url(/static/fonts/woff/montserrat-bold-webfont.woff2) format('woff2'),
+  url(/static/fonts/woff/montserrat-bold-webfont.woff) format('woff'),
+  url(/static/fonts/ttf/montserrat-bold-webfont.ttf) format('truetype');
+}
+
+/* Common Style */
+* { margin: 0; padding: 0; }
+/* set html5 elements to block */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, address, cite, code, del, dfn, em, font, img, ins, q, s, samp, strike, strong, sub, sup, dl, dt, dd, ol, ul, li, fieldset, form, label, legend { line-height: 1.5; border: 0 none; }
+body { position: relative; min-height: 320px; margin: 0 auto; font-size: 100%; font-family: $font-base-stack; word-break: normal;
+	text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+}
+header, h1 { font-size: 100%; }
+html, body { height: 100%; overflow: hidden }
+caption,legend { visibility:hidden; overflow:hidden; width:0; height:0; font-size:0;line-height:0; }
+caption { display: none; }
+img { border: none; vertical-align: top; }
+select, input { vertical-align: top; border: 0px; border-radius: 0; background-color: transparent; }
+hr { display: none; border: 0 none; }
+ol, ul, ul li{ list-style: none; }
+em { font-style: normal; }
+menu li { list-style: none; }
+address { display: inline; font-style: normal; }
+button { appearance: none; cursor: pointer; border: 0px; background-color: transparent; border-radius:0; }
+table {border-collapse:collapse;border-spacing:0;}
+input, textarea, keygen, select, button { font-family: $font-base-stack; }
+strong { font-weight: normal; }
+dfn { font-style: normal; }
+i, b, u, s {
+font-style: inherit;
+font-family: inherit;
+font-weight: inherit;
+text-decoration: none;
+}
+
+/* link Style */
+a:link, a:visited, a:active, a:focus { text-decoration: none; }
+a:hover { text-decoration: none; }
+
+.is-hidden { display: none !important; }
+*[hidden] { display: none !important;}
+.visible-hidden { visibility: hidden !important; }
+.clear { clear: both; }
+.txt-center { text-align: center !important; }
+.txt-left { text-align: left !important; }
+.txt-right { text-align: right !important; }
+.inline-block { display: inline-block; vertical-align: middle; }
+.font-family-notosanscjkkr-regular { font-family: 'NotoSansCJKkr-Regular' }
+.font-family-notosanscjkkr-medium { font-family: 'NotoSansCJKkr-Medium' }
+.font-family-notosanscjkkr-Bold { font-family: 'NotoSansCJKkr-Bold' }
+.font-family-montserrat-regular { font-family: 'Montserrat-Regular' }
+.montserrat-r { font-family: Montserrat-Regular; }
+.montserrat-l { font-family: Montserrat-Light; }
+.montserrat-m { font-family: Montserrat-Medium; }
+.montserrat-b { font-family: Montserrat-Bold; }
+
+/* forms */
+fieldset { appearance: none; }
+select,
+input[type=checkbox],
+input[type=radio],
+input[type=text],
+input[type=password],
+input[type=submit],
+input[type=email],
+input[type=search],
+input[type=number],
+textarea {
+  appearance: none;
+  cursor: pointer;
+  border: 0px;
+  outline: 0;
+}
+button {
+    outline: 0;
+    border-radius:0;    // macos chrome user-agent가 업뎃됐는지 언젠가부터 둥글둥글하게 모서리가 나옴..
+}
+
+input:-ms-input-placeholder {
+  color: #b0b7bf !important;
+  font-size: 14px;
+}
+
+input::-ms-input-placeholder {
+  color: #b0b7bf !important;
+  font-size: 14px;
+}
+
+::-ms-clear {
+	display: none;
+}
+
+::selection {
+	background: #000;
+	color: #fff;
+}
+// body { -ms-overflow-style: -ms-autohiding-scrollbar; }
+
+textarea { resize: none; }
+
+select {
+  &:hover {
+    cursor: pointer !important;
+  }
+  &:focus {
+    -webkit-box-shadow: none
+  }
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27gray%27%3E%3Cpolygon%20points%3D%270%2C0%20100%2C0%2050%2C50%27%2F%3E%3C%2Fsvg%3E")!important;
+  background-position: right 10px top 12px!important;
+  background-repeat: no-repeat!important;
+  background-size: 10px!important;
+}

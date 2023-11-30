@@ -1,0 +1,110 @@
+@import './../function';
+@import './../var';
+@import './../mixin';
+
+button{
+  &:focus{
+    box-shadow: none !important;
+    outline:0 !important;
+  }
+}
+
+.btn{
+  display:inline-flex;
+  align-items: center;
+  &:focus{
+    box-shadow: none !important;
+    outline:0 !important;
+  }
+  &.icon-only{
+    padding-left:.5rem;
+    padding-right:.5rem;
+  }
+  &.only-button{
+    padding-left:0;
+    padding-right:0;
+  }
+  &.btn-transparent{
+    padding-top:0;
+    padding-bottom:0;
+    border:0 !important;
+  }
+  &.custom-color{
+    @each $color, $value in $theme-colors {
+      &.#{$color} {
+        &.active,
+        &:hover{
+          @include eachColorPicker(background-color,$value);
+          @include eachColorPicker(border-color,$value)
+        }
+      }
+    }
+    @each $color, $value in $theme-colors {
+      &.text-#{$color} {
+        @include eachColorPicker(color,$value)
+      }
+    }
+  }
+  &.pseudo-color{
+    &.background-color{
+      @each $color, $value in $theme-colors {
+        &.#{$color} {
+          &:after,
+          &:before{
+            @include eachColorPicker(background-color,$value)
+          }
+        }
+      }
+    }
+    &.color{
+      @each $color, $value in $theme-colors {
+        &.#{$color} {
+          &:after,
+          &:before{
+            @include eachColorPicker(color,$value)
+          }
+        }
+      }
+    }
+  }
+}
+
+.btn-group{
+  .btn{
+    &:hover{
+      @include colorPicker(background-color,'white-1')
+    }
+    &:focus{
+      box-shadow: none !important;
+      outline:0 !important;
+    }
+  }
+}
+
+.icon-alert{
+  position:relative;
+  &:after{
+    content:'';
+    width:8px;
+    height:8px;
+    position:absolute;
+    top:4px;
+    left:calc(100% - 12px);
+    @include colorPicker(background-color,'white-1');
+  }
+  &:before{
+    content:'';
+    width:6px;
+    height:6px;
+    position:absolute;
+    top:4px;
+    left:calc(100% - 10px);
+    border-radius:100%;
+    z-index:z('default');
+    @include colorPicker(background-color,'red-1')
+  }
+}
+
+.box-shadow-none {
+  box-shadow: none !important;
+}

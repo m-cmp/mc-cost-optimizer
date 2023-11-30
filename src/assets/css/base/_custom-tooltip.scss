@@ -1,0 +1,233 @@
+@import './function';
+@import './var';
+@import './mixin';
+
+.tooltip {
+  .tooltip-inner {
+    @include colorPicker(background-color,darkgray-1);
+    opacity: 1 !important;
+    border-radius: 3px !important;
+    padding: 0.6rem 0.8rem;
+    max-width: 378px !important;
+  }
+  &.invoice-insight-info-area {
+    .tooltip-inner {
+      max-width: 1600px !important;
+    }
+  }
+}
+
+.search-detail-modal {
+  .tooltip {
+    .arrow {
+      &:before {
+        border-right-color: #ffffff !important;
+      }
+    }
+    .arrow {
+      &:before {
+        border-left-color: #ffffff !important;
+      }
+    }
+    .tooltip-inner {
+      background-color: #ffffff !important;
+      -webkit-box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.3);
+      -moz-box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.3);
+      box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.3);
+      border: none !important;
+      border-radius: 4px !important;
+      max-width: 800px !important;
+    }
+  }
+
+  .tooltip.show {
+    opacity: 1 !important;
+  }
+}
+
+#tooltip-custom {
+  position: absolute;
+  z-index: 20;
+  box-sizing: border-box;
+  width: auto;
+  white-space: nowrap;
+  padding: 12px;
+  border-radius: 2px;
+  background: #fff;
+  opacity: 1;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2);
+}
+
+.IE-custom-tooltip {
+  position: absolute;
+  z-index: 20;
+  box-sizing: border-box;
+  width: auto;
+  white-space: nowrap;
+  padding: 12px;
+  border-radius: 2px;
+  background: #fff;
+  opacity: 1;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2);
+}
+
+.custom-tooltip-right {
+  &:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent white transparent transparent;
+  }
+}
+
+.custom-tooltip-left {
+  &:after {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent transparent white;
+  }
+}
+
+.custom-tooltip-bottom {
+  &:after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+  }
+}
+
+.custom-tooltip-bottom-right {
+  &:after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 70%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+  }
+}
+
+.custom-tooltip-bottom-right-transform {
+  transform: translate(-145px, -85%);
+}
+
+.dashboard-compare-cost-trend-right {
+  transform: translate(90px, -5%);
+}
+
+.dashboard-compare-cost-trend-left {
+  transform: translate(-265px, -5%);
+}
+
+.billing-cost-trend-transform-left {
+  transform: translate(-295px, -25%);
+}
+
+.billing-cost-trend-transform {
+  transform: translate(-93px, -87%);
+}
+
+.custom-portion-tooltip-bottom-right {
+  transform: translate(5%, -90%);
+  cursor: pointer;
+  &:after {
+    content: " ";
+    position: absolute;
+    top: 100%;
+    right: 93%;
+    margin-top: -1px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+  }
+}
+
+.dashboard-cost-line-transform-right {
+  transform: translate(80px, 5%);
+}
+
+.dashboard-cost-line-transform-left {
+  transform: translate(-93%, -15%);
+}
+
+.ca-cost-line-transform-right {
+  transform: translate(95px, -34%);
+}
+
+.ca-cost-line-transform-left {
+  transform: translate(-93%, -33%);
+}
+
+
+.ca-cost-stacked-transform-left {
+  transform: translate(-87%, -25%);
+}
+
+.ca-cost-stacked-transform-right {
+  transform: translate(80px, -25%);
+}
+
+.custom-portion-tooltip-bottom-left {
+  transform: translate(-95%, -95%);
+  cursor: pointer;
+  &:after {
+    content: " ";
+    position: absolute;
+    top: 100%;
+    left: 93%;
+    margin-top: -1px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+  }
+}
+
+.arrow-up-image {
+  display: inline-flex;
+  width: 10.7px;
+  height: 10.7px;
+  margin-top: 3px;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
+  background-image: url(/static/images/icon/arrow-upward.png);
+}
+
+.arrow-down-image {
+  display: inline-flex;
+  width: 10.7px;
+  height: 10.7px;
+  margin-top: 3px;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
+  background-image: url(/static/images/icon/arrow-drop-down.png);
+}
+
+.even-image {
+  display: inline-flex;
+  width: 10.7px;
+  height: 10.7px;
+  margin-top: 3px;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
+  background-image: url(/static/images/icon/even-icon.png);
+}
+
+.exchange-rate-tooltip {
+  font-size: 12px;
+}
