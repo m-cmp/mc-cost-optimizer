@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TokenSql">
+    <insert
+            id="saveEncryptedToken"
+            parameterType="com.example.slack_demo.slack.model.SaveTokenModel">
+        INSERT INTO slack_token (userId, OAuthToken, channelId)
+        VALUES (#{id}, #{token}, #{channel})
+            ON DUPLICATE KEY UPDATE OAuthToken = #{token}, channelId = #{channel}
+    </insert>
+
+    <select id="getEncryptedToken"
+            resultType="String">
+        SELECT OAuthToken
+        FROM slack_token
+        WHERE userId = #{id}
+    </select>
+
+    <select id="getEncryptedChannel"
+            resultType="String">
+        SELECT channelId
+        FROM slack_token
+        WHERE userId = #{id}
+    </select>
+</mapper>
