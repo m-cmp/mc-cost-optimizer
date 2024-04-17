@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cost_optimize_widget">
+
+    <select id="abnormalList" resultType="com.mcmp.dummybe.model.widget.WidgetAbnormalListModel">
+        SELECT item
+             , itemAlias
+             , currentCost
+             , lastCost
+             , increaseDecreaseRate
+             , costChanges
+             , vendor
+             , alarmLevel
+             , levelStates
+          FROM abnormal_widget_list
+    </select>
+
+    <select id="abnormalSummary" resultType="com.mcmp.dummybe.model.widget.WidgetAbnormalDataModel">
+        SELECT totalIncreaseDecreaseCost
+             , totalIncreaseDecreaseRate
+             , latestSummarizedBillDate
+        FROM abnormal_widget_summary
+    </select>
+
+    <select id="costList" resultType="com.mcmp.dummybe.model.widget.WidgetCostListModel">
+        SELECT meterDate AS `date`
+             , cost
+             , item
+             , itemAlias
+             , vendor
+             , isOthers
+             , orderNum as `order`
+             , serviceGroup
+          FROM cost_widget_list
+         ORDER BY `date`, `order`
+    </select>
+
+    <select id="costCustomFilters" resultType="com.mcmp.dummybe.model.widget.WidgetCostCustomFilterModel">
+        SELECT item
+             , itemAlias
+             , vendor
+             , `order`
+             , serviceGroup
+          FROM cost_widget_customfilters
+    </select>
+</mapper>

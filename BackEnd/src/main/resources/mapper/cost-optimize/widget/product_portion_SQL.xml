@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cost_optimize_widget_product_portion">
+
+    <select id="selectProductPortionAccount" resultType="com.mcmp.dummybe.model.widget.WidgetProductPortionAccountModel">
+        SELECT item, itemAlias, vendor, `order`, serviceGroup
+        FROM product_portion_widget_account
+    </select>
+    
+    <select id="selectProductPortionTimeFrame" resultType="com.mcmp.dummybe.model.widget.WidgetProductPortionTimeFrameModel">
+        SELECT `time`, isCurrent
+        FROM product_portion_widget_timeframe
+    </select>
+
+    <select id="selectProductPortionItem" resultType="com.mcmp.dummybe.model.widget.WidgetProductPortionItemsModel">
+        SELECT pi.familyCode, pi.cost, pi.item, pi.itemAlias, pi.vendor, pi.isOthers, pi.`order`, pi.serviceGroup
+        FROM product_portion_widget_item pi
+                 LEFT JOIN product_portion_widget_family pf ON pi.familyCode = pf.familyCode
+    </select>
+
+    <select id="selectProductPortionFamily" resultType="com.mcmp.dummybe.model.widget.WidgetProductPortionPortionModel">
+        SELECT familyCode, cost, `order`, serviceGroup
+        FROM product_portion_widget_family
+    </select>
+</mapper>

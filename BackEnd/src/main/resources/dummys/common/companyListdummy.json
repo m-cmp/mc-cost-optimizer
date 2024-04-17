@@ -1,0 +1,321 @@
+{
+  "status": "ok",
+  "result": {
+    "siteCd": "MCMP",
+    "userId": "MCMP",
+    "userEmail": "MCMP@mcmp.com",
+    "userNm": "mcmpUser",
+    "userGrpId": null,
+    "userGrpNm": null,
+    "userGrpDesc": null,
+    "userGrpTypeCd": "USER_GRP_TYPE_010",
+    "userGrpTypeNm": "White Labeling Admin Group",
+    "cmpnList": [
+      {
+        "cmpnId": "1",
+        "cmpnNm": "MCMP",
+        "cmpnUtcTmzn": "+09:00",
+        "authYn": null,
+        "service": null,
+        "vendor": [
+          {
+            "cloudVndrId": "aws",
+            "cloudVndrNm": "Amzon Web Service",
+            "accountList": [
+              {
+                "accId": "0",
+                "alias": "Marketplace - DEV",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Testaccount",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "MCMP - NOS",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "CUR 비용수집 테스트",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "AutoSpot-Anhvtl",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Shield Test1",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Fin - STG",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "MCMP - PRD",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Data - DEV",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Fin - MEA1",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Marketplace - PRD",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Chat - DEV",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Sec - DEV",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "계정테스트입니다--",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "hy-test",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "CBP test용 계정_JJ",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "jongwon-개인계정",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Alert - PRD",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Fin - PRD",
+                "hlthYn": "N"
+              },
+              {
+                "accId": "0",
+                "alias": "Chat - PRD",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "key_test2",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Alert - DEV",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "guide",
+                "hlthYn": "N"
+              },
+              {
+                "accId": "0",
+                "alias": "Data - PRD",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Sec - PRD",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "MCMP - COM",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "dsfd",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Autospot-test",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "yijeong-test1",
+                "hlthYn": "Y"
+              }
+            ]
+          },
+          {
+            "cloudVndrId": "azu",
+            "cloudVndrNm": "MicroSoft Azure",
+            "accountList": [
+              {
+                "accId": "0",
+                "alias": "AP구독_1",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "MCMP Svc 2",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "요금재계산테스트",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "MCMP-SWQA",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "SWCAMP01",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "Azure subscription 1",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "SWCAMP02",
+                "hlthYn": "Y"
+              }
+            ]
+          },
+          {
+            "cloudVndrId": "gcp",
+            "cloudVndrNm": "GCP",
+            "accountList": [
+              {
+                "accId": "0",
+                "alias": "Autospot-Anhvtl",
+                "hlthYn": "N"
+              },
+              {
+                "accId": "0",
+                "alias": "MCMP GCP Billing",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "MCMP-qa-automation",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "test040",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "iaas-demo",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "MCMP-gcp-dev-pjt",
+                "hlthYn": "Y"
+              },
+              {
+                "accId": "0",
+                "alias": "smart-osc",
+                "hlthYn": "N"
+              }
+            ]
+          },
+          {
+            "cloudVndrId": "ncp",
+            "cloudVndrNm": "NCP",
+            "accountList": [
+              {
+                "accId": "0",
+                "alias": "12",
+                "hlthYn": "N"
+              },
+              {
+                "accId": "0",
+                "alias": "MCMPpsteam_bgk",
+                "hlthYn": "N"
+              },
+              {
+                "accId": "0",
+                "alias": "MCMP 테스트",
+                "hlthYn": "N"
+              },
+              {
+                "accId": "0",
+                "alias": "test",
+                "hlthYn": "N"
+              },
+              {
+                "accId": "0",
+                "alias": "asset_svc2",
+                "hlthYn": "N"
+              },
+              {
+                "accId": "0",
+                "alias": "p5",
+                "hlthYn": "N"
+              },
+              {
+                "accId": "0",
+                "alias": "dongdongdong",
+                "hlthYn": "N"
+              }
+            ]
+          },
+          {
+            "cloudVndrId": "oci",
+            "cloudVndrNm": "OCI",
+            "accountList": [
+              {
+                "accId": "0",
+                "alias": "mcmp",
+                "hlthYn": "Y"
+              }
+            ]
+          },
+          {
+            "cloudVndrId": "tencent",
+            "cloudVndrNm": "Tencent",
+            "accountList": [
+              {
+                "accId": "0",
+                "alias": "404",
+                "hlthYn": "N"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

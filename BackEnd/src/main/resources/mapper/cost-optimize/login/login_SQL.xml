@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cost-optimize-login">
+
+    <select id="testQuery" resultType="int">
+        SELECT 1
+    </select>
+    <select id="login" resultType="com.mcmp.dummybe.model.login.CurrentLoginModel">
+        SELECT user_id AS userId
+             , siteCd
+             , userEmail
+             , userNm
+             , userStatCd
+             , userStatNm
+             , blntCmpnId
+             , blntCmpnNm
+             , blntCmpnTypeCd
+             , blntCmpnTypeNm
+             , curCmpnId
+             , curCmpnNm
+             , userLangCd
+             , userPwdUpdtDt
+             , pwdMustChangeYn
+             , trialYn
+             , chargeType
+             , useConcurrent
+             , currentCustomerOrderd
+             , creaDt
+             , updtDt
+        FROM user_login_info
+        WHERE user_id = 'MCMP'
+    </select>
+</mapper>

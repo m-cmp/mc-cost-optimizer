@@ -26,6 +26,11 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
 ### Backend
 - java version : 8
 
+### DataBase
+- mysql version : 8
+- run script /BackEnd/src/main/resources/sql/mcmp_cost_optimize_ddl.sql
+- run script /BackEnd/src/main/resources/sql/mcmp_cost_optimize_dml.sql
+
 ## How to Contribute
 
 - Issues/Discussions/Ideas: Utilize issue of mc-cost-optimizer

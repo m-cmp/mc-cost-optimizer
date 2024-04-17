@@ -1,5 +1,8 @@
 package com.mcmp.dummybe.controller;
 
+import com.mcmp.dummybe.model.ResultModel;
+import com.mcmp.dummybe.service.abnormal.AbnormalService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +18,21 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping(path = "/api/v3/anomaly")
 public class AbnormalController {
+    @Autowired
+    AbnormalService abnormalService;
 
+//    @PostMapping(path = "/detectedList")
+//    public ResponseEntity<String> getabnormal() throws IOException {
+//        ClassPathResource abnormalResource = new ClassPathResource("dummys/abnormal/abnormaldummy.json");
+//
+//        String abnormalContent = new String(Files.readAllBytes(Paths.get(abnormalResource.getURI())), StandardCharsets.UTF_8);
+//
+//        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(abnormalContent);
+//    }
     @PostMapping(path = "/detectedList")
-    public ResponseEntity<String> getabnormal() throws IOException {
-        ClassPathResource abnormalResource = new ClassPathResource("dummys/abnormal/abnormaldummy.json");
+    public ResponseEntity<ResultModel> getabnormal() throws IOException {
+        ResultModel result = abnormalService.getAbnormal();
 
-        String abnormalContent = new String(Files.readAllBytes(Paths.get(abnormalResource.getURI())), StandardCharsets.UTF_8);
-
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(abnormalContent);
+        return ResponseEntity.ok().body(result);
     }
 }

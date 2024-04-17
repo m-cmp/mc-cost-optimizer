@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cost-optimize-billing">
+
+    <select id="details" resultType="com.mcmp.dummybe.model.billing.DetailsDataModel">
+        SELECT *
+          FROM billing_detail
+    </select>
+
+    <resultMap id="chargesDataResultMap" type="com.mcmp.dummybe.model.billing.ChargesDataModel">
+        <id property="linkedAccountId" column="linkedAccountId"/>
+        <result property="linkedAccountAlias" column="linkedAccountAlias"/>
+        <result property="vendor" column="vendor"/>
+        <result property="chargeYear" column="chargeYear"/>
+        <result property="chargeMonth" column="chargeMonth"/>
+        <result property="totalCharge" column="totalCharge"/>
+        <result property="invoiceCurrency" column="invoiceCurrency"/>
+        <result property="companyCurrency" column="companyCurrency"/>
+        <result property="cloudCost" column="cloudCost"/>
+        <result property="cloudOriginalCost" column="cloudOriginalCost"/>
+        <result property="onDemandDiscount" column="onDemandDiscount"/>
+        <result property="cloudFrontDiscount" column="cloudFrontDiscount"/>
+        <result property="cloudFrontDtoDiscount" column="cloudFrontDtoDiscount"/>
+        <result property="cloudFrontReqDiscount" column="cloudFrontReqDiscount"/>
+        <result property="cloudServiceCharge" column="cloudServiceCharge"/>
+        <result property="exchangedCloudServiceCharge" column="exchangedCloudServiceCharge"/>
+        <result property="salesDiscount" column="salesDiscount"/>
+        <result property="salesDiscountApplyType" column="salesDiscountApplyType"/>
+        <result property="salesDiscountApplyValue" column="salesDiscountApplyValue"/>
+        <result property="supportFee" column="supportFee"/>
+        <result property="supportFeeApplyValue" column="supportFeeApplyValue"/>
+        <result property="credit" column="credit"/>
+        <collection property="additionalServices" ofType="com.mcmp.dummybe.model.billing.ChargesAdditionalServiceModel">
+            <id property="additionalServiceName" column="additionalServiceName"/>
+            <result property="additionalServiceCode" column="additionalServiceCode"/>
+            <result property="additionalServiceCharge" column="additionalServiceCharge"/>
+        </collection>
+    </resultMap>
+    <select id="charges" resultMap="chargesDataResultMap">
+        SELECT bc.linkedAccountId
+             , bc.linkedAccountAlias
+             , bc.vendor
+             , bc.chargeYear
+             , bc.chargeMonth
+             , bc.totalCharge
+             , bc.invoiceCurrency
+             , bc.companyCurrency
+             , bc.cloudCost
+             , bc.cloudOriginalCost
+             , bc.onDemandDiscount
+             , bc.cloudFrontDiscount
+             , bc.cloudFrontDtoDiscount
+             , bc.cloudFrontReqDiscount
+             , bc.cloudServiceCharge
+             , bc.exchangedCloudServiceCharge
+             , bc.salesDiscount
+             , bc.salesDiscountApplyType
+             , bc.salesDiscountApplyValue
+             , bc.supportFee
+             , bc.supportFeeApplyValue
+             , bc.credit
+             , bcas.additionalServiceName
+             , bcas.additionalServiceCode
+             , bcas.additionalServiceCharge
+          FROM billing_charge bc
+          LEFT JOIN billing_charge_additional_services bcas ON bc.linkedAccountId = bcas.linkedAccountId
+    </select>
+
+    <resultMap id="BillsDataResultMap" type="com.mcmp.dummybe.model.billing.BillsDataModel">
+        <result property="chargeYear" column="chargeYear"/>
+        <result property="chargeMonth" column="chargeMonth"/>
+        <result property="startDate" column="startDate"/>
+        <result property="endDate" column="endDate"/>
+        <result property="increaseDecreaseRate" column="increaseDecreaseRate"/>
+        <result property="totalCharge" column="totalCharge"/>
+        <result property="invoiceCurrency" column="invoiceCurrency"/>
+        <result property="companyCurrency" column="companyCurrency"/>
+        <result property="applyExchangeRate" column="applyExchangeRate"/>
+        <result property="applyExchangeRateDate" column="applyExchangeRateDate"/>
+        <result property="cloudCost" column="cloudCost"/>
+        <result property="cloudOriginalCost" column="cloudOriginalCost"/>
+        <result property="cloudUseOriginalCost" column="cloudUseOriginalCost"/>
+        <result property="onDemandDiscount" column="onDemandDiscount"/>
+        <result property="cloudFrontDiscount" column="cloudFrontDiscount"/>
+        <result property="supportFee" column="supportFee"/>
+        <result property="salesDiscount" column="salesDiscount"/>
+        <result property="credit" column="credit"/>
+        <result property="cloudServiceCharge" column="cloudServiceCharge"/>
+        <result property="exchangedCloudServiceCharge" column="exchangedCloudServiceCharge"/>
+        <result property="additionalServiceCharge" column="additionalServiceCharge"/>
+        <result property="vatYn" column="vatYn"/>
+        <result property="billConfirmationYn" column="billConfirmationYn"/>
+        <result property="lastBillUpdateDate" column="lastBillUpdateDate"/>
+        <collection property="additionalServices" ofType="com.mcmp.dummybe.model.billing.BillsAdditionalServiceModel">
+            <id property="additionalServiceName" column="additionalServiceName"/>
+            <result property="additionalServiceCode" column="additionalServiceCode"/>
+            <result property="additionalServiceCharge" column="additionalServiceChargeChild"/>
+        </collection>
+    </resultMap>
+    <select id="bills" resultMap="BillsDataResultMap">
+        SELECT bi.chargeYear
+             , bi.chargeMonth
+             , bi.startDate
+             , bi.endDate
+             , bi.increaseDecreaseRate
+             , bi.totalCharge
+             , bi.invoiceCurrency
+             , bi.companyCurrency
+             , bi.applyExchangeRate
+             , bi.applyExchangeRateDate
+             , bi.cloudCost
+             , bi.cloudOriginalCost
+             , bi.cloudUseOriginalCost
+             , bi.onDemandDiscount
+             , bi.cloudFrontDiscount
+             , bi.supportFee
+             , bi.salesDiscount
+             , bi.credit
+             , bi.cloudServiceCharge
+             , bi.exchangedCloudServiceCharge
+             , bi.additionalServiceCharge
+             , bi.vatYn
+             , bi.billConfirmationYn
+             , bi.lastBillUpdateDate
+             , bbas.additionalServiceName
+             , bbas.additionalServiceCode
+             , bbas.additionalServiceCharge AS additionalServiceChargeChild
+        FROM billing_info bi
+        LEFT JOIN billing_bills_additional_services bbas ON bi.billingInfoId = bbas.billingInfoId
+    </select>
+</mapper>
