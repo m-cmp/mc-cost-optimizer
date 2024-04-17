@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cost_optimize_abnormal">
+    <select id="selectAbnormalMessage" resultType="com.mcmp.dummybe.model.abnormal.AbnormalMessageModel">
+        SELECT message_cost as `cost`, message_rate as `rate` ,message_vendor as `vendor`, message_count as `count` , currency, timeFrame, viewBy
+        FROM cost_optimize.abnormal_message am;
+    </select>
+
+    <select id="selectAbnormalItem" resultType="java.lang.String">
+        SELECT item
+        FROM cost_optimize.abnormal_message am;
+    </select>
+
+    <select id="selectAbnormalData" resultType="com.mcmp.dummybe.model.abnormal.AbnormalDataModel">
+        SELECT ad.siteId, ad.companyId, ad.userId, ad.userEmail, ad.dashboardIndex,
+               ad.widgetIndex, ad.level, ad.detcBy, ad.vendor, ad.analDt,
+               ad.cost, ad.rate, ad.sensitivity, ad.detcDt, ad.alarmYn,
+               ad.hideYn, ad.impotYn, ad.creaDt, ad.minAlert, ad.maxAlert,
+               ad.widgetTitle, ad.dashboardTitle, ad.savedHistory,
+               am.item, am.message_cost, am.message_rate , am.message_vendor , am.message_count ,
+               am.currency , am.timeFrame , am.viewBy
+        FROM cost_optimize.abnormal_data ad
+        LEFT JOIN cost_optimize.abnormal_message am ON ad.id=am.id
+    </select>
+</mapper>

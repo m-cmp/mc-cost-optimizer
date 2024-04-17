@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cost_optimize_widget_top5">
+
+    <select id="selectTop5Cost" resultType="com.mcmp.dummybe.model.widget.WidgetTop5CostModel">
+        SELECT *
+        FROM cost_widget_top5 as t5
+    </select>
+</mapper>

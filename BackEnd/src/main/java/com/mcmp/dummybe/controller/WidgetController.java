@@ -1,5 +1,8 @@
 package com.mcmp.dummybe.controller;
 
+import com.mcmp.dummybe.model.ResultModel;
+import com.mcmp.dummybe.service.widget.WidgetService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,71 +14,77 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping(path = "/api/v3/dashboard")
 public class WidgetController {
+    @Autowired
+    private WidgetService widgetService;
 
     @PostMapping(path = "/abnormal")
-    public ResponseEntity<String> getabnormal() throws IOException {
-        ClassPathResource abnormalResource = new ClassPathResource("dummys/widget/abnormaldummy.json");
+    public ResponseEntity<ResultModel> getabnormal() {
+        ResultModel result = widgetService.makeAbnormal();
 
-        String abnormalContent = new String(Files.readAllBytes(Paths.get(abnormalResource.getURI())), StandardCharsets.UTF_8);
-
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(abnormalContent);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(result);
     }
 
     @PostMapping(path = "/cost")
-    public ResponseEntity<String> getcost() throws IOException {
-        ClassPathResource costResource = new ClassPathResource("dummys/widget/costdummy.json");
+    public ResponseEntity<ResultModel> getcost() throws ParseException {
+        ResultModel result = widgetService.makeCostChart();
 
-        String costContent = new String(Files.readAllBytes(Paths.get(costResource.getURI())), StandardCharsets.UTF_8);
-
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(costContent);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(result);
     }
 
     @PostMapping(path = "/cost_month_to_date")
-    public ResponseEntity<String> getcostmonth() throws IOException {
-        ClassPathResource costmonthResource = new ClassPathResource("dummys/widget/costmonthdummy.json");
+    public ResponseEntity<ResultModel> getcostmonth() {
+        ResultModel result = widgetService.makeCostMonth();
 
-        String costmonthContent = new String(Files.readAllBytes(Paths.get(costmonthResource.getURI())), StandardCharsets.UTF_8);
-
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(costmonthContent);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(result);
     }
 
     @PostMapping(path = "/estimated_cost")
-    public ResponseEntity<String> getestimated() throws IOException {
-        ClassPathResource estimatedResource = new ClassPathResource("dummys/widget/estimatedcostdummy.json");
+    public ResponseEntity<ResultModel> getestimated() {
+        ResultModel result = widgetService.makeEstimatedCost();
 
-        String estimatedContent = new String(Files.readAllBytes(Paths.get(estimatedResource.getURI())), StandardCharsets.UTF_8);
-
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(estimatedContent);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(result);
     }
 
+//    @PostMapping(path = "/product_portion")
+//    public ResponseEntity<String> getproduct() throws IOException {
+//        ClassPathResource productResource = new ClassPathResource("dummys/widget/productportiondummy.json");
+//        String productContent = new String(Files.readAllBytes(Paths.get(productResource.getURI())), StandardCharsets.UTF_8);
+//
+//        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(productContent);
+//
+//    }
     @PostMapping(path = "/product_portion")
-    public ResponseEntity<String> getproduct() throws IOException {
-        ClassPathResource productResource = new ClassPathResource("dummys/widget/productportiondummy.json");
+    public ResponseEntity<ResultModel> getproduct() throws IOException {
+        ResultModel result = widgetService.makeProductPortionChart();
 
-        String productContent = new String(Files.readAllBytes(Paths.get(productResource.getURI())), StandardCharsets.UTF_8);
-
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(productContent);
+        return ResponseEntity.ok().body(result);
     }
 
+//    @PostMapping(path = "/top5")
+//    public ResponseEntity<String> gettop5() throws IOException {
+//        ClassPathResource top5Resource = new ClassPathResource("dummys/widget/top5dummy.json");
+//
+//        String top5Content = new String(Files.readAllBytes(Paths.get(top5Resource.getURI())), StandardCharsets.UTF_8);
+//
+//        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(top5Content);
+//    }
     @PostMapping(path = "/top5")
-    public ResponseEntity<String> gettop5() throws IOException {
-        ClassPathResource top5Resource = new ClassPathResource("dummys/widget/top5dummy.json");
+    public ResponseEntity<ResultModel> gettop5() throws IOException {
+        ResultModel result = widgetService.makeTop5Chart();
 
-        String top5Content = new String(Files.readAllBytes(Paths.get(top5Resource.getURI())), StandardCharsets.UTF_8);
-
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(top5Content);
+        return ResponseEntity.ok().body(result);
     }
 
     @PostMapping(path = "/trend")
-    public ResponseEntity<String> gettrend() throws IOException {
-        ClassPathResource trendResource = new ClassPathResource("dummys/widget/trenddummy.json");
-
-        String trendContent = new String(Files.readAllBytes(Paths.get(trendResource.getURI())), StandardCharsets.UTF_8);
-
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(trendContent);
+    public ResponseEntity<ResultModel> gettrend() throws IOException {
+//        ClassPathResource trendResource = new ClassPathResource("dummys/widget/trenddummy.json");
+//        String trendContent = new String(Files.readAllBytes(Paths.get(trendResource.getURI())), StandardCharsets.UTF_8);
+        ResultModel resultModel = widgetService.makeTrendChart();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(resultModel);
     }
 }
