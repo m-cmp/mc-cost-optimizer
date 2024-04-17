@@ -7,14 +7,17 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="dummyBE" />
+        <module name="Slack_demo" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="dummyBE" target="1.8" />
+      <module name="Slack_demo" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="Slack_demo" options="-parameters" />
       <module name="dummyBE" options="-parameters" />
     </option>
   </component>

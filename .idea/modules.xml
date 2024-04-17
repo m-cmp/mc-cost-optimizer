@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AlarmService/Slack_demo.iml" filepath="$PROJECT_DIR$/AlarmService/Slack_demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/BackEnd/dummyBE.iml" filepath="$PROJECT_DIR$/BackEnd/dummyBE.iml" />
       <module fileurl="file://$PROJECT_DIR$/BackEnd/src/main/main.iml" filepath="$PROJECT_DIR$/BackEnd/src/main/main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/mc-cost-optimizer-fork.iml" filepath="$PROJECT_DIR$/.idea/mc-cost-optimizer-fork.iml" />
