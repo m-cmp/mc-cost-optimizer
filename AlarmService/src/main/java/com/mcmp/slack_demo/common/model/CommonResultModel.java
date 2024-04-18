@@ -1,4 +1,4 @@
-package com.mcmp.slack_demo.Common.model;
+package com.mcmp.slack_demo.common.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
