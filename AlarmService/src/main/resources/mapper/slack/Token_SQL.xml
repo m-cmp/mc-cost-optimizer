@@ -3,7 +3,7 @@
 <mapper namespace="TokenSql">
     <insert
             id="saveEncryptedToken"
-            parameterType="com.example.slack_demo.slack.model.SaveTokenModel">
+            parameterType="com.mcmp.slack_demo.slack.model.SaveTokenModel">
         INSERT INTO slack_token (userId, OAuthToken, channelId)
         VALUES (#{id}, #{token}, #{channel})
             ON DUPLICATE KEY UPDATE OAuthToken = #{token}, channelId = #{channel}
