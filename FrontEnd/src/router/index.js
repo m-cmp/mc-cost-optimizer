@@ -26,6 +26,13 @@ const TheBilling = resolve => {
   })
 };
 
+const TheAlert = resolve => {
+  // require.ensure is Webpack's special syntax for a code-split point.
+  require.ensure(['@/views/TheAlert'], () => {
+    resolve(require('@/views/TheAlert'))
+  })
+};
+
 
 const ThePageError = resolve => {
   // require.ensure is Webpack's special syntax for a code-split point.
@@ -60,6 +67,11 @@ export default new Router({
       path: '/billing',
       name: ROUTE_NAME.BILLING,
       component: TheBilling,
+    },
+    {
+      path: '/alert',
+      name: ROUTE_NAME.ALERT,
+      component: TheAlert,
     },
     {
       path: '*',

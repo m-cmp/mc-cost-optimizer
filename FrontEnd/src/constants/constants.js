@@ -325,6 +325,7 @@ export const ROUTE_NAME = {
   COST_ANALYTICS: "TheCostAnalytics",
   BILLING: "TheBilling",
   DASHBOARD: "TheDashboard",
+  ALERT: "Alert",
   SAVINGS_PLANS: {
     INDEX: "SavingsPlanIndex",
     COVERAGE: "SavingsPlanCoverage",

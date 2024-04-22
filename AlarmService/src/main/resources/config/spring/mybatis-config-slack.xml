@@ -12,18 +12,6 @@
     <typeAliases>
 
         <!-- Common -->
-<!--        <typeAlias type="com.bespin.iam.common.model.KeycloakJsonModel" alias="common.KeycloakJsonModel"/>-->
-<!--        <typeAlias type="com.bespin.model.admin.TbasMenuMModel" alias="portal.TbasMenuMModel" />-->
-<!--        <typeAlias type="com.bespin.model.common.UserModel" alias="common.UserModel"/>-->
-
-<!--        <typeAlias type="com.bespin.iam.common.model.CompanyModel" alias="common.CompanyModel"/>-->
-
-<!--        <typeAlias type="com.bespin.model.portal.TbpsCmpnMModel" alias="portal.TbpsCmpnMModel"/>-->
-
-<!--        <typeAlias type="com.bespin.hanwhaapi.model.McpInsertSrInfo001CReqModel" alias="McpInsertSrInfo001CModel"/>-->
-<!--        <typeAlias type="com.bespin.hanwhaapi.model.McpApprovalReceive001CReqModel" alias="McpApprovalReceive001CReqModel"/>-->
-<!--        <typeAlias type="com.bespin.sr.manage.model.CmpSrModel" alias="CmpSrModel"/>-->
-<!--        <typeAlias type="com.bespin.sr.manage.model.CmpSrHistoryModel" alias="CmpSrHistoryModel"/>-->
 
     </typeAliases>
 

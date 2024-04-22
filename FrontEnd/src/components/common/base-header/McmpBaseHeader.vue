@@ -10,20 +10,17 @@
       </button>
 
     </div>
-
-    <BasePopup
-      ref="AuthPopup"
-      :modal-class="'none-auth base-confirm-popup'"
-      :content="$t('noAuth.content')"
-      :title="$t('noAuth.title')"
-      :hide-header-close="true"
-      :no-close-on-esc="true"
-      :no-close-on-backdrop="true"
-      :button-text="$t('common.button.ok')"
-      popup-ref="openAuthPopup"
-      @onConfirmAction="goDashboard()"
-    />
-
+    <div class="utils">
+      <div
+        class="user-profile"
+        @focusout="selectStatus = false">
+        <button
+          type="button"
+          class="btn user"
+          data-icon="user"
+        >{{ '2194155' }}</button>
+      </div>
+    </div>
   </header>
 </template>
 <script>
@@ -187,6 +184,28 @@ export default {
             en: "Cost Anomaly Detection",
             zh: "费用异常检测",
             ja: "Cost Anomaly Detection"
+          },
+          subMenuList: null
+        },
+        {
+          menuId: "MTV3090",
+          menuNmEn: "Billing Alert Service",
+          menuNmKo: "청구서 알림",
+          menuNmZh: "计费发票报警",
+          menuNmJa: "Billing Alert Service",
+          menuDesc: null,
+          menuUrl: "/alert",
+          menuFullUrl: "/alert",
+          authTypeCd: "AUTH_TYPE_010",
+          authTypeNm: "EDIT",
+          subYn: "N",
+          menuNewYn: "N",
+          menuBetaYn: "N",
+          menuNm: {
+            ko: "청구서 알림",
+            en: "Billing Alert Service",
+            zh: "计费发票报警",
+            ja: "Billing Alert Service"
           },
           subMenuList: null
         }]
