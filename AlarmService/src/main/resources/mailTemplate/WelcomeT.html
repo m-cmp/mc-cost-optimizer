@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <table align="center" style="background-color: antiquewhite; width: 596px; table-layout: fixed; max-width: 596px" cellspacing="0" cellpadding="0">
+        <tbody>
+        <tr>
+            <td style="width: 20px"></td>
+            <td style="text-align: center; background-color: antiquewhite">
+                <img src="cid:logo_png" alt="img" style="width: 130px; vertical-align: top" />
+            </td>
+            <td style="width: 20px"></td>
+        </tr>
+        <tr>
+            <td style="width: 40px"></td>
+            <td style="background-color: white">
+                <div style=" margin-top: 10px; text-align: center; align-content: center; justify-content: center">
+                    <h3>M-CMP</h3><br/>
+                    <p th:text="${username} + '님, M-CMP 가입을 축하드립니다.'"/>
+                    <p>테스트 메일입니다.</p>
+                </div>
+            </td>
+            <td style="width: 40px"></td>
+        </tr>
+        <tr style="height: 40px">
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>
