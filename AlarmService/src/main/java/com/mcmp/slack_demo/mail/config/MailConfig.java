@@ -1,5 +1,8 @@
 package com.mcmp.slack_demo.mail.config;
 
+import com.mcmp.slack_demo.mail.dao.MailingDao;
+import com.mcmp.slack_demo.mail.model.MailingInfoModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,25 +20,32 @@ public class MailConfig {
     @Value("${spring.mail.port}")
     public int port;
 
-    @Value("${spring.mail.username}")
-    public String sendEmail;
-
-    @Value("${spring.mail.password}")
-    public String sendPassword;
-
     @Value("${spring.mail.properties.mail.smtp.auth}")
     public boolean auth;
 
     @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
     public boolean starttlsEnable;
 
-    @Bean
+    @Autowired
+    private MailingDao mailingDao;
+
+    private String userName;
+
+    private String userPassword;
+
+
     public JavaMailSender getJavaMailSender(){
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(host);
         mailSender.setPort(port);
-        mailSender.setUsername(sendEmail);
-        mailSender.setPassword(sendPassword);
+        System.out.println(this.userName + "/" + this.userPassword);
+        if(userName != null && userPassword != null && !userName.isEmpty() && !userPassword.isEmpty()){
+            System.out.println("입력");
+            mailSender.setUsername(this.userName);
+            mailSender.setPassword(this.userPassword);
+        }else {
+            throw new RuntimeException("G-Mail 정보 부족");
+        }
 
         Properties props = mailSender.getJavaMailProperties();
 
@@ -45,6 +55,23 @@ public class MailConfig {
         props.put("mail.debug", "true");
 
         return mailSender;
+    }
+
+    public void setEmailInfo(MailingInfoModel model){
+        this.userName = model.getUsername();
+        this.userPassword = model.getPassword();
+    }
+
+    @Bean
+    public MailConfig MailConfig(){
+        MailingInfoModel mailInfo = mailingDao.getMailingInfo();
+        System.out.println(mailInfo);
+        if(mailInfo != null){
+            this.userName = mailInfo.getUsername();
+            this.userPassword = mailInfo.getPassword();
+        }
+
+        return new MailConfig();
     }
 
 }
