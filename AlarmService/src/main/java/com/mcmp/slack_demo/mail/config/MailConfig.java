@@ -38,9 +38,7 @@ public class MailConfig {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(host);
         mailSender.setPort(port);
-        System.out.println(this.userName + "/" + this.userPassword);
         if(userName != null && userPassword != null && !userName.isEmpty() && !userPassword.isEmpty()){
-            System.out.println("입력");
             mailSender.setUsername(this.userName);
             mailSender.setPassword(this.userPassword);
         }else {
@@ -65,7 +63,6 @@ public class MailConfig {
     @Bean
     public MailConfig MailConfig(){
         MailingInfoModel mailInfo = mailingDao.getMailingInfo();
-        System.out.println(mailInfo);
         if(mailInfo != null){
             this.userName = mailInfo.getUsername();
             this.userPassword = mailInfo.getPassword();
