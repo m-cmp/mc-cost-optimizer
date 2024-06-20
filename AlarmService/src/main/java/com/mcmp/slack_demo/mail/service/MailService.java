@@ -1,7 +1,10 @@
 package com.mcmp.slack_demo.mail.service;
 
+import com.mcmp.slack_demo.mail.config.MailConfig;
+import com.mcmp.slack_demo.mail.dao.MailingDao;
 import com.mcmp.slack_demo.mail.model.MailMessage;
 
+import com.mcmp.slack_demo.mail.model.MailingInfoModel;
 import jakarta.activation.FileDataSource;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeUtility;
@@ -25,20 +28,20 @@ import java.util.List;
 @Slf4j
 public class MailService {
 
-    @Autowired
-    private JavaMailSender emailSender;
-
-    @Autowired
+@Autowired
     private SpringTemplateEngine templateEngine;
 
+    @Autowired
+    private MailingDao mailingDao;
+
+    @Autowired
+    private MailConfig mailConfig;
+
     public String sendEmail(MailMessage mailMessage, String type, ClassPathResource file){
-        MimeMessage mimeMessage = emailSender.createMimeMessage();
-
-        if (type.equals("password")){
-            // 메일의 타입에 따른 설정
-        }
-
         try {
+            JavaMailSender emailSender = mailConfig.getJavaMailSender();
+            MimeMessage mimeMessage = emailSender.createMimeMessage();
+
             Context context = new Context();
             context.setVariable("username", "테스트유저");
             String html = templateEngine.process("WelcomeT.html", context);
@@ -62,12 +65,24 @@ public class MailService {
 
         } catch (Exception e) {
             log.info("############Send AlertEmail Fail############");
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
     private String[] setToList(List<String> toList){
         return toList.toArray(new String[toList.size()]);
+    }
+
+    public String setMailInfo(MailingInfoModel model){
+        try{
+            mailingDao.insertMailingInfo(model);
+            mailConfig.setEmailInfo(model);
+            return "Success";
+        }catch (Exception e){
+            log.info("############Send SetEmailInfo Fail############");
+            throw new RuntimeException(e);
+        }
     }
 
 }

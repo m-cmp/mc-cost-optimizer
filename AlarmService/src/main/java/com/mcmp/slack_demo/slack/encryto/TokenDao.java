@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 public class TokenDao {
 
     @Autowired
+    @Qualifier("sqlSessionTemplateSlack")
     private SqlSessionTemplate sqlSession;
 //    private SqlSessionTemplate sqlSession;
 //    @Autowired

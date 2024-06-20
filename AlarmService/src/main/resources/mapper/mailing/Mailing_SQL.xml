@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MailingSql">
+    <insert id="insertMailingInfo" parameterType="com.mcmp.slack_demo.mail.model.MailingInfoModel">
+        INSERT INTO mail_info(index_cn, mail_username, mail_password)
+        VALUES (0, #{username}, #{password})
+            ON DUPLICATE KEY UPDATE mail_username = #{username}, mail_password = #{password}
+    </insert>
+
+    <select id="selectMailingInfo" resultType="com.mcmp.slack_demo.mail.model.MailingInfoModel">
+        SELECT mail_username AS username
+             , mail_password AS password
+        FROM mail_info
+                 LIMIT 1
+    </select>
+</mapper>
