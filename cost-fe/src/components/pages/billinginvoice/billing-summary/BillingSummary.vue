@@ -5,14 +5,18 @@
             <div class="d-flex">
                 <h3 class="card-title">Summary</h3>
                 <div class="ms-auto">
-                    <div class="dropdown">
-                        <a class="dropdown-toggle text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Last 7 days</a>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item active" href="#">Last 7 days</a>
-                            <a class="dropdown-item" href="#">Last 30 days</a>
-                            <a class="dropdown-item" href="#">Last 3 months</a>
+                    <div>
+                        <div class="dropdown">
+                          <a class="dropdown-toggle text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ selectedOption }}
+                          </a>
+                          <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="#" @click.prevent="selectOption('Last 7 days')">Last 7 days</a>
+                            <a class="dropdown-item" href="#" @click.prevent="selectOption('Last 30 days')">Last 30 days</a>
+                            <a class="dropdown-item" href="#" @click.prevent="selectOption('Last 3 months')">Last 3 months</a>
+                          </div>
                         </div>
-                    </div>
+                      </div>
                 </div>
             </div>
             <div class="row">
@@ -25,9 +29,9 @@
 </div>
 </template>
 
-
 <script>
 import {
+    ref,
     onMounted
 } from 'vue';
 import ApexCharts from 'apexcharts';
@@ -35,15 +39,42 @@ import ApexCharts from 'apexcharts';
 export default {
     name: 'BillingSummary',
     setup() {
+        const selectedOption = ref('Last 7 days');
+
+        const selectOption = (option) => {
+            selectedOption.value = option;
+        }
+
+        const seriesData = ref([{
+            name: "Total",
+            data: [8500, 9800, 10000, 11650, 10150, 9120, 8781]
+        }, {
+            name: "AWS",
+            data: [5000, 6000, 6200, 7300, 5800, 4220, 4500]
+        }, {
+            name: "AZURE",
+            data: [2000, 2300, 2400, 2750, 2800, 3000, 2200]
+        }, {
+            name: "GCP",
+            data: [1000, 1200, 1000, 1100, 1250, 1500, 1550]
+        }, {
+            name: "NCP",
+            data: [500, 300, 400, 500, 300, 400, 531]
+        }]);
+
+        const labelsData = ref([
+            '2024-06-01', '2024-06-02', '2024-06-03', '2024-06-04', '2024-06-05', '2024-06-06', '2024-06-07'
+        ])
+
         onMounted(() => {
-            var options = {
+            var chartOptions = {
                 chart: {
                     type: "line",
                     fontFamily: 'inherit',
                     height: 288,
                     parentHeightOffset: 0,
                     toolbar: {
-                        show: false,
+                        show: true,
                     },
                     animations: {
                         enabled: false
@@ -57,24 +88,10 @@ export default {
                     lineCap: "round",
                     curve: "smooth",
                 },
-                series: [{
-                    name: "Total",
-                    data: [11000, 12000]
-                }, {
-                    name: "AWS",
-                    data: [5000, 6000]
-                }, {
-                    name: "AZURE",
-                    data: [2000, 2300]
-                }, {
-                    name: "GCP",
-                    data: [1000, 1200]
-                }, {
-                    name: "NCP",
-                    data: [500, 300]
-                }],
+                series: seriesData.value,
+                labels: labelsData.value,
                 tooltip: {
-                    theme: 'dark'
+                    theme: 'dark',
                 },
                 grid: {
                     padding: {
@@ -99,18 +116,19 @@ export default {
                         padding: 4
                     },
                 },
-                labels: [
-                    '2020-05-01', '2020-06-01'
-                ],
-                colors: ['#00E396', '#FEB019', '#FF4560', '#775DD0', '#546E7A'],
                 legend: {
                     show: false,
                 },
             };
 
-            var chart = new ApexCharts(document.getElementById('chart-active-users-2'), options);
+            var chart = new ApexCharts(document.getElementById('chart-active-users-2'), chartOptions);
             chart.render();
         });
+
+        return {
+            selectedOption,
+            selectOption
+        }
     }
 };
 </script>
