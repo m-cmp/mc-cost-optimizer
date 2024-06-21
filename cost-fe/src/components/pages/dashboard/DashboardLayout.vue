@@ -1,28 +1,19 @@
 <template>
 <div class="page">
+    <DashboardHeader />
     <div class="page-wrapper">
     </div>
 </div>
 </template>
-
-
 <script>
+import DashboardHeader from './dashboard-header/DashboardHeader.vue'
 
-
+export default {
+    components: {
+        DashboardHeader
+    }
+}
 </script>
 
-
 <style>
-.page {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    min-height: 100%;
-}
-
-.page-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
 </style>
