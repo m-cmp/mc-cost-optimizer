@@ -1,14 +1,12 @@
 <template>
-<DashboardLayout />
+<router-view></router-view>
 </template>
 
 <script>
-import DashboardLayout from './components/pages/dashboard/DashboardLayout.vue'
 
 export default {
     name: 'App',
     components: {
-        DashboardLayout
     }
 }
 </script>
