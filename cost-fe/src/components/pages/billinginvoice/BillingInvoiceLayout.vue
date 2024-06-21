@@ -2,13 +2,14 @@
 <div class="page">
     <DashboardHeader />
     <div class="page-wrapper">
-    </div>
-    <div class="page-body">
-        <div class="container-xl">
-            <div class="row row-deck row-cards">
-                <BaseInfo />
-                <BillingSummary />
-                <InvoiceTable />
+        <DashboardSelectbox />
+        <div class="page-body">
+            <div class="container-xl">
+                <div class="row row-deck row-cards">
+                    <BaseInfo />
+                    <BillingSummary />
+                    <InvoiceTable />
+                </div>
             </div>
         </div>
     </div>
@@ -16,6 +17,7 @@
 </template>
 
 <script>
+import DashboardSelectbox from '../dashboard/dashboard-header/DashboardSelectbox.vue'
 import DashboardHeader from '../dashboard/dashboard-header/DashboardHeader.vue'
 import BaseInfo from './base-info/BaseInfo.vue'
 import BillingSummary from './billing-summary/BillingSummary.vue'
@@ -25,6 +27,7 @@ export default {
     name: 'BillingInvoiceLayout',
     components: {
         DashboardHeader,
+        DashboardSelectbox,
         BaseInfo,
         BillingSummary,
         InvoiceTable
@@ -242,7 +245,6 @@ export default {
 .bg-green {
     background-color: #2ecc71;
 }
-
 
 .card {
     margin-bottom: 1rem;
