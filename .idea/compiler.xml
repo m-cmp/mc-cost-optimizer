@@ -11,7 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="dummyBE" target="1.8" />
+      <module name="dummyBE" target="9" />
       <module name="Slack_demo" target="17" />
     </bytecodeTargetLevel>
   </component>
