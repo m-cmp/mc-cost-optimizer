@@ -2,8 +2,10 @@
 <div class="page">
     <DashboardHeader />
     <div class="page-wrapper">
+        
         <!-- selectbox -->
         <DashboardSelectbox />
+
         <!-- body -->
         
         <!-- footer -->
