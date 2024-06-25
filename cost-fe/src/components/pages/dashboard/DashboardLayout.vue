@@ -78,9 +78,9 @@ export default {
     getDBoardUsageAssetData(){
       axios.post('http://localhost:9090/api/v2/getBillAsset', {
         today: new Date().toISOString().split('T')[0].replace(/-/g, ''),
-        selectedProjects: this.store.selectedOptions.project,
-        selectedCsps: this.store.selectedOptions.csp,
-        selectedWorkspace: this.store.selectedOptions.workspace
+        selectedProjects: this.store.selectedOptions.selectedProjects,
+        selectedCsps: this.store.selectedOptions.selectedCsps,
+        selectedWorkspace: this.store.selectedOptions.selectedWorkspace
       })
           .then((res) => {
             if (res.data.status === "OK") {
@@ -96,9 +96,9 @@ export default {
     getTop5CostData(){
       axios.post('http://localhost:9090/api/v2/getTop5Bill', {
         today: new Date().toISOString().split('T')[0].replace(/-/g, ''),
-        selectedProjects: this.store.selectedOptions.project,
-        selectedCsps: this.store.selectedOptions.csp,
-        selectedWorkspace: this.store.selectedOptions.workspace
+        selectedProjects: this.store.selectedOptions.selectedProjects,
+        selectedCsps: this.store.selectedOptions.selectedCsps,
+        selectedWorkspace: this.store.selectedOptions.selectedWorkspace
       })
           .then((res) => {
             if (res.data.status === "OK") {
