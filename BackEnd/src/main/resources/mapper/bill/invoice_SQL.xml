@@ -26,4 +26,37 @@
            AND co.lineitem_usageenddate < DATE_ADD(#{summaryPeriodDate}, INTERVAL 1 DAY)
         ]]>
     </select>
+
+    <select id="getAWSInovice" parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel" resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
+        SELECT co.lineitem_usageaccountid as accountID
+             , co.lineitem_productcode  as productID
+             , sm.csp_type as csp
+             , SUM(co.lineitem_unblendedcost) AS bill
+             , co.lineitem_resourceid as resourceID
+          FROM cur_origin co
+          LEFT JOIN servicegroup_meta sm
+            ON co.lineitem_resourceid = sm.csp_instanceid
+         WHERE 1=1
+        <if test="selectedCsps != null and selectedCsps.size() > 0">
+            AND sm.csp_type IN
+            <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
+                #{selectedCsp}
+            </foreach>
+        </if>
+           AND sm.workspace_cd = #{selectedWorkspace}
+        <if test="selectedProjects != null and selectedProjects.size() > 0">
+            AND sm.service_cd IN
+            <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+                #{selectedProject}
+            </foreach>
+        </if>
+          <![CDATA[
+           AND co.lineitem_usagestartdate >= #{curMonthStartDate}
+           AND co.lineitem_usageenddate < #{curMonthEndDate}
+        ]]>
+         GROUP BY co.lineitem_usageaccountid,
+                  co.lineitem_productcode,
+                  sm.csp_type,
+                  co.lineitem_resourceid
+    </select>
 </mapper>
