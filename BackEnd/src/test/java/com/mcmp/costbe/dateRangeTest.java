@@ -25,9 +25,9 @@ public class dateRangeTest {
 
     @Test
     public void testCal(){
-//        DateRangeModel result = dateCalculator.dateRangeCalculator("20240331");
+        List<LocalDateTime> result = dateCalculator.calculatePeriodDates("20240321", "30days");
 //        System.out.println(result);
-        List<String> result = AWSResourceMapping.getData("Database");
+//        List<String> result = AWSResourceMapping.getData("Database");
         System.out.println(result);
     }
 

@@ -66,7 +66,7 @@ public class UsageController {
             result.setData(data);
         } catch (Exception e){
             e.printStackTrace();
-            result.setError(500, "Fail to getCurMonthBill");
+            result.setError(500, "Fail to getTop5Bill");
         }
         return ResponseEntity.ok(result);
     }
@@ -79,7 +79,7 @@ public class UsageController {
             result.setData(data);
         } catch (Exception e){
             e.printStackTrace();
-            result.setError(500, "Fail to getCurMonthBill");
+            result.setError(500, "Fail to getBillAsset");
         }
         return ResponseEntity.ok(result);
     }
