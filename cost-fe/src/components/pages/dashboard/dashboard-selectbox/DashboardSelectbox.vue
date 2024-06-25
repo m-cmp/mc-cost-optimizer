@@ -154,7 +154,6 @@ export default {
             } else {
                 this.selectedOptions[type] = option;
             }
-            console.log('this.store: ', this.store.selectedOptions)
             this.resetOptions();
         },
         isSelected(type, option) {

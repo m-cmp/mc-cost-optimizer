@@ -3,7 +3,6 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Base info</h3>
-
         </div>
         <div class="card-body">
             <div class="px-5 total-amount">
@@ -28,43 +27,41 @@
 </div>
 </template>
 
+    
 <script>
 import {
     ref,
-    onMounted
+    onMounted,
+    watch
 } from 'vue';
+import {
+    useSelectedOptionsStore
+} from '@/stores/selectedOptions';
+import axios from 'axios';
 import ps from '@/utils/common.js';
 
 export default {
     name: 'BaseInfo',
     setup() {
-        const eachCost = ref([{
-                'csp': 'AWS',
-                'cost': 6458,
-                'colorClass': 'bg-google'
-            },
-            {
-                'csp': 'AZURE',
-                'cost': 3985,
-                'colorClass': 'bg-red'
-            },
-            {
-                'csp': 'GCP',
-                'cost': 3985,
-                'colorClass': 'bg-facebook'
-            },
-            {
-                'csp': 'NCP',
-                'cost': 2412,
-                'colorClass': 'bg-green'
-            }
-        ]);
+        const selectedOptionsStore = useSelectedOptionsStore();
+
+        const eachCost = ref([]);
 
         const totalCost = ref(0);
 
+        const getCostData = async () => {
+            try {
+                const response = await axios.post('http://localhost:9090/api/v2/invoice/getBillingBaseInfo', selectedOptionsStore.selectedOptions)
+                eachCost.value = response.data.Data;
+                CalculateTotalCost(); // 데이터를 가져온 후에 총 금액 계산
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+
         const CalculateTotalCost = () => {
             totalCost.value = eachCost.value.reduce((sum, item) => sum + item.cost, 0);
-            console.log(totalCost.value);
         };
 
         const toFixedLocaleString = (number) => {
@@ -72,13 +69,20 @@ export default {
         };
 
         onMounted(() => {
-            CalculateTotalCost();
+            getCostData();
+        });
+
+        watch(() => selectedOptionsStore.selectedOptions, () => {
+            getCostData();
+        }, {
+            deep: true
         });
 
         return {
             eachCost,
             totalCost,
-            toFixedLocaleString
+            toFixedLocaleString,
+            selectedOptions: selectedOptionsStore.selectedOptions
         };
     }
 };
