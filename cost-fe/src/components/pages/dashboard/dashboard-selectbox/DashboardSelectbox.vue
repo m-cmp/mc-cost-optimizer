@@ -137,10 +137,11 @@ export default {
                     // 이미 선택된 경우 해제
                     this.selectedOptions.project.splice(index, 1);
                 } else {
-                    // 선택되지 않은 경우 추가
-                    this.selectedOptions.project.push(option);
+                  // 선택되지 않은 경우 추가
+                  this.selectedOptions.project.push(option);
                 }
                 this.store.toggleProject(this.selectedOptions.project);
+                this.$emit('selectOptions');
             } else if (type === 'csp') {
                 const index = this.selectedOptions.csp.indexOf(option);
                 if (index > -1) {

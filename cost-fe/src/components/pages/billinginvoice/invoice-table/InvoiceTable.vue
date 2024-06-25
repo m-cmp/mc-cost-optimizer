@@ -82,91 +82,80 @@ export default {
                     movableRows: true,
                     groupBy: "gender",
                     columns: [{
-                            title: "Name",
-                            field: "name",
-                            width: 200
+                      title: "CSP",
+                      field: "csp",
+                      formatter: () => 'AWS'
+                    },
+                      {
+                            title: "계정 ID",
+                            field: "accountID",
+                            width: 200,
                         },
                         {
-                            title: "Progress",
-                            field: "progress",
-                            formatter: "progress",
-                            sorter: "number"
+                            title: "Product ID",
+                            field: "productID",
+                            // formatter: "progress",
+                            sorter: "number",
                         },
                         {
-                            title: "Gender",
-                            field: "gender"
+                            title: "리소스 ID",
+                            field: "resourceID"
                         },
                         {
-                            title: "Rating",
-                            field: "rating",
-                            formatter: "star",
-                            hozAlign: "center",
-                            width: 100
-                        },
-                        {
-                            title: "Favourite Color",
-                            field: "col"
-                        },
-                        {
-                            title: "Date Of Birth",
-                            field: "dob",
-                            hozAlign: "center",
-                            sorter: "date"
-                        },
-                        {
-                            title: "Driver",
-                            field: "car",
-                            hozAlign: "center",
-                            formatter: "tickCross"
-                        },
+                            title: "비용",
+                            field: "bill",
+                            // formatter: "star",
+                            // hozAlign: "center",
+                          formatter: cell => "₩" + cell.getValue()
+                        }
                     ],
                     data: [{
-                            id: 1,
-                            name: "Oli Bob",
-                            progress: 42,
+                            // id: 1,
+                      accountID: "Oli Bob",
+                      productID: 42,
                             gender: "male",
-                            rating: 5,
-                            col: "red",
+                      bill: 5,
+                      resourceID: "red",
                             dob: "14/04/1984",
                             car: true
                         },
                         {
-                            id: 2,
-                            name: "Mary May",
-                            progress: 73,
+                            // id: 2,
+                          accountID: "Mary May",
+                          productID: 73,
                             gender: "female",
-                            rating: 4,
-                            col: "blue",
+                          bill: 4,
+                          resourceID: "blue",
                             dob: "14/05/1982",
                             car: true
                         },
                         {
-                            id: 3,
-                            name: "Chris Brown",
-                            progress: 100,
+                            // id: 3,
+                          accountID: "Chris Brown",
+                          productID: 100,
                             gender: "male",
-                            rating: 3,
-                            col: "green",
+                          bill: 3,
+                          resourceID: "green",
                             dob: "22/08/1992",
                             car: false
                         },
                         {
-                            id: 4,
-                            name: "Diana Ross",
-                            progress: 78,
+                            // id: 4,
+                          accountID: "Diana Ross",
+                          productID: 78,
                             gender: "female",
-                            rating: 2,
-                            col: "yellow",
+                          bill: 2,
+                          resourceID: "yellow",
                             dob: "12/09/1985",
                             car: true
                         },
                         {
-                            id: 5,
-                            name: "Paul Smith",
-                            progress: 52,
+                            // id: 5,
+                          accountID: "Paul Smith",
+                          productID: 52,
                             gender: "male",
-                            rating: 1,
-                            col: "purple",
+                          bill: 1,
+                          resourceID: "purple",
                             dob: "03/04/1979",
                             car: false
                         },

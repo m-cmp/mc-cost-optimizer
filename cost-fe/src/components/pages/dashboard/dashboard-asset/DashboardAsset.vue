@@ -14,7 +14,7 @@
                         </div>
                         <div class="col">
                             <div class="font-weight-medium"> Virtual Machine </div>
-                            <div class="text-muted"> 100 Unit </div>
+                            <div class="text-muted"> {{ assets.vmUnit }} Unit </div>
                         </div>
                     </div>
                 </div>
@@ -30,7 +30,7 @@
                         </div>
                         <div class="col">
                             <div class="font-weight-medium"> LB </div>
-                            <div class="text-muted"> 100 Unit </div>
+                            <div class="text-muted"> {{ assets.lbUnit }} Unit </div>
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                         </div>
                         <div class="col">
                             <div class="font-weight-medium"> Storage </div>
-                            <div class="text-muted"> 1.0 Tb </div>
+                            <div class="text-muted"> {{ assets.storageUnit }} Unit </div>
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                         </div>
                         <div class="col">
                             <div class="font-weight-medium"> DataBase </div>
-                            <div class="text-muted"> 10 Unit </div>
+                            <div class="text-muted"> {{ assets.dbUnit }} Unit </div>
                         </div>
                     </div>
                 </div>
@@ -85,9 +85,52 @@ export default {
             virtualMachineIcon,
             lbIcon,
             storageIcon,
-            databaseIcon
+            databaseIcon,
+          assets: {
+            vmCost: 0.0,
+            vmUnit: 0,
+            storageCost: 0.0,
+            storageUnit: 0,
+            lbCost: 0.0,
+            lbUnit: 0,
+            dbCost: 0.0,
+            dbUnit: 0
+          }
         };
+    },
+  props: {
+    origData: {
+      type: Object,
+      required: true,
     }
+  },
+  watch: {
+    origData: {
+      handler(newVal){
+        newVal.Data.billingAsset.forEach(item => {
+          switch (item.familyProductCode){
+            case "Virtual Machine":
+              this.assets.vmCost = item.totalCost;
+              this.assets.vmUnit = item.totalUnit;
+              break;
+            case "Storage":
+              this.assets.storageCost = item.totalCost;
+              this.assets.storageUnit = item.totalUnit;
+              break;
+            case "Database":
+              this.assets.dbCost = item.totalCost;
+              this.assets.dbUnit = item.totalUnit;
+              break;
+            case "LB":
+              this.assets.lbCost = item.totalCost;
+              this.assets.lbUnit = item.totalUnit;
+              break;
+          }
+        })
+      },
+      deep: true
+    }
+  }
 
 }
 </script>
