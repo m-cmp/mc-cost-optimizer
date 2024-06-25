@@ -1,23 +1,23 @@
 <template>
-<div class="page">
-    <DashboardHeader />
-    <div class="page-wrapper">
-        <DashboardSelectbox />
-        <div class="page-body">
-            <div class="container-xl">
-                <div class="row row-deck row-cards">
-                    <BaseInfo />
-                    <BillingSummary />
-                    <InvoiceTable />
+    <div class="page">
+        <DashboardHeader />
+        <div class="page-wrapper">
+            <DashboardSelectbox />
+            <div class="page-body">
+                <div class="container-xl">
+                    <div class="row row-deck row-cards">
+                        <BaseInfo />
+                        <BillingSummary />
+                        <InvoiceTable />
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </template>
 
 <script>
-import DashboardSelectbox from '../dashboard/dashboard-header/DashboardSelectbox.vue'
+import DashboardSelectbox from '../dashboard/dashboard-selectbox/DashboardSelectbox.vue'
 import DashboardHeader from '../dashboard/dashboard-header/DashboardHeader.vue'
 import BaseInfo from './base-info/BaseInfo.vue'
 import BillingSummary from './billing-summary/BillingSummary.vue'
