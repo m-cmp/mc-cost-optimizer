@@ -9,8 +9,10 @@
     },
     "dependencies": {
         "apexcharts": "^3.49.1",
+        "axios": "^1.7.2",
         "bootstrap": "^5.3.3",
         "core-js": "^3.8.3",
+        "pinia": "^2.1.7",
         "tabulator-tables": "^6.2.1",
         "vue": "^3.2.13",
         "vue-apexcharts": "^1.6.2",
