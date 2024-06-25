@@ -152,6 +152,7 @@ export default {
                     this.selectedOptions.csp.push(option);
                 }
                 this.store.toggleCSP(this.selectedOptions.csp);
+                this.$emit('selectOptions');
             } else {
                 this.selectedOptions[type] = option;
             }
