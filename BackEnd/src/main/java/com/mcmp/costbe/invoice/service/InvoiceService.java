@@ -1,10 +1,9 @@
 package com.mcmp.costbe.invoice.service;
 
+import com.mcmp.costbe.common.model.DateRangeModel;
 import com.mcmp.costbe.common.service.DateCalculator;
 import com.mcmp.costbe.invoice.dao.InvoiceDao;
-import com.mcmp.costbe.invoice.model.SummaryBillItemModel;
-import com.mcmp.costbe.invoice.model.SummaryReqModel;
-import com.mcmp.costbe.invoice.model.SummaryResModel;
+import com.mcmp.costbe.invoice.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,9 @@ import java.util.List;
 @Service
 @Slf4j
 public class InvoiceService {
+
+    @Autowired
+    private DateCalculator dateCalculator;
 
     @Autowired
     private InvoiceDao invoiceDao;
@@ -87,5 +89,13 @@ public class InvoiceService {
         summaryTotalItem.setCsp("Total");
 
         return summaryTotalItem;
+    }
+
+    public List<InvoiceItemModel> getAWSInvoice(InvoiceReqModel req){
+        DateRangeModel dateRange = dateCalculator.dateRangeCalculator(req.getToday());
+        req.setCurMonthStartDate(dateRange.getStartDate());
+        req.setCurMonthEndDate(dateRange.getEndDate());
+
+        return invoiceDao.getAWSInvoice(req);
     }
 }
