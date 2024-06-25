@@ -198,4 +198,35 @@
         </choose>
         GROUP BY co.lineitem_productcode
     </select>
+
+
+    <select id="getCurMonthBill" parameterType="com.mcmp.costbe.usage.model.bill.BillingInvoiceBaseInfoReqModel" resultType="com.mcmp.costbe.usage.model.bill.BillingInvoiceBaseInfoModel">
+        /*bill.getCurPrevMonthBill*/
+        <![CDATA[SELECT COALESCE(SUM(CASE
+                            WHEN co.lineitem_usagestartdate >= #{curMonthStartDate}
+                             AND co.lineitem_usageenddate <= #{curMonthEndDate}
+                            THEN co.lineitem_unblendedcost
+                            ELSE 0
+                END), 0) AS cost]]>
+        FROM cur_origin co
+        LEFT JOIN servicegroup_meta sm
+        ON co.lineitem_resourceid = sm.csp_instanceid
+        WHERE 1=1
+        <if test="selectedCsps != null and selectedCsps.size() > 0">
+            AND sm.csp_type IN
+            <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
+                #{selectedCsp}
+            </foreach>
+        </if>
+        AND sm.workspace_cd = #{selectedWorkspace}
+        <if test="selectedProjects != null and selectedProjects.size() > 0">
+            AND sm.service_cd IN
+            <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+                #{selectedProject}
+            </foreach>
+        </if>
+        <![CDATA[
+           AND co.lineitem_usageenddate <= #{curMonthEndDate}
+        ]]>
+    </select>
 </mapper>

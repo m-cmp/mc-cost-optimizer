@@ -28,12 +28,18 @@ public class DateCalculator {
         return result;
     }
 
-    public String prevMonthdate(String mow){
+    public String prevMonthdate(String now){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate date = LocalDate.parse(mow, formatter);
+        LocalDate date = LocalDate.parse(now, formatter);
         LocalDate oneMonthBefore = date.minusMonths(1);
 
         return oneMonthBefore.format(formatter);
     }
 
+    public String curMonthDate(String now) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate date = LocalDate.parse(now, formatter);
+
+        return date.format(formatter);
+    }
 }
