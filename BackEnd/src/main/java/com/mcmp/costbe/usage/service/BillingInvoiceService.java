@@ -30,8 +30,6 @@ public class BillingInvoiceService {
         BillingInvoiceBaseInfoModel aws_result = billingInvoiceDao.getCurMonthBill(req);
         aws_result.setCsp("AWS");
         aws_result.setColorClass("bg-google");
-        System.out.println(req);
-        System.out.println(aws_result);
 
         BillingInvoiceBaseInfoModel gcp_result = new BillingInvoiceBaseInfoModel();
         gcp_result.setCsp("GCP");
