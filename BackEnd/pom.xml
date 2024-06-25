@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.mcmp</groupId>
-    <artifactId>dummyBE</artifactId>
+    <artifactId>costBE</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>dummyBE</name>
-    <description>dummyBE</description>
+    <name>costBE</name>
+    <description>costBE</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>
