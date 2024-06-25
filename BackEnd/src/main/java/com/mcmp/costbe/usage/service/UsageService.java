@@ -61,8 +61,6 @@ public class UsageService {
         result.setSelectedCsps(req.getSelectedCsps());
         result.setSelectedProjects(req.getSelectedProjects());
 
-        System.out.println(result);
-
         return result;
     }
 
@@ -72,9 +70,7 @@ public class UsageService {
         req.setCurMonthEndDate(curMonthRange.getEndDate());
 
         Top5WidgetModel result = new Top5WidgetModel();
-        System.out.println("파라미터 : "+ req);
         List<Top5BillModel> top5bill = billDao.getTop5Bill(req);
-        System.out.println("이것을 보라" + top5bill);
 
         for(Top5BillModel item : top5bill){
            if("others".equals(item.getResourceNm())){
@@ -122,7 +118,6 @@ public class UsageService {
             familyItem.setFamilyProductCode(item);
 
             billingAsset.add(familyItem);
-            System.out.println("하나 씩 넣자 으여차 : " + billingAsset);
         }
 
         result.setSelectedProjects(req.getSelectedProjects());
