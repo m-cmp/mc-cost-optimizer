@@ -4,7 +4,7 @@
         <div class="card-header">
             <h3 class="card-title">Invoices</h3>
         </div>
-        <div class="card-body border-bottom py-3">
+        <!-- <div class="card-body border-bottom py-3">
             <div class="d-flex">
                 <div class="text-muted">
                     Show
@@ -20,12 +20,12 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div ref="tableRef" id="example-table-tabulator"></div>
 
         <div class="card-footer d-flex align-items-center">
-            <p class="m-0 text-muted">Showing <span>1</span> to <span>{{ entriesCount }}</span> of <span>16</span> entries</p>
+            <!-- <p class="m-0 text-muted">Showing <span>1</span> to <span>{{ entriesCount }}</span> of <span>16</span> entries</p> -->
             <ul class="pagination m-0 ms-auto">
                 <li class="page-item disabled">
                     <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
@@ -36,8 +36,8 @@
                         prev
                     </a>
                 </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item active"><a class="page-link" href="#">2</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
                 <li class="page-item"><a class="page-link" href="#">3</a></li>
                 <li class="page-item"><a class="page-link" href="#">4</a></li>
                 <li class="page-item"><a class="page-link" href="#">5</a></li>
@@ -55,113 +55,108 @@
     </div>
 </div>
 <link href="https://unpkg.com/tabulator-tables@5.0.10/dist/css/tabulator.min.css" rel="stylesheet">
-
 </template>
 
 <script>
+import axios from 'axios';
 import {
     ref,
-    onMounted
+    watch
 } from 'vue';
 import {
     TabulatorFull as Tabulator
 } from 'tabulator-tables';
+import {
+    useSelectedOptionsStore
+} from '@/stores/selectedOptions';
 
 export default {
     name: 'InvoiceTable',
     setup() {
+        const store = useSelectedOptionsStore();
         const entriesCount = ref(8);
         const searchQuery = ref('');
         const tableRef = ref(null);
+        const tableOption = ref({
+            height: "311px",
+            layout: "fitColumns",
+            movableRows: true,
+            groupBy: ["csp", "accountID", "productID"],
+            groupHeader: (value, count, data) => {
+                // 그룹의 bill 합산
+                const totalBill = data.reduce((sum, row) => sum + (row.bill || 0), 0);
+                return `${value} (${count} items) - Total: ₩${totalBill.toFixed(2)}`;
+            },
+            columns: [{
+                    title: "CSP",
+                    field: "csp",
+                },
+                {
+                    title: "Account ID",
+                    field: "accountID",
+                    width: 200,
+                },
+                {
+                    title: "Product ID",
+                    field: "productID",
+                    sorter: "number",
+                },
+                {
+                    title: "Resource ID",
+                    field: "resourceID"
+                },
+                {
+                    title: "비용",
+                    field: "bill",
+                    // formatter: "star",
+                    // hozAlign: "center",
+                    formatter: cell => "₩" + cell.getValue()
+                }
+            ],
+            data: [],
+        })
 
-        onMounted(() => {
-            if (tableRef.value) {
-                new Tabulator(tableRef.value, {
-                    height: "311px",
-                    layout: "fitColumns",
-                    movableRows: true,
-                    groupBy: "gender",
-                    columns: [{
-                      title: "CSP",
-                      field: "csp",
-                      formatter: () => 'AWS'
+        const getTableData = async () => {
+            try {
+                const response = await axios.post('http://localhost:9090/api/v2/invoice/getInvoice', store.selectedOptions)
+                const data = response.data.Data.invoice;
+                const additionalData = [{
+                        csp: 'NCP',
+                        accountID: null,
+                        productID: null,
+                        resourceID: null,
+                        bill: null
                     },
-                      {
-                            title: "계정 ID",
-                            field: "accountID",
-                            width: 200,
-                        },
-                        {
-                            title: "Product ID",
-                            field: "productID",
-                            // formatter: "progress",
-                            sorter: "number",
-                        },
-                        {
-                            title: "리소스 ID",
-                            field: "resourceID"
-                        },
-                        {
-                            title: "비용",
-                            field: "bill",
-                            // formatter: "star",
-                            // hozAlign: "center",
-                          formatter: cell => "₩" + cell.getValue()
-                        }
-                    ],
-                    data: [{
-                            // id: 1,
-                      accountID: "Oli Bob",
-                      productID: 42,
-                            gender: "male",
-                      bill: 5,
-                      resourceID: "red",
-                            dob: "14/04/1984",
-                            car: true
-                        },
-                        {
-                            // id: 2,
-                          accountID: "Mary May",
-                          productID: 73,
-                            gender: "female",
-                          bill: 4,
-                          resourceID: "blue",
-                            dob: "14/05/1982",
-                            car: true
-                        },
-                        {
-                            // id: 3,
-                          accountID: "Chris Brown",
-                          productID: 100,
-                            gender: "male",
-                          bill: 3,
-                          resourceID: "green",
-                            dob: "22/08/1992",
-                            car: false
-                        },
-                        {
-                            // id: 4,
-                          accountID: "Diana Ross",
-                          productID: 78,
-                            gender: "female",
-                          bill: 2,
-                          resourceID: "yellow",
-                            dob: "12/09/1985",
-                            car: true
-                        },
-                        {
-                            // id: 5,
-                          accountID: "Paul Smith",
-                          productID: 52,
-                            gender: "male",
-                          bill: 1,
-                          resourceID: "purple",
-                            dob: "03/04/1979",
-                            car: false
-                        },
-                    ],
-                });
+                    {
+                        csp: 'GCP',
+                        accountID: null,
+                        productID: null,
+                        resourceID: null,
+                        bill: null
+                    },
+                    {
+                        csp: 'AZURE',
+                        accountID: null,
+                        productID: null,
+                        resourceID: null,
+                        bill: null
+                    }
+                ];
+                const mergedData = data.concat(additionalData);
+                tableOption.value.data = mergedData;
+                if (tableRef.value) {
+                    new Tabulator(tableRef.value, tableOption.value)
+                }
+
+            } catch (error) {
+                console.error(error);
             }
+        }
+
+        watch(() => store.selectedOptions, () => {
+            getTableData();
+        }, {
+            deep: true
         });
 
         return {
