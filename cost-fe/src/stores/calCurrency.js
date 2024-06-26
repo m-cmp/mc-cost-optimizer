@@ -6,7 +6,7 @@ export const useCalCurrencyStore = defineStore('calCurrency', {
     actions: {
         usdToKrw(usd) {
             const exchangeRate = 1389.92;
-            return Math.round(usd * exchangeRate);
+            return usd * exchangeRate;
         }
     }
 });

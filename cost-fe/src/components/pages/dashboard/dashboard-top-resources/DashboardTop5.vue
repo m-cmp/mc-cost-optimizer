@@ -93,7 +93,7 @@ export default {
           let series = [];
           sortedData.forEach(item => {
             labels.push(item.resourceNm);
-            series.push(calCurrencyStore.usdToKrw(item.bill));
+            series.push(Math.round(calCurrencyStore.usdToKrw(item.bill)));
           })
 
           this.chartOptions.series = series;
