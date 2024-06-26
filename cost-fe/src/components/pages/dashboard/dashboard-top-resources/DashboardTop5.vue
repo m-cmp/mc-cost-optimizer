@@ -46,7 +46,7 @@ export default {
           fillSeriesColor: false,
           y: {
             formatter: function (val) {
-              return val + "KRW";
+              return val.toLocaleString('ko-KR') + " KRW";
             },
           }
         },
@@ -93,7 +93,7 @@ export default {
           let series = [];
           sortedData.forEach(item => {
             labels.push(item.resourceNm);
-            series.push(parseFloat(calCurrencyStore.usdToKrw(item.bill).toFixed(2)));
+            series.push(calCurrencyStore.usdToKrw(item.bill));
           })
 
           this.chartOptions.series = series;
