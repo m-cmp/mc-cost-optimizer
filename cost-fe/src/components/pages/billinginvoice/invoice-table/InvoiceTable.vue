@@ -70,10 +70,14 @@ import {
 import {
     useSelectedOptionsStore
 } from '@/stores/selectedOptions';
+import {
+    useCalCurrencyStore
+} from '@/stores/calCurrency';
 
 export default {
     name: 'InvoiceTable',
     setup() {
+        const calCurrencyStore = useCalCurrencyStore();
         const store = useSelectedOptionsStore();
         const entriesCount = ref(8);
         const searchQuery = ref('');
@@ -85,8 +89,8 @@ export default {
             groupBy: ["csp", "accountID", "productID"],
             groupHeader: (value, count, data) => {
                 // 그룹의 bill 합산
-                const totalBill = data.reduce((sum, row) => sum + (row.bill || 0), 0);
-                return `${value} (${count} items) - Total: ₩${totalBill.toFixed(2)}`;
+                const totalBill = data.reduce((sum, row) => sum + (calCurrencyStore.usdToKrw(row.bill) || 0), 0);
+                return `${value} (${count} items) - Total: ${Math.round(totalBill).toLocaleString()} KRW`;
             },
             columns: [{
                     title: "CSP",
@@ -107,11 +111,11 @@ export default {
                     field: "resourceID"
                 },
                 {
-                    title: "비용",
+                    title: "Billing (KRW)",
                     field: "bill",
                     // formatter: "star",
                     // hozAlign: "center",
-                    formatter: cell => "₩" + cell.getValue()
+                    formatter: cell => Math.round(calCurrencyStore.usdToKrw(cell.getValue())).toLocaleString()
                 }
             ],
             data: [],

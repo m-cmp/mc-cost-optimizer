@@ -37,13 +37,17 @@ import {
 import {
     useSelectedOptionsStore
 } from '@/stores/selectedOptions';
+import {
+    useCalCurrencyStore
+} from '@/stores/calCurrency';
 import axios from 'axios';
-import ps from '@/utils/common.js';
+// import ps from '@/utils/common.js';
 
 export default {
     name: 'BaseInfo',
     setup() {
         const selectedOptionsStore = useSelectedOptionsStore();
+        const calCurrencyStore = useCalCurrencyStore();
 
         const eachCost = ref([]);
 
@@ -65,7 +69,7 @@ export default {
         };
 
         const toFixedLocaleString = (number) => {
-            return ps.str.toFixedLocaleString(number, 3);
+            return Math.round(calCurrencyStore.usdToKrw(number)).toLocaleString() + ' KRW';
         };
 
         watch(() => selectedOptionsStore.selectedOptions, () => {
