@@ -3,7 +3,7 @@
         <div class="card-body flex-container">
             <div class="text-content">
                 <h3 class="card-title">{{ curYear }}년 {{ curMonth }}월 청구금액</h3>
-                <p class="card-text">{{ convertedCurMonthBill.toLocaleString() }} KRW</p>
+                <h1 class="card-text">{{ convertedCurMonthBill.toLocaleString() }} KRW</h1>
                 <p class="card-text">
                     전월사용 금액대비<br>
                     <span :style="{ color: parseFloat(momPer) > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 0, 128)' }">{{ momPerSign
