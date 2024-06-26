@@ -1,7 +1,6 @@
 // src/stores/selectedOptions.js
 import { defineStore } from 'pinia';
 import ps from '@/utils/common.js'
-
 export const useSelectedOptionsStore = defineStore('selectedOptions', {
     state: () => ({
         selectedOptions: {
