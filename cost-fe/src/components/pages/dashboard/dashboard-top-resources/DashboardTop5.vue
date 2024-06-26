@@ -42,7 +42,8 @@ export default {
         labels: ["AmazonECS", "AmazonRDS", "AmazonEC2", "AWSELB", "awswaf", "others"],
         tooltip: {
           theme: 'dark',
-          fillSeriesColor: false
+          fillSeriesColor: false,
+
         },
         grid: {
           strokeDashArray: 4,
@@ -86,7 +87,7 @@ export default {
           let series = [];
           sortedData.forEach(item => {
             labels.push(item.resourceNm);
-            series.push(item.bill);
+            series.push(parseFloat(item.bill.toFixed(2)));
           })
 
           this.chartOptions.series = series;

@@ -129,6 +129,7 @@
                 if (type === 'workspace') {
                     this.fetchProjects(option);
                     this.store.setSelectedWorkspace(option);
+                  this.$emit('selectOptions')
                 }
                 if (type === 'project') {
                     // console.log('선택한 프로젝트 : ', this.selectedOptions);
@@ -141,6 +142,7 @@
                         this.selectedOptions.project.push(option);
                     }
                     this.store.toggleProject(this.selectedOptions.project);
+                    this.$emit('selectOptions')
                 } else if (type === 'csp') {
                     const index = this.selectedOptions.csp.indexOf(option);
                     if (index > -1) {
@@ -151,6 +153,7 @@
                         this.selectedOptions.csp.push(option);
                     }
                     this.store.toggleCSP(this.selectedOptions.csp);
+                  this.$emit('selectOptions')
                 } else {
                     this.selectedOptions[type] = option;
                 }
@@ -311,4 +314,3 @@
         border-bottom: 0 none;
     }
     </style>
-    
