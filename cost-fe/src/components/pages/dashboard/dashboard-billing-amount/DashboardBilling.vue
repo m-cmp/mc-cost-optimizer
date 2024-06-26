@@ -6,9 +6,9 @@
                 <h1 class="card-text">{{ convertedCurMonthBill.toLocaleString() }} KRW</h1>
                 <p class="card-text">
                     전월사용 금액대비<br>
-                    <span :style="{ color: parseFloat(momPer) > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 0, 128)' }">{{ momPerSign
+                    <span :style="{ color: parseFloat(momPer) > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 128, 255)' }">{{ momPerSign
                         }} {{ formattedMomPer }}%</span>
-                    <span :style="{ color: momBill > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 0, 128)' }">{{ momBillSign }} {{
+                    <span :style="{ color: momBill > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 128, 255)' }">{{ momBillSign }} {{
                         formattedMomBill.toLocaleString() }} KRW</span>
                 </p>
             </div>
