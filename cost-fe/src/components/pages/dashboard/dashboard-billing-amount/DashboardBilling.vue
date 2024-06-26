@@ -1,21 +1,23 @@
 <template>
-<div class="card">
-    <div class="card-body flex-container">
-        <div class="text-content">
-            <h3 class="card-title">{{ curYear }}년 {{ curMonth }}월 청구금액</h3>
-            <p class="card-text">{{ curMonthBill.toFixed(2) }} USD</p>
-            <p class="card-text">
-                전월사용 금액대비<br>
-                <span :style="{ color: parseFloat(momPer) > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 0, 128)' }">{{ momPerSign }} {{ formattedMomPer  }}%</span>
-                <span :style="{ color: momBill > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 0, 128)' }">{{ momBillSign }} {{ formattedMomBill  }} USD</span>
-            </p>
-        </div>
+    <div class="card">
+        <div class="card-body flex-container">
+            <div class="text-content">
+                <h3 class="card-title">{{ curYear }}년 {{ curMonth }}월 청구금액</h3>
+                <p class="card-text">{{ convertedCurMonthBill.toLocaleString() }} KRW</p>
+                <p class="card-text">
+                    전월사용 금액대비<br>
+                    <span :style="{ color: parseFloat(momPer) > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 0, 128)' }">{{ momPerSign
+                        }} {{ formattedMomPer }}%</span>
+                    <span :style="{ color: momBill > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 0, 128)' }">{{ momBillSign }} {{
+                        formattedMomBill.toLocaleString() }} KRW</span>
+                </p>
+            </div>
 
-        <div id="chart-mentions" class="chart-lg chart-container" style="min-height: 240px;">
-            <apexchart type="bar" height="240" :options="chartOptions" :series="series"></apexchart>
+            <div id="chart-mentions" class="chart-lg chart-container" style="min-height: 240px;">
+                <apexchart type="bar" height="240" :options="chartOptions" :series="series"></apexchart>
+            </div>
         </div>
     </div>
-</div>
 </template>
 
 <script>
@@ -29,6 +31,9 @@ import {
 import {
     useSelectedOptionsStore
 } from '@/stores/selectedOptions';
+import {
+    useCalCurrencyStore
+} from '@/stores/calCurrency';
 import ApexCharts from 'apexcharts';
 
 export default {
@@ -36,6 +41,8 @@ export default {
     setup() {
 
         const store = useSelectedOptionsStore();
+        const currencyStore = useCalCurrencyStore();
+
         const curYear = ref('');
         const curMonth = ref('');
         const curMonthBill = ref(0);
@@ -44,13 +51,17 @@ export default {
         const series = ref([]);
         const chart = ref(null);
 
+        // 환율 변환된 금액
+        const convertedCurMonthBill = computed(() => Math.round(currencyStore.usdToKrw(curMonthBill.value)));
+        const convertedMomBill = computed(() => Math.round(currencyStore.usdToKrw(momBill.value)));
+
         // 기호 계산
         const momPerSign = computed(() => (parseFloat(momPer.value) > 0 ? '▲' : '▼'));
         const momBillSign = computed(() => (momBill.value > 0 ? '▲' : '▼'));
 
         // momPer와 momBill 값을 양수로 변환
         const formattedMomPer = computed(() => Math.abs(parseFloat(momPer.value)).toFixed(2));
-        const formattedMomBill = computed(() => Math.abs(momBill.value).toFixed(2));
+        const formattedMomBill = computed(() => Math.abs(convertedMomBill.value));
 
         const chartOptions = {
             chart: {
@@ -83,7 +94,7 @@ export default {
                 theme: 'dark',
                 y: {
                     formatter: function (val) {
-                        return val + " USD"; // 툴팁에 'USD' 추가
+                        return val.toLocaleString() + " KRW"; // 툴팁에 'USD' 추가
                     },
                 }
             },
@@ -143,7 +154,7 @@ export default {
 
                     // 월, 금액 분리
                     const months = data.monthlyBill.map(item => `${item.year}-${item.month}-01`).reverse();
-                    const bills = data.monthlyBill.map(item => item.bill.toFixed(2)).reverse();
+                    const bills = data.monthlyBill.map(item => Math.round(currencyStore.usdToKrw(item.bill.toFixed(2)))).reverse();
 
                     // 시리즈 데이터 업데이트
                     series.value = [{
@@ -201,11 +212,12 @@ export default {
             momPerSign,
             momBillSign,
             formattedMomPer,
-            formattedMomBill
+            formattedMomBill,
+            convertedCurMonthBill,
+            convertedMomBill,
         };
     },
 };
 </script>
 
-<style scoped>
-    </style>
+<style scoped></style>
