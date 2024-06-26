@@ -4,9 +4,7 @@ import ps from '@/utils/common.js'
 export const useSelectedOptionsStore = defineStore('selectedOptions', {
     state: () => ({
         selectedOptions: {
-            selectedWorkspace: {
-                'workspaceNM': 'WorkSpace'
-            },
+            selectedWorkspace: "",
             selectedProjects: [], // 여러 개의 프로젝트를 선택할 수 있도록 배열로 변경
             selectedCsps: [], // 여러 개의 CSP를 선택할 수 있도록 배열로 변경
             today: ps.date.toFormatString('','yyyymmdd')
