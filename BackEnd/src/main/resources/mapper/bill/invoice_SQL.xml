@@ -25,6 +25,7 @@
            AND co.lineitem_usagestartdate >= #{summaryPeriodDate}
            AND co.lineitem_usageenddate < DATE_ADD(#{summaryPeriodDate}, INTERVAL 1 DAY)
         ]]>
+          AND co.lineitem_unblendedcost >= 0
     </select>
 
     <select id="getAWSInovice" parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel" resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
@@ -54,6 +55,7 @@
            AND co.lineitem_usagestartdate >= #{curMonthStartDate}
            AND co.lineitem_usageenddate < #{curMonthEndDate}
         ]]>
+           AND co.lineitem_unblendedcost >= 0
          GROUP BY co.lineitem_usageaccountid,
                   co.lineitem_productcode,
                   sm.csp_type,
