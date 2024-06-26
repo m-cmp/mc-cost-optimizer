@@ -32,7 +32,8 @@
 <script>
 import {
     ref,
-    watch
+    watch,
+    onMounted
 } from 'vue';
 import ApexCharts from 'apexcharts';
 import axios from 'axios';
@@ -152,6 +153,10 @@ export default {
         }, {
             deep: true
         });
+
+        onMounted(() => {
+            getChartData();
+        })
 
         return {
             selectedPeriodOptions,

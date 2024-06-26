@@ -31,7 +31,8 @@
 <script>
 import {
     ref,
-    watch
+    watch,
+    onMounted
 } from 'vue';
 import {
     useSelectedOptionsStore
@@ -72,6 +73,10 @@ export default {
         }, {
             deep: true
         });
+
+        onMounted(() => {
+            getCostData();
+        })
 
         return {
             eachCost,
