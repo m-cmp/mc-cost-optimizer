@@ -18,13 +18,13 @@
 </div>
 </template>
 
-    
 <script>
 import axios from 'axios';
 import {
     ref,
     watch,
-    computed
+    computed,
+    onMounted
 } from 'vue';
 import {
     useSelectedOptionsStore
@@ -173,7 +173,7 @@ export default {
                     }
                 })
                 .catch(error => {
-                    console.log('message: ',store.selectedOptions)
+                    console.log('message: ', store.selectedOptions)
                     console.error("There was an error!", error);
                 });
         };
@@ -184,10 +184,11 @@ export default {
             deep: true,
         });
 
-
-        // onMounted(() => {
-        //     fetchBillingData();
-        // });
+        onMounted(() => {
+            if (store.selectedOptions.selectedWorkspace) {
+                fetchBillingData();
+            }
+        });
 
         return {
             curYear,
@@ -206,6 +207,5 @@ export default {
 };
 </script>
 
-    
 <style scoped>
     </style>
