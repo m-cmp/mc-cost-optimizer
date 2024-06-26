@@ -40,11 +40,15 @@ import axios from 'axios';
 import {
     useSelectedOptionsStore
 } from '@/stores/selectedOptions';
+import {
+    useCalCurrencyStore
+} from '@/stores/calCurrency';
 import ps from '@/utils/common.js'
 
 export default {
     name: 'BillingSummary',
     setup() {
+        const calCurrencyStore = useCalCurrencyStore();
         const store = useSelectedOptionsStore();
 
         const selectedPeriodOptions = ref('Last 7 days');
@@ -80,6 +84,11 @@ export default {
             labels: "",
             tooltip: {
                 theme: 'dark',
+                y: {
+                    formatter: function (value) {
+                        return Math.round(calCurrencyStore.usdToKrw(value)).toLocaleString() + ' KRW';
+                    }
+                }
             },
             grid: {
                 padding: {
@@ -103,7 +112,7 @@ export default {
                 labels: {
                     padding: 4,
                     formatter: function (value) {
-                        return value.toFixed(2); // 소수점 이하 두 자리로 제한
+                        return Math.round(calCurrencyStore.usdToKrw(value)).toLocaleString();
                     }
                 }
             },
