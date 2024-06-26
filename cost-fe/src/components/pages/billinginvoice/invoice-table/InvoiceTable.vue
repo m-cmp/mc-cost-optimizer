@@ -95,26 +95,31 @@ export default {
             columns: [{
                     title: "CSP",
                     field: "csp",
+                    headerHozAlign: "center"
                 },
                 {
                     title: "Account ID",
                     field: "accountID",
                     width: 200,
+                    headerHozAlign: "center"
                 },
                 {
                     title: "Product ID",
                     field: "productID",
                     sorter: "number",
+                    headerHozAlign: "center"
                 },
                 {
                     title: "Resource ID",
-                    field: "resourceID"
+                    field: "resourceID",
+                    headerHozAlign: "center"
                 },
                 {
                     title: "Billing (KRW)",
                     field: "bill",
                     // formatter: "star",
-                    // hozAlign: "center",
+                    hozAlign: "right",
+                    headerHozAlign: "center",
                     formatter: cell => Math.round(calCurrencyStore.usdToKrw(cell.getValue())).toLocaleString()
                 }
             ],
