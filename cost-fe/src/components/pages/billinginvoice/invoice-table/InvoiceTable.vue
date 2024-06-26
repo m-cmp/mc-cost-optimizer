@@ -61,7 +61,8 @@
 import axios from 'axios';
 import {
     ref,
-    watch
+    watch,
+    onMounted
 } from 'vue';
 import {
     TabulatorFull as Tabulator
@@ -159,6 +160,10 @@ export default {
             deep: true
         });
 
+        onMounted(() => {
+            getTableData();
+        })
+        
         return {
             entriesCount,
             searchQuery,

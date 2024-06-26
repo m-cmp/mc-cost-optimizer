@@ -142,7 +142,7 @@
         <div class="navbar">
             <div class="container-xl">
                 <ul class="navbar-nav">
-                    <li class="nav-item active">
+                    <li :class="['nav-item', isActive('/') ? 'active' : '']">
                         <router-link class="nav-link" to="/">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -156,7 +156,7 @@
                             </span>
                         </router-link>
                     </li>
-                    <li class="nav-item">
+                    <li :class="['nav-item', isActive('/billing-invoice') ? 'active' : '']">
                         <router-link class="nav-link" to="/billing-invoice">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-businessplan">
@@ -193,6 +193,7 @@
 </header>
 </template>
 
+    
 <script>
 export default {
     name: 'DashboardHeader',
@@ -209,11 +210,16 @@ export default {
         enableLightMode() {
             document.body.classList.add('theme-light');
             document.body.classList.remove('theme-dark');
+        },
+        isActive(path) {
+            const route = this.$route;
+            return route.path === path;
         }
     }
 }
 </script>
 
+    
 <style scoped>
 
-</style>
+    </style>
