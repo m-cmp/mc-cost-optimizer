@@ -80,6 +80,17 @@ public class UsageService {
            }
         }
 
+        System.out.println(top5bill.size());
+        if(top5bill.isEmpty()){
+            Top5BillModel temp = new Top5BillModel();
+            temp.setBill(0.0);
+            temp.setCsp("Null");
+            temp.setIsOthers(false);
+            temp.setResourceNm("Null");
+
+            top5bill.add(temp);
+        }
+
         result.setTop5bill(top5bill);
         result.setSelectedProjects(req.getSelectedProjects());
         result.setSelectedCsps(req.getSelectedCsps());

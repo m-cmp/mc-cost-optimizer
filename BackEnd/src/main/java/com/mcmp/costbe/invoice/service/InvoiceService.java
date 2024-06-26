@@ -41,7 +41,7 @@ public class InvoiceService {
     }
 
     public SummaryBillItemModel getGCPSummary(){
-        List<Double> bill = List.of(1.002, 0.00127, 3.0, 0.0003, 0.154, 0.012, 0.003);
+        List<Double> bill = List.of(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         SummaryBillItemModel summaryGCPItem = new SummaryBillItemModel();
         summaryGCPItem.setBill(bill);
@@ -52,7 +52,7 @@ public class InvoiceService {
     }
 
     public SummaryBillItemModel getAzureSummary(){
-        List<Double> bill = List.of(0.002, 0.0, 1.02, 0.0002, 0.152, 0.13, 0.01);
+        List<Double> bill = List.of(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         SummaryBillItemModel summaryAzureItem = new SummaryBillItemModel();
         summaryAzureItem.setBill(bill);
@@ -63,7 +63,7 @@ public class InvoiceService {
     }
 
     public SummaryBillItemModel getNcpSummary(){
-        List<Double> bill = List.of(0.001, 0.0, 0.0, 0.012, 0.13, 0.12, 0.01);
+        List<Double> bill = List.of(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         SummaryBillItemModel summaryNcpItem = new SummaryBillItemModel();
         summaryNcpItem.setBill(bill);
