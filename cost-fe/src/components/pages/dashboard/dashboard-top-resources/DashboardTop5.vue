@@ -10,6 +10,7 @@
 
 <script>
 import ApexCharts from 'apexcharts';
+import { useCalCurrencyStore } from '@/stores/calCurrency';
 
 export default {
     name: 'DashboardTop',
@@ -43,7 +44,11 @@ export default {
         tooltip: {
           theme: 'dark',
           fillSeriesColor: false,
-
+          y: {
+            formatter: function (val) {
+              return val + "KRW";
+            },
+          }
         },
         grid: {
           strokeDashArray: 4,
@@ -76,6 +81,7 @@ export default {
     origData: {
       handler(newVal){
         const data = newVal.Data.top5bill
+        const calCurrencyStore = useCalCurrencyStore();
 
         if(data !== null && data.length > 0){
           data.sort((a, b) => b.bill - a.bill);
@@ -87,7 +93,7 @@ export default {
           let series = [];
           sortedData.forEach(item => {
             labels.push(item.resourceNm);
-            series.push(parseFloat(item.bill.toFixed(2)));
+            series.push(parseFloat(calCurrencyStore.usdToKrw(item.bill).toFixed(2)));
           })
 
           this.chartOptions.series = series;
