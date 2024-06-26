@@ -31,7 +31,6 @@
 <script>
 import {
     ref,
-    onMounted,
     watch
 } from 'vue';
 import {
@@ -67,10 +66,6 @@ export default {
         const toFixedLocaleString = (number) => {
             return ps.str.toFixedLocaleString(number, 3);
         };
-
-        onMounted(() => {
-            getCostData();
-        });
 
         watch(() => selectedOptionsStore.selectedOptions, () => {
             getCostData();
