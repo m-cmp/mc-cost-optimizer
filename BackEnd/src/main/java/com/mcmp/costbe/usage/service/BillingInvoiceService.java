@@ -33,17 +33,17 @@ public class BillingInvoiceService {
 
         BillingInvoiceBaseInfoModel gcp_result = new BillingInvoiceBaseInfoModel();
         gcp_result.setCsp("GCP");
-        gcp_result.setCost(3985);
+        gcp_result.setCost(0);
         gcp_result.setColorClass("bg-facebook");
 
         BillingInvoiceBaseInfoModel azure_result = new BillingInvoiceBaseInfoModel();
         azure_result.setCsp("AZURE");
-        azure_result.setCost(3985);
+        azure_result.setCost(0);
         azure_result.setColorClass("bg-red");
 
         BillingInvoiceBaseInfoModel ncp_result = new BillingInvoiceBaseInfoModel();
         ncp_result.setCsp("NCP");
-        ncp_result.setCost(3985);
+        ncp_result.setCost(0);
         ncp_result.setColorClass("bg-green");
 
         List<BillingInvoiceBaseInfoModel> result = new ArrayList<>();

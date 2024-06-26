@@ -7,16 +7,16 @@
                 <div class="ms-auto">
                     <div>
                         <div class="dropdown">
-                          <a class="dropdown-toggle text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ selectedOption }}
-                          </a>
-                          <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="#" @click.prevent="selectOption('Last 7 days')">Last 7 days</a>
-                            <a class="dropdown-item" href="#" @click.prevent="selectOption('Last 30 days')">Last 30 days</a>
-                            <a class="dropdown-item" href="#" @click.prevent="selectOption('Last 3 months')">Last 3 months</a>
-                          </div>
+                            <a class="dropdown-toggle text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ selectedPeriodOptions }}
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" href="#" @click.prevent="selectOption('Last 7 days')">Last 7 days</a>
+                                <a class="dropdown-item" href="#" @click.prevent="selectOption('Last 30 days')">Last 30 days</a>
+                                <a class="dropdown-item" href="#" @click.prevent="selectOption('Last 3 months')">Last 3 months</a>
+                            </div>
                         </div>
-                      </div>
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -32,102 +32,131 @@
 <script>
 import {
     ref,
-    onMounted
+    watch
 } from 'vue';
 import ApexCharts from 'apexcharts';
+import axios from 'axios';
+import {
+    useSelectedOptionsStore
+} from '@/stores/selectedOptions';
+import ps from '@/utils/common.js'
 
 export default {
     name: 'BillingSummary',
     setup() {
-        const selectedOption = ref('Last 7 days');
+        const store = useSelectedOptionsStore();
+
+        const selectedPeriodOptions = ref('Last 7 days');
+
+        let chart = null;
 
         const selectOption = (option) => {
-            selectedOption.value = option;
+            selectedPeriodOptions.value = option;
         }
 
-        const seriesData = ref([{
-            name: "Total",
-            data: [8500, 9800, 10000, 11650, 10150, 9120, 8781]
-        }, {
-            name: "AWS",
-            data: [5000, 6000, 6200, 7300, 5800, 4220, 4500]
-        }, {
-            name: "AZURE",
-            data: [2000, 2300, 2400, 2750, 2800, 3000, 2200]
-        }, {
-            name: "GCP",
-            data: [1000, 1200, 1000, 1100, 1250, 1500, 1550]
-        }, {
-            name: "NCP",
-            data: [500, 300, 400, 500, 300, 400, 531]
-        }]);
-
-        const labelsData = ref([
-            '2024-06-01', '2024-06-02', '2024-06-03', '2024-06-04', '2024-06-05', '2024-06-06', '2024-06-07'
-        ])
-
-        onMounted(() => {
-            var chartOptions = {
-                chart: {
-                    type: "line",
-                    fontFamily: 'inherit',
-                    height: 288,
-                    parentHeightOffset: 0,
-                    toolbar: {
-                        show: true,
-                    },
-                    animations: {
-                        enabled: false
-                    },
+        var chartOptions = {
+            chart: {
+                type: "line",
+                fontFamily: 'inherit',
+                height: 288,
+                parentHeightOffset: 0,
+                toolbar: {
+                    show: true,
                 },
-                fill: {
-                    opacity: 1,
+                animations: {
+                    enabled: false
                 },
-                stroke: {
-                    width: 2,
-                    lineCap: "round",
-                    curve: "smooth",
+            },
+            fill: {
+                opacity: 1,
+            },
+            stroke: {
+                width: 2,
+                lineCap: "round",
+                curve: "smooth",
+            },
+            series: "",
+            labels: "",
+            tooltip: {
+                theme: 'dark',
+            },
+            grid: {
+                padding: {
+                    top: -20,
+                    right: 0,
+                    left: -4,
+                    bottom: -4
                 },
-                series: seriesData.value,
-                labels: labelsData.value,
+                strokeDashArray: 4,
+            },
+            xaxis: {
+                labels: {
+                    padding: 0,
+                },
                 tooltip: {
-                    theme: 'dark',
+                    enabled: false
                 },
-                grid: {
-                    padding: {
-                        top: -20,
-                        right: 0,
-                        left: -4,
-                        bottom: -4
-                    },
-                    strokeDashArray: 4,
-                },
-                xaxis: {
-                    labels: {
-                        padding: 0,
-                    },
-                    tooltip: {
-                        enabled: false
-                    },
-                    type: 'datetime',
-                },
-                yaxis: {
-                    labels: {
-                        padding: 4
-                    },
-                },
-                legend: {
-                    show: false,
-                },
-            };
+                type: 'datetime',
+            },
+            yaxis: {
+                labels: {
+                    padding: 4,
+                    formatter: function (value) {
+                        return value.toFixed(2); // 소수점 이하 두 자리로 제한
+                    }
+                }
+            },
+            legend: {
+                show: false,
+            },
+        };
 
-            var chart = new ApexCharts(document.getElementById('chart-active-users-2'), chartOptions);
+        const createChart = (options) => {
+            // 기존 차트가 있으면 파괴
+            if (chart !== null) {
+                chart.destroy();
+            }
+
+            // 새로운 차트 생성
+            chart = new ApexCharts(document.getElementById('chart-active-users-2'), options);
             chart.render();
+        };
+
+        const getChartData = async () => {
+            try {
+                var selectedPeriod = ps.str.removeDelimiter(ps.str.removeDelimiter(selectedPeriodOptions.value, ' '), 'Last');
+                store.selectedOptions.selectedPeriod = selectedPeriod;
+                const response = await axios.post('http://localhost:9090/api/v2/invoice/getSummary', store.selectedOptions)
+                const data = response.data.Data;
+
+                chartOptions.labels = data.dates;
+                chartOptions.series = data.summaryBill.map(item => ({
+                    name: item.csp,
+                    data: item.bill
+                }))
+                createChart(chartOptions);
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        watch(() => store.selectedOptions, () => {
+            getChartData();
+        }, {
+            deep: true
+        });
+
+        watch(() => selectedPeriodOptions, () => {
+            getChartData();
+        }, {
+            deep: true
         });
 
         return {
-            selectedOption,
-            selectOption
+            selectedPeriodOptions,
+            selectOption,
+            selectedOptions: store.selectedOptions
         }
     }
 };
