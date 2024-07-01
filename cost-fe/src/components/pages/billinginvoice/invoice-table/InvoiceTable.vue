@@ -1,0 +1,186 @@
+<template>
+<div class="col-12">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Invoices</h3>
+        </div>
+        <!-- <div class="card-body border-bottom py-3">
+            <div class="d-flex">
+                <div class="text-muted">
+                    Show
+                    <div class="mx-2 d-inline-block">
+                        <input type="text" class="form-control form-control-sm" v-model="entriesCount" size="3" aria-label="Invoices count">
+                    </div>
+                    entries
+                </div>
+                <div class="ms-auto text-muted">
+                    Search:
+                    <div class="ms-2 d-inline-block">
+                        <input type="text" class="form-control form-control-sm" v-model="searchQuery" aria-label="Search invoice">
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <div ref="tableRef" id="example-table-tabulator"></div>
+
+        <div class="card-footer d-flex align-items-center">
+            <!-- <p class="m-0 text-muted">Showing <span>1</span> to <span>{{ entriesCount }}</span> of <span>16</span> entries</p> -->
+            <ul class="pagination m-0 ms-auto">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                        <!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M15 6l-6 6l6 6" /></svg>
+                        prev
+                    </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                <li class="page-item"><a class="page-link" href="#">5</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">
+                        next
+                        <!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M9 6l6 6l-6 6" /></svg>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<link href="https://unpkg.com/tabulator-tables@5.0.10/dist/css/tabulator.min.css" rel="stylesheet">
+</template>
+
+<script>
+import axios from 'axios';
+import {
+    ref,
+    watch,
+    onMounted
+} from 'vue';
+import {
+    TabulatorFull as Tabulator
+} from 'tabulator-tables';
+import {
+    useSelectedOptionsStore
+} from '@/stores/selectedOptions';
+import {
+    useCalCurrencyStore
+} from '@/stores/calCurrency';
+
+export default {
+    name: 'InvoiceTable',
+    setup() {
+        const calCurrencyStore = useCalCurrencyStore();
+        const store = useSelectedOptionsStore();
+        const entriesCount = ref(8);
+        const searchQuery = ref('');
+        const tableRef = ref(null);
+        const tableOption = ref({
+            height: "311px",
+            layout: "fitColumns",
+            movableRows: true,
+            groupBy: ["csp", "accountID", "productID"],
+            groupHeader: (value, count, data) => {
+                // 그룹의 bill 합산
+                const totalBill = data.reduce((sum, row) => sum + (calCurrencyStore.usdToKrw(row.bill) || 0), 0);
+                return `${value} (${count} items) - Total: ${Math.round(totalBill).toLocaleString()} KRW`;
+            },
+            columns: [{
+                    title: "CSP",
+                    field: "csp",
+                    headerHozAlign: "center"
+                },
+                {
+                    title: "Account ID",
+                    field: "accountID",
+                    width: 200,
+                    headerHozAlign: "center"
+                },
+                {
+                    title: "Product ID",
+                    field: "productID",
+                    sorter: "number",
+                    headerHozAlign: "center"
+                },
+                {
+                    title: "Resource ID",
+                    field: "resourceID",
+                    headerHozAlign: "center"
+                },
+                {
+                    title: "Billing (KRW)",
+                    field: "bill",
+                    // formatter: "star",
+                    hozAlign: "right",
+                    headerHozAlign: "center",
+                    formatter: cell => Math.round(calCurrencyStore.usdToKrw(cell.getValue())).toLocaleString()
+                }
+            ],
+            data: [],
+        })
+
+        const getTableData = async () => {
+            try {
+                const response = await axios.post('http://localhost:9090/api/v2/invoice/getInvoice', store.selectedOptions)
+                const data = response.data.Data.invoice;
+                const additionalData = [{
+                        csp: 'NCP',
+                        accountID: null,
+                        productID: null,
+                        resourceID: null,
+                        bill: null
+                    },
+                    {
+                        csp: 'GCP',
+                        accountID: null,
+                        productID: null,
+                        resourceID: null,
+                        bill: null
+                    },
+                    {
+                        csp: 'AZURE',
+                        accountID: null,
+                        productID: null,
+                        resourceID: null,
+                        bill: null
+                    }
+                ];
+                const mergedData = data.concat(additionalData);
+                tableOption.value.data = mergedData;
+                if (tableRef.value) {
+                    new Tabulator(tableRef.value, tableOption.value)
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        watch(() => store.selectedOptions, () => {
+            getTableData();
+        }, {
+            deep: true
+        });
+
+        onMounted(() => {
+            getTableData();
+        })
+        
+        return {
+            entriesCount,
+            searchQuery,
+            tableRef
+        };
+    }
+};
+</script>
+
+<style scoped>
+</style>
