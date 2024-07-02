@@ -1,6 +1,5 @@
 package com.mcmp.costbe;
 
-import com.mcmp.dummybe.DummyBeApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

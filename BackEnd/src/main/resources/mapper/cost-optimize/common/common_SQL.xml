@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cost-optimize-common">
-    <select id="vendorStatus" resultType="com.mcmp.dummybe.model.common.VendorStatusModel">
-        SELECT *
-        FROM vendor_status
-    </select>
-</mapper>
