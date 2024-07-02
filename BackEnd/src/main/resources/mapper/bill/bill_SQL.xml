@@ -223,7 +223,7 @@
     </select>
 
 
-    <select id="getCurMonthBill" parameterType="com.mcmp.costbe.usage.model.bill.BillingInvoiceBaseInfoReqModel" resultType="com.mcmp.costbe.usage.model.bill.BillingInvoiceBaseInfoModel">
+    <select id="getCurMonthBill" parameterType="com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoReqModel" resultType="com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoModel">
         /*bill.getCurPrevMonthBill*/
         <![CDATA[SELECT COALESCE(SUM(CASE
                             WHEN co.lineitem_usagestartdate >= #{curMonthStartDate}

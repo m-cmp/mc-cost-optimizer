@@ -1,9 +1,8 @@
-package com.mcmp.costbe.usage;
+package com.mcmp.costbe.invoice;
 
-import com.mcmp.costbe.invoice.model.InvoiceResModel;
-import com.mcmp.costbe.usage.model.bill.BillingInvoiceBaseInfoModel;
-import com.mcmp.costbe.usage.model.bill.BillingInvoiceBaseInfoReqModel;
-import com.mcmp.costbe.usage.service.BillingInvoiceService;
+import com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoModel;
+import com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoReqModel;
+import com.mcmp.costbe.invoice.service.BillingInvoiceService;
 import com.mcmp.costbe.common.model.ResultModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

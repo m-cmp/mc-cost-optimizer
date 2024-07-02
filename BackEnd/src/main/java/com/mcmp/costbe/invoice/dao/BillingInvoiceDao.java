@@ -1,9 +1,7 @@
-package com.mcmp.costbe.usage.dao;
+package com.mcmp.costbe.invoice.dao;
 
-import com.mcmp.costbe.usage.model.bill.BillingInvoiceBaseInfoModel;
-import com.mcmp.costbe.usage.model.bill.BillingInvoiceBaseInfoReqModel;
-import com.mcmp.costbe.usage.model.bill.BillingWidgetModel;
-import com.mcmp.costbe.usage.model.bill.BillingWidgetReqModel;
+import com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoModel;
+import com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoReqModel;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 

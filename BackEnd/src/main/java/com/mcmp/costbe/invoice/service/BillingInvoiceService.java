@@ -1,10 +1,10 @@
-package com.mcmp.costbe.usage.service;
+package com.mcmp.costbe.invoice.service;
 
 import com.mcmp.costbe.common.model.DateRangeModel;
 import com.mcmp.costbe.common.service.DateCalculator;
-import com.mcmp.costbe.usage.dao.BillingInvoiceDao;
-import com.mcmp.costbe.usage.model.bill.BillingInvoiceBaseInfoModel;
-import com.mcmp.costbe.usage.model.bill.BillingInvoiceBaseInfoReqModel;
+import com.mcmp.costbe.invoice.dao.BillingInvoiceDao;
+import com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoModel;
+import com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoReqModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
