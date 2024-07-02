@@ -5,6 +5,13 @@ import com.mcmp.costbe.usage.model.bill.*;
 import com.mcmp.costbe.usage.model.filter.ProjectsModel;
 import com.mcmp.costbe.usage.model.filter.WorkspacesModel;
 import com.mcmp.costbe.usage.service.UsageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,6 +27,12 @@ public class UsageController {
     private UsageService usageService;
 
     @GetMapping(path = "/getWorkspaces")
+    @Tag(name = "User", description = "User API")
+    @Operation(summary = "워크스페이스 목록 조회", description = "워크스페이스 목록을 조회합니다.")
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
+    })
     public ResponseEntity<ResultModel> getWorkspaces(){
         ResultModel result = new ResultModel();
         try{
@@ -33,7 +46,15 @@ public class UsageController {
     }
 
     @GetMapping(path = "/getProjects")
-    public ResponseEntity<ResultModel> getProjects(@RequestParam String workspaceCD){
+    @Tag(name = "User", description = "User API")
+    @Operation(summary = "프로젝트 목록 조회", description = "워크스페이스에 속한 프로젝트 목록을 조회합니다.")
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
+    })
+    public ResponseEntity<ResultModel> getProjects(
+            @Parameter(name = "workspaceCD", description = "워크스페이스 코드", example = "workspace1", required = true) @RequestParam String workspaceCD
+    ){
         ResultModel result = new ResultModel();
         try{
             List<ProjectsModel> data = usageService.getProjects(workspaceCD);
@@ -46,6 +67,13 @@ public class UsageController {
     }
 
     @PostMapping(path = "/getCurMonthBill")
+    @Tag(name = "Cost Dashboard", description = "Cost Dashboard overview API")
+    @Operation(summary = "이번달 비용 조회", description = "지난달 대비 이번달 비용을 확인합니다.")
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(schema = @Schema(implementation = BillingWidgetModel.class))}),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
+    })
     public ResponseEntity getCurMonthBill(@RequestBody BillingWidgetReqModel req) throws IOException {
         ResultModel result = new ResultModel();
         try{
@@ -59,6 +87,13 @@ public class UsageController {
     }
 
     @PostMapping(path = "/getTop5Bill")
+    @Tag(name = "Cost Dashboard", description = "Cost Dashboard overview API")
+    @Operation(summary = "이번달 상위 5개 리소스 비용 조회", description = "이번달에 사용한 비용 상위 5개의 리소스와 비용을 확인합니다.")
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(schema = @Schema(implementation = Top5WidgetModel.class))}),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
+    })
     public ResponseEntity getTop5Bill(@RequestBody Top5WidgetReqModel req) throws IOException {
         ResultModel result = new ResultModel();
         try{
@@ -72,6 +107,13 @@ public class UsageController {
     }
 
     @PostMapping(path = "/getBillAsset")
+    @Tag(name = "Cost Dashboard", description = "Cost Dashboard overview API")
+    @Operation(summary = "이번달 리소스 사용량 및 비용 조회", description = "이번달 사용한 리소스의 unit과 비용을 확인합니다.")
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "성공",
+            content = {@Content(schema = @Schema(implementation = BillingAssetWidgetModel.class))}),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
+    })
     public ResponseEntity getBillAsset(@RequestBody BillingAssetReqModel req) throws IOException {
         ResultModel result = new ResultModel();
         try{
