@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="2" viewBox="0 0 16 2">
-  <defs>
-    <rect id="legend_red_dashed_line01-a" width="16" height="2" x="744" y="469"/>
-    <mask id="legend_red_dashed_line01-b" width="16" height="2" x="0" y="0" fill="#fff">
-      <use xlink:href="#legend_red_dashed_line01-a"/>
-    </mask>
-  </defs>
-  <use fill="none" fill-rule="evenodd" stroke="#FF2D47" stroke-dasharray="3 6" stroke-width="4" mask="url(#legend_red_dashed_line01-b)" transform="matrix(-1 0 0 1 760 -469)" xlink:href="#legend_red_dashed_line01-a"/>
-</svg>
