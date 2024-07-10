@@ -85,4 +85,8 @@ public class MailService {
         }
     }
 
+    public MailingInfoModel getMailingInfo(){
+        return mailingDao.getMailingInfo();
+    }
+
 }

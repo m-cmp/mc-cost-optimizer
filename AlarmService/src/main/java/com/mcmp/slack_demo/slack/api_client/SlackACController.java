@@ -1,17 +1,18 @@
 package com.mcmp.slack_demo.slack.api_client;
 
+import com.mcmp.slack_demo.common.model.CommonResultModel;
 import com.mcmp.slack_demo.slack.encryto.TokenService;
 import com.mcmp.slack_demo.slack.model.SaveTokenModel;
 import com.slack.api.methods.SlackApiException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
+@RequestMapping(value = "/alert")
 public class SlackACController {
 
     private final SlackACService slackACService;
@@ -24,7 +25,7 @@ public class SlackACController {
         this.tokenService = tokenService;
     }
 
-    @PostMapping("/sendAC")
+    @PostMapping("/sendSlackAC")
     public String sendMessageToSlack(
             @RequestParam String userId,
             @RequestParam String message,
@@ -46,10 +47,23 @@ public class SlackACController {
         }
     }
 
-    @PostMapping("/insertToken")
+    @PostMapping("/insertSlackToken")
     public String insertToken(@RequestBody SaveTokenModel model) throws Exception {
         tokenService.storeToken(model);
         return "token & channelId insert ok";
+    }
+
+    @GetMapping("/getSlackIF")
+    public ResponseEntity<?> getSlackToken(@RequestParam String userId){
+        CommonResultModel result = new CommonResultModel();
+        try{
+            Map<String, String> data = slackACService.getSlackToken(userId);
+            result.setData(data);
+        }catch (Exception e){
+            e.printStackTrace();
+            result.setError(400, "Error Get SlackINFO");
+        }
+        return ResponseEntity.ok().body(result);
     }
 
     @PostMapping("/test")

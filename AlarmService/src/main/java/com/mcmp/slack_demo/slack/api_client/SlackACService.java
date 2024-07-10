@@ -24,6 +24,9 @@ public class SlackACService {
     public void sendMessage(String userId, String message, String linkUrl, String linkText) throws SlackApiException, IOException {
         Slack slack = Slack.getInstance();
         String fullMessage = message;
+        if(message.isEmpty()){
+            fullMessage = "Slack Test Message";
+        }
 
         if (linkUrl != null && !linkUrl.isEmpty() && linkText != null && !linkText.isEmpty()) {
             fullMessage += " <" + linkUrl + "|" + linkText + ">";
@@ -53,5 +56,9 @@ public class SlackACService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Map<String, String> getSlackToken(String userId) throws Exception {
+        return tokenService.retrieveToken(userId);
     }
 }
