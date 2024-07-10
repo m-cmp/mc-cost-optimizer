@@ -12,7 +12,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/cost")
+@RequestMapping(value = "/alert")
 public class MailController {
     @Autowired
     private MailService mailService;
@@ -40,6 +40,19 @@ public class MailController {
         } catch (Exception e){
             e.printStackTrace();
             result.setError(400, "Insert AlertEmail Info Fail");
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/getMailInfo")
+    public ResponseEntity<CommonResultModel> getMailingInfo(){
+        CommonResultModel result = new CommonResultModel();
+        try{
+            MailingInfoModel data = mailService.getMailingInfo();
+            result.setData(data);
+        } catch (Exception e){
+            e.printStackTrace();
+            result.setError(400, "Get AlertEmail Info Fail");
         }
         return ResponseEntity.ok(result);
     }
