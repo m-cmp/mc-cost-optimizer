@@ -242,9 +242,11 @@ export default {
           userId: '2194155'
         }})
           .then((res) => {
-            if(res.data.Data && res.data.Data.channel && res.data.Data.token){
-              this.token = res.data.Data.token;
-              this.channel = res.data.Data.channel;
+            if(res.data.status === 'OK'){
+              if(res.data.Data && res.data.Data.channel && res.data.Data.token){
+                this.token = res.data.Data.token;
+                this.channel = res.data.Data.channel;
+              }
             }
           })
           .catch((err) => {
@@ -254,9 +256,11 @@ export default {
     getInitMailInfo(){
       axios.get('http://localhost:9000/alert/getMailInfo')
           .then((res) => {
-            if(res.data.Data && res.data.Data.username){
-              this.mailuserID = res.data.Data.username
-              this.mailAppPasswd = res.data.Data.password
+            if(res.data.status === 'OK'){
+              if(res.data.Data && res.data.Data.username){
+                this.mailuserID = res.data.Data.username
+                this.mailAppPasswd = res.data.Data.password
+              }
             }
           })
           .catch((err) => {
