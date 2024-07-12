@@ -4,6 +4,7 @@ import {
 } from 'vue-router'
 import DashboardLayout from '@/components/pages/dashboard/DashboardLayout.vue'
 import BillingInvoiceLayout from '@/components/pages/billinginvoice/BillingInvoiceLayout.vue'
+import UserGuideLayout from '@/components/pages/userGuide/UserGuideLayout.vue'
 
 const routes = [{
         path: '/',
@@ -14,6 +15,11 @@ const routes = [{
         path: '/billing-invoice',
         name: 'BillingInvoiceLayout',
         component: BillingInvoiceLayout
+    },
+    {
+        path: '/guide',
+        name: 'UserGuideLayout',
+        component: UserGuideLayout
     }
 ]
 

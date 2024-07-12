@@ -26,7 +26,7 @@
                         <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
                         <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" /></svg>
                 </a>
-                <div class="nav-item dropdown d-none d-md-flex me-3">
+                <div class="nav-item dropdown d-none d-md-flex">
                     <a href="#" class="nav-link px-0" data-bs-toggle="dropdown" tabindex="-1" aria-label="Show notifications">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -116,6 +116,13 @@
                         </div>
                     </div>
                 </div>
+                <div class="nav-item d-none d-md-flex me-3">
+                    <router-link class="nav-link px-0" to="/guide" title="Show Service Guide">
+                      <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-info-circle">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 9h.01" /><path d="M11 12h1v4h1" />
+                      </svg>
+                    </router-link>
+                </div>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
                         <span class="avatar avatar-sm" :style="{ backgroundImage: `url(${avatarUrl})` }"></span>
@@ -173,6 +180,21 @@
                             </span>
                         </router-link>
                     </li>
+                  <li :class="['nav-item', isActive('/guide') ? 'active' : '']">
+                    <router-link class="nav-link" to="/guide">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-alarm">
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                  <path d="M12 13m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                  <path d="M12 10l0 3l2 0" />
+                                  <path d="M7 4l-2.75 2" />
+                                  <path d="M17 4l2.75 2" /></svg>
+                            </span>
+                            <span class="nav-link-title">
+                                Alarm
+                            </span>
+                    </router-link>
+                  </li>
                 </ul>
                 <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
                     <form action="./" method="get" autocomplete="off" novalidate>
