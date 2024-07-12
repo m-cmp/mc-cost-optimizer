@@ -49,6 +49,8 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
 ```  
   4. backend run
   ### Maven install and jar run
+  ### java version 17
+  ### If you have personal DB connection information, change jdbc-url, username, password, etc. in application.properties.
   brew install maven
   mvn clean install
   java -jar target/BackEnd.jar
