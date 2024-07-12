@@ -2,6 +2,9 @@
 
 -- db 생성
 create database cost;
+-- cost 데이터베이스 사용
+USE cost;
+
 
 -- 1. cur_origin create
 CREATE TABLE `cur_origin` (
