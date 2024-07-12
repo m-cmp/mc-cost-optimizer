@@ -16,12 +16,52 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
 
 ## How to Use
 
-- clone this repo
-- update submodule (git submodule init; git submodule update)
-- install mysql version 8
-- run ddl/dml script
-- create Mysql user(name : mcmpcostopti / init pw : 0000)
-- build and run Backend first, Frontend later
+### Step one
+```
+  ## 1. clone this repo
+  mkdir -p {your source repo}
+  git clone https://github.com/m-cmp/mc-cost-optimizer.git
+```
+
+### Step two
+```
+  ## 2. DB install
+  ### Example of DB installation method based on Mac
+  ### In case of DB installation, installation is possible depending on the installation environment. 
+  ### MySQL version 8 must be installed
+  brew install mysql
+  brew services start mysql
+  CREATE USER 'mcmpcostopti'@'%' IDENTIFIED BY '0000'; 
+  GRANT ALL PRIVILEGES ON *.* TO 'mcmpcostopti'@'%' WITH GRANT OPTION; 
+  FLUSH PRIVILEGES;
+```
+
+### Step three
+```
+  ## 3. DDL/DML execution
+  ### sql file path : /BackEnd/src/main/resource/sql
+  ### running step DDL > DML
+  mysql -u mcmpcostopti -p < mcmp_cost_optimize_ddl.sql
+  mysql -u mcmpcostopti -p < mcmp_cost_optimize_dml.sql
+```
+
+### Step four
+```  
+  4. backend run
+  ### Maven install and jar run
+  brew install maven
+  mvn clean install
+  java -jar target/BackEnd.jar
+```
+
+### Step five
+```  
+  5. Frontend run
+  ## node : v20.13.1
+  ## npm : v10.5.2
+  npm i
+  npm run serve
+```
 
 ### Frontend
 - node version : v20.13.1
