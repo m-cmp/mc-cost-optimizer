@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="aws">
+    <select id="getVerifyResources" parameterType="map" resultType="com.processor.costprocessor.model.unused.ResourceSetModel">
+        select uc.csp_resourceid as instanceid
+             , uc.create_dt as createDt
+          from unused_collector uc
+         where 1=1
+         <![CDATA[  and uc.create_dt >= #{startDT}
+           and uc.create_dt < #{endDT} ]]>
+         LIMIT #{_skiprows}, #{_pagesize}
+    </select>
+
+    <select id="getDailyAssetAmount" parameterType="com.processor.costprocessor.model.unused.DailyAssetAmountParamModel" resultType="com.processor.costprocessor.model.unused.DailyAssetAmountModel">
+        SELECT CURDATE() AS creat_dt
+             , acm.metric_type AS metric_type
+             , acm.csp_instanceid AS resource_id
+             , AVG(acm.metric_amount) AS metric_avg_amount
+             , DATE(acm.collect_dt) AS collect_dt
+          FROM asset_compute_metric acm
+         WHERE 1=1
+           AND acm.csp_instanceid  = #{resourceId}
+           AND DATE(acm.collect_dt) BETWEEN  #{startDt} and #{endDt}
+           AND acm.metric_type  IN ('cpu', 'network')
+         GROUP BY DATE(acm.collect_dt),
+                  acm.metric_type
+    </select>
+
+    <insert id="insertDailyAssetAmount" parameterType="com.processor.costprocessor.model.unused.DailyAssetAmountModel">
+        INSERT INTO unused_process_mart(create_dt, resource_id, collect_dt, metric_type, metric_avg_amount)
+        VALUES (#{creat_dt}
+             , #{resource_id}
+             , #{collect_dt}
+             , #{metric_type}
+             , #{metric_avg_amount})
+            ON DUPLICATE KEY UPDATE create_dt = #{creat_dt}, metric_avg_amount = #{metric_avg_amount}
+    </insert>
+</mapper>

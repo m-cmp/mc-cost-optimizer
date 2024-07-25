@@ -3,10 +3,7 @@ package com.mcmp.costbe.common.service;
 import com.mcmp.costbe.common.model.DateRangeModel;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.YearMonth;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +85,14 @@ public class DateCalculator {
             dateList.add(dateTime.toLocalDate().format(formatter));
         }
         return dateList;
+    }
+
+    public LocalDateTime curUTCLocalDateTime(){
+        return ZonedDateTime.now(ZoneId.of("UTC")).toLocalDateTime();
+    }
+
+    public LocalDate curUTCLocalDate(){
+        return ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate();
     }
 
 }
