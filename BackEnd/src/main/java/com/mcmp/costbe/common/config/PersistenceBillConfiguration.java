@@ -22,7 +22,7 @@ public class PersistenceBillConfiguration {
 
     @Primary
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.hikari.bill")
+    @ConfigurationProperties(prefix = "spring.datasource.hikari.cost.optimize")
     public DataSource dataSourceBill() {
         return DataSourceBuilder.create().type(HikariDataSource.class).build();
     }
