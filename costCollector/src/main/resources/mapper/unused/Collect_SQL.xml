@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="batch">
+    <select id="getAccounts" parameterType="map" resultType="com.mcmp.collector.model.unused.AccountModel">
+        select '111111111111' as account
+         LIMIT #{_skiprows}, #{_pagesize}
+    </select>
+
+    <select id="getResouces" parameterType="com.mcmp.collector.model.unused.ResourceSetParamModel" resultType="com.mcmp.collector.model.unused.ResourceSetModel">
+        select co.lineitem_resourceid as instanceid
+             , CURDATE() as createDt
+          from cur_origin co
+         where 1=1
+           and co.lineitem_usageaccountid = #{account}
+           and co.lineitem_lineitemtype = 'Usage'
+           and co.lineitem_productcode = 'AmazonEC2'
+           and co.pricing_unit = 'Hrs'
+           and co.lineitem_usageamount = '24'
+           <![CDATA[ and co.lineitem_usagestartdate >= #{startDt}
+           and co.lineitem_usageenddate <= #{endDt} ]]>
+           and co.lineitem_unblendedcost > 0
+    </select>
+
+    <insert id="insertRst" parameterType="map">
+        insert into unused_collector(csp_resourceid, create_dt)
+        values (#{instanceid}
+             , #{createDt})
+            ON DUPLICATE KEY UPDATE csp_resourceid = #{instanceid}, create_dt = #{createDt}
+    </insert>
+</mapper>

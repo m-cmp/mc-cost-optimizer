@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="opti">
+    <select id="getOptiUnused" parameterType="com.mcmp.costbe.opti.model.UnusedQueryParamModel" resultType="com.mcmp.costbe.opti.model.UnusedQueryRstModel">
+        SELECT ubr.csp_type AS csp
+             , ubr.csp_account AS account
+             , ubr.csp_instanceid AS instance_id
+             , ubr.plan_type AS plan_type
+             , SUM(co.lineitem_unblendedcost) AS saving_cost
+          FROM unused_batch_rst ubr
+          LEFT JOIN servicegroup_meta sm
+               ON ubr.csp_instanceid = sm.csp_instanceid
+          LEFT OUTER JOIN cur_origin co
+               ON ubr.csp_instanceid = co.lineitem_resourceid
+               AND co.lineitem_usagestartdate BETWEEN #{curDate} - INTERVAL 30 DAY AND #{curDate}
+         WHERE 1=1
+            <if test="selectedCsps != null and selectedCsps.size() > 0">
+                AND sm.csp_type IN
+                <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
+                    #{selectedCsp}
+                </foreach>
+            </if>
+                AND sm.workspace_cd = #{selectedWorkspace}
+            <if test="selectedProjects != null and selectedProjects.size() > 0">
+                AND sm.service_cd IN
+                <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+                    #{selectedProject}
+                </foreach>
+            </if>
+                AND ubr.create_dt = #{curDate}
+         GROUP BY ubr.csp_type, ubr.csp_account, ubr.csp_instanceid, ubr.plan_type
+    </select>
+</mapper>
