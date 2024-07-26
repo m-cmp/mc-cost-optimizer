@@ -2,8 +2,9 @@
 FROM node:20.13.1-alpine AS build
 WORKDIR /app
 COPY package.json ./
-RUN npm install --production
+RUN npm install
 COPY . .
+RUN npm install -g @vue/cli
 RUN npm run build
 
 # Run stage
