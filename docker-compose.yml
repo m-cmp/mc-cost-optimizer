@@ -1,0 +1,76 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: cost
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+  BE:
+    restart: always
+    build:
+      context: ./BackEnd
+    ports:
+      - "9090:9090"
+    environment:
+      spring.datasource.hikari.cost.optimize.jdbc-url: ${COST_DB_URL}
+      spring.datasource.hikari.cost.optimize.username: ${COST_DB_USERNM}
+      spring.datasource.hikari.cost.optimize.password: ${COST_DB_PW}
+  FE:
+    restart: always
+    build:
+      context: ./cost-fe
+    ports:
+      - "80:80"
+  CostCollector:
+    restart: always
+    build:
+      context: ./costCollector
+    ports:
+      - "8081:8081"
+    environment:
+      spring.datasource.hikari.batch.jdbc-url: ${COST_DB_URL}
+      spring.datasource.hikari.batch.username: ${COST_DB_USERNM}
+      spring.datasource.hikari.batch.password: ${COST_DB_PW}
+      unusedBatchCronSchedule: ${COST_COLLECT_CRON_SCHEDULE}
+  CostProcessor:
+    restart: always
+    build:
+      context: ./costProcessor
+    ports:
+      - "8082:8082"
+    environment:
+      spring.datasource.hikari.batch.jdbc-url: ${COST_DB_URL}
+      spring.datasource.hikari.batch.username: ${COST_DB_USERNM}
+      spring.datasource.hikari.batch.password: ${COST_DB_PW}
+      unusedProcessCronSchedule: ${COST_PROCESS_CRON_SCHEDULE}
+      cost.selector.url: ${COST_SELECTOR_URL}
+  CostSelector:
+    restart: always
+    build:
+      context: ./costSelector
+    ports:
+      - "8083:8083"
+    environment:
+      spring.datasource.hikari.cost.optimize.jdbc-url: ${COST_DB_URL}
+      spring.datasource.hikari.cost.optimize.username: ${COST_DB_USERNM}
+      spring.datasource.hikari.cost.optimize.password: ${COST_DB_PW}
+  AlarmService:
+    restart: always
+    build:
+      context: ./AlarmService
+    ports:
+      - "9000:9000"
+    environment:
+      spring.datasource.hikari.slack.jdbc-url: ${SLACK_DB_URL}
+      spring.datasource.hikari.slack.username: ${SLACK_DB_USERNM}
+      spring.datasource.hikari.slack.password: ${SLACK_DB_PW}
+      spring.datasource.hikari.mailing.jdbc-url: ${MAIL_DB_URL}
+      spring.datasource.hikari.mailing.username: ${MAIL_DB_USERNM}
+      spring.datasource.hikari.mailing.password: ${MAIL_DB_PW}
