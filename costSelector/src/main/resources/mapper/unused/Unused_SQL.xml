@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="unused">
+    <select id="getResourceStatus" parameterType="com.mcmp.costselector.unused.model.UnusedSelectReqModel" resultType="com.mcmp.costselector.unused.model.UnusedResourceStatusModel">
+        SELECT acm.csp_instanceid AS resource_id
+             , acm.csp_type AS csp_type
+             , acm.csp_account AS csp_account
+             , 'mcmpcostopti' AS cmp_user_id
+             , acm.resource_status AS resource_status
+             , acm.resource_spot_yn AS resource_spot_yn
+             , acm.collect_dt AS collect_dt
+          FROM asset_compute_metric acm
+         WHERE 1=1
+           AND acm.csp_instanceid = #{resource_id}
+         ORDER BY acm.collect_dt DESC
+         LIMIT 1
+    </select>
+    
+    <select id="getUserAssetRSOPT" parameterType="String" resultType="com.mcmp.costselector.unused.model.UserAssetRSOPTModel">
+        SELECT ars.csp_type AS csp_type
+             , ars.metric_type AS metric_type
+             , ars.regress_duration AS regress_duration
+             , ars.criteria_value AS criteria_value
+          FROM asset_rsopt_settings ars
+         WHERE 1=1
+           AND ars.cmp_user_id = #{value}
+    </select>
+
+    <select id="getCPUAssetMart" parameterType="com.mcmp.costselector.unused.model.AssetMartReqModel" resultType="com.mcmp.costselector.unused.model.CpuAssetMartModel">
+        SELECT CASE
+               WHEN <![CDATA[ MAX(upm.metric_avg_amount) < #{setting_value} ]]> THEN 'TRUE'
+                                                                                ELSE 'FALSE'
+               END AS max_amount
+             , AVG(upm.metric_avg_amount) AS avg_amount
+             , COUNT(*) AS c_total_count
+          FROM unused_process_mart upm
+         WHERE 1=1
+           AND upm.resource_id = #{resource_id}
+           AND upm.collect_dt BETWEEN #{cur_date} - INTERVAL #{setting_period} DAY AND #{cur_date}
+           AND upm.metric_type = #{metric_type}
+    </select>
+
+    <select id="getNetworkMart" parameterType="com.mcmp.costselector.unused.model.AssetMartReqModel" resultType="com.mcmp.costselector.unused.model.NetworkAssetMartModel">
+        SELECT COUNT(*) AS n_total_count
+             , COUNT(CASE WHEN <![CDATA[ upm.metric_avg_amount <= #{setting_value} ]]> THEN 1 END) AS count_less_than_setting
+             , COUNT(CASE WHEN <![CDATA[ upm.metric_avg_amount > 0  ]]> THEN 1 END) AS count_occured
+          FROM unused_process_mart upm
+         WHERE 1=1
+           AND upm.resource_id = #{resource_id}
+           AND upm.collect_dt BETWEEN #{cur_date} - INTERVAL #{setting_period} DAY AND #{cur_date}
+           AND upm.metric_type = #{metric_type}
+    </select>
+    
+    <insert id="insertBatchRst" parameterType="com.mcmp.costselector.unused.model.UnusedBatchRstModel">
+        INSERT INTO unused_batch_rst(create_dt, csp_type, csp_account, csp_instanceid, plan_type)
+        VALUES (#{create_dt}
+              , #{csp_type}
+              , #{csp_account}
+              , #{csp_instanceid}
+              , #{plan_type})
+             ON DUPLICATE KEY UPDATE plan_type = #{plan_type}
+    </insert>
+
+</mapper>
