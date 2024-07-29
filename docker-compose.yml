@@ -26,7 +26,7 @@ services:
     build:
       context: ./cost-fe
     ports:
-      - "8001:8001"
+      - "8080:80"
   costcollector:
     restart: always
     build:
