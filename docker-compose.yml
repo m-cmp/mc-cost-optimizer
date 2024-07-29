@@ -1,20 +1,11 @@
+version: '3'
 services:
-  db:
-    image: mysql:8.0
-    container_name: mysql_db
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: cost
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./mysql:/docker-entrypoint-initdb.d
   be:
     restart: always
     build:
       context: ./BackEnd
+    networks:
+      - mcmp_cost_network
     ports:
       - "9090:9090"
     environment:
@@ -25,12 +16,16 @@ services:
     restart: always
     build:
       context: ./cost-fe
+    networks:
+      - mcmp_cost_network
     ports:
       - "8080:80"
   costcollector:
     restart: always
     build:
       context: ./costCollector
+    networks:
+      - mcmp_cost_network
     ports:
       - "8081:8081"
     environment:
@@ -42,6 +37,8 @@ services:
     restart: always
     build:
       context: ./costProcessor
+    networks:
+      - mcmp_cost_network
     ports:
       - "8082:8082"
     environment:
@@ -54,6 +51,8 @@ services:
     restart: always
     build:
       context: ./costSelector
+    networks:
+      - mcmp_cost_network
     ports:
       - "8083:8083"
     environment:
@@ -64,6 +63,8 @@ services:
     restart: always
     build:
       context: ./AlarmService
+    networks:
+      - mcmp_cost_network
     ports:
       - "9000:9000"
     environment:
@@ -73,3 +74,6 @@ services:
       spring.datasource.hikari.mailing.jdbc-url: ${MAIL_DB_URL}
       spring.datasource.hikari.mailing.username: ${MAIL_DB_USERNM}
       spring.datasource.hikari.mailing.password: ${MAIL_DB_PW}
+networks:
+  mcmp_cost_network:
+    driver: bridge
