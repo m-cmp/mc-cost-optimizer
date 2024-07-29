@@ -11,7 +11,6 @@ services:
       - "3306:3306"
     volumes:
       - ./mysql:/docker-entrypoint-initdb.d
-
   be:
     restart: always
     build:
@@ -22,14 +21,12 @@ services:
       spring.datasource.hikari.cost.optimize.jdbc-url: ${COST_DB_URL}
       spring.datasource.hikari.cost.optimize.username: ${COST_DB_USERNM}
       spring.datasource.hikari.cost.optimize.password: ${COST_DB_PW}
-
   fe:
     restart: always
     build:
       context: ./cost-fe
     ports:
-      - "80:80"
-
+      - "8001:8001"
   costcollector:
     restart: always
     build:
@@ -41,7 +38,6 @@ services:
       spring.datasource.hikari.batch.username: ${COST_DB_USERNM}
       spring.datasource.hikari.batch.password: ${COST_DB_PW}
       unusedBatchCronSchedule: ${COST_COLLECT_CRON_SCHEDULE}
-
   costprocessor:
     restart: always
     build:
@@ -54,7 +50,6 @@ services:
       spring.datasource.hikari.batch.password: ${COST_DB_PW}
       unusedProcessCronSchedule: ${COST_PROCESS_CRON_SCHEDULE}
       cost.selector.url: ${COST_SELECTOR_URL}
-
   costselector:
     restart: always
     build:
@@ -65,7 +60,6 @@ services:
       spring.datasource.hikari.cost.optimize.jdbc-url: ${COST_DB_URL}
       spring.datasource.hikari.cost.optimize.username: ${COST_DB_USERNM}
       spring.datasource.hikari.cost.optimize.password: ${COST_DB_PW}
-
   alarmservice:
     restart: always
     build:
