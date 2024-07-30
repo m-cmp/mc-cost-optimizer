@@ -1,0 +1,79 @@
+version: '3'
+services:
+  be:
+    restart: always
+    build:
+      context: ./BackEnd
+    networks:
+      - mcmp_cost_network
+    ports:
+      - "9090:9090"
+    environment:
+      spring.datasource.hikari.cost.optimize.jdbc-url: ${COST_DB_URL}
+      spring.datasource.hikari.cost.optimize.username: ${COST_DB_USERNM}
+      spring.datasource.hikari.cost.optimize.password: ${COST_DB_PW}
+  fe:
+    restart: always
+    build:
+      context: ./cost-fe
+    networks:
+      - mcmp_cost_network
+    ports:
+      - "8080:80"
+  costcollector:
+    restart: always
+    build:
+      context: ./costCollector
+    networks:
+      - mcmp_cost_network
+    ports:
+      - "8081:8081"
+    environment:
+      spring.datasource.hikari.batch.jdbc-url: ${COST_DB_URL}
+      spring.datasource.hikari.batch.username: ${COST_DB_USERNM}
+      spring.datasource.hikari.batch.password: ${COST_DB_PW}
+      unusedBatchCronSchedule: ${COST_COLLECT_CRON_SCHEDULE}
+  costprocessor:
+    restart: always
+    build:
+      context: ./costProcessor
+    networks:
+      - mcmp_cost_network
+    ports:
+      - "8082:8082"
+    environment:
+      spring.datasource.hikari.batch.jdbc-url: ${COST_DB_URL}
+      spring.datasource.hikari.batch.username: ${COST_DB_USERNM}
+      spring.datasource.hikari.batch.password: ${COST_DB_PW}
+      unusedProcessCronSchedule: ${COST_PROCESS_CRON_SCHEDULE}
+      cost.selector.url: ${COST_SELECTOR_URL}
+  costselector:
+    restart: always
+    build:
+      context: ./costSelector
+    networks:
+      - mcmp_cost_network
+    ports:
+      - "8083:8083"
+    environment:
+      spring.datasource.hikari.cost.optimize.jdbc-url: ${COST_DB_URL}
+      spring.datasource.hikari.cost.optimize.username: ${COST_DB_USERNM}
+      spring.datasource.hikari.cost.optimize.password: ${COST_DB_PW}
+  alarmservice:
+    restart: always
+    build:
+      context: ./AlarmService
+    networks:
+      - mcmp_cost_network
+    ports:
+      - "9000:9000"
+    environment:
+      spring.datasource.hikari.slack.jdbc-url: ${SLACK_DB_URL}
+      spring.datasource.hikari.slack.username: ${SLACK_DB_USERNM}
+      spring.datasource.hikari.slack.password: ${SLACK_DB_PW}
+      spring.datasource.hikari.mailing.jdbc-url: ${MAIL_DB_URL}
+      spring.datasource.hikari.mailing.username: ${MAIL_DB_USERNM}
+      spring.datasource.hikari.mailing.password: ${MAIL_DB_PW}
+networks:
+  mcmp_cost_network:
+    driver: bridge
