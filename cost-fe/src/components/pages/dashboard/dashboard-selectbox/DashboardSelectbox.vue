@@ -74,6 +74,7 @@
     
 <script>
 import axios from 'axios';
+import ENDPOINT from '@/api/Endpoints'
 import {
     useSelectedOptionsStore
 } from '@/stores/selectedOptions';
@@ -169,7 +170,7 @@ export default {
             }
         },
         fetchWorkspaces() {
-            axios.get('http://localhost:9090/api/v2/getWorkspaces', {
+            axios.get(ENDPOINT.be + '/api/v2/getWorkspaces', {
                     params: {
                         account: 'mcmpcostopti'
                     }
@@ -190,7 +191,7 @@ export default {
                 });
         },
         fetchProjects(options) {
-            axios.get('http://localhost:9090/api/v2/getProjects', {
+            axios.get(ENDPOINT.be + '/api/v2/getProjects', {
                     params: {
                         workspaceCD: options.workspaceCD
                     }

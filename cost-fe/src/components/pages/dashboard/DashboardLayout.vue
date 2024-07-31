@@ -46,6 +46,7 @@ import DashboardTop from './dashboard-top-resources/DashboardTop5.vue'
 import DashboardAsset from './dashboard-asset/DashboardAsset.vue'
 import DashboardCommitment from './dashboard-commitment/DashboardCommitment.vue'
 import axios from "axios";
+import ENDPOINT from '@/api/Endpoints'
 import {useSelectedOptionsStore} from "@/stores/selectedOptions";
 
 export default {
@@ -76,7 +77,7 @@ export default {
       this.getTop5CostData();
     },
     getDBoardUsageAssetData(){
-      axios.post('http://localhost:9090/api/v2/getBillAsset', {
+      axios.post(ENDPOINT.be + '/api/v2/getBillAsset', {
         today: new Date().toISOString().split('T')[0].replace(/-/g, ''),
         selectedProjects: this.store.selectedOptions.selectedProjects,
         selectedCsps: this.store.selectedOptions.selectedCsps,
@@ -94,7 +95,7 @@ export default {
           })
     },
     getTop5CostData(){
-      axios.post('http://localhost:9090/api/v2/getTop5Bill', {
+      axios.post(ENDPOINT.be + '/api/v2/getTop5Bill', {
         today: new Date().toISOString().split('T')[0].replace(/-/g, ''),
         selectedProjects: this.store.selectedOptions.selectedProjects,
         selectedCsps: this.store.selectedOptions.selectedCsps,

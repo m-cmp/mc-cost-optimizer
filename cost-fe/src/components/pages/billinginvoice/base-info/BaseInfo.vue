@@ -41,6 +41,7 @@ import {
     useCalCurrencyStore
 } from '@/stores/calCurrency';
 import axios from 'axios';
+import ENDPOINT from '@/api/Endpoints'
 // import ps from '@/utils/common.js';
 
 export default {
@@ -55,7 +56,7 @@ export default {
 
         const getCostData = async () => {
             try {
-                const response = await axios.post('http://localhost:9090/api/v2/invoice/getBillingBaseInfo', selectedOptionsStore.selectedOptions)
+                const response = await axios.post(ENDPOINT.be + '/api/v2/invoice/getBillingBaseInfo', selectedOptionsStore.selectedOptions)
                 eachCost.value = response.data.Data;
                 CalculateTotalCost(); // 데이터를 가져온 후에 총 금액 계산
             } catch (error) {
