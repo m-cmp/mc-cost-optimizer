@@ -37,6 +37,7 @@ import {
 } from 'vue';
 import ApexCharts from 'apexcharts';
 import axios from 'axios';
+import ENDPOINT from '@/api/Endpoints'
 import {
     useSelectedOptionsStore
 } from '@/stores/selectedOptions';
@@ -136,7 +137,7 @@ export default {
             try {
                 var selectedPeriod = ps.str.removeDelimiter(ps.str.removeDelimiter(selectedPeriodOptions.value, ' '), 'Last');
                 store.selectedOptions.selectedPeriod = selectedPeriod;
-                const response = await axios.post('http://localhost:9090/api/v2/invoice/getSummary', store.selectedOptions)
+                const response = await axios.post(ENDPOINT.be + '/api/v2/invoice/getSummary', store.selectedOptions)
                 const data = response.data.Data;
 
                 chartOptions.labels = data.dates;

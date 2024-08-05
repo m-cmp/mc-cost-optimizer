@@ -200,6 +200,7 @@
 
 <script>
 import axios from "axios";
+import ENDPOINT from '@/api/Endpoints'
 import SlackGuideScript from "@/components/pages/userGuide/SlackGuideScript.vue";
 import MailingGuideScript from "@/components/pages/userGuide/MailingGuideScript.vue";
 
@@ -237,7 +238,7 @@ export default {
   },
   methods: {
     getInitSlackInfo(){
-      axios.get('http://localhost:9000/alert/getSlackIF', {
+      axios.get(ENDPOINT.alaram + '/alert/getSlackIF', {
         params: {
           userId: '2194155'
         }})
@@ -254,7 +255,7 @@ export default {
           })
     },
     getInitMailInfo(){
-      axios.get('http://localhost:9000/alert/getMailInfo')
+      axios.get(ENDPOINT.alaram + '/alert/getMailInfo')
           .then((res) => {
             if(res.data.status === 'OK'){
               if(res.data.Data && res.data.Data.username){
@@ -277,7 +278,7 @@ export default {
         token: token,
         channel: channel
       }
-      axios.post('http://localhost:9000/alert/insertSlackToken', params)
+      axios.post(ENDPOINT.alaram + '/alert/insertSlackToken', params)
           .then(() => {
             alert('Save.')
             this.toggleSaveBtn = false
@@ -291,7 +292,7 @@ export default {
     saveMailpw(){
       this.toggleSaveBtn = true
       if(this.mailuserID && this.mailAppPasswd){
-        axios.post('http://localhost:9000/alert/insertMailInfo', {
+        axios.post(ENDPOINT.alaram + '/alert/insertMailInfo', {
           username: this.mailuserID,
           password: this.mailAppPasswd
         })
@@ -327,7 +328,7 @@ export default {
       if (this.linkText) {
         params.append('linkText', this.linkText);
       }
-      axios.post('http://localhost:9000/alert/sendSlackAC', params)
+      axios.post(ENDPOINT.alaram + '/alert/sendSlackAC', params)
           .then((res) => {
             alert(res.data)
             this.toggleSaveBtn = false
@@ -344,7 +345,7 @@ export default {
       }else{
         const mailTo = [];
         mailTo.push(this.testMailTo)
-        axios.post('http://localhost:9000/alert/sendAlertMail', {
+        axios.post(ENDPOINT.alaram + '/alert/sendAlertMail', {
           to: mailTo,
           subject: this.testMailTitle
         })
