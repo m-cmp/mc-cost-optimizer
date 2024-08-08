@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HistorySql">
+    <insert id="insertAlertHistory" parameterType="com.mcmp.slack_demo.mail.model.SendMailFormModel">
+        INSERT INTO alarm_history(event_type, resource_id, resource_type, occure_time, account_id, urgency, note)
+        VALUES (#{event_type}, #{resource_id}, #{resource_type}, #{occure_time}, #{account_id}, #{urgency}, #{note})
+    </insert>
+
+    <select id="getAlarmMailReceivers" parameterType="map" resultType="String">
+        SELECT tcumr.mcmp_mail_receiver AS receiver
+          FROM servicegroup_meta sm
+          JOIN temp_cmp_user_info tcui
+            ON tcui.mcmp_user_account = sm.csp_account
+          JOIN temp_cmp_user_mail_receiver tcumr
+            ON tcumr.mcmp_user_id = tcui.mcmp_user_id
+         WHERE 1=1
+           AND sm.csp_instanceid = #{resource_id}
+           AND sm.csp_account = #{account_id}
+    </select>
+
+</mapper>

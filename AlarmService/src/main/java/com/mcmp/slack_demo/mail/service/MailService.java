@@ -1,14 +1,18 @@
 package com.mcmp.slack_demo.mail.service;
 
+import com.mcmp.slack_demo.common.model.costOpti.CostOptiAlarmReqModel;
+import com.mcmp.slack_demo.common.service.CommonService;
 import com.mcmp.slack_demo.mail.config.MailConfig;
 import com.mcmp.slack_demo.mail.dao.MailingDao;
 import com.mcmp.slack_demo.mail.model.MailMessage;
 
 import com.mcmp.slack_demo.mail.model.MailingInfoModel;
+import com.mcmp.slack_demo.mail.model.SendMailFormModel;
 import jakarta.activation.FileDataSource;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeUtility;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -21,14 +25,18 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
 @Slf4j
 public class MailService {
 
-@Autowired
+    @Autowired
     private SpringTemplateEngine templateEngine;
 
     @Autowired
@@ -36,6 +44,64 @@ public class MailService {
 
     @Autowired
     private MailConfig mailConfig;
+
+    @Autowired
+    private CommonService commonService;
+
+    public void sendEmail(CostOptiAlarmReqModel optiAlarmReqModel, ClassPathResource file){
+        SendMailFormModel mailFormModel = new SendMailFormModel();
+        BeanUtils.copyProperties(optiAlarmReqModel, mailFormModel);
+        mailFormModel.setOccure_time(ZonedDateTime.now(ZoneId.of("UTC")).toLocalDateTime());
+
+        try {
+            JavaMailSender emailSender = mailConfig.getJavaMailSender();
+            MimeMessage mimeMessage = emailSender.createMimeMessage();
+
+            // find mail receiver
+            mailFormModel.setTo(getAlarmMailReceivers(optiAlarmReqModel.getResource_id(), optiAlarmReqModel.getAccount_id()));
+
+            String mailMessage = "[MCMP-Notice] Cost Alarm occurred";
+            switch (optiAlarmReqModel.getEvent_type()){
+                case "Unused":
+                    mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Caution Unused Resources");
+                    mailMessage = "MCMP Cost에서 미사용 자원 주의 알람이 발생했습니다." +
+                            "<br><br>" +
+                            "계정 : " + mailFormModel.getAccount_id() + "<br>" +
+                            "리소스 ID : " + mailFormModel.getResource_id();
+                    break;
+                case "Abnormal":
+                    mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Warning Abnormal Cost");
+                    mailMessage = "MCMP Cost에서 이상 비용 경고 알람이 발생했습니다." +
+                            "<br><br>" +
+                            "계정 : " + mailFormModel.getAccount_id() + "<br>" +
+                            "리소스 ID : " + mailFormModel.getResource_id();
+                    break;
+                case "Resize":
+                    mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Advise Resizing Resources");
+                    mailMessage = "MCMP Cost에서 자원 최적화 권고 알람이 발생했습니다." +
+                            "<br><br>" +
+                            "계정 : " + mailFormModel.getAccount_id() + "<br>" +
+                            "리소스 ID : " + mailFormModel.getResource_id();
+                    break;
+            }
+
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            mimeMessageHelper.setTo(setToList(mailFormModel.getTo()));
+            mimeMessageHelper.setSubject(mailFormModel.getSubject());
+            mimeMessageHelper.setText(mailMessage, true);
+
+            emailSender.send(mimeMessage);
+
+            log.info("############Send OptiAlertEmail Success############");
+
+        } catch (Exception e) {
+            log.info("############Send AlertEmail Fail############");
+            e.printStackTrace();
+        }
+
+        commonService.insertAlarmHistory(mailFormModel);
+
+    }
 
     public String sendEmail(MailMessage mailMessage, String type, ClassPathResource file){
         try {
@@ -87,6 +153,16 @@ public class MailService {
 
     public MailingInfoModel getMailingInfo(){
         return mailingDao.getMailingInfo();
+    }
+
+    private List<String> getAlarmMailReceivers(String resource_id, String account_id){
+        Map<String, String> param = Map.of(
+                "resource_id", resource_id,
+                "account_id", account_id
+        );
+
+        return commonService.getAlarmMailReceivers(param);
+
     }
 
 }
