@@ -4,10 +4,6 @@
 
 This repository provides a Multi-Cloud Cost Management and Optimizing Framework.
 
-A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to deploy and manage Multi-Cloud Infrastructures.
-
-([Cloud-Barista/CB-Tumblebug](https://github.com/cloud-barista/cb-tumblebug) mirroring for M-CMP)
-
 ## Overview
 
 - Multi-cloud Cost Management and Optimizing Framework (Codename: mc-cost-optimizer): Supports cost management and cost optimization processes for various heterogeneous clouds
