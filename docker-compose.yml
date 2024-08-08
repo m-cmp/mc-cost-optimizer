@@ -74,6 +74,9 @@ services:
       spring.datasource.hikari.mailing.jdbc-url: ${MAIL_DB_URL}
       spring.datasource.hikari.mailing.username: ${MAIL_DB_USERNM}
       spring.datasource.hikari.mailing.password: ${MAIL_DB_PW}
+      spring.datasource.hikari.history.jdbc-url: ${COST_DB_URL}
+      spring.datasource.hikari.history.username: ${COST_DB_USERNM}
+      spring.datasource.hikari.history.password: ${COST_DB_PW}
 networks:
   mcmp_cost_network:
     driver: bridge
