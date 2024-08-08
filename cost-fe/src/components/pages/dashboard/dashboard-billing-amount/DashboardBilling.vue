@@ -22,6 +22,7 @@
 
 <script>
 import axios from 'axios';
+import ENDPOINT from '@/api/Endpoints'
 import {
     ref,
     watch,
@@ -142,7 +143,7 @@ export default {
 
         const fetchBillingData = () => {
             // console.log("today: ", store.selectedOptions)
-            axios.post('http://localhost:9090/api/v2/getCurMonthBill', store.selectedOptions)
+            axios.post(ENDPOINT.be + '/api/v2/getCurMonthBill', store.selectedOptions)
                 .then(response => {
                     // console.log('response: ', response.data)
                     const data = response.data.Data;

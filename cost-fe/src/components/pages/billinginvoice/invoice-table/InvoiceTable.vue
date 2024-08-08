@@ -59,6 +59,7 @@
 
 <script>
 import axios from 'axios';
+import ENDPOINT from '@/api/Endpoints'
 import {
     ref,
     watch,
@@ -128,7 +129,7 @@ export default {
 
         const getTableData = async () => {
             try {
-                const response = await axios.post('http://localhost:9090/api/v2/invoice/getInvoice', store.selectedOptions)
+                const response = await axios.post(ENDPOINT.be + '/api/v2/invoice/getInvoice', store.selectedOptions)
                 const data = response.data.Data.invoice;
                 const additionalData = [{
                         csp: 'NCP',
