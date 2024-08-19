@@ -29,8 +29,8 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
   ### Example of DB installation method based on Mac
   ### In case of DB installation, installation is possible depending on the installation environment. 
   ### MySQL version 8 must be installed
-  brew install mysql
-  brew services start mysql
+  
+  ### create user and privileges settings
   CREATE USER 'mcmpcostopti'@'%' IDENTIFIED BY '0000'; 
   GRANT ALL PRIVILEGES ON *.* TO 'mcmpcostopti'@'%' WITH GRANT OPTION; 
   FLUSH PRIVILEGES;
@@ -39,48 +39,55 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
 ### Step three
 ```
   ## 3. DDL/DML execution
-  ### sql file path : /BackEnd/src/main/resource/sql
-  ### running step DDL > DML
-  mysql -u mcmpcostopti -p < mcmp_cost_optimize_ddl.sql
-  mysql -u mcmpcostopti -p < mcmp_cost_optimize_dml.sql
+  ### sql file path : /mc-cost-optimizer/mysql
+  ### running script
+  mysql -u mcmpcostopti -p < init_cost_db.sql
+  mysql -u mcmpcostopti -p < init_mail_db.sql
+  mysql -u mcmpcostopti -p < init_slack_db.sql
 ```
 
 ### Step four
 ```  
-  4. backend run
-  ### Maven install and jar run
-  ### java version 17
-  ### If you have personal DB connection information, change jdbc-url, username, password, etc. in application.properties.
-  brew install maven
-  mvn clean install
-  java -jar target/BackEnd.jar
+  4. docker-compose run
+  ### Modify '.env' to suit your environment.
+  vi .env 
+  ### build and run docker
+  docker compose up -d
 ```
 
-### Step five
-```  
-  5. Frontend run
-  ## node : v20.13.1
-  ## npm : v10.5.2
-  npm i
-  npm run serve
-```
-
-### Frontend
+### Frontend(cost-fe)
 - node version : v20.13.1
 - npm version : v10.5.2
 - run command : npm run serve
 
-### Backend
+### BackEnd
 - java version : 17
+- spring boot version : 2.7.15
+
+### batch process(costCollector/costProcessor/costSelector)
+- java version : 17
+- spring boot version : 3.2.8
+
+### AlarmService
+- java version : 17
+- spring boot version : 3.2.4
 
 ### DataBase
 - mysql version : 8
-- run script /BackEnd/src/main/resources/sql/mcmp_cost_optimize_ddl.sql
-- run script /BackEnd/src/main/resources/sql/mcmp_cost_optimize_dml.sql
+- run script 
+```
+- /mc-cost-optimizer/mysql/init_cost_db.sql
+- /mc-cost-optimizer/mysql/init_mail_db.sql
+- /mc-cost-optimizer/mysql/init_slack_db.sql
+```
+
+
+### Video Guide to init project
+#### [YouTube link](https://www.youtube.com/watch?v=Pei7MWMD6UA)
+
 
 ### swagger UI
-- After starting the backend, search the URL
-- url : localhost:9090/swagger-ui(default back-end port 9090)
+#### [mc-cost-optimizer Swagger api](https://cloud-barista.github.io/api/?url=https://raw.githubusercontent.com/m-cmp/mc-cost-optimizer/main/swagger.yaml)
 
 ## How to Contribute
 
