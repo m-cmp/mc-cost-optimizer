@@ -40,7 +40,7 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
 ```
   ## 3. DDL/DML execution
   ### sql file path : /mc-cost-optimizer/mysql
-  ### running step DDL > DML
+  ### running script
   mysql -u mcmpcostopti -p < init_cost_db.sql
   mysql -u mcmpcostopti -p < init_mail_db.sql
   mysql -u mcmpcostopti -p < init_slack_db.sql
@@ -62,20 +62,25 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
 
 ### BackEnd
 - java version : 17
-- spring boot version : 3.x.x
+- spring boot version : 2.7.15
 
 ### batch process(costCollector/costProcessor/costSelector)
 - java version : 17
-- spring boot version : 3.x.x
+- spring boot version : 3.2.8
 
 ### AlarmService
 - java version : 17
-- spring boot version : 3.x.x
+- spring boot version : 3.2.4
 
 ### DataBase
 - mysql version : 8
-- run script /BackEnd/src/main/resources/sql/mcmp_cost_optimize_ddl.sql
-- run script /BackEnd/src/main/resources/sql/mcmp_cost_optimize_dml.sql
+- run script 
+```
+- /mc-cost-optimizer/mysql/init_cost_db.sql
+- /mc-cost-optimizer/mysql/init_mail_db.sql
+- /mc-cost-optimizer/mysql/init_slack_db.sql
+```
+
 
 ### Video Guide to init project
 #### [YouTube link](https://www.youtube.com/watch?v=Pei7MWMD6UA)
