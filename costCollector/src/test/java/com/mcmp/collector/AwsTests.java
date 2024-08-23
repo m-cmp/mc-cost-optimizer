@@ -1,32 +1,28 @@
-package com.mcmp.costbe;
+package com.mcmp.collector;
 
-import com.mcmp.costbe.common.model.DateRangeModel;
-import com.mcmp.costbe.common.service.DateCalculator;
-import com.mcmp.costbe.resourceMapping.aws.AWSResourceMapping;
+import com.mcmp.collector.service.Cur;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application.properties")
-public class dateRangeTest {
+public class AwsTests {
 
     @Autowired
-    private DateCalculator dateCalculator;
-
+    private Cur service;
 
     @Test
-    public void testCal(){
-//        List<LocalDateTime> result = dateCalculator.calculatePeriodDates("20240321", "30days");
-//        System.out.println(result);
+    public void getS3List(){
+        // service.batchInsertCURData("mcmpcostopti", LocalDateTime.now(), "1", "202408", null);
     }
 
 }

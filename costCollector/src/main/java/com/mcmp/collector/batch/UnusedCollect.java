@@ -161,7 +161,7 @@ public class UnusedCollect {
         return itemLists -> {
             for (List<ResourceSetModel> itemList : itemLists) {
                 for(ResourceSetModel item : itemList){
-                    System.out.println("Writer: 쓴다 " + item);
+//                    System.out.println("Writer: 쓴다 " + item);
                 }
             }
         };
