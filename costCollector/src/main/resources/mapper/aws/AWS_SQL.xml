@@ -85,7 +85,7 @@
     </select>
 
     <insert id="insertCurOriginBatch" parameterType="java.util.List">
-        INSERT INTO temp_cur_origin(lineitem_usageaccountid,
+        INSERT INTO cur_origin(lineitem_usageaccountid,
                                     lineitem_productcode,
                                     lineitem_resourceid,
                                     lineitem_lineitemtype,
