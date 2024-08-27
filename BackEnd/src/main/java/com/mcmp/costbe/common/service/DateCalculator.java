@@ -95,4 +95,9 @@ public class DateCalculator {
         return ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate();
     }
 
+    public LocalDate curLocalDate(){
+        return ZonedDateTime.now().toLocalDate();
+    }
+
+
 }

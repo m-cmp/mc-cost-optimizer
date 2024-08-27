@@ -32,9 +32,9 @@ public class ScheduleJob extends QuartzJobBean {
         log.info("Starting Quartz Job");
 
         try {
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
-            String startOfToday = String.valueOf(now.toLocalDate().atStartOfDay());
-            String endOfToday = String.valueOf(now.toLocalDate().plusDays(1).atStartOfDay());
+            ZonedDateTime now = ZonedDateTime.now();
+            String endOfToday = String.valueOf(now.toLocalDate().atStartOfDay());
+            String startOfToday = String.valueOf(now.toLocalDate().minusDays(1).atStartOfDay());
 
             JobParameters jobParameter = new JobParametersBuilder()
                     .addString("startDt", startOfToday)

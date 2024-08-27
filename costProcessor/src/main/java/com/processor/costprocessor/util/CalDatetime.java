@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 @Service
 public class CalDatetime {
     public CurrentDateModel currentDatetime(){
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
+        ZonedDateTime now = ZonedDateTime.now();
         LocalDateTime startOfToday = now.toLocalDate().atStartOfDay();
         LocalDateTime endOfToday = now.toLocalDate().plusDays(1).atStartOfDay();
 
@@ -22,9 +22,9 @@ public class CalDatetime {
     }
 
     public CurrentDateModel monthDateRange(){
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
+        ZonedDateTime now = ZonedDateTime.now();
         LocalDateTime startOfToday = now.toLocalDate().minusMonths(1).atStartOfDay();
-        LocalDateTime endOfToday = now.toLocalDateTime();
+        LocalDateTime endOfToday = now.toLocalDate().atStartOfDay();
 
         CurrentDateModel curDt = new CurrentDateModel();
         curDt.setCurStartDatetime(startOfToday);

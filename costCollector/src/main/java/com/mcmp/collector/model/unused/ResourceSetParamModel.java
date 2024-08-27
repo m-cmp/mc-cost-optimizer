@@ -10,4 +10,5 @@ public class ResourceSetParamModel {
     private LocalDateTime startDt;
     private LocalDateTime endDt;
     private String account;
+    private String yearMonth;
 }

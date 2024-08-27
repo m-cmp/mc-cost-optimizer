@@ -27,7 +27,7 @@ public class UnusedSelectService {
             String plan = "None";
             if(rsStatus != null && (!rsStatus.getResource_status().isEmpty() || !rsStatus.getResource_spot_yn().isEmpty())){
                 if("running".equals(rsStatus.getResource_status()) && "N".equals(rsStatus.getResource_spot_yn())){
-                    LocalDate curDate = ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate();
+                    LocalDate curDate = ZonedDateTime.now().toLocalDate();
 
                     List<UserAssetRSOPTModel> userAssetSetting = unusedSelectDao.getUserAssetRSOPT(rsStatus.getCmp_user_id());
 
@@ -72,7 +72,7 @@ public class UnusedSelectService {
                 }
 
                 UnusedBatchRstModel rstModel = UnusedBatchRstModel.builder()
-                        .create_dt(ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate().atStartOfDay())
+                        .create_dt(ZonedDateTime.now().toLocalDate().atStartOfDay())
                         .csp_type(rsStatus.getCsp_type())
                         .csp_account(rsStatus.getCsp_account())
                         .csp_instanceid(rsStatus.getResource_id())

@@ -8,8 +8,8 @@
 
     <select id="getResouces" parameterType="com.mcmp.collector.model.unused.ResourceSetParamModel" resultType="com.mcmp.collector.model.unused.ResourceSetModel">
         select co.lineitem_resourceid as instanceid
-             , CURDATE() as createDt
-          from cur_origin co
+             , #{endDt} as createDt
+          from tbl_table_billing_detail_${yearMonth} co
          where 1=1
            and co.lineitem_usageaccountid = #{account}
            and co.lineitem_lineitemtype = 'Usage'
