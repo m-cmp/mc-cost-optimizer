@@ -11,7 +11,6 @@
              , #{endDt} as createDt
           from tbl_table_billing_detail_${yearMonth} co
          where 1=1
-           and co.lineitem_usageaccountid = #{account}
            and co.lineitem_lineitemtype = 'Usage'
            and co.lineitem_productcode = 'AmazonEC2'
            and co.pricing_unit = 'Hrs'
