@@ -19,7 +19,7 @@ public class DateCalculator {
 
         YearMonth yearMonth = YearMonth.of(date.getYear(), date.getMonth());
         LocalDateTime firstDayOfMonth = yearMonth.atDay(1).atStartOfDay();
-        LocalDateTime lastDayOfMonth = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+        LocalDateTime lastDayOfMonth = yearMonth.plusMonths(1).atDay(1).atStartOfDay();
 
         DateRangeModel result = new DateRangeModel();
         result.setStartDate(firstDayOfMonth);

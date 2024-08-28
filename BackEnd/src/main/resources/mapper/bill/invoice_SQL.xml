@@ -34,7 +34,7 @@
              , sm.csp_type as csp
              , SUM(co.lineitem_unblendedcost) AS bill
              , co.lineitem_resourceid as resourceID
-          FROM cur_origin co
+          FROM tbl_table_billing_detail_${year_month} co
           LEFT JOIN servicegroup_meta sm
             ON co.lineitem_resourceid = sm.csp_instanceid
          WHERE 1=1

@@ -123,7 +123,7 @@
                                  FROM (
                                        SELECT co.lineitem_productcode
                                             , COALESCE(SUM(co.lineitem_unblendedcost), 0) AS total_cost
-                                         FROM cur_origin co
+                                         FROM tbl_table_billing_detail_${year_month} co
                                          LEFT JOIN servicegroup_meta sm
                                            ON co.lineitem_resourceid = sm.csp_instanceid
                                         WHERE 1=1
@@ -154,7 +154,7 @@
                           END AS productcode
                      , COALESCE(SUM(co.lineitem_unblendedcost), 0) AS total_cost
                      , MIN(co.lineitem_resourceid) AS min_resourceid
-                  FROM cur_origin co
+                  FROM tbl_table_billing_detail_${year_month} co
                   LEFT JOIN servicegroup_meta sm
                     ON co.lineitem_resourceid = sm.csp_instanceid
                  WHERE 1=1
@@ -187,7 +187,7 @@
         SELECT COALESCE(SUM(co.lineitem_unblendedcost), 0) AS bill
              , co.lineitem_productcode AS childProductCode
              , count(DISTINCT co.lineitem_resourceid) as unit
-          FROM cur_origin co
+          FROM tbl_table_billing_detail_${year_month} co
           LEFT JOIN servicegroup_meta sm
             ON co.lineitem_resourceid = sm.csp_instanceid
          WHERE 1=1
@@ -232,7 +232,7 @@
                             THEN co.lineitem_unblendedcost
                             ELSE 0
                 END), 0) AS cost]]>
-        FROM cur_origin co
+        FROM tbl_table_billing_detail_${year_month} co
         LEFT JOIN servicegroup_meta sm
         ON co.lineitem_resourceid = sm.csp_instanceid
         WHERE 1=1

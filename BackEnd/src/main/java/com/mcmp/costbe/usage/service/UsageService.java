@@ -2,6 +2,7 @@ package com.mcmp.costbe.usage.service;
 
 import com.mcmp.costbe.common.model.DateRangeModel;
 import com.mcmp.costbe.common.service.DateCalculator;
+import com.mcmp.costbe.common.service.ExceptionService;
 import com.mcmp.costbe.resourceMapping.aws.AWSResourceMapping;
 import com.mcmp.costbe.usage.dao.BillDao;
 import com.mcmp.costbe.usage.dao.FilterDao;
@@ -11,6 +12,7 @@ import com.mcmp.costbe.usage.model.filter.WorkspacesModel;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,6 +27,9 @@ public class UsageService {
 
     @Autowired
     private BillDao billDao;
+
+    @Autowired
+    private ExceptionService exceptionService;
 
     @Autowired
     private DateCalculator dateCalculator;
@@ -65,34 +70,44 @@ public class UsageService {
         return result;
     }
 
-    public Top5WidgetModel getTop5Bill(Top5WidgetReqModel req){
+    public Top5WidgetModel getTop5Bill(Top5WidgetReqModel req) {
         DateRangeModel curMonthRange = dateCalculator.dateRangeCalculator(req.getToday());
         req.setCurMonthStartDate(curMonthRange.getStartDate());
         req.setCurMonthEndDate(curMonthRange.getEndDate());
+        req.setYear_month(req.getToday().substring(0,6));
 
         Top5WidgetModel result = new Top5WidgetModel();
-        List<Top5BillModel> top5bill = billDao.getTop5Bill(req);
+        try{
+            List<Top5BillModel> top5bill = billDao.getTop5Bill(req);
 
-        for(Top5BillModel item : top5bill){
-           if("others".equals(item.getResourceNm())){
-               item.setIsOthers(true);
-           }else{
-               item.setIsOthers(false);
-           }
+            for(Top5BillModel item : top5bill){
+                if("others".equals(item.getResourceNm())){
+                    item.setIsOthers(true);
+                }else{
+                    item.setIsOthers(false);
+                }
+            }
+
+            if(top5bill.isEmpty()){
+                Top5BillModel temp = new Top5BillModel();
+                temp.setBill(0.0);
+                temp.setCsp("Null");
+                temp.setIsOthers(false);
+                temp.setResourceNm("Null");
+
+                top5bill.add(temp);
+            }
+
+            result.setTop5bill(top5bill);
+        } catch (BadSqlGrammarException ex){
+            if(exceptionService.isTableNotFound(ex)){
+                log.warn("[Top5 Widget Log]NotFoundTable : {}", ex.getMessage());
+            }else {
+                ex.printStackTrace();
+                throw new RuntimeException();
+            }
         }
 
-        System.out.println(top5bill.size());
-        if(top5bill.isEmpty()){
-            Top5BillModel temp = new Top5BillModel();
-            temp.setBill(0.0);
-            temp.setCsp("Null");
-            temp.setIsOthers(false);
-            temp.setResourceNm("Null");
-
-            top5bill.add(temp);
-        }
-
-        result.setTop5bill(top5bill);
         result.setSelectedProjects(req.getSelectedProjects());
         result.setSelectedCsps(req.getSelectedCsps());
         result.setCurYear(req.getToday().substring(0, 4));
@@ -107,29 +122,39 @@ public class UsageService {
         DateRangeModel curMonthRange = dateCalculator.dateRangeCalculator(req.getToday());
         req.setCurMonthStartDate(curMonthRange.getStartDate());
         req.setCurMonthEndDate(curMonthRange.getEndDate());
+        req.setYear_month(req.getToday().substring(0, 6));
 
         List<String> familyCode = List.of("Virtual Machine", "Storage", "Database", "LB");
         List<BillingAssetModel> billingAsset = new ArrayList<>();
 
-        for(String item : familyCode){
-            BillingAssetModel familyItem = new BillingAssetModel();
-            List<String> childProducts = AWSResourceMapping.getData(item);
-            req.setAWSChildProducts(childProducts);
+        try{
+            for(String item : familyCode){
+                BillingAssetModel familyItem = new BillingAssetModel();
+                List<String> childProducts = AWSResourceMapping.getData(item);
+                req.setAWSChildProducts(childProducts);
 
-            List<BillingAssetChildModel> childItem = billDao.getBillAssetChild(req);
-            double childsTotalBill = 0.0;
-            Integer childsTotalUnit = 0;
-            for(BillingAssetChildModel child : childItem){
-                childsTotalUnit += child.getUnit();
-                childsTotalBill += child.getBill();
+                List<BillingAssetChildModel> childItem = billDao.getBillAssetChild(req);
+                double childsTotalBill = 0.0;
+                Integer childsTotalUnit = 0;
+                for(BillingAssetChildModel child : childItem){
+                    childsTotalUnit += child.getUnit();
+                    childsTotalBill += child.getBill();
+                }
+
+                familyItem.setChildProductCode(childItem);
+                familyItem.setTotalCost(childsTotalBill);
+                familyItem.setTotalUnit(childsTotalUnit);
+                familyItem.setFamilyProductCode(item);
+
+                billingAsset.add(familyItem);
             }
-
-            familyItem.setChildProductCode(childItem);
-            familyItem.setTotalCost(childsTotalBill);
-            familyItem.setTotalUnit(childsTotalUnit);
-            familyItem.setFamilyProductCode(item);
-
-            billingAsset.add(familyItem);
+        } catch (BadSqlGrammarException ex){
+            if(exceptionService.isTableNotFound(ex)){
+                log.warn("[BillAsset Widget Log]NotFoundTable : {}", ex.getMessage());
+            } else {
+                ex.printStackTrace();
+                throw new RuntimeException();
+            }
         }
 
         result.setSelectedProjects(req.getSelectedProjects());
