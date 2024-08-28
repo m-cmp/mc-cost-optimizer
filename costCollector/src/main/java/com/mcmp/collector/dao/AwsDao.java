@@ -5,6 +5,7 @@ import com.mcmp.collector.model.aws.UserArnModel;
 import com.mcmp.collector.model.cur.AwsCurDetailModel;
 import com.mcmp.collector.model.cur.AwsCurModel;
 import com.mcmp.collector.model.cur.CurProcessModel;
+import com.mcmp.collector.model.cur.RscGrpMetaModel;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,6 +54,10 @@ public class AwsDao {
 
     public void insertCurDetailBatch(AwsCurDetailModel model){
         sqlSessionTemplate.insert("aws.insertCurDetailBatch", model);
+    }
+
+    public void insertRscGrpMeta(RscGrpMetaModel model){
+        sqlSessionTemplate.insert("aws.insertRscGrpMeta", model);
     }
 
 }

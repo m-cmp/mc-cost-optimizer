@@ -156,4 +156,13 @@
         </foreach>
     </insert>
 
+    <insert id="insertRscGrpMeta" parameterType="com.mcmp.collector.model.cur.RscGrpMetaModel">
+        INSERT INTO servicegroup_meta(csp_type, csp_account, csp_instanceid, service_cd, workspace_cd)
+        SELECT #{csp}, #{account}, lineitem_resourceid, #{prj_cd}, #{workspace_cd}
+          FROM tbl_table_billing_detail_${year_month}
+         GROUP BY lineitem_resourceid
+            ON DUPLICATE KEY UPDATE
+                csp_instanceid = csp_instanceid
+    </insert>
+
 </mapper>

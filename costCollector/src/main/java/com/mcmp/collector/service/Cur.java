@@ -4,6 +4,7 @@ import com.mcmp.collector.dao.AwsDao;
 import com.mcmp.collector.model.cur.AwsCurDetailModel;
 import com.mcmp.collector.model.cur.AwsCurModel;
 import com.mcmp.collector.model.cur.CurProcessModel;
+import com.mcmp.collector.model.cur.RscGrpMetaModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -163,12 +164,20 @@ public class Cur {
                         .certifed_fixed_yn(certifed_fixed_yn)
                         .object_key(s3Object.key())
                         .build();
-
                 if(certifed_fixed_yn.equals("Y")){
                     updateProcess.setCertifed_fixed_date(collectDt);
                 }
 
+                RscGrpMetaModel rscGrpMetaModel = RscGrpMetaModel.builder()
+                        .csp("AWS")
+                        .account(payerId)
+                        .prj_cd("testPrj")
+                        .workspace_cd("testWs")
+                        .year_month(todoCollectMonth)
+                        .build();
+
                 awsDao.insertCURProcess(updateProcess);
+                awsDao.insertRscGrpMeta(rscGrpMetaModel);
 
             }
 
