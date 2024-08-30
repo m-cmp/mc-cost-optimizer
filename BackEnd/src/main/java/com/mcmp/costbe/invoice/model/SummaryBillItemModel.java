@@ -7,9 +7,11 @@ import java.util.List;
 
 @Data
 public class SummaryBillItemModel {
-    @Schema(description = "CSP", example = "AWS")
+
     private String csp;
+    @Schema(description = "연도월", example = "202406")
+    private String yearMonth;
     @Schema(description = "비용")
-    private List<Double> bill;
+    private Double bill;
 
 }

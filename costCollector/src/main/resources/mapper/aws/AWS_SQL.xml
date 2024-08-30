@@ -165,4 +165,20 @@
                 csp_instanceid = csp_instanceid
     </insert>
 
+    <insert id="insertMonthlySum" parameterType="String">
+        insert into monthly_summation(`year_month` , project_cd, csp, total_cost, workspace_cd)
+        SELECT ${value}
+             , sm.service_cd
+             , sm.csp_type
+             , COALESCE(SUM(ttbd.lineitem_unblendedcost), 0)
+             , sm.workspace_cd
+        from tbl_table_billing_detail_${value} ttbd
+                 left join servicegroup_meta sm
+                           on sm.csp_instanceid = ttbd.lineitem_resourceid
+        group by sm.csp_type
+               , sm.service_cd
+               , sm.workspace_cd
+            ON DUPLICATE KEY update total_cost = values(total_cost)
+    </insert>
+
 </mapper>

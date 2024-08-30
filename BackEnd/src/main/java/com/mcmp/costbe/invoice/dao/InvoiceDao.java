@@ -2,6 +2,7 @@ package com.mcmp.costbe.invoice.dao;
 
 import com.mcmp.costbe.invoice.model.InvoiceItemModel;
 import com.mcmp.costbe.invoice.model.InvoiceReqModel;
+import com.mcmp.costbe.invoice.model.SummaryBillItemModel;
 import com.mcmp.costbe.invoice.model.SummaryReqModel;
 import com.mcmp.costbe.usage.model.bill.BillingWidgetModel;
 import com.mcmp.costbe.usage.model.bill.BillingWidgetReqModel;
@@ -16,8 +17,8 @@ public class InvoiceDao {
     @Resource(name="sqlSessionTemplateBill")
     private SqlSessionTemplate sqlSession;
 
-    public Double getSummary(SummaryReqModel req){
-        return sqlSession.selectOne("invoice.getAWSSummaryBill", req);
+    public List<SummaryBillItemModel> getSummaryBill(SummaryReqModel req){
+        return sqlSession.selectList("invoice.getSummaryBill", req);
     }
 
     public List<InvoiceItemModel> getAWSInvoice(InvoiceReqModel req){

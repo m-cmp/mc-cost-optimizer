@@ -42,15 +42,11 @@ public class UsageService {
         return filterDao.getProjects(workspaceCD);
     }
 
-    public BillingWidgetModel getBillingWidget(BillingWidgetReqModel req){
+    public BillingWidgetModel getBillingMonthlyWidget(BillingWidgetReqModel req){
         String prevMonth = dateCalculator.prevMonthdate(req.getToday());
-        DateRangeModel curMonthRange = dateCalculator.dateRangeCalculator(req.getToday());
-        DateRangeModel prevMonthRange = dateCalculator.dateRangeCalculator(prevMonth);
-
-        req.setCurMonthStartDate(curMonthRange.getStartDate());
-        req.setCurMonthEndDate(curMonthRange.getEndDate());
-        req.setPrevMonthStartDate(prevMonthRange.getStartDate());
-        req.setPrevMonthEndDate(prevMonthRange.getEndDate());
+        req.setCurYearMonth(req.getToday().substring(0, 6));
+        req.setPrevYearMonth(prevMonth.substring(0, 6));
+        req.setPrevMonths(dateCalculator.getLast12Months(req.getToday()));
 
         BillingWidgetModel result = billDao.getCurPrevMonthBill(req);
         result.setCurYear(req.getToday().substring(0, 4));

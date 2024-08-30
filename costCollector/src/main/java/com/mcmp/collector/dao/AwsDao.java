@@ -60,4 +60,8 @@ public class AwsDao {
         sqlSessionTemplate.insert("aws.insertRscGrpMeta", model);
     }
 
+    public void insertMonthlySum(String yearmonth){
+        sqlSessionTemplate.insert("aws.insertMonthlySum", yearmonth);
+    }
+
 }

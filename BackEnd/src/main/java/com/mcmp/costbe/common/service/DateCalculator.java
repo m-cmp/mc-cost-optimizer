@@ -43,6 +43,18 @@ public class DateCalculator {
 
         return date.format(formatter);
     }
+
+    public List<String> getLast12Months(String now){
+        LocalDate curDate = LocalDate.parse(now, DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        List<String> last12Months = new ArrayList<>();
+        for(int i=0; i<12; i++){
+            String yearMonth = curDate.minusMonths(i).format(DateTimeFormatter.ofPattern("yyyyMM"));
+            last12Months.add(yearMonth);
+        }
+
+        return last12Months;
+    }
   
     public List<LocalDateTime> calculatePeriodDates(String Date, String periodType) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");

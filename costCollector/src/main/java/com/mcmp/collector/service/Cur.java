@@ -179,6 +179,8 @@ public class Cur {
                 awsDao.insertCURProcess(updateProcess);
                 awsDao.insertRscGrpMeta(rscGrpMetaModel);
 
+                calMonthlySum(todoCollectMonth);
+
             }
 
         } catch (RuntimeException re) {
@@ -302,6 +304,10 @@ public class Cur {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void calMonthlySum(String yearmonth){
+        awsDao.insertMonthlySum(yearmonth);
     }
 
 }
