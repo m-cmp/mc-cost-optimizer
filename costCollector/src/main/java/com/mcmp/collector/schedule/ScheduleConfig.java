@@ -12,6 +12,9 @@ public class ScheduleConfig {
     @Value("${unusedBatchCronSchedule}")
     public String batchCron ;
 
+    @Value("${curBatchCronSchedule}")
+    public String curBatchCron;
+
     @Bean
     public JobDetail UnusedJobDetail() {
         return JobBuilder.newJob().ofType(ScheduleJob.class)
@@ -27,6 +30,26 @@ public class ScheduleConfig {
 
         return TriggerBuilder.newTrigger().forJob(UnusedJobDetail)
                 .withIdentity("UnusedJobTrigger1", "Unused")
+                .withDescription("Unused Job Trigger")
+                .withSchedule(cronSchedule)
+                .build();
+    }
+
+    @Bean
+    public JobDetail CurJobDetail() {
+        return JobBuilder.newJob().ofType(CurScheduleJob.class)
+                .storeDurably()
+                .withIdentity("CurJob", "Cur")
+                .withDescription("Execute Spring Batch Cur Batch Job with Quartz")
+                .build();
+    }
+
+    @Bean
+    public Trigger CurJobTrigger(JobDetail CurJobDetail) {
+        CronScheduleBuilder cronSchedule = CronScheduleBuilder.cronSchedule(curBatchCron);
+
+        return TriggerBuilder.newTrigger().forJob(CurJobDetail)
+                .withIdentity("CurJobTrigger1", "Cur")
                 .withDescription("Unused Job Trigger")
                 .withSchedule(cronSchedule)
                 .build();

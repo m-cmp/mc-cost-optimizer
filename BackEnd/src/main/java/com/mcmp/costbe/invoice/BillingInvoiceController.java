@@ -38,7 +38,7 @@ public class BillingInvoiceController {
     public ResponseEntity getBillingBaseInfo(@RequestBody BillingInvoiceBaseInfoReqModel req) throws IOException {
         ResultModel result = new ResultModel();
         try {
-            List<BillingInvoiceBaseInfoModel> data = billingInvoiceService.getCurMonthBill(req);
+            List<BillingInvoiceBaseInfoModel> data = billingInvoiceService.getBaseInfo(req);
             result.setData(data);
         } catch (Exception e){
             e.printStackTrace();

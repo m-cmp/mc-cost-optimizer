@@ -31,7 +31,7 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @PostMapping(path = "/getSummary")
-    @Operation(summary = "빌링 인보이스 날짜별 조회", description = "CSP별 빌링 인보이스 비용을 날짜별로 확인한다.")
+    @Operation(summary = "빌링 인보이스 월별 조회", description = "CSP별 빌링 인보이스 비용을 월별로 확인한다.")
     @ApiResponses(value={
             @ApiResponse(responseCode = "200", description = "성공",
                     content = {@Content(schema = @Schema(implementation = SummaryResModel.class))}),
@@ -40,25 +40,15 @@ public class InvoiceController {
     public ResponseEntity<ResultModel> getSummary(@RequestBody SummaryReqModel req){
         ResultModel result = new ResultModel();
         try{
-            List<LocalDateTime> calPeriodDated = dateCalculator.calculatePeriodDates(req.getToday(), req.getSelectedPeriod());
-
+            req.setPrevMonths(dateCalculator.getLast12Months(req.getToday()));
             SummaryResModel resultData = new SummaryResModel();
             resultData.setCurYear(req.getToday().substring(0, 4));
             resultData.setCurMonth(req.getToday().substring(4, 6));
-            resultData.setCurDay(req.getToday().substring(6, 8));
-            resultData.setDates(dateCalculator.LocalDateTimeToString(calPeriodDated));
+            resultData.setYearMonths(req.getPrevMonths());
             resultData.setSelectedCsps(req.getSelectedCsps());
             resultData.setSelectedProjects(req.getSelectedProjects());
-            resultData.setSelectedPeriod(req.getSelectedPeriod());
 
-            List<SummaryBillItemModel> summaryBillResult = new ArrayList<>();
-            summaryBillResult.add(invoiceService.getAWSSummary(req, calPeriodDated));
-            summaryBillResult.add(invoiceService.getGCPSummary());
-            summaryBillResult.add(invoiceService.getAzureSummary());
-            summaryBillResult.add(invoiceService.getNcpSummary());
-            SummaryBillItemModel totalSummary = invoiceService.getTotalSummary(summaryBillResult);
-            summaryBillResult.add(totalSummary);
-            
+            List<SummaryBillItemsModel> summaryBillResult = invoiceService.getInvoiceSummaryBill(req);
             resultData.setSummaryBill(summaryBillResult);
             result.setData(resultData);
         } catch (Exception e){

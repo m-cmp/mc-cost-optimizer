@@ -2,15 +2,19 @@ package com.mcmp.costbe.invoice.service;
 
 import com.mcmp.costbe.common.model.DateRangeModel;
 import com.mcmp.costbe.common.service.DateCalculator;
+import com.mcmp.costbe.common.service.ExceptionService;
 import com.mcmp.costbe.invoice.dao.InvoiceDao;
 import com.mcmp.costbe.invoice.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,73 +26,19 @@ public class InvoiceService {
     @Autowired
     private InvoiceDao invoiceDao;
 
-    public SummaryBillItemModel getAWSSummary(SummaryReqModel req, List<LocalDateTime> calPeriodDated ){
+    @Autowired
+    private ExceptionService exceptionService;
 
+    public List<SummaryBillItemsModel> getInvoiceSummaryBill(SummaryReqModel req){
+        List<SummaryBillItemModel> summary = invoiceDao.getSummaryBill(req);
+        Map<String, List<SummaryBillItemModel>> groupedByCsp = summary.stream()
+                .collect(Collectors.groupingBy(SummaryBillItemModel::getCsp));
 
-        req.setSummaryPeriod(calPeriodDated);
+        List<SummaryBillItemsModel> result = groupedByCsp.entrySet().stream()
+                .map(item -> new SummaryBillItemsModel(item.getKey(), item.getValue()))
+                .collect(Collectors.toList());
 
-        List<Double> bill = new ArrayList<>();
-        for(int i = 0; i<calPeriodDated.size(); i++) {
-            req.setSummaryPeriodDate(calPeriodDated.get(i));
-            bill.add(invoiceDao.getSummary(req));
-        }
-        SummaryBillItemModel summaryAWSItem = new SummaryBillItemModel();
-        summaryAWSItem.setBill(bill);
-        summaryAWSItem.setCsp("AWS");
-
-
-        return summaryAWSItem;
-    }
-
-    public SummaryBillItemModel getGCPSummary(){
-        List<Double> bill = List.of(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-
-        SummaryBillItemModel summaryGCPItem = new SummaryBillItemModel();
-        summaryGCPItem.setBill(bill);
-        summaryGCPItem.setCsp("GCP");
-
-
-        return summaryGCPItem;
-    }
-
-    public SummaryBillItemModel getAzureSummary(){
-        List<Double> bill = List.of(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-
-        SummaryBillItemModel summaryAzureItem = new SummaryBillItemModel();
-        summaryAzureItem.setBill(bill);
-        summaryAzureItem.setCsp("AZURE");
-
-
-        return summaryAzureItem;
-    }
-
-    public SummaryBillItemModel getNcpSummary(){
-        List<Double> bill = List.of(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-
-        SummaryBillItemModel summaryNcpItem = new SummaryBillItemModel();
-        summaryNcpItem.setBill(bill);
-        summaryNcpItem.setCsp("NCP");
-
-
-        return summaryNcpItem;
-    }
-
-    public SummaryBillItemModel getTotalSummary(List<SummaryBillItemModel> summaryBill){
-        SummaryBillItemModel summaryTotalItem = new SummaryBillItemModel();
-        List<Double> totalBill = new ArrayList<>();
-
-        for(int i=0; i<summaryBill.get(0).getBill().size(); i++){
-            double sum = 0.0;
-            for(SummaryBillItemModel item : summaryBill){
-                sum += item.getBill().get(i);
-            }
-            totalBill.add(sum);
-        }
-
-        summaryTotalItem.setBill(totalBill);
-        summaryTotalItem.setCsp("Total");
-
-        return summaryTotalItem;
+        return result;
     }
 
     public List<InvoiceItemModel> getAWSInvoice(InvoiceReqModel req){
@@ -96,6 +46,19 @@ public class InvoiceService {
         req.setCurMonthStartDate(dateRange.getStartDate());
         req.setCurMonthEndDate(dateRange.getEndDate());
 
-        return invoiceDao.getAWSInvoice(req);
+        req.setYear_month(req.getToday().substring(0, 6));
+
+        try {
+            return invoiceDao.getAWSInvoice(req);
+        } catch (BadSqlGrammarException ex){
+            if(exceptionService.isTableNotFound(ex)){
+                log.warn("[Invoice Widget Log] NotFoundTable : {}", ex.getMessage());
+            } else {
+                ex.printStackTrace();
+                throw new RuntimeException();
+            }
+        }
+
+        return null;
     }
 }

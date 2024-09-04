@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="invoice">
-
-    <select id="getAWSSummaryBill" parameterType="com.mcmp.costbe.invoice.model.SummaryReqModel" resultType="Double">
-        SELECT COALESCE(sum(co.lineitem_unblendedcost),0)
-          FROM cur_origin co
-          LEFT JOIN servicegroup_meta sm
-            ON co.lineitem_resourceid = sm.csp_instanceid
-         WHERE 1=1
-        <if test="selectedCsps != null and selectedCsps.size() > 0">
-            AND sm.csp_type IN
-            <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                #{selectedCsp}
+    <select id="getSummaryBill" parameterType="com.mcmp.costbe.invoice.model.SummaryReqModel" resultType="com.mcmp.costbe.invoice.model.SummaryBillItemModel">
+        SELECT COALESCE(SUM(ms.total_cost), 0) AS bill
+             , ym.`year_month` AS yearMonth
+             , csp_providers.csp AS csp
+          FROM (
+            <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
+                SELECT #{prevMonth} AS `year_month`
             </foreach>
-        </if>
-           AND sm.workspace_cd = #{selectedWorkspace}
-        <if test="selectedProjects != null and selectedProjects.size() > 0">
-            AND sm.service_cd IN
-            <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                #{selectedProject}
-            </foreach>
-        </if>
-        <![CDATA[
-           AND co.lineitem_usagestartdate >= #{summaryPeriodDate}
-           AND co.lineitem_usageenddate < DATE_ADD(#{summaryPeriodDate}, INTERVAL 1 DAY)
-        ]]>
-          AND co.lineitem_unblendedcost >= 0
+                ) AS ym
+         CROSS JOIN (
+                SELECT 'AWS' AS csp UNION ALL
+                SELECT 'GCP' UNION ALL
+                SELECT 'AZURE' UNION ALL
+                SELECT 'NCP'
+                ) AS csp_providers
+          LEFT JOIN monthly_summation ms
+            ON ym.`year_month` = ms.`year_month`
+           AND ms.csp = csp_providers.csp
+            <if test="selectedProjects != null and selectedProjects.size() > 0">
+                AND ms.project_cd IN
+                <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+                    #{selectedProject}
+                </foreach>
+            </if>
+           AND ms.workspace_cd = #{selectedWorkspace}
+         GROUP BY ym.year_month, csp_providers.csp
+         ORDER BY ym.year_month DESC, csp_providers.csp
     </select>
 
     <select id="getAWSInovice" parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel" resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
@@ -34,7 +36,7 @@
              , sm.csp_type as csp
              , SUM(co.lineitem_unblendedcost) AS bill
              , co.lineitem_resourceid as resourceID
-          FROM cur_origin co
+          FROM tbl_table_billing_detail_${year_month} co
           LEFT JOIN servicegroup_meta sm
             ON co.lineitem_resourceid = sm.csp_instanceid
          WHERE 1=1

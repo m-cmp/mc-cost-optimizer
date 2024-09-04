@@ -1,5 +1,6 @@
 package com.mcmp.costbe.invoice.model;
 
+import com.mcmp.costbe.usage.model.bill.YearMonthModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 @Data
 @Schema(description = "빌링 인보이스 요약 조회 요청 모델")
-public class BillingInvoiceBaseInfoReqModel {
+public class BillingInvoiceBaseInfoReqModel extends YearMonthModel {
     @Schema(description = "오늘 날짜", example = "20240620", required = true)
     private String today;
     @Schema(required = false)

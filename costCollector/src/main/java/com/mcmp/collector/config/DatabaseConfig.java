@@ -46,7 +46,7 @@ public class DatabaseConfig {
     public SqlSessionFactory sqlSessionSimple() throws Exception {
         SqlSessionFactoryBean sqlSession = new SqlSessionFactoryBean();
         sqlSession.setDataSource(dataSourceBatch());
-        sqlSession.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(ResourcePatternResolver.CLASSPATH_URL_PREFIX + "/mapper/unused/*_SQL.xml"));
+        sqlSession.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(ResourcePatternResolver.CLASSPATH_URL_PREFIX + "/mapper/**/*_SQL.xml"));
         return sqlSession.getObject();
     }
 

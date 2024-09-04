@@ -76,7 +76,7 @@ public class UsageController {
     public ResponseEntity getCurMonthBill(@RequestBody BillingWidgetReqModel req) throws IOException {
         ResultModel result = new ResultModel();
         try{
-            BillingWidgetModel data = usageService.getBillingWidget(req);
+            BillingWidgetModel data = usageService.getBillingMonthlyWidget(req);
             result.setData(data);
         } catch (Exception e){
             e.printStackTrace();
@@ -107,7 +107,7 @@ public class UsageController {
 
     @PostMapping(path = "/getBillAsset")
     @Tag(name = "Cost Dashboard", description = "Cost Dashboard overview API")
-    @Operation(summary = "이번달 리소스 사용량 및 비용 조회", description = "이번달 사용한 리소스의 unit과 비용을 확인합니다.")
+    @Operation(summary = "이번달 사용 서비스별 비용 조회", description = "이번달 사용한 서비스(VM, DB 등) 단위의 비용을 확인합니다.")
     @ApiResponses(value={
             @ApiResponse(responseCode = "200", description = "성공",
             content = {@Content(schema = @Schema(implementation = BillingAssetWidgetModel.class))}),

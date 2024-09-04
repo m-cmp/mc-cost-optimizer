@@ -25,7 +25,7 @@ public class OptiService {
     public UnusedRstModel getOptiUnused(UnusedReqModel req){
         try {
             UnusedRstModel rst = new UnusedRstModel();
-            LocalDate curDate = dateCalculator.curUTCLocalDate();
+            LocalDate curDate = dateCalculator.curLocalDate();
 
             UnusedQueryParamModel queryParam = new UnusedQueryParamModel();
             queryParam.setCurDate(curDate);

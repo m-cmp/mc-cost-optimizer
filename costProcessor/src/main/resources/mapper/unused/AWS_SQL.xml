@@ -12,7 +12,7 @@
     </select>
 
     <select id="getDailyAssetAmount" parameterType="com.processor.costprocessor.model.unused.DailyAssetAmountParamModel" resultType="com.processor.costprocessor.model.unused.DailyAssetAmountModel">
-        SELECT CURDATE() AS creat_dt
+        SELECT #{endDt} AS creat_dt
              , acm.metric_type AS metric_type
              , acm.csp_instanceid AS resource_id
              , AVG(acm.metric_amount) AS metric_avg_amount
