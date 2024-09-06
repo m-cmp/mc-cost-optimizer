@@ -3,10 +3,7 @@ package com.mcmp.costbe.opti;
 import com.mcmp.costbe.common.model.ResultModel;
 import com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoModel;
 import com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoReqModel;
-import com.mcmp.costbe.opti.model.UnusedQueryParamModel;
-import com.mcmp.costbe.opti.model.UnusedQueryRstModel;
-import com.mcmp.costbe.opti.model.UnusedReqModel;
-import com.mcmp.costbe.opti.model.UnusedRstModel;
+import com.mcmp.costbe.opti.model.*;
 import com.mcmp.costbe.opti.service.OptiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -34,7 +31,7 @@ public class OptiController {
     private OptiService optiService;
 
     @PostMapping(path = "/unusedRec")
-    @Operation(summary = "미사용 자원(추천) 조회", description = "이번달 CSP별 요약된 빌링 인보이스를 확인한다.")
+    @Operation(summary = "미사용 자원(추천) 조회", description = "최근 24시간동안 과금이 발생한 리소스에 대하여 미사용 자원을 추천한다.")
     @ApiResponses(value={
             @ApiResponse(responseCode = "200", description = "성공",
                     content = {@Content(array = @ArraySchema(schema = @Schema(implementation = UnusedQueryRstModel.class)))}),
@@ -48,6 +45,25 @@ public class OptiController {
         } catch (Exception e){
             e.printStackTrace();
             result.setError(500, "Failed to get Unused Resource Info");
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping(path = "/abnormalRec")
+    @Operation(summary = "이상 비용 조회", description = "최근 24시간동안 과금이 발생한 서비스들의 이상 비용 여부를 확인한다.")
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(array = @ArraySchema(schema = @Schema(implementation = AbnormalRstModel.class)))}),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
+    })
+    public ResponseEntity getAbrnormalRec(@RequestBody AbnormalReqModel req){
+        ResultModel result = new ResultModel();
+        try {
+            AbnormalRstModel data = optiService.getOptiAbrnomal(req);
+            result.setData(data);
+        } catch (Exception e){
+            e.printStackTrace();
+            result.setError(500, "Failed to get Abnormal Service Info");
         }
         return ResponseEntity.ok(result);
     }

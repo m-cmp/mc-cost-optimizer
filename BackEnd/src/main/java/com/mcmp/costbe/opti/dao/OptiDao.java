@@ -1,5 +1,7 @@
 package com.mcmp.costbe.opti.dao;
 
+import com.mcmp.costbe.opti.model.AbnoramlItemModel;
+import com.mcmp.costbe.opti.model.AbnormalReqModel;
 import com.mcmp.costbe.opti.model.UnusedQueryParamModel;
 import com.mcmp.costbe.opti.model.UnusedQueryRstModel;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -16,6 +18,10 @@ public class OptiDao {
 
     public List<UnusedQueryRstModel> getOptiUnused(UnusedQueryParamModel param){
         return sqlSession.selectList("opti.getOptiUnused", param);
+    }
+
+    public List<AbnoramlItemModel> getOptiAbnormal(AbnormalReqModel param){
+        return sqlSession.selectList("opti.getOptiAbnormal", param);
     }
 
 }

@@ -47,7 +47,7 @@ public class Cur {
     private static final int BATCH_SIZE = 100;
     private static final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
 
-    public void batchInsertCURData(String payerId, LocalDateTime collectDt, String seq, String todoCollectMonth, String preObjectKey){
+    public void batchInsertCURData(String payerId, LocalDateTime collectDt, String seq, String todoCollectMonth, String preObjectKey, int run_idx){
         try{
             String bucketNM = assumeRole.getDataExportBucketNM(payerId);
 
@@ -97,8 +97,10 @@ public class Cur {
                     return;
                 }
 
-                awsDao.dropTable(todoCollectMonth);
-                awsDao.createTable(todoCollectMonth);
+                if(run_idx == 0){
+                    awsDao.dropTable(todoCollectMonth);
+                    awsDao.createTable(todoCollectMonth);
+                }
 
                 String certifed_fixed_yn = "Y";
 
@@ -180,6 +182,7 @@ public class Cur {
                 awsDao.insertRscGrpMeta(rscGrpMetaModel);
 
                 calMonthlySum(todoCollectMonth);
+                calDailySumByProduct(todoCollectMonth);
 
             }
 
@@ -308,6 +311,10 @@ public class Cur {
 
     public void calMonthlySum(String yearmonth){
         awsDao.insertMonthlySum(yearmonth);
+    }
+
+    public void calDailySumByProduct(String yearmonth){
+        awsDao.insertDailySumByProduct(yearmonth);
     }
 
 }
