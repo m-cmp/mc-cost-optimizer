@@ -10,9 +10,8 @@
           FROM unused_batch_rst ubr
           LEFT JOIN servicegroup_meta sm
                ON ubr.csp_instanceid = sm.csp_instanceid
-          LEFT OUTER JOIN cur_origin co
+          LEFT OUTER JOIN tbl_table_billing_detail_${lastYearMonth} co
                ON ubr.csp_instanceid = co.lineitem_resourceid
-               AND co.lineitem_usagestartdate BETWEEN #{curDate} - INTERVAL 30 DAY AND #{curDate}
          WHERE 1=1
             <if test="selectedCsps != null and selectedCsps.size() > 0">
                 AND sm.csp_type IN

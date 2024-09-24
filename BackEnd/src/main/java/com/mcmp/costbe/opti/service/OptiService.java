@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -23,9 +24,11 @@ public class OptiService {
         try {
             UnusedRstModel rst = new UnusedRstModel();
             LocalDate curDate = dateCalculator.curLocalDate();
+            LocalDate lastYM = curDate.minusMonths(1);
 
             UnusedQueryParamModel queryParam = new UnusedQueryParamModel();
             queryParam.setCurDate(curDate);
+            queryParam.setLastYearMonth(lastYM.format(DateTimeFormatter.ofPattern("yyyyMM")));
             queryParam.setSelectedCsps(req.getSelectedCsps());
             queryParam.setSelectedProjects(req.getSelectedProjects());
             queryParam.setSelectedWorkspace(req.getSelectedWorkspace());
