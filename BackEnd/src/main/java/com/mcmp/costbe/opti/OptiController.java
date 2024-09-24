@@ -30,14 +30,14 @@ public class OptiController {
     @Autowired
     private OptiService optiService;
 
-    @PostMapping(path = "/unusedRec")
+    @PostMapping(path = "/unusedRcmd")
     @Operation(summary = "미사용 자원(추천) 조회", description = "최근 24시간동안 과금이 발생한 리소스에 대하여 미사용 자원을 추천한다.")
     @ApiResponses(value={
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = {@Content(array = @ArraySchema(schema = @Schema(implementation = UnusedQueryRstModel.class)))}),
+                    content = {@Content(schema = @Schema(implementation = UnusedQueryRstModel.class))}),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
     })
-    public ResponseEntity getUnusedRec(@RequestBody UnusedReqModel req){
+    public ResponseEntity getUnusedRcmd(@RequestBody UnusedReqModel req){
         ResultModel result = new ResultModel();
         try {
             UnusedRstModel data = optiService.getOptiUnused(req);
@@ -49,17 +49,36 @@ public class OptiController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping(path = "/abnormalRec")
+    @PostMapping(path = "/abnormalRcmd")
     @Operation(summary = "이상 비용 조회", description = "최근 24시간동안 과금이 발생한 서비스들의 이상 비용 여부를 확인한다.")
     @ApiResponses(value={
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = {@Content(array = @ArraySchema(schema = @Schema(implementation = AbnormalRstModel.class)))}),
+                    content = {@Content(schema = @Schema(implementation = AbnormalRstModel.class))}),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
     })
-    public ResponseEntity getAbrnormalRec(@RequestBody AbnormalReqModel req){
+    public ResponseEntity getAbrnormalRcmd(@RequestBody AbnormalReqModel req){
         ResultModel result = new ResultModel();
         try {
             AbnormalRstModel data = optiService.getOptiAbrnomal(req);
+            result.setData(data);
+        } catch (Exception e){
+            e.printStackTrace();
+            result.setError(500, "Failed to get Abnormal Service Info");
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping(path = "/instOptiSizeRcmd")
+    @Operation(summary = "인스턴스 사이즈 추천 조회", description = "사용중인 인스턴스의 추천 사이즈를 확인한다.")
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "성공",
+                    content = {@Content(schema = @Schema(implementation = InstOptiSizeRstModel.class))}),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
+    })
+    public ResponseEntity getInstOptiSizeRcmd(@RequestBody InstOptiSizeReqModel req){
+        ResultModel result = new ResultModel();
+        try {
+            InstOptiSizeRstModel data = optiService.getInstOptiSizeRcmd(req);
             result.setData(data);
         } catch (Exception e){
             e.printStackTrace();

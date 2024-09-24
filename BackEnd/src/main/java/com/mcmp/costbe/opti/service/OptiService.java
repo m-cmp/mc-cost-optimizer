@@ -66,4 +66,25 @@ public class OptiService {
             throw new RuntimeException();
         }
     }
+
+    public InstOptiSizeRstModel getInstOptiSizeRcmd(InstOptiSizeReqModel req){
+        try{
+            LocalDate date = LocalDate.now();
+            req.setDate(date);
+
+            InstOptiSizeRstModel result = InstOptiSizeRstModel.builder()
+                    .today(date.toString())
+                    .optiSizeItems(optiDao.getInstOptiSize(req))
+                    .selectedWorkspace(req.getSelectedWorkspace())
+                    .selectedProjects(req.getSelectedProjects())
+                    .selectedCsps(req.getSelectedCsps())
+                    .build();
+
+            return result;
+
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
 }

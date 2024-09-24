@@ -55,4 +55,33 @@
             </if>
            AND dabp.collect_dt = #{date}
     </select>
+
+    <select id="getInstOptiSize" parameterType="com.mcmp.costbe.opti.model.InstOptiSizeReqModel" resultType="com.mcmp.costbe.opti.model.InstOptiSizeItemModel">
+        SELECT iorr.resource_id AS resource_id
+             , iorr.csp_type AS csp_type
+             , iorr.csp_account AS account
+             , iorr.origin_type AS origin_type
+             , iorr.rcmd_type AS rcmd_type
+             , iorr.plan_type AS plan_type
+             , iorr.origin_usd AS origin_usd
+             , iorr.rcmd_usd AS rcmd_usd
+        FROM inst_opti_rcmd_rst iorr
+        LEFT JOIN servicegroup_meta sm
+          ON iorr.resource_id = sm.csp_instanceid
+        WHERE 1=1
+        <if test="selectedCsps != null and selectedCsps.size() > 0">
+            AND sm.csp_type IN
+            <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
+                #{selectedCsp}
+            </foreach>
+        </if>
+        AND sm.workspace_cd = #{selectedWorkspace}
+        <if test="selectedProjects != null and selectedProjects.size() > 0">
+            AND sm.service_cd IN
+            <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+                #{selectedProject}
+            </foreach>
+        </if>
+        AND iorr.create_dt = #{date}
+    </select>
 </mapper>

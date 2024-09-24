@@ -1,9 +1,6 @@
 package com.mcmp.costbe.opti.dao;
 
-import com.mcmp.costbe.opti.model.AbnoramlItemModel;
-import com.mcmp.costbe.opti.model.AbnormalReqModel;
-import com.mcmp.costbe.opti.model.UnusedQueryParamModel;
-import com.mcmp.costbe.opti.model.UnusedQueryRstModel;
+import com.mcmp.costbe.opti.model.*;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +19,10 @@ public class OptiDao {
 
     public List<AbnoramlItemModel> getOptiAbnormal(AbnormalReqModel param){
         return sqlSession.selectList("opti.getOptiAbnormal", param);
+    }
+
+    public List<InstOptiSizeItemModel> getInstOptiSize(InstOptiSizeReqModel param){
+        return sqlSession.selectList("opti.getInstOptiSize", param);
     }
 
 }
