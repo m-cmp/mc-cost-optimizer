@@ -44,7 +44,7 @@ public class Cur {
     private String dataExportPathPrefix;
 
     private static final Region region = Region.AP_NORTHEAST_2;
-    private static final int BATCH_SIZE = 100;
+    private static final int BATCH_SIZE = 50;
     private static final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
 
     public void batchInsertCURData(String payerId, LocalDateTime collectDt, String seq, String todoCollectMonth, String preObjectKey, int run_idx){
@@ -87,7 +87,9 @@ public class Cur {
                         "lineItem/LineItemType", "product/instanceType", "pricing/unit",
                         "lineItem/UsageAmount", "lineItem/UnblendedCost", "lineItem/BlendedCost",
                         "lineItem/UsageStartDate", "lineItem/UsageEndDate", "pricing/publicOnDemandCost",
-                        "pricing/publicOnDemandRate", "lineItem/CurrencyCode", "bill/InvoiceId"
+                        "pricing/publicOnDemandRate", "lineItem/CurrencyCode", "bill/InvoiceId", "product/sku", "product/region",
+                        "product/instanceFamily", "product/location", "lineItem/Operation",
+                        "product/instanceTypeFamily", "lineItem/UsageType", "product/vcpu", "product/memory"
                 };
                 Map<String, Integer> indexMap = Arrays.stream(keys)
                         .collect(Collectors.toMap(key -> key, key -> headerMap.getOrDefault(key, -1)));
@@ -129,7 +131,16 @@ public class Cur {
                             fields[indexMap.get("pricing/publicOnDemandRate")],
                             fields[indexMap.get("lineItem/CurrencyCode")],
                             collectDt,
-                            seq
+                            seq,
+                            fields[indexMap.get("product/sku")],
+                            fields[indexMap.get("product/region")],
+                            fields[indexMap.get("product/instanceFamily")],
+                            fields[indexMap.get("product/location")],
+                            fields[indexMap.get("lineItem/Operation")],
+                            fields[indexMap.get("product/instanceTypeFamily")],
+                            fields[indexMap.get("lineItem/UsageType")],
+                            fields[indexMap.get("product/vcpu")],
+                            fields[indexMap.get("product/memory")]
                     );
 
                     batchList.add(usageData);

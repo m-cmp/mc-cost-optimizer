@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class UnusedSelectDao {
@@ -31,6 +32,18 @@ public class UnusedSelectDao {
 
     public void insertBatchRst(UnusedBatchRstModel req){
         sqlSessionTemplate.insert("unused.insertBatchRst", req);
+    }
+
+    public OptiSizeTargetMetaModel getOptiSizeTargetMeta(UnusedResourceStatusModel req){
+        return sqlSessionTemplate.selectOne("unused.getOptiSizeTargetMeta", req);
+    }
+
+    public OptiEC2SizeRstModel getRscEc2OptiSize(Map<String, Object> req){
+        return sqlSessionTemplate.selectOne("unused.getRscEc2OptiSize", req);
+    }
+
+    public void insertInstOptiRcmd(InstOptiRcmdRst req){
+        sqlSessionTemplate.insert("unused.insertInstOptiRcmd", req);
     }
 
 }

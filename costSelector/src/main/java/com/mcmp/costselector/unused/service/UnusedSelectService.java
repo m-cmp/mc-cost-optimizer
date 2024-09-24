@@ -18,11 +18,13 @@ public class UnusedSelectService {
     @Autowired
     private UnusedSelectDao unusedSelectDao;
 
+    @Autowired
+    private OptiSizeService optiSizeService;
+
 
     public void unusedResourceSelector(UnusedSelectReqModel req){
         try{
 
-            // todo. cmp 유저 정보 <-> csp account mapping (query)
             UnusedResourceStatusModel rsStatus = unusedSelectDao.getResourceStatus(req);
             String plan = "None";
             if(rsStatus != null && (!rsStatus.getResource_status().isEmpty() || !rsStatus.getResource_spot_yn().isEmpty())){
@@ -55,7 +57,7 @@ public class UnusedSelectService {
                     int refVal = (int) Math.ceil(Math.abs(networkMart.getSetting_period() +1 / 4));
 
                     if(cpuMart.getSetting_period() <= cpuRst.getC_total_count()
-                            && ("TRUE".equals(cpuRst.getMax_amount())
+                            && ("TRUE".equals(cpuRst.getMax_amount_yn())
                             || 1 > cpuRst.getAvg_amount()) ){
                         plan = "Unused";
                     } else if (networkMart.getSetting_period() <= netRst.getN_total_count()
@@ -64,22 +66,27 @@ public class UnusedSelectService {
                         plan = "Unused";
                     } else if (cpuMart.getSetting_period() > cpuRst.getC_total_count() && networkMart.getSetting_period() > netRst.getN_total_count()) {
                         plan = "None";
-                    } else{
-                        plan = "Down";
                     }
+                    if(!"Unused".equals(plan)){
+                        plan = optiSizeService.analyzeTypeForResizing(rsStatus);
+                    }
+
                 } else {
                     plan = "None";
                 }
 
-                UnusedBatchRstModel rstModel = UnusedBatchRstModel.builder()
-                        .create_dt(ZonedDateTime.now().toLocalDate().atStartOfDay())
-                        .csp_type(rsStatus.getCsp_type())
-                        .csp_account(rsStatus.getCsp_account())
-                        .csp_instanceid(rsStatus.getResource_id())
-                        .plan_type(plan)
-                        .build();
-                log.info("리소스 선별 결과 : " + rstModel);
-                unusedSelectDao.insertBatchRst(rstModel);
+                if(!"Up".equals(plan) && !"Down".equals(plan)){
+                    UnusedBatchRstModel rstModel = UnusedBatchRstModel.builder()
+                            .create_dt(ZonedDateTime.now().toLocalDate().atStartOfDay())
+                            .csp_type(rsStatus.getCsp_type())
+                            .csp_account(rsStatus.getCsp_account())
+                            .csp_instanceid(rsStatus.getResource_id())
+                            .plan_type(plan)
+                            .build();
+                    log.info("Unused instance screening results : " + rstModel);
+                    unusedSelectDao.insertBatchRst(rstModel);
+                }
+
             }
         } catch (Exception e){
             e.printStackTrace();

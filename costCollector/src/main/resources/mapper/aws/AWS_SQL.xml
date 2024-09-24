@@ -23,7 +23,16 @@
             `lineitem_usageenddate` timestamp NULL DEFAULT NULL,
             `pricing_publicondemandcost` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
             `pricing_publicondemandrate` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-            `lineitem_currencycode` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+            `lineitem_currencycode` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+            `product_sku` varchar(100) DEFAULT NULL,
+            `product_region` varchar(50) DEFAULT NULL,
+            `product_instanceFamily` varchar(100) DEFAULT NULL,
+            `product_location` varchar(100) DEFAULT NULL,
+            `lineitem_operation` varchar(100) DEFAULT NULL,
+            `product_instancetypefamily` varchar(20) DEFAULT NULL,
+            `lineitem_usagetype` varchar(100) DEFAULT NULL,
+            `product_vcpu` varchar(30) DEFAULT NULL,
+            `product_memory` varchar(30) DEFAULT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
         </if>
     </update>
@@ -100,7 +109,16 @@
                                     pricing_publicondemandrate,
                                     lineitem_currencycode,
                                     data_collect_date,
-                                    data_collect_seq)
+                                    data_collect_seq,
+                                    product_sku,
+                                    product_region,
+                                    product_instanceFamily,
+                                    product_location,
+                                    lineitem_operation,
+                                    product_instancetypefamily,
+                                    lineitem_usagetype,
+                                    product_vcpu,
+                                    product_memory)
         VALUES
             <foreach collection="list" item="item" separator=",">
             (#{item.lineitem_usageaccountid},
@@ -118,7 +136,16 @@
                 #{item.pricing_publicondemandrate},
                 #{item.lineitem_currencycode},
                 #{item.collect_date},
-                #{item.seq})
+                #{item.seq},
+                #{item.product_sku},
+                #{item.product_region},
+                #{item.product_instanceFamily},
+                #{item.product_location},
+                #{item.lineitem_operation},
+                #{item.product_instancetypefamily},
+                #{item.lineitem_usagetype},
+                #{item.product_vcpu},
+                #{item.product_memory})
             </foreach>
     </insert>
 
@@ -136,7 +163,16 @@
                                     lineitem_usageenddate,
                                     pricing_publicondemandcost,
                                     pricing_publicondemandrate,
-                                    lineitem_currencycode)
+                                    lineitem_currencycode,
+                                    product_sku,
+                                    product_region,
+                                    product_instanceFamily,
+                                    product_location,
+                                    lineitem_operation,
+                                    product_instancetypefamily,
+                                    lineitem_usagetype,
+                                    product_vcpu,
+                                    product_memory)
         VALUES
         <foreach collection="batchList" item="item" separator=",">
             (#{item.lineitem_usageaccountid},
@@ -152,7 +188,16 @@
             #{item.lineitem_usageenddate},
             #{item.pricing_publicondemandcost},
             #{item.pricing_publicondemandrate},
-            #{item.lineitem_currencycode})
+            #{item.lineitem_currencycode},
+            #{item.product_sku},
+            #{item.product_region},
+            #{item.product_instanceFamily},
+            #{item.product_location},
+            #{item.lineitem_operation},
+            #{item.product_instancetypefamily},
+            #{item.lineitem_usagetype},
+            #{item.product_vcpu},
+            #{item.product_memory})
         </foreach>
     </insert>
 
