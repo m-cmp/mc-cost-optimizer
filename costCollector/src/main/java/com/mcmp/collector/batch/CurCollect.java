@@ -59,6 +59,7 @@ public class CurCollect {
             LocalDateTime collectDt = LocalDateTime.now();
 
             List<String> payers = awsDao.getPayerID();
+            int run_idx = 0;
             for(String payer : payers){
 
                 if(collectDt.getDayOfMonth() == 1 && seq.equals("1")){
@@ -75,7 +76,8 @@ public class CurCollect {
                 List<CurProcessModel> todos = awsDao.getTodoCURCollectMonth(payer);
 
                 for(CurProcessModel todo : todos){
-                    cur.batchInsertCURData(payer, collectDt, seq, todo.getCollect_date(), todo.getObject_key());
+                    cur.batchInsertCURData(payer, collectDt, seq, todo.getCollect_date(), todo.getObject_key(), run_idx);
+                    run_idx += run_idx;
                 }
 
             }

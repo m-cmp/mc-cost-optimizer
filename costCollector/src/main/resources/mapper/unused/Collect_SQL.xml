@@ -9,21 +9,44 @@
     <select id="getResouces" parameterType="com.mcmp.collector.model.unused.ResourceSetParamModel" resultType="com.mcmp.collector.model.unused.ResourceSetModel">
         select co.lineitem_resourceid as instanceid
              , #{endDt} as createDt
+             , 'ec2' as resourceType
+             , co.product_instancetype as instanceType
+             , co.product_region as regionId
+             , co.product_location as regionNM
+             , co.lineitem_operation as operation
+             , co.product_instanceFamily as instanceFamily
+             , co.product_instancetypefamily as instanceFamilyType
+             , co.product_sku as productSKU
           from tbl_table_billing_detail_${yearMonth} co
          where 1=1
            and co.lineitem_lineitemtype = 'Usage'
            and co.lineitem_productcode = 'AmazonEC2'
            and co.pricing_unit = 'Hrs'
-           and co.lineitem_usageamount = '24'
+           and co.lineitem_usageamount <![CDATA[>]]> 0
            <![CDATA[ and co.lineitem_usagestartdate >= #{startDt}
            and co.lineitem_usageenddate <= #{endDt} ]]>
-           and co.lineitem_unblendedcost > 0
+           and co.lineitem_unblendedcost <![CDATA[>]]> 0
     </select>
 
     <insert id="insertRst" parameterType="map">
-        insert into unused_collector(csp_resourceid, create_dt)
+        insert into unused_collector(csp_resourceid, create_dt, instance_type, rsrc_type, region_id, region_nm, operation, instance_family_type, product_sku, instance_family)
         values (#{instanceid}
-             , #{createDt})
-            ON DUPLICATE KEY UPDATE csp_resourceid = #{instanceid}, create_dt = #{createDt}
+             , #{createDt}
+             , #{instanceType}
+             , #{resourceType}
+             , #{regionId}
+             , #{regionNM}
+             , #{operation}
+             , #{instanceFamilyType}
+             , #{productSKU}
+             , #{instanceFamily})
+            ON DUPLICATE KEY UPDATE instance_type = #{instanceType}
+                , rsrc_type = #{resourceType}
+                , region_id = #{regionId}
+                , region_nm = #{regionNM}
+                , operation = #{operation}
+                , instance_family_type = #{instanceFamilyType}
+                , product_sku = #{productSKU}
+                , instance_family = #{instanceFamily}
     </insert>
 </mapper>

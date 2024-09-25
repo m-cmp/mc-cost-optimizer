@@ -7,4 +7,5 @@ import java.time.LocalDate;
 @Data
 public class UnusedQueryParamModel extends  UnusedReqModel {
     private LocalDate curDate;
+    private String lastYearMonth;
 }

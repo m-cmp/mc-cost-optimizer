@@ -7,4 +7,5 @@ public class NetworkAssetMartModel {
     private int count_occured;
     private int count_less_than_setting;
     private int n_total_count;
+    private double avg_amount;
 }

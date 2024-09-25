@@ -64,4 +64,8 @@ public class AwsDao {
         sqlSessionTemplate.insert("aws.insertMonthlySum", yearmonth);
     }
 
+    public void insertDailySumByProduct(String yearmonth){
+        sqlSessionTemplate.insert("aws.insertDailySumByProduct", yearmonth);
+    }
+
 }
