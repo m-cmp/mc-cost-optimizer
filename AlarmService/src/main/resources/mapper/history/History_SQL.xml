@@ -46,7 +46,7 @@
             ON tcumr.mcmp_user_id = tcui.mcmp_user_id
          WHERE 1=1
            <choose>
-               <when test="workspace_cd == null">
+               <when test="project_cd == null">
                    AND sm.csp_instanceid = #{resource_id}
                </when>
                <otherwise>

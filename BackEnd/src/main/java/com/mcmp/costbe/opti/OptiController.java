@@ -82,7 +82,7 @@ public class OptiController {
             result.setData(data);
         } catch (Exception e){
             e.printStackTrace();
-            result.setError(500, "Failed to get Abnormal Service Info");
+            result.setError(500, "Failed to get OptiSize Recommend Service Info");
         }
         return ResponseEntity.ok(result);
     }
