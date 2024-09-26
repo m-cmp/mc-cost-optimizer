@@ -11,10 +11,13 @@
            AND ah.occure_date = date(#{occure_time})
            AND ah.csp_type = #{csp_type}
            AND ah.alarm_impl = #{alarm_impl}
+        <if test="account_id == null">
+           AND ah.project_cd = #{project_cd}
+        </if>
     </select>
 
     <insert id="insertAlertHistory" parameterType="com.mcmp.slack_demo.mail.model.SendMailFormModel">
-        INSERT INTO alarm_history(event_type, csp_type, resource_id, resource_type, occure_dt, account_id, urgency, plan, note, occure_date, alarm_impl)
+        INSERT INTO alarm_history(event_type, csp_type, resource_id, resource_type, occure_dt, account_id, urgency, plan, note, occure_date, alarm_impl, project_cd)
         VALUES (#{event_type}
                , #{csp_type}
                , #{resource_id}
@@ -25,7 +28,8 @@
                , #{plan}
                , #{note}
                , date(#{occure_time})
-               , #{alarm_impl})
+               , #{alarm_impl}
+               , #{workspace_cd})
             ON DUPLICATE KEY UPDATE occure_dt = #{occure_time}
                 , account_id = #{account_id}
                 , urgency = #{urgency}
@@ -48,7 +52,7 @@
                <otherwise>
                    AND sm.service_cd = #{project_cd}
                    AND sm.workspace_cd  = #{workspace_cd}
-                 group by tcumr.mcmp_mail_receiver;
+                 group by tcumr.mcmp_mail_receiver
                </otherwise>
            </choose>
     </select>
