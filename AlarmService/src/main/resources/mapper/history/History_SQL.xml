@@ -1,21 +1,56 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="HistorySql">
+    <select id="getAlertDuplicate" parameterType="com.mcmp.slack_demo.mail.model.SendMailFormModel" resultType="int">
+        SELECT count(*)
+          FROM alarm_history ah
+         WHERE 1=1
+           AND ah.event_type = #{event_type}
+           AND ah.resource_id = #{resource_id}
+           AND ah.resource_type = #{resource_type}
+           AND ah.occure_date = date(#{occure_time})
+           AND ah.csp_type = #{csp_type}
+           AND ah.alarm_impl = #{alarm_impl}
+    </select>
+
     <insert id="insertAlertHistory" parameterType="com.mcmp.slack_demo.mail.model.SendMailFormModel">
-        INSERT INTO alarm_history(event_type, resource_id, resource_type, occure_time, account_id, urgency, note)
-        VALUES (#{event_type}, #{resource_id}, #{resource_type}, #{occure_time}, #{account_id}, #{urgency}, #{note})
+        INSERT INTO alarm_history(event_type, csp_type, resource_id, resource_type, occure_dt, account_id, urgency, plan, note, occure_date, alarm_impl)
+        VALUES (#{event_type}
+               , #{csp_type}
+               , #{resource_id}
+               , #{resource_type}
+               , #{occure_time}
+               , #{account_id}
+               , #{urgency}
+               , #{plan}
+               , #{note}
+               , date(#{occure_time})
+               , #{alarm_impl})
+            ON DUPLICATE KEY UPDATE occure_dt = #{occure_time}
+                , account_id = #{account_id}
+                , urgency = #{urgency}
+                , plan = #{plan}
+                , note = #{note}
     </insert>
 
-    <select id="getAlarmMailReceivers" parameterType="map" resultType="String">
+    <select id="getAlarmMailReceivers" parameterType="com.mcmp.slack_demo.common.model.costOpti.CostOptiAlarmReqModel" resultType="String">
         SELECT tcumr.mcmp_mail_receiver AS receiver
           FROM servicegroup_meta sm
           JOIN temp_cmp_user_info tcui
-            ON tcui.mcmp_user_account = sm.csp_account
+            ON tcui.csp_account_id = sm.csp_account
           JOIN temp_cmp_user_mail_receiver tcumr
             ON tcumr.mcmp_user_id = tcui.mcmp_user_id
          WHERE 1=1
-           AND sm.csp_instanceid = #{resource_id}
-           AND sm.csp_account = #{account_id}
+           <choose>
+               <when test="workspace_cd == null">
+                   AND sm.csp_instanceid = #{resource_id}
+               </when>
+               <otherwise>
+                   AND sm.service_cd = #{project_cd}
+                   AND sm.workspace_cd  = #{workspace_cd}
+                 group by tcumr.mcmp_mail_receiver;
+               </otherwise>
+           </choose>
     </select>
 
 </mapper>

@@ -1,7 +1,9 @@
 package com.mcmp.costselector.unused.service;
 
+import com.mcmp.costselector.model.util.AlarmReqModel;
 import com.mcmp.costselector.unused.dao.UnusedSelectDao;
 import com.mcmp.costselector.unused.model.*;
+import com.mcmp.costselector.util.service.AlarmService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,9 @@ public class UnusedSelectService {
 
     @Autowired
     private OptiSizeService optiSizeService;
+
+    @Autowired
+    private AlarmService alarmService;
 
 
     public void unusedResourceSelector(UnusedSelectReqModel req){
@@ -85,6 +90,18 @@ public class UnusedSelectService {
                             .build();
                     log.info("Unused instance screening results : " + rstModel);
                     unusedSelectDao.insertBatchRst(rstModel);
+
+                    AlarmReqModel alarmReqModel = AlarmReqModel.builder()
+                            .event_type("Unused")
+                            .resource_id(rsStatus.getResource_id())
+                            .resource_type(rsStatus.getRsrc_type())
+                            .csp_type(rsStatus.getCsp_type())
+                            .account_id(rsStatus.getCsp_account())
+                            .urgency("Caution")
+                            .plan(plan)
+                            .build();
+
+                    alarmService.sendAlarm(alarmReqModel);
                 }
 
             }

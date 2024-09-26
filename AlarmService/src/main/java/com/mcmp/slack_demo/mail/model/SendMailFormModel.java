@@ -10,4 +10,5 @@ public class SendMailFormModel extends CostOptiAlarmReqModel {
     private List<String> to;
     private String subject;
     private String message;
+    private String alarm_impl;
 }
