@@ -29,7 +29,7 @@
                , #{note}
                , date(#{occure_time})
                , #{alarm_impl}
-               , #{workspace_cd})
+               , COALESCE(#{project_cd}, 'BLANK_00_'))
             ON DUPLICATE KEY UPDATE occure_dt = #{occure_time}
                 , account_id = #{account_id}
                 , urgency = #{urgency}

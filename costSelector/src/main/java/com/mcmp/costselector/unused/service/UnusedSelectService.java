@@ -49,27 +49,31 @@ public class UnusedSelectService {
                             .build();
                     CpuAssetMartModel cpuRst = unusedSelectDao.getCPUAssetMart(cpuMart);
 
-                    UserAssetRSOPTModel networkSet = userAssetSetting.stream().filter(item -> "NETWORK".equals(item.getMetric_type()))
-                            .findFirst().orElse(null);
-                    AssetMartReqModel networkMart = AssetMartReqModel.builder()
-                            .cur_date(curDate)
-                            .setting_value(networkSet != null ? networkSet.getCriteria_value() : 5)
-                            .setting_period(networkSet != null ? networkSet.getRegress_duration() : 14)
-                            .resource_id(req.getResource_id())
-                            .metric_type("network")
-                            .build();
-                    NetworkAssetMartModel netRst = unusedSelectDao.getNetworkMart(networkMart);
-                    int refVal = (int) Math.ceil(Math.abs(networkMart.getSetting_period() +1 / 4));
+//                     20240927. network asset -> 3차년도 예정
+//                    UserAssetRSOPTModel networkSet = userAssetSetting.stream().filter(item -> "NETWORK".equals(item.getMetric_type()))
+//                            .findFirst().orElse(null);
+//                    AssetMartReqModel networkMart = AssetMartReqModel.builder()
+//                            .cur_date(curDate)
+//                            .setting_value(networkSet != null ? networkSet.getCriteria_value() : 5)
+//                            .setting_period(networkSet != null ? networkSet.getRegress_duration() : 14)
+//                            .resource_id(req.getResource_id())
+//                            .metric_type("network")
+//                            .build();
+//                    NetworkAssetMartModel netRst = unusedSelectDao.getNetworkMart(networkMart);
+//                    int refVal = (int) Math.ceil(Math.abs(networkMart.getSetting_period() +1 / 4));
 
                     if(cpuMart.getSetting_period() <= cpuRst.getC_total_count()
                             && ("TRUE".equals(cpuRst.getMax_amount_yn())
                             || 1 > cpuRst.getAvg_amount()) ){
                         plan = "Unused";
-                    } else if (networkMart.getSetting_period() <= netRst.getN_total_count()
-                            && (netRst.getCount_less_than_setting() >= refVal
-                            || netRst.getCount_occured() < refVal)){
-                        plan = "Unused";
-                    } else if (cpuMart.getSetting_period() > cpuRst.getC_total_count() && networkMart.getSetting_period() > netRst.getN_total_count()) {
+                    }
+//                    20240927. network asset -> 3차년도 예정
+//                    else if (networkMart.getSetting_period() <= netRst.getN_total_count()
+//                            && (netRst.getCount_less_than_setting() >= refVal
+//                            || netRst.getCount_occured() < refVal)){
+//                        plan = "Unused";
+//                    } else if (cpuMart.getSetting_period() > cpuRst.getC_total_count() && networkMart.getSetting_period() > netRst.getN_total_count()) {
+                    else if (cpuMart.getSetting_period() > cpuRst.getC_total_count()) {
                         plan = "None";
                     }
                     if(!"Unused".equals(plan)){
