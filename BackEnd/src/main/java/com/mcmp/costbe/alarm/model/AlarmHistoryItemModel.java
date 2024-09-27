@@ -1,11 +1,12 @@
-package com.mcmp.slack_demo.common.model.costOpti;
+package com.mcmp.costbe.alarm.model;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class CostOptiAlarmModel {
+public class AlarmHistoryItemModel {
+
     private String event_type;
     private String resource_id;
     private String resource_type;
@@ -15,7 +16,6 @@ public class CostOptiAlarmModel {
     private String urgency;
     private String plan;
     private String note;
-    private String workspace_cd;
     private String project_cd;
 
 }

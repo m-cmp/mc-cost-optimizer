@@ -79,6 +79,8 @@
         WHERE 1=1
           AND tcura.csp='AWS'
           AND tcui.mcmp_user_id=#{value}
+        GROUP BY tcui.mcmp_user_id, tcura.csp, tcura.role_arn
+        LIMIT 1
     </select>
 
     <select id="getDataExportBucket" parameterType="String" resultType="com.mcmp.collector.model.aws.DataExportBucketModel">
@@ -91,6 +93,8 @@
          WHERE 1=1
            AND tcura.csp='AWS'
            AND tcui.mcmp_user_id=#{value}
+         GROUP BY tcui.mcmp_user_id,tcura.csp, tcura.bucket_nm
+         LIMIT 1
     </select>
 
     <insert id="insertCurOriginBatch" parameterType="java.util.List">

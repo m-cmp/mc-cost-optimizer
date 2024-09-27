@@ -2,6 +2,8 @@ package com.processor.costprocessor.batch;
 
 import com.processor.costprocessor.model.abnormal.AbnormalItemModel;
 import com.processor.costprocessor.model.unused.DailyAssetAmountModel;
+import com.processor.costprocessor.model.util.AlarmReqModel;
+import com.processor.costprocessor.util.AlarmService;
 import com.processor.costprocessor.util.CalDatetime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +53,9 @@ public class AbnormalProcess {
 
     @Autowired
     private CalDatetime calDatetime;
+
+    @Autowired
+    private AlarmService alarmService;
 
     @Bean
     public CustomerItemListener customerListener(){
@@ -125,6 +130,20 @@ public class AbnormalProcess {
             }
 
             item.setCollect_dt(collect_dt);
+
+            AlarmReqModel alarmReqModel = AlarmReqModel.builder()
+                    .event_type("Abnormal")
+                    .resource_id(item.getProduct_cd())
+                    .resource_type(item.getProduct_cd())
+                    .csp_type(item.getCsp_type())
+                    .urgency("Warning")
+                    .plan(item.getAbnormal_rating())
+                    .note("지난달 비용(" + item.getSubject_cost() + " USD) 대비 이번달 비용(" + item.getStandard_cost() + " USD)이 " + item.getPercentage_point() + " % 발생했습니다.")
+                    .workspace_cd(item.getWorkspace_cd())
+                    .project_cd(item.getProject_cd())
+                    .build();
+
+            alarmService.sendAlarm(alarmReqModel);
 
             return item;
         };

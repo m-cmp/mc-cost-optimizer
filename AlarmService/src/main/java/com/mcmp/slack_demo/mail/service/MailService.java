@@ -51,14 +51,22 @@ public class MailService {
     public void sendEmail(CostOptiAlarmReqModel optiAlarmReqModel, ClassPathResource file){
         SendMailFormModel mailFormModel = new SendMailFormModel();
         BeanUtils.copyProperties(optiAlarmReqModel, mailFormModel);
-        mailFormModel.setOccure_time(ZonedDateTime.now(ZoneId.of("UTC")).toLocalDateTime());
+        mailFormModel.setOccure_time(ZonedDateTime.now().toLocalDateTime());
+        mailFormModel.setAlarm_impl("mail");
+
+        int checkDuplicateMail = commonService.getAlertDuplicate(mailFormModel);
+        if(checkDuplicateMail >= 1){
+            log.info("############Send OptiAlertEmail Duplicate : {} - {} - {}############", mailFormModel.getEvent_type(), mailFormModel.getResource_id()
+                    , (mailFormModel.getAccount_id() != null ? mailFormModel.getAccount_id() : mailFormModel.getProject_cd()));
+            return;
+        }
 
         try {
             JavaMailSender emailSender = mailConfig.getJavaMailSender();
             MimeMessage mimeMessage = emailSender.createMimeMessage();
 
             // find mail receiver
-            mailFormModel.setTo(getAlarmMailReceivers(optiAlarmReqModel.getResource_id(), optiAlarmReqModel.getAccount_id()));
+            mailFormModel.setTo(getAlarmMailReceivers(optiAlarmReqModel));
 
             String mailMessage = "[MCMP-Notice] Cost Alarm occurred";
             switch (optiAlarmReqModel.getEvent_type()){
@@ -66,22 +74,29 @@ public class MailService {
                     mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Caution Unused Resources");
                     mailMessage = "MCMP Cost에서 미사용 자원 주의 알람이 발생했습니다." +
                             "<br><br>" +
-                            "계정 : " + mailFormModel.getAccount_id() + "<br>" +
-                            "리소스 ID : " + mailFormModel.getResource_id();
+                            "CSP : " + mailFormModel.getCsp_type() + "<br>" +
+                            "리소스 ID : " + mailFormModel.getResource_id() + "<br>" +
+                            "리소스 Type : " + mailFormModel.getResource_type() + "<br>" +
+                            "해당 자원이 미사용 자원으로 의심됩니다.";
                     break;
                 case "Abnormal":
                     mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Warning Abnormal Cost");
                     mailMessage = "MCMP Cost에서 이상 비용 경고 알람이 발생했습니다." +
                             "<br><br>" +
-                            "계정 : " + mailFormModel.getAccount_id() + "<br>" +
-                            "리소스 ID : " + mailFormModel.getResource_id();
+                            "CSP : " + mailFormModel.getCsp_type() + "<br>" +
+                            "제품군 : " + mailFormModel.getResource_type() + "<br>" +
+                            "이상비용 등급 : " + mailFormModel.getPlan() + "<br>" +
+                            "이상비용이 발생했습니다. " + mailFormModel.getNote();
                     break;
                 case "Resize":
-                    mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Advise Resizing Resources");
+                    mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Advise Right Size Resources");
                     mailMessage = "MCMP Cost에서 자원 최적화 권고 알람이 발생했습니다." +
                             "<br><br>" +
-                            "계정 : " + mailFormModel.getAccount_id() + "<br>" +
-                            "리소스 ID : " + mailFormModel.getResource_id();
+                            "CSP : " + mailFormModel.getCsp_type() + "<br>" +
+                            "리소스 ID : " + mailFormModel.getResource_id() + "<br>" +
+                            "리소스 Type : " + mailFormModel.getResource_type() + "<br>" +
+                            "추천 Plan : " + mailFormModel.getPlan() + "<br>" +
+                            mailFormModel.getNote();
                     break;
             }
 
@@ -155,14 +170,8 @@ public class MailService {
         return mailingDao.getMailingInfo();
     }
 
-    private List<String> getAlarmMailReceivers(String resource_id, String account_id){
-        Map<String, String> param = Map.of(
-                "resource_id", resource_id,
-                "account_id", account_id
-        );
-
+    private List<String> getAlarmMailReceivers(CostOptiAlarmReqModel param){
         return commonService.getAlarmMailReceivers(param);
-
     }
 
 }

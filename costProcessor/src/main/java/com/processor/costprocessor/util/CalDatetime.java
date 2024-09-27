@@ -44,7 +44,7 @@ public class CalDatetime {
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
         LocalDate lastMonthSameDate = yesterday.minusMonths(1);
-        DayOfWeek dayOfWeek = lastMonthSameDate.getDayOfWeek();
+        DayOfWeek dayOfWeek = yesterday.getDayOfWeek();
         LocalDate lastMonthFirstDay = lastMonthSameDate.with(TemporalAdjusters.firstDayOfMonth());
 
         for(LocalDate date = lastMonthFirstDay;

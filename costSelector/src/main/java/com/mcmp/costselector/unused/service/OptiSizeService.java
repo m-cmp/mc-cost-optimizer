@@ -1,7 +1,9 @@
 package com.mcmp.costselector.unused.service;
 
+import com.mcmp.costselector.model.util.AlarmReqModel;
 import com.mcmp.costselector.unused.dao.UnusedSelectDao;
 import com.mcmp.costselector.unused.model.*;
+import com.mcmp.costselector.util.service.AlarmService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class OptiSizeService {
 
     @Autowired
     private UnusedSelectDao unusedSelectDao;
+
+    @Autowired
+    private AlarmService alarmService;
 
     public String analyzeTypeForResizing(UnusedResourceStatusModel rscStatus){
         LocalDate curDate = ZonedDateTime.now().toLocalDate();
@@ -68,6 +73,7 @@ public class OptiSizeService {
 
                 OptiEC2SizeRstModel rcmdType = unusedSelectDao.getRscEc2OptiSize(paramMap);
                 InstOptiRcmdRst rcmdRst;
+                String alarmNote;
                 if(rcmdType != null){
                     rcmdRst = InstOptiRcmdRst.builder()
                             .createDT(ZonedDateTime.now().toLocalDate())
@@ -80,6 +86,8 @@ public class OptiSizeService {
                             .originUSD(targetMeta.getUsd())
                             .rcmdUSD(rcmdType.getUsd())
                             .build();
+                    alarmNote = "인스턴스(" + rscStatus.getResource_id() + ")를 기존 타입 : "
+                            + rscStatus.getInstance_type() + "에서 추천 타입 : " + rcmdType.getInstType() + "으로 변경하는 것을 추천드립니다.";
                 } else{
                     rcmdRst = InstOptiRcmdRst.builder()
                             .createDT(ZonedDateTime.now().toLocalDate())
@@ -92,9 +100,24 @@ public class OptiSizeService {
                             .originUSD(targetMeta.getUsd())
                             .rcmdUSD(null)
                             .build();
+                    alarmNote = "인스턴스(" + rscStatus.getResource_id() + ")를 기존 타입 : "
+                            + rscStatus.getInstance_type() + "에서 " + resizingType + "Sizing으로 변경하는 것을 추천드립니다.";
                 }
                 log.info("Instance size recommendation results : " + rcmdRst);
                 unusedSelectDao.insertInstOptiRcmd(rcmdRst);
+
+                AlarmReqModel alarmReqModel = AlarmReqModel.builder()
+                        .event_type("Resize")
+                        .resource_id(rscStatus.getResource_id())
+                        .resource_type(rscStatus.getRsrc_type())
+                        .csp_type(rscStatus.getCsp_type())
+                        .account_id(rscStatus.getCsp_account())
+                        .urgency("Advise")
+                        .plan(resizingType)
+                        .note(alarmNote)
+                        .build();
+
+                alarmService.sendAlarm(alarmReqModel);
             }
         }
 
