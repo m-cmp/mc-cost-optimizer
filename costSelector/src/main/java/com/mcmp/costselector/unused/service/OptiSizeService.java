@@ -35,22 +35,28 @@ public class OptiSizeService {
                 .build();
         CpuAssetMartModel cpuRst = unusedSelectDao.getCPUAssetMart(cpuMart);
 
-        AssetMartReqModel networkMart = AssetMartReqModel.builder()
-                .cur_date(curDate)
-                .setting_value(5)
-                .setting_period(4)
-                .resource_id(rscStatus.getResource_id())
-                .metric_type("network")
-                .build();
-        NetworkAssetMartModel netRst = unusedSelectDao.getNetworkMart(networkMart);
+//                    20240927. network asset -> 3차년도 예정
+//        AssetMartReqModel networkMart = AssetMartReqModel.builder()
+//                .cur_date(curDate)
+//                .setting_value(5)
+//                .setting_period(4)
+//                .resource_id(rscStatus.getResource_id())
+//                .metric_type("network")
+//                .build();
+//        NetworkAssetMartModel netRst = unusedSelectDao.getNetworkMart(networkMart);
 
         String resizingType;
-        if(cpuRst != null && 4 <= cpuRst.getC_total_count() || netRst != null && 4 <= netRst.getN_total_count()){
+//                    20240927. network asset -> 3차년도 예정
+//        if(cpuRst != null && 4 <= cpuRst.getC_total_count() || netRst != null && 4 <= netRst.getN_total_count()){
+        if(cpuRst != null && 4 <= cpuRst.getC_total_count()){
             if(cpuRst != null && cpuRst.getAvg_amount() > 80){
                 resizingType = "Up";
                 rscStatus.setIsUpsizeTarget(true);
                 rscStatus.setIsDownsizeTarget(false);
-            } else if(cpuRst != null && (cpuRst.getAvg_amount() <= 10 || cpuRst.getMax_amount() <= 50) || netRst != null && netRst.getAvg_amount() <= 5){
+            }
+//                    20240927. network asset -> 3차년도 예정
+//            else if(cpuRst != null && (cpuRst.getAvg_amount() <= 10 || cpuRst.getMax_amount() <= 50) || netRst != null && netRst.getAvg_amount() <= 5){
+            else if(cpuRst != null && (cpuRst.getAvg_amount() <= 10 || cpuRst.getMax_amount() <= 50)){
                 resizingType = "Down";
                 rscStatus.setIsUpsizeTarget(false);
                 rscStatus.setIsDownsizeTarget(true);
