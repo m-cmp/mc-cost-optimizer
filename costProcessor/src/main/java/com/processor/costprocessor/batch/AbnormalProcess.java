@@ -120,7 +120,7 @@ public class AbnormalProcess {
             item.setPercentage_point(percent);
 
             if(percent >= 30){
-                item.setAbnormal_rating("Alarm");
+                item.setAbnormal_rating("Critical");
             } else if(percent >= 20){
                 item.setAbnormal_rating("Caution");
             } else if(percent >= 10){
