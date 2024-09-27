@@ -3,6 +3,7 @@ package com.mcmp.slack_demo.common.service;
 import com.mcmp.slack_demo.common.dao.CommonDao;
 import com.mcmp.slack_demo.common.model.costOpti.CostOptiAlarmReqModel;
 import com.mcmp.slack_demo.mail.model.SendMailFormModel;
+import com.mcmp.slack_demo.slack.model.SendSlackFormModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,13 @@ public class CommonService {
 
     public List<String> getAlarmMailReceivers(CostOptiAlarmReqModel param){
         return commonDao.getAlarmMailReceivers(param);
+    }
+
+    public int getSlackDuplicate(SendSlackFormModel model){
+        return commonDao.getSlackDuplicate(model);
+    }
+
+    public void insertSlackHistory(SendSlackFormModel model){
+        commonDao.insertSlackHistory(model);
     }
 }

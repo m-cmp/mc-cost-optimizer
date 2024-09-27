@@ -33,7 +33,7 @@ public class AlarmService {
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
             Map<String, Object> body = new HashMap<>();
-            body.put("alarm_type", List.of("mail"));
+            body.put("alarm_type", List.of("mail", "slack"));
             body.put("event_type", req.getEvent_type());
             body.put("resource_id", req.getResource_id());
             body.put("resource_type", req.getResource_type());

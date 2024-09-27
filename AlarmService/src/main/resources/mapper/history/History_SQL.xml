@@ -29,7 +29,7 @@
                , #{note}
                , date(#{occure_time})
                , #{alarm_impl}
-               , #{workspace_cd})
+               , COALESCE(#{project_cd}, 'BLANK_00_'))
             ON DUPLICATE KEY UPDATE occure_dt = #{occure_time}
                 , account_id = #{account_id}
                 , urgency = #{urgency}
@@ -57,4 +57,39 @@
            </choose>
     </select>
 
+    <select id="getSlackDuplicate" parameterType="com.mcmp.slack_demo.slack.model.SendSlackFormModel" resultType="int">
+        SELECT count(*)
+        FROM alarm_history ah
+        WHERE 1=1
+        AND ah.event_type = #{event_type}
+        AND ah.resource_id = #{resource_id}
+        AND ah.resource_type = #{resource_type}
+        AND ah.occure_date = date(#{occure_time})
+        AND ah.csp_type = #{csp_type}
+        AND ah.alarm_impl = #{alarm_impl}
+        <if test="account_id == null">
+            AND ah.project_cd = #{project_cd}
+        </if>
+    </select>
+
+    <insert id="insertSlackHistory" parameterType="com.mcmp.slack_demo.slack.model.SendSlackFormModel">
+        INSERT INTO alarm_history(event_type, csp_type, resource_id, resource_type, occure_dt, account_id, urgency, plan, note, occure_date, alarm_impl, project_cd)
+        VALUES (#{event_type}
+               , #{csp_type}
+               , #{resource_id}
+               , #{resource_type}
+               , #{occure_time}
+               , #{account_id}
+               , #{urgency}
+               , #{plan}
+               , #{note}
+               , date(#{occure_time})
+               , #{alarm_impl}
+               , COALESCE(#{project_cd}, 'BLANK_00_'))
+            ON DUPLICATE KEY UPDATE occure_dt = #{occure_time}
+                                 , account_id = #{account_id}
+                                 , urgency = #{urgency}
+                                 , plan = #{plan}
+                                 , note = #{note}
+    </insert>
 </mapper>
