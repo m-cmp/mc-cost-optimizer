@@ -32,5 +32,6 @@
                 #{selectedProject}
             </foreach>)
             AND ah.occure_date >= DATE_SUB(#{curDate}, INTERVAL 7 DAY)
+        ORDER BY ah.occure_dt DESC
     </select>
 </mapper>
