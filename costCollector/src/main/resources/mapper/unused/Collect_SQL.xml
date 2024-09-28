@@ -9,7 +9,7 @@
     <select id="getResouces" parameterType="com.mcmp.collector.model.unused.ResourceSetParamModel" resultType="com.mcmp.collector.model.unused.ResourceSetModel">
         select co.lineitem_resourceid as instanceid
              , #{endDt} as createDt
-             , 'ec2' as resourceType
+             , 'AmazonEC2' as resourceType
              , co.product_instancetype as instanceType
              , co.product_region as regionId
              , co.product_location as regionNM
