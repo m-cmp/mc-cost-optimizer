@@ -5,6 +5,7 @@ import com.processor.costprocessor.model.unused.DailyAssetAmountModel;
 import com.processor.costprocessor.model.util.AlarmReqModel;
 import com.processor.costprocessor.util.AlarmService;
 import com.processor.costprocessor.util.CalDatetime;
+import com.processor.costprocessor.util.NumericCalculator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -56,6 +57,9 @@ public class AbnormalProcess {
 
     @Autowired
     private AlarmService alarmService;
+
+    @Autowired
+    private NumericCalculator numericCalculator;
 
     @Bean
     public CustomerItemListener customerListener(){
@@ -138,7 +142,7 @@ public class AbnormalProcess {
                     .csp_type(item.getCsp_type())
                     .urgency("Warning")
                     .plan(item.getAbnormal_rating())
-                    .note("지난달 비용(" + item.getSubject_cost() + " USD) 대비 이번달 비용(" + item.getStandard_cost() + " USD)이 " + item.getPercentage_point() + " % 발생했습니다.")
+                    .note("지난달 비용(" + numericCalculator.parseExponentialFormat(item.getSubject_cost()) + " USD) 대비 이번달 비용(" + numericCalculator.parseExponentialFormat(item.getStandard_cost()) + " USD)이 " + item.getPercentage_point() + " % 발생했습니다.")
                     .workspace_cd(item.getWorkspace_cd())
                     .project_cd(item.getProject_cd())
                     .build();
