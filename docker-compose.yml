@@ -97,6 +97,8 @@ services:
       spring.datasource.hikari.batch.jdbc-url: ${COST_DB_URL}
       spring.datasource.hikari.batch.username: ${COST_DB_USERNM}
       spring.datasource.hikari.batch.password: ${COST_DB_PW}
+      asset.collect.url: ${ASSET_MONITORING_SERVER}
+      assetCollectBatchCronSchedule: ${ASSET_COLLECT_BATCH_CRON_SCHEDULE}
 networks:
   mcmp_cost_network:
     driver: bridge

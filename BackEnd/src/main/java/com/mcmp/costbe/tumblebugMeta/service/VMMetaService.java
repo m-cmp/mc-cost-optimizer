@@ -55,10 +55,10 @@ public class VMMetaService {
             ResponseEntity<TBBNSModel> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, httpEntity, TBBNSModel.class);
             TBBNSModel response = responseEntity.getBody();
 
-            if(!response.getNs().isEmpty()){
+            if(response.getNs() != null && !response.getNs().isEmpty()){
                 return response.getNs();
             }else{
-                log.warn("TUMBLEBUG META - NS IS EMPTY");
+                log.warn("TUMBLEBUG META - NS IS EMPTY => response : {}", response);
                 return new ArrayList<>();
             }
         } catch (HttpClientErrorException | HttpServerErrorException clientError) {
@@ -89,10 +89,10 @@ public class VMMetaService {
                 ResponseEntity<TBBMCIModel> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, httpEntity, TBBMCIModel.class);
                 TBBMCIModel response = responseEntity.getBody();
 
-                if(!response.getMci().isEmpty()){
+                if(response.getMci() != null && !response.getMci().isEmpty()){
                     return response.getMci();
                 }else{
-                    log.warn("TUMBLEBUG META - MCI => MCI IS EMPTY");
+                    log.warn("TUMBLEBUG META - MCI => MCI IS EMPTY => response : {}", response);
                     return new ArrayList<>();
                 }
             } catch (HttpClientErrorException | HttpServerErrorException clientError) {
