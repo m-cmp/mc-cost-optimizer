@@ -17,8 +17,6 @@ public class AbnormalRstModel {
     @Schema(description = "이상비용 목록")
     private List<AbnoramlItemModel> abnoramlItems;
 
-    @Schema(description = "선택 워크스페이스", example = "workspaceCode1")
-    private String selectedWorkspace;
 
     @Schema(description = "선택 프로젝트", example = "[\"projectCode1\", \"projectCode2\"]")
     private List<String> selectedProjects;

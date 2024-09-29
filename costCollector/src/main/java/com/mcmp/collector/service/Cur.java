@@ -185,7 +185,6 @@ public class Cur {
                         .csp("AWS")
                         .account(payerId)
                         .prj_cd("testPrj")
-                        .workspace_cd("testWs")
                         .year_month(todoCollectMonth)
                         .build();
 

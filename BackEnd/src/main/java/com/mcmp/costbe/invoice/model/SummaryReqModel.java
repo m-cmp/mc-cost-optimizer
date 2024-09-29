@@ -17,7 +17,7 @@ public class SummaryReqModel extends PrevMonthsModel {
     private List<String> selectedProjects;
     @Schema(description = "CSP", example = "[\"AWS\"]", required = false)
     private List<String> selectedCsps;
-    @Schema(description = "워크스페이스 코드", example = "workspaceCode1", required = true)
+    @Schema(description = "워크스페이스 코드", example = "workspaceCode1", required = false, deprecated = true)
     private String selectedWorkspace;
 
     @Schema(required = false)

@@ -41,7 +41,6 @@ public class AlarmService {
             body.put("urgency", req.getUrgency());
             body.put("plan", req.getPlan());
             body.put("note", req.getNote());
-            body.put("workspace_cd", req.getWorkspace_cd());
             body.put("project_cd", req.getProject_cd());
             HttpEntity<?> httpEntity = new HttpEntity<>(body, httpHeaders);
 

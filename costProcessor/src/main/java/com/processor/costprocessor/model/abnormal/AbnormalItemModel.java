@@ -14,6 +14,5 @@ public class AbnormalItemModel {
     private double standard_cost;
     private double subject_cost;
     private String project_cd;
-    private String workspace_cd;
     private String csp_type;
 }

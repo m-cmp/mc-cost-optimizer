@@ -15,8 +15,6 @@ public class InstOptiSizeRstModel {
     @Schema(description = "인스턴스 추천 사이즈 목록")
     private List<InstOptiSizeItemModel> optiSizeItems;
 
-    @Schema(description = "선택 워크스페이스", example = "workspaceCode1")
-    private String selectedWorkspace;
 
     @Schema(description = "선택 프로젝트", example = "[\"projectCode1\", \"projectCode2\"]")
     private List<String> selectedProjects;
