@@ -158,9 +158,13 @@ public class VMMetaService {
 
                         }
 
-                        tbbDao.insertTBBServicegroupMeta(resourcegroupMetaList);
+                        if(resourcegroupMetaList.size() >= 1){
+                            tbbDao.insertTBBServicegroupMeta(resourcegroupMetaList);
+                        }
+
                     } catch (Exception e){
                         e.printStackTrace();
+                        throw new RuntimeException();
                     }
 
                 }

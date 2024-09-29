@@ -20,9 +20,9 @@
                , #{item.mciNm}
                , #{item.instanceRunningStatus})
         </foreach>
-            ON DUPLICATE KEY UPDATE service_nm = VALUES(service_nm)
-                                 , vm_nm = VALUES(vm_nm)
-                                 , mci_nm = VALUES(mci_nm)
-                                 , instance_running_status = VALUES(instance_running_status)
+            ON DUPLICATE KEY UPDATE service_nm = values(service_nm)
+                                 , vm_nm = values(vm_nm)
+                                 , mci_nm = values(mci_nm)
+                                 , instance_running_status = values(instance_running_status)
     </insert>
 </mapper>

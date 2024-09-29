@@ -211,7 +211,7 @@
           FROM tbl_table_billing_detail_${year_month}
          GROUP BY lineitem_resourceid
             ON DUPLICATE KEY UPDATE
-                csp_instanceid = csp_instanceid
+                csp_instanceid = values(csp_instanceid)
     </insert>
 
     <insert id="insertMonthlySum" parameterType="String">
