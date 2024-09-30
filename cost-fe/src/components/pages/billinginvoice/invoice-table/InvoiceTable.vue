@@ -4,28 +4,9 @@
         <div class="card-header">
             <h3 class="card-title">Invoices</h3>
         </div>
-        <!-- <div class="card-body border-bottom py-3">
-            <div class="d-flex">
-                <div class="text-muted">
-                    Show
-                    <div class="mx-2 d-inline-block">
-                        <input type="text" class="form-control form-control-sm" v-model="entriesCount" size="3" aria-label="Invoices count">
-                    </div>
-                    entries
-                </div>
-                <div class="ms-auto text-muted">
-                    Search:
-                    <div class="ms-2 d-inline-block">
-                        <input type="text" class="form-control form-control-sm" v-model="searchQuery" aria-label="Search invoice">
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
         <div ref="tableRef" id="example-table-tabulator"></div>
 
         <div class="card-footer d-flex align-items-center">
-            <!-- <p class="m-0 text-muted">Showing <span>1</span> to <span>{{ entriesCount }}</span> of <span>16</span> entries</p> -->
             <ul class="pagination m-0 ms-auto">
                 <li class="page-item disabled">
                     <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
@@ -71,14 +52,11 @@ import {
 import {
     useSelectedOptionsStore
 } from '@/stores/selectedOptions';
-import {
-    useCalCurrencyStore
-} from '@/stores/calCurrency';
+
 
 export default {
     name: 'InvoiceTable',
     setup() {
-        const calCurrencyStore = useCalCurrencyStore();
         const store = useSelectedOptionsStore();
         const entriesCount = ref(8);
         const searchQuery = ref('');
@@ -90,8 +68,8 @@ export default {
             groupBy: ["csp", "accountID", "productID"],
             groupHeader: (value, count, data) => {
                 // 그룹의 bill 합산
-                const totalBill = data.reduce((sum, row) => sum + (calCurrencyStore.usdToKrw(row.bill) || 0), 0);
-                return `${value} (${count} items) - Total: ${Math.round(totalBill).toLocaleString()} KRW`;
+                const totalBill = data.reduce((sum, row) => sum + (row.bill || 0), 0);
+                return `${value} (${count} items) - Total: ${totalBill.toLocaleString()} USD`;
             },
             columns: [{
                     title: "CSP",
@@ -116,12 +94,14 @@ export default {
                     headerHozAlign: "center"
                 },
                 {
-                    title: "Billing (KRW)",
+                    title: "Billing (USD)",
                     field: "bill",
-                    // formatter: "star",
                     hozAlign: "right",
                     headerHozAlign: "center",
-                    formatter: cell => Math.round(calCurrencyStore.usdToKrw(cell.getValue())).toLocaleString()
+                    formatter: cell => {
+                        const value = cell.getValue();
+                        return value !== null && value !== undefined ? value.toLocaleString() + " USD" : "-";
+                    }
                 }
             ],
             data: [],
@@ -155,6 +135,7 @@ export default {
                 ];
                 const mergedData = data.concat(additionalData);
                 tableOption.value.data = mergedData;
+
                 if (tableRef.value) {
                     new Tabulator(tableRef.value, tableOption.value)
                 }

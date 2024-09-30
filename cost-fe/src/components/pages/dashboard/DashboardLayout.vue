@@ -24,7 +24,7 @@
                       :origData="usageAssetData"/>
                     </div>
                     <div class="col-lg-6">
-                        <DashboardCommitment />
+                        <!-- <DashboardCommitment /> -->
                     </div>
                 </div>
             </div>
@@ -44,7 +44,7 @@ import DashboardFooter from './dashboard-footer/DashboardFooter.vue'
 import DashboardBilling from './dashboard-billing-amount/DashboardBilling.vue'
 import DashboardTop from './dashboard-top-resources/DashboardTop5.vue'
 import DashboardAsset from './dashboard-asset/DashboardAsset.vue'
-import DashboardCommitment from './dashboard-commitment/DashboardCommitment.vue'
+// import DashboardCommitment from './dashboard-commitment/DashboardCommitment.vue'
 import axios from "axios";
 import ENDPOINT from '@/api/Endpoints'
 import {useSelectedOptionsStore} from "@/stores/selectedOptions";
@@ -57,7 +57,7 @@ export default {
         DashboardBilling,
         DashboardTop,
         DashboardAsset,
-        DashboardCommitment
+        // DashboardCommitment
     },
   data() {
     return {

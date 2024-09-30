@@ -8,9 +8,9 @@
             <div class="px-5 total-amount">
                 <div class="text-muted">
                     <span class="status-dot bg-primary"></span>
-                    총금액
+                    총 금액
                 </div>
-                <div class="h2">{{ toFixedLocaleString(totalCost) }}</div>
+                <div class="h2">{{ totalCost.toLocaleString() }} USD</div>
                 <hr class="divider">
             </div>
             <div class="amount-grid">
@@ -19,7 +19,7 @@
                         <span class="status-dot" :class="item.colorClass"></span>
                         {{ item.csp }}
                     </div>
-                    <div class="h2">{{ toFixedLocaleString(item.cost) }}</div>
+                    <div class="h2">{{ item.cost.toLocaleString() }} USD</div>
                 </div>
             </div>
         </div>
@@ -37,40 +37,29 @@ import {
 import {
     useSelectedOptionsStore
 } from '@/stores/selectedOptions';
-import {
-    useCalCurrencyStore
-} from '@/stores/calCurrency';
 import axios from 'axios';
 import ENDPOINT from '@/api/Endpoints'
-// import ps from '@/utils/common.js';
 
 export default {
     name: 'BaseInfo',
     setup() {
         const selectedOptionsStore = useSelectedOptionsStore();
-        const calCurrencyStore = useCalCurrencyStore();
 
         const eachCost = ref([]);
-
         const totalCost = ref(0);
 
         const getCostData = async () => {
             try {
                 const response = await axios.post(ENDPOINT.be + '/api/v2/invoice/getBillingBaseInfo', selectedOptionsStore.selectedOptions)
                 eachCost.value = response.data.Data;
-                CalculateTotalCost(); // 데이터를 가져온 후에 총 금액 계산
+                CalculateTotalCost();
             } catch (error) {
                 console.error(error);
             }
         }
 
-
         const CalculateTotalCost = () => {
             totalCost.value = eachCost.value.reduce((sum, item) => sum + item.cost, 0);
-        };
-
-        const toFixedLocaleString = (number) => {
-            return Math.round(calCurrencyStore.usdToKrw(number)).toLocaleString() + ' KRW';
         };
 
         watch(() => selectedOptionsStore.selectedOptions, () => {
@@ -86,7 +75,6 @@ export default {
         return {
             eachCost,
             totalCost,
-            toFixedLocaleString,
             selectedOptions: selectedOptionsStore.selectedOptions
         };
     }
@@ -97,22 +85,18 @@ export default {
 .total-amount {
     width: 100%;
     text-align: left;
-    font-size: 1.25rem;
-    /* 2포인트 증가 */
+    font-size: 1.5rem;
     margin-bottom: 10px;
 }
 
 .total-amount .h2 {
     font-size: 2.5rem;
-    /* 총금액 폰트 사이즈 키우기 */
 }
 
 .divider {
     width: 100%;
     border: none;
     border-top: 1.5px solid #666;
-    /* 회색 줄 */
     margin: 10px 0;
-    /* 줄 위아래 간격 */
 }
 </style>

@@ -7,7 +7,7 @@
                 <div class="container-xl">
                     <div class="row row-deck row-cards">
                         <BaseInfo />
-                        <BillingSummary />
+                        <MonthlyOverview />
                         <InvoiceTable />
                     </div>
                 </div>
@@ -20,7 +20,7 @@
 import DashboardSelectbox from '../dashboard/dashboard-selectbox/DashboardSelectbox.vue'
 import DashboardHeader from '../dashboard/dashboard-header/DashboardHeader.vue'
 import BaseInfo from './base-info/BaseInfo.vue'
-import BillingSummary from './billing-summary/BillingSummary.vue'
+import MonthlyOverview from './billing-summary/monthlyOverview.vue'
 import InvoiceTable from './invoice-table/InvoiceTable.vue'
 
 export default {
@@ -29,7 +29,7 @@ export default {
         DashboardHeader,
         DashboardSelectbox,
         BaseInfo,
-        BillingSummary,
+        MonthlyOverview,
         InvoiceTable
     },
     data() {
@@ -40,7 +40,6 @@ export default {
 </script>
 
 <style>
-/* select box에 대한 스타일 */
 .selectBoxList {
     display: flex;
     grid-gap: 30px;
@@ -139,7 +138,6 @@ export default {
     border-bottom: 0 none;
 }
 
-/* 그래프 카드에 대한 스타일 */
 .flex-container {
     display: flex;
     justify-content: space-between;
@@ -167,9 +165,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* This will align items to the bottom */
     height: 240px;
-    /* Ensure the container takes full height for proper alignment */
 }
 
 .text-container-right-text p {
@@ -185,27 +181,22 @@ export default {
     border-radius: 4px;
 }
 
-/* 청구금액 summary */
 .total-amount {
     width: 100%;
     text-align: left;
     font-size: 1.25rem;
-    /* 2포인트 증가 */
     margin-bottom: 10px;
 }
 
 .total-amount .h2 {
     font-size: 2.5rem;
-    /* 총금액 폰트 사이즈 키우기 */
 }
 
 .divider {
     width: 100%;
     border: none;
     border-top: 1.5px solid #666;
-    /* 회색 줄 */
     margin: 10px 0;
-    /* 줄 위아래 간격 */
 }
 
 .amount-grid {
@@ -215,7 +206,6 @@ export default {
     width: 100%;
 }
 
-/* 상태 점 스타일 */
 .status-dot {
     display: inline-block;
     width: 10px;
@@ -225,7 +215,6 @@ export default {
     margin-right: 0.5rem;
 }
 
-/* 색상 클래스 */
 .bg-primary {
     background-color: #467fcf;
 }
