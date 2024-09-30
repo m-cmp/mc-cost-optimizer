@@ -25,7 +25,6 @@
                     #{selectedProject}
                 </foreach>
             </if>
-           AND ms.workspace_cd = #{selectedWorkspace}
          GROUP BY ym.year_month, csp_providers.csp
          ORDER BY ym.year_month DESC, csp_providers.csp
     </select>
@@ -46,7 +45,6 @@
                 #{selectedCsp}
             </foreach>
         </if>
-           AND sm.workspace_cd = #{selectedWorkspace}
         <if test="selectedProjects != null and selectedProjects.size() > 0">
             AND sm.service_cd IN
             <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">

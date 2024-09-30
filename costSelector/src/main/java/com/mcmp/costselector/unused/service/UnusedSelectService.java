@@ -95,17 +95,20 @@ public class UnusedSelectService {
                     log.info("Unused instance screening results : " + rstModel);
                     unusedSelectDao.insertBatchRst(rstModel);
 
-                    AlarmReqModel alarmReqModel = AlarmReqModel.builder()
-                            .event_type("Unused")
-                            .resource_id(rsStatus.getResource_id())
-                            .resource_type(rsStatus.getRsrc_type())
-                            .csp_type(rsStatus.getCsp_type())
-                            .account_id(rsStatus.getCsp_account())
-                            .urgency("Caution")
-                            .plan(plan)
-                            .build();
+                    if(!"None".equals(plan)){
+                        AlarmReqModel alarmReqModel = AlarmReqModel.builder()
+                                .event_type("Unused")
+                                .resource_id(rsStatus.getResource_id())
+                                .resource_type(rsStatus.getRsrc_type())
+                                .csp_type(rsStatus.getCsp_type())
+                                .account_id(rsStatus.getCsp_account())
+                                .urgency("Caution")
+                                .plan(plan)
+                                .build();
 
-                    alarmService.sendAlarm(alarmReqModel);
+                        alarmService.sendAlarm(alarmReqModel);
+                    }
+
                 }
 
             }

@@ -206,37 +206,34 @@
     </insert>
 
     <insert id="insertRscGrpMeta" parameterType="com.mcmp.collector.model.cur.RscGrpMetaModel">
-        INSERT INTO servicegroup_meta(csp_type, csp_account, csp_instanceid, service_cd, workspace_cd)
-        SELECT #{csp}, #{account}, lineitem_resourceid, #{prj_cd}, #{workspace_cd}
+        INSERT INTO servicegroup_meta(csp_type, csp_account, csp_instanceid, service_cd)
+        SELECT #{csp}, #{account}, lineitem_resourceid, #{prj_cd}
           FROM tbl_table_billing_detail_${year_month}
          GROUP BY lineitem_resourceid
             ON DUPLICATE KEY UPDATE
-                csp_instanceid = csp_instanceid
+                csp_instanceid = values(csp_instanceid)
     </insert>
 
     <insert id="insertMonthlySum" parameterType="String">
-        INSERT INTO monthly_summation(`year_month` , project_cd, csp, total_cost, workspace_cd)
+        INSERT INTO monthly_summation(`year_month` , project_cd, csp, total_cost)
         SELECT ${value}
              , sm.service_cd
              , sm.csp_type
              , COALESCE(SUM(ttbd.lineitem_unblendedcost), 0)
-             , sm.workspace_cd
           FROM tbl_table_billing_detail_${value} ttbd
           LEFT JOIN servicegroup_meta sm
             ON sm.csp_instanceid = ttbd.lineitem_resourceid
          GROUP BY sm.csp_type
                , sm.service_cd
-               , sm.workspace_cd
             ON DUPLICATE KEY update total_cost = values(total_cost)
     </insert>
 
     <insert id="insertDailySumByProduct" parameterType="String">
-        INSERT INTO daily_summation_by_product (`date`, product, total_cost, project_cd, workspace_cd, csp_type)
+        INSERT INTO daily_summation_by_product (`date`, product, total_cost, project_cd, csp_type)
         SELECT DATE(ttbd.lineitem_usagestartdate) AS `date`
              , ttbd.lineitem_productcode AS product
              , COALESCE(SUM(ttbd.lineitem_unblendedcost), 0) AS total_cost
              , sm.service_cd AS project_cd
-             , sm.workspace_cd AS workspace_cd
              , 'AWS' as csp_type
           FROM tbl_table_billing_detail_${value} ttbd
           LEFT JOIN servicegroup_meta sm
@@ -245,7 +242,6 @@
          GROUP BY ttbd.lineitem_productcode
              , DATE(ttbd.lineitem_usagestartdate)
              , sm.service_cd
-             , sm.workspace_cd
             ON DUPLICATE KEY UPDATE total_cost = values(total_cost)
     </insert>
 

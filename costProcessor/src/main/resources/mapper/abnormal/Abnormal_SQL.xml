@@ -6,7 +6,6 @@
              , tbl1.total_cost AS standard_cost
              , COALESCE(tbl2.avg_cost, 0) AS subject_cost
              , tbl1.project_cd AS project_cd
-             , tbl1.workspace_cd AS workspace_cd
              , tbl1.csp_type AS csp_type
           FROM (SELECT *
                   FROM daily_summation_by_product dsbp
@@ -15,7 +14,6 @@
           LEFT OUTER JOIN (SELECT dsbp2.product
                                 , COALESCE(AVG(dsbp2.total_cost), 0) AS avg_cost
                                 , dsbp2.project_cd
-                                , dsbp2.workspace_cd
                              FROM daily_summation_by_product dsbp2
                             WHERE 1=1
                               AND dsbp2.`date` IN (
@@ -23,15 +21,14 @@
                                     #{item}
                                 </foreach>
                                   )
-                            GROUP BY dsbp2.product, dsbp2.project_cd, dsbp2.workspace_cd) AS tbl2
+                            GROUP BY dsbp2.product, dsbp2.project_cd) AS tbl2
                                ON tbl2.product = tbl1.product
                               AND tbl2.project_cd = tbl1.project_cd
-                              AND tbl2.workspace_cd = tbl1.workspace_cd
          LIMIT #{_skiprows}, #{_pagesize}
     </select>
     
     <insert id="insertDailyAbnoramlCost" parameterType="com.processor.costprocessor.model.abnormal.AbnormalItemModel">
-        INSERT INTO daily_abnormal_by_product(collect_dt, product_cd, abnormal_rating, percentage_point, standard_cost, subject_cost, project_cd, workspace_cd, csp_type)
+        INSERT INTO daily_abnormal_by_product(collect_dt, product_cd, abnormal_rating, percentage_point, standard_cost, subject_cost, project_cd, csp_type)
         VALUES (#{collect_dt}
              , #{product_cd}
              , #{abnormal_rating}
@@ -39,7 +36,6 @@
              , #{standard_cost}
              , #{subject_cost}
              , #{project_cd}
-             , #{workspace_cd}
              , #{csp_type})
             ON DUPLICATE KEY UPDATE abnormal_rating = #{abnormal_rating}
                                   , percentage_point = #{percentage_point}

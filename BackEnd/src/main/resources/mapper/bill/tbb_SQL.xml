@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tbb">
+    <insert id="insertTBBServicegroupMeta" parameterType="java.util.List">
+        INSERT INTO servicegroup_meta(csp_type, csp_account, csp_instanceid, service_cd, service_nm, service_uid
+        , vm_id, vm_uid, vm_nm, mci_id, mci_uid, mci_nm, instance_running_status)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.cspType}
+               , #{item.cspAccount}
+               , #{item.cspInstanceid}
+               , #{item.serviceCd}
+               , #{item.serviceNm}
+               , #{item.serviceUid}
+               , #{item.vmId}
+               , #{item.vmUid}
+               , #{item.vmNm}
+               , #{item.mciId}
+               , #{item.mciUid}
+               , #{item.mciNm}
+               , #{item.instanceRunningStatus})
+        </foreach>
+            ON DUPLICATE KEY UPDATE service_nm = values(service_nm)
+                                 , vm_nm = values(vm_nm)
+                                 , mci_nm = values(mci_nm)
+                                 , instance_running_status = values(instance_running_status)
+    </insert>
+</mapper>

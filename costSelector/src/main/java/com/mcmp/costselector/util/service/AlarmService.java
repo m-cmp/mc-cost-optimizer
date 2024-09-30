@@ -32,7 +32,7 @@ public class AlarmService {
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
             Map<String, Object> body = new HashMap<>();
-            body.put("alarm_type", List.of("mail"));
+            body.put("alarm_type", List.of("mail", "slack"));
             body.put("event_type", req.getEvent_type());
             body.put("resource_id", req.getResource_id());
             body.put("resource_type", req.getResource_type());
@@ -41,7 +41,6 @@ public class AlarmService {
             body.put("urgency", req.getUrgency());
             body.put("plan", req.getPlan());
             body.put("note", req.getNote());
-            body.put("workspace_cd", req.getWorkspace_cd());
             body.put("project_cd", req.getProject_cd());
             HttpEntity<?> httpEntity = new HttpEntity<>(body, httpHeaders);
 
