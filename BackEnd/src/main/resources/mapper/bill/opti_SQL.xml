@@ -10,9 +10,8 @@
           FROM unused_batch_rst ubr
           LEFT JOIN servicegroup_meta sm
                ON ubr.csp_instanceid = sm.csp_instanceid
-          LEFT OUTER JOIN cur_origin co
+          LEFT OUTER JOIN tbl_table_billing_detail_${lastYearMonth} co
                ON ubr.csp_instanceid = co.lineitem_resourceid
-               AND co.lineitem_usagestartdate BETWEEN #{curDate} - INTERVAL 30 DAY AND #{curDate}
          WHERE 1=1
             <if test="selectedCsps != null and selectedCsps.size() > 0">
                 AND sm.csp_type IN
@@ -20,7 +19,6 @@
                     #{selectedCsp}
                 </foreach>
             </if>
-                AND sm.workspace_cd = #{selectedWorkspace}
             <if test="selectedProjects != null and selectedProjects.size() > 0">
                 AND sm.service_cd IN
                 <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
@@ -29,5 +27,57 @@
             </if>
                 AND ubr.create_dt = #{curDate}
          GROUP BY ubr.csp_type, ubr.csp_account, ubr.csp_instanceid, ubr.plan_type
+    </select>
+
+    <select id="getOptiAbnormal" parameterType="com.mcmp.costbe.opti.model.AbnormalReqModel" resultType="com.mcmp.costbe.opti.model.AbnoramlItemModel">
+        SELECT dabp.product_cd AS product_cd
+             , dabp.abnormal_rating AS abnormal_rating
+             , dabp.percentage_point AS percentage_point
+             , dabp.standard_cost AS standard_cost
+             , dabp.subject_cost AS subject_cost
+             , dabp.csp_type AS csp_type
+          FROM daily_abnormal_by_product dabp
+         WHERE 1=1
+            <if test="selectedCsps != null and selectedCsps.size() > 0">
+                AND dabp.csp_type IN
+                <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
+                    #{selectedCsp}
+                </foreach>
+            </if>
+            <if test="selectedProjects != null and selectedProjects.size() > 0">
+                AND dabp.project_cd IN
+                <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+                    #{selectedProject}
+                </foreach>
+            </if>
+           AND dabp.collect_dt = #{date}
+    </select>
+
+    <select id="getInstOptiSize" parameterType="com.mcmp.costbe.opti.model.InstOptiSizeReqModel" resultType="com.mcmp.costbe.opti.model.InstOptiSizeItemModel">
+        SELECT iorr.resource_id AS resource_id
+             , iorr.csp_type AS csp_type
+             , iorr.csp_account AS account
+             , iorr.origin_type AS origin_type
+             , iorr.rcmd_type AS rcmd_type
+             , iorr.plan_type AS plan_type
+             , iorr.origin_usd AS origin_usd
+             , iorr.rcmd_usd AS rcmd_usd
+        FROM inst_opti_rcmd_rst iorr
+        LEFT JOIN servicegroup_meta sm
+          ON iorr.resource_id = sm.csp_instanceid
+        WHERE 1=1
+        <if test="selectedCsps != null and selectedCsps.size() > 0">
+            AND sm.csp_type IN
+            <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
+                #{selectedCsp}
+            </foreach>
+        </if>
+        <if test="selectedProjects != null and selectedProjects.size() > 0">
+            AND sm.service_cd IN
+            <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+                #{selectedProject}
+            </foreach>
+        </if>
+        AND iorr.create_dt = #{date}
     </select>
 </mapper>

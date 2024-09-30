@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="abnoraml">
+    <select id="getAbnormalSubjectsCost" parameterType="map" resultType="com.processor.costprocessor.model.abnormal.AbnormalItemModel">
+        SELECT tbl1.product AS product_cd
+             , tbl1.total_cost AS standard_cost
+             , COALESCE(tbl2.avg_cost, 0) AS subject_cost
+             , tbl1.project_cd AS project_cd
+             , tbl1.csp_type AS csp_type
+          FROM (SELECT *
+                  FROM daily_summation_by_product dsbp
+                 WHERE 1=1
+                   AND dsbp.`date` = #{standardDT}) AS tbl1
+          LEFT OUTER JOIN (SELECT dsbp2.product
+                                , COALESCE(AVG(dsbp2.total_cost), 0) AS avg_cost
+                                , dsbp2.project_cd
+                             FROM daily_summation_by_product dsbp2
+                            WHERE 1=1
+                              AND dsbp2.`date` IN (
+                                <foreach collection="subjectDTs" item="item" separator=",">
+                                    #{item}
+                                </foreach>
+                                  )
+                            GROUP BY dsbp2.product, dsbp2.project_cd) AS tbl2
+                               ON tbl2.product = tbl1.product
+                              AND tbl2.project_cd = tbl1.project_cd
+         LIMIT #{_skiprows}, #{_pagesize}
+    </select>
+    
+    <insert id="insertDailyAbnoramlCost" parameterType="com.processor.costprocessor.model.abnormal.AbnormalItemModel">
+        INSERT INTO daily_abnormal_by_product(collect_dt, product_cd, abnormal_rating, percentage_point, standard_cost, subject_cost, project_cd, csp_type)
+        VALUES (#{collect_dt}
+             , #{product_cd}
+             , #{abnormal_rating}
+             , #{percentage_point}
+             , #{standard_cost}
+             , #{subject_cost}
+             , #{project_cd}
+             , #{csp_type})
+            ON DUPLICATE KEY UPDATE abnormal_rating = #{abnormal_rating}
+                                  , percentage_point = #{percentage_point}
+                                  , standard_cost = #{standard_cost}
+                                  , subject_cost = #{subject_cost}
+    </insert>
+</mapper>

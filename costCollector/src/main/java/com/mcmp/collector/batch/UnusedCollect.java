@@ -34,10 +34,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -122,9 +124,18 @@ public class UnusedCollect {
             param.setAccount(item.getAccount());
             param.setStartDt(startDatetime);
             param.setEndDt(endDatetime);
+            param.setYearMonth(startDatetime.format(DateTimeFormatter.ofPattern("yyyyMM")));
 
-            List<ResourceSetModel> data = unusedDao.getResourceSet(param);
-
+            List<ResourceSetModel> data = null;
+            try{
+                 data = unusedDao.getResourceSet(param);
+            }catch (BadSqlGrammarException ex){
+                if(isTableNotFound(ex)){
+                    log.warn("[Unused Log]NotFoundTable : {}", ex.getMessage());
+                }else{
+                    log.error("[Unused Log] Occure Processor Error : {}", ex.getMessage());
+                }
+            }
             return data;
         };
     }
@@ -161,7 +172,7 @@ public class UnusedCollect {
         return itemLists -> {
             for (List<ResourceSetModel> itemList : itemLists) {
                 for(ResourceSetModel item : itemList){
-                    System.out.println("Writer: 쓴다 " + item);
+//                    System.out.println("Writer: 쓴다 " + item);
                 }
             }
         };
@@ -187,5 +198,12 @@ public class UnusedCollect {
         asyncItemWriter.setDelegate(writer());
 
         return asyncItemWriter;
+    }
+
+    private boolean isTableNotFound(BadSqlGrammarException ex){
+        String msg = ex.getCause().getMessage();
+
+        return msg != null && msg.contains("Table") && (msg.contains("doesn't exist") || msg.contains("not found") ||
+                msg.contains("does not exist") || msg.contains("ORA-00942"));
     }
 }

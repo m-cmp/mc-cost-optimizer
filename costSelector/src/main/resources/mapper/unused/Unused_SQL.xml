@@ -9,9 +9,21 @@
              , acm.resource_status AS resource_status
              , acm.resource_spot_yn AS resource_spot_yn
              , acm.collect_dt AS collect_dt
-          FROM asset_compute_metric acm
+             , uc.instance_type AS instance_type
+             , uc.rsrc_type AS rsrc_type
+             , uc.region_id AS region_id
+             , uc.region_nm AS region_nm
+             , uc.operation AS operation
+             , uc.instance_family AS inst_family
+             , uc.instance_family_type AS inst_family_type
+             , uc.product_sku AS product_sku
+        FROM asset_compute_metric acm
+          LEFT JOIN unused_collector uc
+            ON uc.csp_resourceid = acm.csp_instanceid
+           AND uc.create_dt = DATE(#{create_dt})
          WHERE 1=1
            AND acm.csp_instanceid = #{resource_id}
+           AND acm.collect_dt >= DATE(DATE_SUB(#{create_dt}, INTERVAL 1 DAY))
          ORDER BY acm.collect_dt DESC
          LIMIT 1
     </select>
@@ -30,7 +42,8 @@
         SELECT CASE
                WHEN <![CDATA[ MAX(upm.metric_avg_amount) < #{setting_value} ]]> THEN 'TRUE'
                                                                                 ELSE 'FALSE'
-               END AS max_amount
+               END AS max_amount_yn
+             , MAX(upm.metric_avg_amount) AS max_amount
              , AVG(upm.metric_avg_amount) AS avg_amount
              , COUNT(*) AS c_total_count
           FROM unused_process_mart upm
@@ -44,6 +57,7 @@
         SELECT COUNT(*) AS n_total_count
              , COUNT(CASE WHEN <![CDATA[ upm.metric_avg_amount <= #{setting_value} ]]> THEN 1 END) AS count_less_than_setting
              , COUNT(CASE WHEN <![CDATA[ upm.metric_avg_amount > 0  ]]> THEN 1 END) AS count_occured
+             , AVG(upm.metric_avg_amount) AS avg_amount
           FROM unused_process_mart upm
          WHERE 1=1
            AND upm.resource_id = #{resource_id}
@@ -59,6 +73,128 @@
               , #{csp_instanceid}
               , #{plan_type})
              ON DUPLICATE KEY UPDATE plan_type = #{plan_type}
+    </insert>
+
+    <select id="getOptiSizeTargetMeta" parameterType="com.mcmp.costselector.unused.model.UnusedResourceStatusModel" resultType="com.mcmp.costselector.unused.model.OptiSizeTargetMetaModel">
+        SELECT APP.USD          AS usd
+             , MODN.NEW_GENTH   AS modernType
+             , NPL.NW_PERF_NM   AS nwPerfNm
+             , NPL.NW_PERF_ODR  AS nwPerfOdr
+             , PED.INSTANCE_FAMILY AS instanceFamily
+             , PED.PRODUCT_FAMILY  AS productFamily
+             , PED.TENANCY         AS tenancy
+             , PED.STORAGE         AS storage
+             , TRSE.BASE_ECU      AS ecu
+             , COUNT(1)         AS cnt
+             , PED.PHYSICAL_PROCESSOR AS physicalProcessor
+          FROM (SELECT #{rsrc_type} AS RSRC_TYPE
+                   , #{instance_type} AS INST_TYPE
+                   , #{region_id} AS RGN_ID
+                   , #{operation} AS OPERATION
+                   , #{region_nm} AS RGN_NM) TUAL
+          LEFT OUTER JOIN TASM_AWS_RSRC_OPT_MODN_L MODN
+                                 ON MODN.RSRC_TYPE  = TUAL.RSRC_TYPE
+                                     AND MODN.PREV_GENTH = TUAL.INST_TYPE
+                                     AND MODN.RGN_ID     = TUAL.RGN_ID
+          LEFT OUTER JOIN TASM_AWS_PROD_EC2_D PED
+                                 ON PED.LOCATION       = TUAL.RGN_NM
+                                     AND PED.OPERATION      = IFNULL(TUAL.OPERATION, 'RunInstances')
+                                     AND PED.TENANCY        = 'Shared'
+                                     AND PED.CAPACITYSTATUS = 'Used'
+                                     AND PED.INSTANCE_TYPE  = TUAL.INST_TYPE
+                                     AND PED.PRODUCT_FAMILY = 'Compute Instance'
+          LEFT OUTER JOIN TASM_AWS_EC2_PRICING_L APP
+                                 ON APP.SKU = PED.SKU
+                                     AND APP.OFFER_TERM_CODE = CASE WHEN TUAL.RGN_ID = 'cn-north-1' THEN '99YE2YK9UR'
+                                                                    WHEN TUAL.RGN_ID = 'cn-northwest-1' THEN '5Y9WH78GDR'
+                                                                    ELSE 'JRTCKXETXF' END
+                                     AND APP.PRICING_TIER = CASE WHEN TUAL.RGN_ID = 'cn-north-1' THEN 'Q7UJUT2CE6'
+                                                                 WHEN TUAL.RGN_ID = 'cn-northwest-1' THEN 'Q7UJUT2CE6'
+                                                                 ELSE '6YS6EN2CT7' END
+          LEFT OUTER JOIN TASM_AWS_PROD_NW_PERF_L NPL
+                                 ON PED.NETWORK_PERFORMANCE = NPL.NW_PERF_NM
+          LEFT OUTER JOIN TASM_RIGHT_SIZE_AWS_ECU_L TRSE
+                                 ON TUAL.INST_TYPE = TRSE.INST_TYPE
+         WHERE 1=1
+           AND APP.USD IS NOT NULL
+           AND TRIM(REPLACE(PED.MEMORY, 'GiB', '')) != 'NA'
+		   AND NPL.NW_PERF_ODR  IS NOT NULL
+         GROUP BY TUAL.RGN_ID
+             , APP.USD
+             , NPL.NW_PERF_NM
+             , PED.INSTANCE_FAMILY
+             , PED.STORAGE
+             , PED.PHYSICAL_PROCESSOR
+        HAVING cnt <![CDATA[>]]> 0
+         LIMIT 1
+    </select>
+
+    <select id="getRscEc2OptiSize" parameterType="map" resultType="com.mcmp.costselector.unused.model.OptiEC2SizeRstModel">
+        SELECT PED.INSTANCE_TYPE         AS instType
+             , PED.NETWORK_PERFORMANCE   AS nwPerfNm
+             , PED.STORAGE               AS storage
+             , TRIM(REPLACE(PED.MEMORY, 'GiB', '')) AS memory
+             , PED.ECU                   AS ecu
+             , APP.USD                   AS usd
+             , NPL.NW_PERF_ODR           AS nwPerfOdr
+          FROM TASM_AWS_PROD_EC2_D PED
+          LEFT OUTER JOIN TASM_AWS_EC2_PRICING_L APP
+            ON PED.SKU = APP.SKU
+           AND APP.OFFER_TERM_CODE = CASE WHEN PED.LOCATION = 'China (Beijing)' THEN '99YE2YK9UR'
+                                          WHEN PED.LOCATION = 'China (Ningxia)' THEN '5Y9WH78GDR'
+                                          ELSE 'JRTCKXETXF' END
+          AND APP.PRICING_TIER = CASE WHEN PED.LOCATION = 'China (Beijing)' THEN 'Q7UJUT2CE6'
+                                      WHEN PED.LOCATION = 'China (Ningxia)' THEN 'Q7UJUT2CE6'
+                                      ELSE '6YS6EN2CT7' END
+         LEFT OUTER JOIN TASM_RIGHT_SIZE_AWS_ECU_L TRSE
+           ON PED.INSTANCE_TYPE = TRSE.INST_TYPE
+         LEFT OUTER JOIN TASM_AWS_PROD_NW_PERF_L NPL
+           ON PED.NETWORK_PERFORMANCE = NPL.NW_PERF_NM
+         LEFT OUTER JOIN TASM_AWS_RSRC_OPT_MODN_L MODN
+           ON MODN.PREV_GENTH = PED.INSTANCE_TYPE
+          AND MODN.RGN_ID     = #{rscInfo.region_id}
+        WHERE PED.PRODUCT_FAMILY = 'Compute Instance'
+          AND CASE WHEN 'GPU instance'                    = #{rscInfo.inst_family} THEN PED.INSTANCE_FAMILY = 'GPU instance'
+                   WHEN 'Machine Learning ASIC Instances' = #{rscInfo.inst_family} THEN PED.INSTANCE_FAMILY = 'Machine Learning ASIC Instances'
+                   WHEN 'FPGA Instances'                  = #{rscInfo.inst_family} THEN PED.INSTANCE_FAMILY = 'FPGA Instances'
+                   ELSE PED.INSTANCE_FAMILY NOT IN ('GPU instance','Machine Learning ASIC Instances','FPGA Instances') END
+          AND PED.LOCATION = #{rscInfo.region_nm}
+          AND PED.OPERATION = #{rscInfo.operation}
+          AND PED.TENANCY = 'Shared'
+          AND PED.CAPACITYSTATUS = 'Used'
+          AND PED.INSTANCE_TYPE NOT LIKE CONCAT('%.', SUBSTRING_INDEX(#{rscInfo.instance_type}, '.', -1))
+          AND PED.PHYSICAL_PROCESSOR LIKE CONCAT(SUBSTRING_INDEX(#{targetMeta.physicalProcessor}, ' ', 1), '%')
+          <if test="rscInfo.isDownsizeTarget">
+          AND USD  <![CDATA[<]]> #{targetMeta.usd} * 1.0
+            <if test="rscInfo.inst_family_type != null">
+                AND PED.INSTANCE_TYPE LIKE CONCAT(#{rscInfo.inst_family_type}, '.%')
+            </if>
+          </if>
+          <if test="rscInfo.isUpsizeTarget">
+          AND TRSE.BASE_ECU <![CDATA[>]]> #{targetMeta.ecu}
+          </if>
+          AND USD IS NOT NULL
+          AND NW_PERF_ODR <![CDATA[>=]]> #{targetMeta.nwPerfOdr}
+        ORDER BY USD * 1.0
+        LIMIT 1
+    </select>
+
+    <insert id="insertInstOptiRcmd" parameterType="com.mcmp.costselector.unused.model.InstOptiRcmdRst">
+        INSERT INTO inst_opti_rcmd_rst(create_dt, resource_id, csp_type, csp_account, origin_type, rcmd_type, plan_type, origin_usd, rcmd_usd)
+        VALUES (#{createDT}
+               , #{resourceID}
+               , #{cspType}
+               , #{cspAccount}
+               , #{originType}
+               , #{rcmdType}
+               , #{planType}
+               , #{originUSD}
+               , #{rcmdUSD})
+            ON DUPLICATE KEY UPDATE origin_type = #{originType}
+                                     , rcmd_type = #{rcmdType}
+                                     , plan_type = #{planType}
+                                     , origin_usd = #{originUSD}
+                                     , rcmd_usd = #{rcmdUSD}
     </insert>
 
 </mapper>

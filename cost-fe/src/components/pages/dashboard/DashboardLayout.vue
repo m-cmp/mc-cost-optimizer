@@ -13,7 +13,8 @@
             <div class="container-xl">
                 <div class="row row-deck row-cards">
                     <div class="col-lg-6">
-                        <DashboardBilling />
+                        <DashboardBilling
+                        ref="dashboardBilling"/>
                     </div>
                     <div class="col-lg-6">
                         <DashboardTop
@@ -24,7 +25,7 @@
                       :origData="usageAssetData"/>
                     </div>
                     <div class="col-lg-6">
-                        <DashboardCommitment />
+                        <!-- <DashboardCommitment /> -->
                     </div>
                 </div>
             </div>
@@ -44,7 +45,7 @@ import DashboardFooter from './dashboard-footer/DashboardFooter.vue'
 import DashboardBilling from './dashboard-billing-amount/DashboardBilling.vue'
 import DashboardTop from './dashboard-top-resources/DashboardTop5.vue'
 import DashboardAsset from './dashboard-asset/DashboardAsset.vue'
-import DashboardCommitment from './dashboard-commitment/DashboardCommitment.vue'
+// import DashboardCommitment from './dashboard-commitment/DashboardCommitment.vue'
 import axios from "axios";
 import ENDPOINT from '@/api/Endpoints'
 import {useSelectedOptionsStore} from "@/stores/selectedOptions";
@@ -57,7 +58,7 @@ export default {
         DashboardBilling,
         DashboardTop,
         DashboardAsset,
-        DashboardCommitment
+        // DashboardCommitment
     },
   data() {
     return {
@@ -71,10 +72,14 @@ export default {
       store
     };
   },
+  mounted() {
+      this.getWidgetData();
+  },
   methods: {
     getWidgetData(){
       this.getDBoardUsageAssetData();
       this.getTop5CostData();
+      this.$refs.dashboardBilling.fetchBillingData();
     },
     getDBoardUsageAssetData(){
       axios.post(ENDPOINT.be + '/api/v2/getBillAsset', {

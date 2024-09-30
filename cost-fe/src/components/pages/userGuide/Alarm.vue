@@ -240,7 +240,7 @@ export default {
     getInitSlackInfo(){
       axios.get(ENDPOINT.alaram + '/alert/getSlackIF', {
         params: {
-          userId: '2194155'
+          userId: 'test'
         }})
           .then((res) => {
             if(res.data.status === 'OK'){

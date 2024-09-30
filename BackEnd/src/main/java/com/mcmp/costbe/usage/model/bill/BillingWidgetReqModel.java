@@ -1,5 +1,6 @@
 package com.mcmp.costbe.usage.model.bill;
 
+import com.mcmp.costbe.common.model.PrevMonthsModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 @Data
 @Schema(description = "이번달 비용 조회 요청 모델")
-public class BillingWidgetReqModel {
+public class BillingWidgetReqModel extends PrevMonthsModel {
 
     @Schema(description = "오늘 날짜", example = "20240620", required = true)
     private String today;
@@ -19,7 +20,7 @@ public class BillingWidgetReqModel {
     @Schema(description = "CSP", example = "[\"AWS\"]", required = true)
     private List<String> selectedCsps;
 
-    @Schema(description = "워크스페이스 코드", example = "workspaceCode1", required = true)
+    @Schema(description = "워크스페이스 코드", example = "workspaceCode1", required = false, deprecated = true)
     private String selectedWorkspace;
 
     @Schema(required = false)
@@ -30,4 +31,10 @@ public class BillingWidgetReqModel {
     private LocalDateTime prevMonthStartDate;
     @Schema(required = false)
     private LocalDateTime prevMonthEndDate;
+
+    @Schema(required = false)
+    private String curYearMonth;
+
+    @Schema(required = false)
+    private String prevYearMonth;
 }

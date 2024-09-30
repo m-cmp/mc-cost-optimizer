@@ -4,6 +4,7 @@ import com.mcmp.slack_demo.common.model.CommonResultModel;
 import com.mcmp.slack_demo.common.model.costOpti.CostOptiAlarmReqModel;
 import com.mcmp.slack_demo.mail.model.MailMessage;
 import com.mcmp.slack_demo.mail.service.MailService;
+import com.mcmp.slack_demo.slack.api_client.SlackACService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,9 @@ public class CommonController {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+    private SlackACService slackService;
+
     @PostMapping("/sendOptiAlarmMail")
     public ResponseEntity<CommonResultModel> sendOptiAlarmMail(@RequestBody CostOptiAlarmReqModel reqModel){
         CommonResultModel result = new CommonResultModel();
@@ -29,6 +33,7 @@ public class CommonController {
                         mailService.sendEmail(reqModel, null);
                         break;
                     case "slack":
+                        slackService.sendSlack(reqModel);
                         break;
                 }
             }

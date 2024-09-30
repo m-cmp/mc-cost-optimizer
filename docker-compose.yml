@@ -32,7 +32,12 @@ services:
       spring.datasource.hikari.batch.jdbc-url: ${COST_DB_URL}
       spring.datasource.hikari.batch.username: ${COST_DB_USERNM}
       spring.datasource.hikari.batch.password: ${COST_DB_PW}
-      unusedBatchCronSchedule: ${COST_COLLECT_CRON_SCHEDULE}
+      unusedBatchCronSchedule: ${COST_COLLECT_UNUSED_CRON_SCHEDULE}
+      curBatchCronSchedule: ${COST_COLLECT_CUR_CRON_SCHEDULE}
+      aws.data.export.name: ${AWS_CUR_EXPORT_NAME}
+      aws.data.export.path.prefix: ${AWS_CUR_EXPORT_PATH_PREFIX}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
   costprocessor:
     restart: always
     build:
@@ -45,8 +50,10 @@ services:
       spring.datasource.hikari.batch.jdbc-url: ${COST_DB_URL}
       spring.datasource.hikari.batch.username: ${COST_DB_USERNM}
       spring.datasource.hikari.batch.password: ${COST_DB_PW}
-      unusedProcessCronSchedule: ${COST_PROCESS_CRON_SCHEDULE}
+      unusedProcessCronSchedule: ${COST_PROCESS_UNUSED_CRON_SCHEDULE}
+      abnormalProcessCronSchedule: ${COST_PROCESS_ABNORMAL_CRON_SCHEDULE}
       cost.selector.url: ${COST_SELECTOR_URL}
+      opti.alarm.url: ${ALARM_URL}
   costselector:
     restart: always
     build:
@@ -59,6 +66,7 @@ services:
       spring.datasource.hikari.cost.optimize.jdbc-url: ${COST_DB_URL}
       spring.datasource.hikari.cost.optimize.username: ${COST_DB_USERNM}
       spring.datasource.hikari.cost.optimize.password: ${COST_DB_PW}
+      opti.alarm.url: ${ALARM_URL}
   alarmservice:
     restart: always
     build:
@@ -77,6 +85,20 @@ services:
       spring.datasource.hikari.history.jdbc-url: ${COST_DB_URL}
       spring.datasource.hikari.history.username: ${COST_DB_USERNM}
       spring.datasource.hikari.history.password: ${COST_DB_PW}
+  assetcollector:
+    restart: always
+    build:
+      context: ./assetCollector
+    networks:
+      - mcmp_cost_network
+    ports:
+      - "8091:8091"
+    environment:
+      spring.datasource.hikari.batch.jdbc-url: ${COST_DB_URL}
+      spring.datasource.hikari.batch.username: ${COST_DB_USERNM}
+      spring.datasource.hikari.batch.password: ${COST_DB_PW}
+      asset.collect.url: ${ASSET_MONITORING_SERVER}
+      assetCollectBatchCronSchedule: ${ASSET_COLLECT_BATCH_CRON_SCHEDULE}
 networks:
   mcmp_cost_network:
     driver: bridge

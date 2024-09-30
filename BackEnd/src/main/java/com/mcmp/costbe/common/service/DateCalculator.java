@@ -19,7 +19,7 @@ public class DateCalculator {
 
         YearMonth yearMonth = YearMonth.of(date.getYear(), date.getMonth());
         LocalDateTime firstDayOfMonth = yearMonth.atDay(1).atStartOfDay();
-        LocalDateTime lastDayOfMonth = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+        LocalDateTime lastDayOfMonth = yearMonth.plusMonths(1).atDay(1).atStartOfDay();
 
         DateRangeModel result = new DateRangeModel();
         result.setStartDate(firstDayOfMonth);
@@ -42,6 +42,18 @@ public class DateCalculator {
         LocalDate date = LocalDate.parse(now, formatter);
 
         return date.format(formatter);
+    }
+
+    public List<String> getLast12Months(String now){
+        LocalDate curDate = LocalDate.parse(now, DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        List<String> last12Months = new ArrayList<>();
+        for(int i=0; i<12; i++){
+            String yearMonth = curDate.minusMonths(i).format(DateTimeFormatter.ofPattern("yyyyMM"));
+            last12Months.add(yearMonth);
+        }
+
+        return last12Months;
     }
   
     public List<LocalDateTime> calculatePeriodDates(String Date, String periodType) {
@@ -94,5 +106,10 @@ public class DateCalculator {
     public LocalDate curUTCLocalDate(){
         return ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate();
     }
+
+    public LocalDate curLocalDate(){
+        return ZonedDateTime.now().toLocalDate();
+    }
+
 
 }

@@ -1,27 +1,26 @@
 <template>
-<div class="card">
+  <div class="card">
     <div class="card-body">
-        <h3 class="card-title">요금 상위 5개 서비스</h3>
-        <div id="chart-top5cost-pie" style="min-height: 201.9px;">
-        </div>
+      <h3 class="card-title">요금 상위 5개 서비스</h3>
+      <div id="chart-top5cost-pie" style="min-height: 201.9px;">
+      </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script>
 import ApexCharts from 'apexcharts';
-import { useCalCurrencyStore } from '@/stores/calCurrency';
 
 export default {
-    name: 'DashboardTop',
-  props:{
+  name: 'DashboardTop',
+  props: {
     origData: {
       type: Object,
       required: true,
     }
   },
-  data(){
-    return{
+  data() {
+    return {
       init: true,
       chart: null,
       chartOptions: {
@@ -39,14 +38,14 @@ export default {
         fill: {
           opacity: 1,
         },
-        series: [1,1,1,1,1,1],
+        series: [0, 0, 0, 0, 0, 0],
         labels: ["AmazonECS", "AmazonRDS", "AmazonEC2", "AWSELB", "awswaf", "others"],
         tooltip: {
           theme: 'dark',
           fillSeriesColor: false,
           y: {
             formatter: function (val) {
-              return val.toLocaleString('ko-KR') + " KRW";
+              return val.toLocaleString('ko-KR') + " USD";
             },
           }
         },
@@ -71,19 +70,18 @@ export default {
       }
     }
   },
-    setup() {
-    },
+  setup() {
+  },
   mounted() {
     this.init = true;
     this.renderChart();
   },
-  watch:{
+  watch: {
     origData: {
-      handler(newVal){
+      handler(newVal) {
         const data = newVal.Data.top5bill
-        const calCurrencyStore = useCalCurrencyStore();
 
-        if(data !== null && data.length > 0){
+        if (data !== null && data.length > 0) {
           data.sort((a, b) => b.bill - a.bill);
           const others = data.filter(item => item.resourceNm === "others");
           const nonOthers = data.filter(item => item.resourceNm !== "others");
@@ -93,7 +91,7 @@ export default {
           let series = [];
           sortedData.forEach(item => {
             labels.push(item.resourceNm);
-            series.push(Math.round(calCurrencyStore.usdToKrw(item.bill)));
+            series.push(item.bill);
           })
 
           this.chartOptions.series = series;
@@ -102,7 +100,7 @@ export default {
           this.init = false;
 
           this.renderChart();
-        } else{
+        } else {
           this.chartOptions.series = [];
           this.chartOptions.labels = [];
           this.init = false;
@@ -112,18 +110,17 @@ export default {
       deep: true
     }
   },
-  methods:{
-      renderChart(){
-        if(this.init === true){
-          this.chart = new ApexCharts(document.querySelector("#chart-top5cost-pie"), this.chartOptions);
-          this.chart.render();
-        } else {
-          this.chart.updateOptions(this.chartOptions)
-        }
-      },
+  methods: {
+    renderChart() {
+      if (this.init === true) {
+        this.chart = new ApexCharts(document.querySelector("#chart-top5cost-pie"), this.chartOptions);
+        this.chart.render();
+      } else {
+        this.chart.updateOptions(this.chartOptions)
+      }
+    },
   }
 }
 </script>
 
-<style>
-</style>
+<style></style>

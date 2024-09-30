@@ -126,7 +126,12 @@ public class UnusedProcess {
 
             List<DailyAssetAmountModel> dailyAssetAmounts = unusedDao.getDailyAssetAmount(param);
 
-            return dailyAssetAmounts;
+            if(dailyAssetAmounts.isEmpty()){
+                log.warn("Unused Daily Asset Amount INFO is EMPTY!");
+                return null;
+            } else{
+                return dailyAssetAmounts;
+            }
         };
     }
 
@@ -175,17 +180,13 @@ public class UnusedProcess {
 
                     Map<String, Object> body = new HashMap<>();
                     body.put("resource_id", itemList.get(0).getResource_id());
-                    body.put("create_dt", ZonedDateTime.now(ZoneId.of("UTC")).toLocalDateTime());
+                    body.put("create_dt", ZonedDateTime.now().toLocalDateTime());
                     HttpEntity<?> httpEntity = new HttpEntity<>(body, httpHeaders);
 
                     restTemplate.exchange(apiUrl, HttpMethod.POST, httpEntity, String.class);
                 } catch (HttpClientErrorException | HttpServerErrorException clientError) {
                     String cleintErrorMsg = clientError.getMessage();
                     log.error("FAIL TO CALL COST SELECTOR - UNUSED API : " + cleintErrorMsg);
-                }
-
-                for(DailyAssetAmountModel item : itemList){
-                    log.info("Writer: 쓴다 " + item);
                 }
             }
         };

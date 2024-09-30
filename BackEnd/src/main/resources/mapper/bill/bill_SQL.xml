@@ -21,96 +21,68 @@
 
     <select id="getCurPrevMonthBill" parameterType="com.mcmp.costbe.usage.model.bill.BillingWidgetReqModel" resultType="com.mcmp.costbe.usage.model.bill.BillingWidgetModel">
         /*bill.getCurPrevMonthBill*/
-        <![CDATA[SELECT COALESCE(SUM(CASE
-                            WHEN co.lineitem_usagestartdate >= #{curMonthStartDate}
-                             AND co.lineitem_usageenddate <= #{curMonthEndDate}
-                             AND co.lineitem_unblendedcost >= 0
-                            THEN co.lineitem_unblendedcost
-                            ELSE 0
-                END), 0) AS curMonthBill
-              , COALESCE(SUM(CASE
-                             WHEN co.lineitem_usagestartdate >= #{prevMonthStartDate}
-                              AND co.lineitem_usageenddate <= #{prevMonthEndDate}
-                              AND co.lineitem_unblendedcost >= 0
-                             THEN co.lineitem_unblendedcost
-                             ELSE 0
-                END), 0) AS prevMonthBill]]>
-          FROM cur_origin co
-          LEFT JOIN servicegroup_meta sm
-               ON co.lineitem_resourceid = sm.csp_instanceid
-         WHERE 1=1
-           <if test="selectedCsps != null and selectedCsps.size() > 0">
-           AND sm.csp_type IN
-                <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                    #{selectedCsp}
-                </foreach>
-           </if>
-           AND sm.workspace_cd = #{selectedWorkspace}
-           <if test="selectedProjects != null and selectedProjects.size() > 0">
-           AND sm.service_cd IN
-                <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                     #{selectedProject}
-                </foreach>
-           </if>
-        <![CDATA[
-           AND co.lineitem_usagestartdate >= #{prevMonthStartDate}
-           AND co.lineitem_usageenddate <= #{curMonthEndDate}
-        ]]>
+        SELECT (SELECT coalesce(sum(total_cost), 0)
+                  FROM monthly_summation ms
+                 WHERE 1=1
+                  AND ms.`year_month` = #{curYearMonth}
+                <if test="selectedCsps != null and selectedCsps.size() > 0">
+                    AND ms.csp IN
+                    <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
+                        #{selectedCsp}
+                    </foreach>
+                </if>
+                <if test="selectedProjects != null and selectedProjects.size() > 0">
+                    AND ms.project_cd IN
+                    <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+                        #{selectedProject}
+                    </foreach>
+                </if>
+                ) AS curMonthBill
+             , (SELECT coalesce(sum(total_cost), 0)
+                  FROM monthly_summation ms
+                 WHERE 1=1
+                  AND ms.`year_month` = #{prevYearMonth}
+                <if test="selectedCsps != null and selectedCsps.size() > 0">
+                    AND ms.csp IN
+                    <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
+                        #{selectedCsp}
+                    </foreach>
+                </if>
+                <if test="selectedProjects != null and selectedProjects.size() > 0">
+                    AND ms.project_cd IN
+                    <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+                        #{selectedProject}
+                    </foreach>
+                </if>
+                ) AS prevMonthBill
     </select>
 
     <select id="getMonthBill" parameterType="com.mcmp.costbe.usage.model.bill.BillingWidgetReqModel" resultType="com.mcmp.costbe.usage.model.bill.MonthlyBillModel">
         /*bill.getMonthBill*/
-        SELECT DATE_FORMAT(dates.month_date, '%Y') AS year
-             , DATE_FORMAT(dates.month_date, '%m') AS month
-             , COALESCE(SUM(CASE
-                            WHEN 1=1
-                            <if test="selectedCsps != null and selectedCsps.size() > 0">
-                                AND sm.csp_type IN
-                                <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                                    #{selectedCsp}
-                                </foreach>
-                            </if>
-                            <if test="selectedProjects != null and selectedProjects.size() > 0">
-                                AND sm.service_cd IN
-                                <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                                    #{selectedProject}
-                                </foreach>
-                            </if>
-                             AND sm.workspace_cd = 'testWs'
-                             AND co.lineitem_unblendedcost >= 0
-                            THEN co.lineitem_unblendedcost
-                            ELSE 0
-                             END), 0) AS bill
+        SELECT COALESCE(SUM(ms.total_cost), 0) AS bill
+             , SUBSTRING(ym.`year_month`, 1, 4) as year
+             , substring(ym.`year_month`, 5, 2) as month
           FROM (
-                SELECT DATE_FORMAT(DATE_ADD(#{curMonthStartDate}, INTERVAL -(seq - 1) MONTH), '%Y-%m-01') AS month_date
-                  FROM (
-                        SELECT 1 AS seq UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION
-                        SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION
-                        SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12
-                  ) AS seq_table
-               ) AS dates
-          LEFT JOIN cur_origin co
-            ON DATE_FORMAT(co.lineitem_usagestartdate, '%Y%m') = DATE_FORMAT(dates.month_date, '%Y%m')
-          LEFT JOIN servicegroup_meta sm
-            ON co.lineitem_resourceid = sm.csp_instanceid
-        <if test="selectedCsps != null and selectedCsps.size() > 0">
-            AND sm.csp_type IN
-            <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                #{selectedCsp}
-            </foreach>
-        </if>
-        <if test="selectedProjects != null and selectedProjects.size() > 0">
-            AND sm.service_cd IN
-            <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                #{selectedProject}
-            </foreach>
-        </if>
-            AND sm.workspace_cd = #{selectedWorkspace}
-        WHERE 1=1
-          AND dates.month_date BETWEEN DATE_FORMAT(DATE_SUB(#{curMonthStartDate}, INTERVAL 1 YEAR), '%Y-%m-01') AND #{curMonthEndDate}
-        GROUP BY DATE_FORMAT(dates.month_date, '%Y'), DATE_FORMAT(dates.month_date, '%m')
-        ORDER BY year DESC, month DESC
-        LIMIT 12
+              <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
+                  SELECT #{prevMonth} AS `year_month`
+              </foreach>
+               ) AS ym
+          LEFT JOIN monthly_summation ms
+            ON ym.`year_month` = ms.`year_month`
+            <if test="selectedCsps != null and selectedCsps.size() > 0">
+                AND ms.csp IN
+                <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
+                    #{selectedCsp}
+                </foreach>
+            </if>
+            <if test="selectedProjects != null and selectedProjects.size() > 0">
+                AND ms.project_cd IN
+                <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+                    #{selectedProject}
+                </foreach>
+            </if>
+         GROUP BY ym.year_month
+         ORDER BY ym.year_month DESC
     </select>
 
     <select id="getTop5Bill" parameterType="com.mcmp.costbe.usage.model.bill.Top5WidgetReqModel" resultType="com.mcmp.costbe.usage.model.bill.Top5BillModel">
@@ -123,7 +95,7 @@
                                  FROM (
                                        SELECT co.lineitem_productcode
                                             , COALESCE(SUM(co.lineitem_unblendedcost), 0) AS total_cost
-                                         FROM cur_origin co
+                                         FROM tbl_table_billing_detail_${year_month} co
                                          LEFT JOIN servicegroup_meta sm
                                            ON co.lineitem_resourceid = sm.csp_instanceid
                                         WHERE 1=1
@@ -133,7 +105,6 @@
                                             #{selectedCsp}
                                             </foreach>
                                          </if>
-                                          AND sm.workspace_cd = #{selectedWorkspace}
                                           <if test="selectedProjects != null and selectedProjects.size() > 0">
                                           AND sm.service_cd IN
                                               <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
@@ -154,7 +125,7 @@
                           END AS productcode
                      , COALESCE(SUM(co.lineitem_unblendedcost), 0) AS total_cost
                      , MIN(co.lineitem_resourceid) AS min_resourceid
-                  FROM cur_origin co
+                  FROM tbl_table_billing_detail_${year_month} co
                   LEFT JOIN servicegroup_meta sm
                     ON co.lineitem_resourceid = sm.csp_instanceid
                  WHERE 1=1
@@ -164,7 +135,6 @@
                        #{selectedCsp}
                    </foreach>
                    </if>
-                   AND sm.workspace_cd = #{selectedWorkspace}
                    <if test="selectedProjects != null and selectedProjects.size() > 0">
                    AND sm.service_cd IN
                        <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
@@ -180,14 +150,14 @@
                 ) AS grouped_results
           LEFT JOIN servicegroup_meta sm2
             ON grouped_results.min_resourceid = sm2.csp_instanceid
-         ORDER BY total_cost DESC;
+         ORDER BY total_cost DESC
     </select>
 
     <select id="getBillAssetChild" parameterType="com.mcmp.costbe.usage.model.bill.BillingAssetReqModel" resultType="com.mcmp.costbe.usage.model.bill.BillingAssetChildModel">
         SELECT COALESCE(SUM(co.lineitem_unblendedcost), 0) AS bill
              , co.lineitem_productcode AS childProductCode
              , count(DISTINCT co.lineitem_resourceid) as unit
-          FROM cur_origin co
+          FROM tbl_table_billing_detail_${year_month} co
           LEFT JOIN servicegroup_meta sm
             ON co.lineitem_resourceid = sm.csp_instanceid
          WHERE 1=1
@@ -197,7 +167,6 @@
                 #{selectedCsp}
             </foreach>
         </if>
-        AND sm.workspace_cd = #{selectedWorkspace}
         <if test="selectedProjects != null and selectedProjects.size() > 0">
             AND sm.service_cd IN
             <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
@@ -232,7 +201,7 @@
                             THEN co.lineitem_unblendedcost
                             ELSE 0
                 END), 0) AS cost]]>
-        FROM cur_origin co
+        FROM tbl_table_billing_detail_${year_month} co
         LEFT JOIN servicegroup_meta sm
         ON co.lineitem_resourceid = sm.csp_instanceid
         WHERE 1=1
@@ -242,7 +211,6 @@
                 #{selectedCsp}
             </foreach>
         </if>
-        AND sm.workspace_cd = #{selectedWorkspace}
         <if test="selectedProjects != null and selectedProjects.size() > 0">
             AND sm.service_cd IN
             <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
