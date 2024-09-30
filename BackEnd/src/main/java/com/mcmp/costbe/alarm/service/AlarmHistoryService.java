@@ -25,7 +25,6 @@ public class AlarmHistoryService {
             result.setAlarmHistory(alarmDao.getAlarmHistory(req));
             result.setSelectedCsps(req.getSelectedCsps());
             result.setSelectedProjects(req.getSelectedProjects());
-            result.setSelectedWorkspace(req.getSelectedWorkspace());
 
             return result;
         } catch (Exception e){
