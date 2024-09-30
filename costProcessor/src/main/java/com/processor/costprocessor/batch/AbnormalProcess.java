@@ -134,6 +134,7 @@ public class AbnormalProcess {
             }
 
             item.setCollect_dt(collect_dt);
+            String pctFormatter = String.format("%.2f", item.getPercentage_point());
 
             AlarmReqModel alarmReqModel = AlarmReqModel.builder()
                     .event_type("Abnormal")
@@ -142,7 +143,7 @@ public class AbnormalProcess {
                     .csp_type(item.getCsp_type())
                     .urgency("Warning")
                     .plan(item.getAbnormal_rating())
-                    .note("지난달 비용(" + numericCalculator.parseExponentialFormat(item.getSubject_cost()) + " USD) 대비 이번달 비용(" + numericCalculator.parseExponentialFormat(item.getStandard_cost()) + " USD)이 " + item.getPercentage_point() + " % 발생했습니다.")
+                    .note("지난달 비용(" + numericCalculator.parseExponentialFormat(item.getSubject_cost()) + " USD) 대비 이번달 비용(" + numericCalculator.parseExponentialFormat(item.getStandard_cost()) + " USD)이 " + pctFormatter + " % 발생했습니다.")
                     .project_cd(item.getProject_cd())
                     .build();
 
