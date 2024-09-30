@@ -22,6 +22,9 @@ export const useSelectedOptionsStore = defineStore('selectedOptions', {
         },
         toggleCSP(csp) {
             this.selectedOptions.selectedCsps = csp;
+        },
+        setTumblebugProject(projects){
+            this.selectedOptions.selectedProjects = projects;
         }
     }
 });
