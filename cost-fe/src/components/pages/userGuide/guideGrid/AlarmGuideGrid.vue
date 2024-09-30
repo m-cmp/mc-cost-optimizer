@@ -35,8 +35,8 @@
           <Column header="추천 유형" headerStyle="width: 120px; text-align: center;">
             <template #body="slotProps">
               <span v-if="slotProps.data.event_type === 'Abnormal'"
-                    :style="getUrgencyStyle(slotProps.data.urgency)">
-                {{ translateUrgency(slotProps.data.urgency) }}
+                    :style="getUrgencyStyle(slotProps.data.plan)">
+                {{ translateUrgency(slotProps.data.plan) }}
               </span>
 
               <span v-else-if="slotProps.data.event_type === 'Resize' || slotProps.data.event_type === 'Unused'"
@@ -107,8 +107,8 @@ export default {
       return `${yyyy}-${mm}-${dd}`;
     };
 
-    const getUrgencyStyle = (urgency) => {
-      switch (urgency) {
+    const getUrgencyStyle = (plan) => {
+      switch (plan) {
         case 'Caution':
           return { color: 'orange', fontWeight: 'bold' };
         case 'Warning':
@@ -120,8 +120,8 @@ export default {
       }
     };
 
-    const translateUrgency = (urgency) => {
-      switch (urgency) {
+    const translateUrgency = (plan) => {
+      switch (plan) {
         case 'Caution':
           return '주의';
         case 'Warning':
@@ -129,7 +129,7 @@ export default {
         case 'Critical':
           return '긴급';
         default:
-          return urgency;
+          return plan;
       }
     };
 
