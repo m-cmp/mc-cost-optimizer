@@ -1,7 +1,5 @@
 <template>
-  <div>
-    Workspace ID : {{ tumblebugWorkspaceid }}, Project ID : {{ tumblebugProjectid }}, User Token : {{ tumblebugUsertoken }}
-  </div>
+  <div></div>
 <!--<div class="page-header d-print-none">-->
 <!--    <div class="container-xl">-->
 <!--        <div class="row g-2 align-items-center">-->
@@ -93,7 +91,7 @@ export default {
                 csp: []
             },
             tumblebugWorkspaceid: null,
-            tumblebugProjectid: null,
+            tumblebugProjectid: [],
             tumblebugUsertoken: null
         };
     },
@@ -206,25 +204,27 @@ export default {
         const projectCode = event.data && event.data.projectid !== undefined;
         if (projectCode) {
           this.tumblebugWorkspaceid = event.data.workspaceid;
-          this.store.setSelectedWorkspace(this.tumblebugWorkspaceid);
+          this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
           this.tumblebugProjectid = event.data.projectid;
           this.store.setTumblebugProject(this.tumblebugProjectid);
           this.tumblebugUsertoken = event.data.usertoken;
+          this.store.setTumblebugUserToken(this.tumblebugUsertoken);
           this.$emit('selectOptions');
         } else {
           alert('프로젝트 코드를 전달받지 못했습니다.')
           this.tumblebugWorkspaceid = 'testWs';
-          this.store.setSelectedWorkspace(this.tumblebugWorkspaceid);
+          this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
           this.tumblebugProjectid = ['testPrj'];
           this.store.setTumblebugProject(this.tumblebugProjectid);
           this.tumblebugUsertoken = 'Null';
+          this.store.setTumblebugUserToken(this.tumblebugUsertoken);
           this.$emit('selectOptions');
         }
       }
     },
     mounted() {
         window.addEventListener('message', this.handleMessage);
-        this.fetchWorkspaces();
+        // this.fetchWorkspaces();
     }
 }
 </script>

@@ -201,6 +201,7 @@ export default {
             formattedMomBill,
             convertedCurMonthBill,
             convertedMomBill,
+            fetchBillingData
         };
     },
 };

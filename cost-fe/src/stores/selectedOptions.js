@@ -7,6 +7,7 @@ export const useSelectedOptionsStore = defineStore('selectedOptions', {
             selectedWorkspace: "",
             selectedProjects: [], // 여러 개의 프로젝트를 선택할 수 있도록 배열로 변경
             selectedCsps: [], // 여러 개의 CSP를 선택할 수 있도록 배열로 변경
+            selectedUserToekn: "",
             today: ps.date.toFormatString('','yyyymmdd')
         }
     }),
@@ -23,8 +24,14 @@ export const useSelectedOptionsStore = defineStore('selectedOptions', {
         toggleCSP(csp) {
             this.selectedOptions.selectedCsps = csp;
         },
+        setTumblebugWorkspace(workspace) {
+            this.selectedOptions.selectedWorkspace = workspace;
+        },
         setTumblebugProject(projects){
             this.selectedOptions.selectedProjects = projects;
+        },
+        setTumblebugUserToken(userToken){
+            this.selectedOptions.selectedUserToekn = userToken;
         }
     }
 });

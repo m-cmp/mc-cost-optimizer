@@ -13,7 +13,8 @@
             <div class="container-xl">
                 <div class="row row-deck row-cards">
                     <div class="col-lg-6">
-                        <DashboardBilling />
+                        <DashboardBilling
+                        ref="dashboardBilling"/>
                     </div>
                     <div class="col-lg-6">
                         <DashboardTop
@@ -71,10 +72,14 @@ export default {
       store
     };
   },
+  mounted() {
+      this.getWidgetData();
+  },
   methods: {
     getWidgetData(){
       this.getDBoardUsageAssetData();
       this.getTop5CostData();
+      this.$refs.dashboardBilling.fetchBillingData();
     },
     getDBoardUsageAssetData(){
       axios.post(ENDPOINT.be + '/api/v2/getBillAsset', {
