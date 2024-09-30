@@ -2,342 +2,176 @@
   <div class="col-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Invoices</h3>
+        <h3 class="card-title">추천 이력</h3>
       </div>
-      <div class="card-body border-bottom py-3">
-        <div class="d-flex">
-          <div class="text-muted">
-            Show
-            <div class="mx-2 d-inline-block">
-              <input type="text" class="form-control form-control-sm" value="8" size="3" aria-label="Invoices count">
-            </div>
-            entries
-          </div>
-          <div class="ms-auto text-muted">
-            Search:
-            <div class="ms-2 d-inline-block">
-              <input type="text" class="form-control form-control-sm" aria-label="Search invoice">
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="table-responsive">
-        <table class="table card-table table-vcenter text-nowrap datatable">
-          <thead>
-          <tr>
-            <th class="w-1"><input class="form-check-input m-0 align-middle" type="checkbox" aria-label="Select all invoices"></th>
-            <th class="w-1">No. <!-- Download SVG icon from http://tabler-icons.io/i/chevron-up -->
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm icon-thick" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 15l6 -6l6 6" /></svg>
-            </th>
-            <th>Invoice Subject</th>
-            <th>Client</th>
-            <th>VAT No.</th>
-            <th>Created</th>
-            <th>Status</th>
-            <th>Price</th>
-            <th></th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td><input class="form-check-input m-0 align-middle" type="checkbox" aria-label="Select invoice"></td>
-            <td><span class="text-muted">001401</span></td>
-            <td><a href="invoice.html" class="text-reset" tabindex="-1">Design Works</a></td>
-            <td>
-              <span class="flag flag-country-us"></span>
-              Carlson Limited
-            </td>
-            <td>
-              87956621
-            </td>
-            <td>
-              15 Dec 2017
-            </td>
-            <td>
-              <span class="badge bg-success me-1"></span> Paid
-            </td>
-            <td>$887</td>
-            <td class="text-end">
-                            <span class="dropdown">
-                              <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown">Actions</button>
-                              <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">
-                                  Action
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                  Another action
-                                </a>
-                              </div>
-                            </span>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="form-check-input m-0 align-middle" type="checkbox" aria-label="Select invoice"></td>
-            <td><span class="text-muted">001402</span></td>
-            <td><a href="invoice.html" class="text-reset" tabindex="-1">UX Wireframes</a></td>
-            <td>
-              <span class="flag flag-country-us"></span>
-              Adobe
-            </td>
-            <td>
-              87956421
-            </td>
-            <td>
-              12 Apr 2017
-            </td>
-            <td>
-              <span class="badge bg-warning me-1"></span> Pending
-            </td>
-            <td>$1200</td>
-            <td class="text-end">
-                            <span class="dropdown">
-                              <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown">Actions</button>
-                              <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">
-                                  Action
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                  Another action
-                                </a>
-                              </div>
-                            </span>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="form-check-input m-0 align-middle" type="checkbox" aria-label="Select invoice"></td>
-            <td><span class="text-muted">001403</span></td>
-            <td><a href="invoice.html" class="text-reset" tabindex="-1">New Dashboard</a></td>
-            <td>
-              <span class="flag flag-country-us"></span>
-              Bluewolf
-            </td>
-            <td>
-              87952621
-            </td>
-            <td>
-              23 Oct 2017
-            </td>
-            <td>
-              <span class="badge bg-warning me-1"></span> Pending
-            </td>
-            <td>$534</td>
-            <td class="text-end">
-                            <span class="dropdown">
-                              <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown">Actions</button>
-                              <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">
-                                  Action
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                  Another action
-                                </a>
-                              </div>
-                            </span>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="form-check-input m-0 align-middle" type="checkbox" aria-label="Select invoice"></td>
-            <td><span class="text-muted">001404</span></td>
-            <td><a href="invoice.html" class="text-reset" tabindex="-1">Landing Page</a></td>
-            <td>
-              <span class="flag flag-country-us"></span>
-              Salesforce
-            </td>
-            <td>
-              87953421
-            </td>
-            <td>
-              2 Sep 2017
-            </td>
-            <td>
-              <span class="badge bg-secondary me-1"></span> Due in 2 Weeks
-            </td>
-            <td>$1500</td>
-            <td class="text-end">
-                            <span class="dropdown">
-                              <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown">Actions</button>
-                              <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">
-                                  Action
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                  Another action
-                                </a>
-                              </div>
-                            </span>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="form-check-input m-0 align-middle" type="checkbox" aria-label="Select invoice"></td>
-            <td><span class="text-muted">001405</span></td>
-            <td><a href="invoice.html" class="text-reset" tabindex="-1">Marketing Templates</a></td>
-            <td>
-              <span class="flag flag-country-us"></span>
-              Printic
-            </td>
-            <td>
-              87956621
-            </td>
-            <td>
-              29 Jan 2018
-            </td>
-            <td>
-              <span class="badge bg-danger me-1"></span> Paid Today
-            </td>
-            <td>$648</td>
-            <td class="text-end">
-                            <span class="dropdown">
-                              <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown">Actions</button>
-                              <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">
-                                  Action
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                  Another action
-                                </a>
-                              </div>
-                            </span>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="form-check-input m-0 align-middle" type="checkbox" aria-label="Select invoice"></td>
-            <td><span class="text-muted">001406</span></td>
-            <td><a href="invoice.html" class="text-reset" tabindex="-1">Sales Presentation</a></td>
-            <td>
-              <span class="flag flag-country-us"></span>
-              Tabdaq
-            </td>
-            <td>
-              87956621
-            </td>
-            <td>
-              4 Feb 2018
-            </td>
-            <td>
-              <span class="badge bg-secondary me-1"></span> Due in 3 Weeks
-            </td>
-            <td>$300</td>
-            <td class="text-end">
-                            <span class="dropdown">
-                              <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown">Actions</button>
-                              <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">
-                                  Action
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                  Another action
-                                </a>
-                              </div>
-                            </span>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="form-check-input m-0 align-middle" type="checkbox" aria-label="Select invoice"></td>
-            <td><span class="text-muted">001407</span></td>
-            <td><a href="invoice.html" class="text-reset" tabindex="-1">Logo & Print</a></td>
-            <td>
-              <span class="flag flag-country-us"></span>
-              Apple
-            </td>
-            <td>
-              87956621
-            </td>
-            <td>
-              22 Mar 2018
-            </td>
-            <td>
-              <span class="badge bg-success me-1"></span> Paid Today
-            </td>
-            <td>$2500</td>
-            <td class="text-end">
-                            <span class="dropdown">
-                              <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown">Actions</button>
-                              <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">
-                                  Action
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                  Another action
-                                </a>
-                              </div>
-                            </span>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="form-check-input m-0 align-middle" type="checkbox" aria-label="Select invoice"></td>
-            <td><span class="text-muted">001408</span></td>
-            <td><a href="invoice.html" class="text-reset" tabindex="-1">Icons</a></td>
-            <td>
-              <span class="flag flag-country-us"></span>
-              Tookapic
-            </td>
-            <td>
-              87956621
-            </td>
-            <td>
-              13 May 2018
-            </td>
-            <td>
-              <span class="badge bg-success me-1"></span> Paid Today
-            </td>
-            <td>$940</td>
-            <td class="text-end">
-                            <span class="dropdown">
-                              <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown">Actions</button>
-                              <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">
-                                  Action
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                  Another action
-                                </a>
-                              </div>
-                            </span>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card-footer d-flex align-items-center">
-        <p class="m-0 text-muted">Showing <span>1</span> to <span>8</span> of <span>16</span> entries</p>
-        <ul class="pagination m-0 ms-auto">
-          <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-              <!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>
-              prev
-            </a>
-          </li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item active"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">4</a></li>
-          <li class="page-item"><a class="page-link" href="#">5</a></li>
-          <li class="page-item">
-            <a class="page-link" href="#">
-              next <!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>
-            </a>
-          </li>
-        </ul>
+      <div>
+        <!-- PrimeVue DataTable 컴포넌트 -->
+        <DataTable :value="alarms" :paginator="true" :rows="rows" tableStyle="min-width: 50rem">
+          <Column field="occure_time" header="일시"
+                  headerStyle="width: 130px; display: flex; font-weight: bold;"></Column>
+          <Column field="csp_type" header="CSP" headerStyle="width: auto; justify-content: center"></Column>
+          <Column field="resource_id" header="리소스 ID" headerStyle="width: 200px; justify-content: center"></Column>
+          <Column field="resource_type" header="리소스 타입" headerStyle="width: 120px; text-align: center;"></Column>
+          
+          <Column header="알람 종류" headerStyle="width: 120px; text-align: center;">
+            <template #body="slotProps">
+              {{ translateEventType(slotProps.data.event_type) }}
+            </template>
+          </Column>
+
+          <!-- note 필드의 body 슬롯 설정 -->
+          <Column header="알람 내용" headerStyle="width: auto; text-align: center;">
+            <template #body="slotProps">
+
+              <span v-if="slotProps.data.event_type === 'Unused' && !slotProps.data.note">
+                미사용 자원으로, 확인이 필요합니다.
+              </span>
+              <span v-else>
+                {{ slotProps.data.note }}
+              </span>
+            </template>
+          </Column>
+
+          <!-- 조건부 렌더링을 위한 body 슬롯 사용 -->
+          <Column header="추천 유형" headerStyle="width: 120px; text-align: center;">
+            <template #body="slotProps">
+
+              <span v-if="slotProps.data.event_type === 'Abnormal'"
+                    :style="getUrgencyStyle(slotProps.data.urgency)">
+                {{ translateUrgency(slotProps.data.urgency) }}
+              </span>
+
+              <span v-else-if="slotProps.data.event_type === 'Resize' || slotProps.data.event_type === 'Unused'"
+                    :style="slotProps.data.plan">
+                {{ translatePlan(slotProps.data.plan) }}
+              </span>
+
+              <span v-else>
+                {{ slotProps.data.plan }}
+              </span>
+            </template>
+          </Column>
+
+        </DataTable>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+
 export default {
   props: {
   },
   data() {
     return {
+      alarms: Array.from({ length: 10 }, () => ({
+        occure_time: '',
+        csp_type: '',
+        resource_id: '',
+        resource_type: '',
+        event_type: '',
+        note: '',
+        plan: ''
+      })),
+      rows: 10,
     };
   },
+  mounted() {
+    this.fetchAlarmHistory();
+  },
   methods: {
-  }
+    async fetchAlarmHistory() {
+      try {
+        const response = await axios.post('http://localhost:9090/api/v2/alarm/history', {
+          selectedCsps: ["AWS"],
+          selectedWorkspace: "testWs",
+          selectedProjects: ["testPrj", "testPrj2"]
+        });
+
+        const alarmData = response.data.Data.alarmHistory;
+
+        this.alarms = alarmData.map(alarm => ({
+          ...alarm,
+          occure_time: this.formatDate(alarm.occure_time)
+        })); 
+      } catch (error) {
+        console.error('API 호출 오류:', error);
+      }
+    },
+    translateEventType(eventType) {
+      switch (eventType) {
+        case 'Abnormal':
+          return '비정상';
+        case 'Resize':
+          return '사이즈 변경';
+        case 'Unused':
+          return '미사용';
+        default:
+          return eventType;
+      }
+    },
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0'); 
+      const dd = String(date.getDate()).padStart(2, '0'); 
+      return `${yyyy}-${mm}-${dd}`;
+    },
+    getUrgencyStyle(urgency) {
+      switch (urgency) {
+        case 'Caution':
+          return { color: 'orange', fontWeight: 'bold' };
+        case 'Warning':
+          return { color: 'darkorange', fontWeight: 'bold' };
+        case 'Critical':
+          return { color: 'red', fontWeight: 'bold' };
+        default:
+          return { color: 'black', fontWeight: 'normal' };
+      }
+    },
+    translateUrgency(urgency) {
+      switch (urgency) {
+        case 'Caution':
+          return '주의';
+        case 'Warning':
+          return '경고';
+        case 'Critical':
+          return '긴급';
+        default:
+          return urgency;
+      }
+    },
+    translatePlan(plan) {
+      switch (plan) {
+        case 'Up':
+          return '상향';
+        case 'Down':
+          return '하향';
+        case 'Unused':
+          return '미사용';
+        default:
+          return plan;
+      }
+    }
+  },
+  components: {
+    DataTable,
+    Column
+  },
 }
 </script>
 
 <style>
+.card-title {
+  font-family: 'Arial', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: #3c3c3c;
+}
 
 </style>

@@ -3,13 +3,13 @@
         <div class="card-body flex-container">
             <div class="text-content">
                 <h3 class="card-title">{{ curYear }}년 {{ curMonth }}월 청구금액</h3>
-                <h1 class="card-text">{{ convertedCurMonthBill.toLocaleString() }} KRW</h1>
+                <h1 class="card-text">{{ convertedCurMonthBill.toLocaleString() }} USD</h1>
                 <p class="card-text">
                     전월사용 금액대비<br>
                     <span :style="{ color: parseFloat(momPer) > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 128, 255)' }">{{ momPerSign
                         }} {{ formattedMomPer }}%</span>
                     <span :style="{ color: momBill > 0 ? 'rgb(128, 0, 0)' : 'rgb(0, 128, 255)' }">{{ momBillSign }} {{
-                        formattedMomBill.toLocaleString() }} KRW</span>
+                        formattedMomBill.toLocaleString() }} USD</span>
                 </p>
             </div>
 
@@ -32,9 +32,6 @@ import {
 import {
     useSelectedOptionsStore
 } from '@/stores/selectedOptions';
-import {
-    useCalCurrencyStore
-} from '@/stores/calCurrency';
 import ApexCharts from 'apexcharts';
 
 export default {
@@ -42,7 +39,6 @@ export default {
     setup() {
 
         const store = useSelectedOptionsStore();
-        const currencyStore = useCalCurrencyStore();
 
         const curYear = ref('');
         const curMonth = ref('');
@@ -52,15 +48,12 @@ export default {
         const series = ref([]);
         const chart = ref(null);
 
-        // 환율 변환된 금액
-        const convertedCurMonthBill = computed(() => Math.round(currencyStore.usdToKrw(curMonthBill.value)));
-        const convertedMomBill = computed(() => Math.round(currencyStore.usdToKrw(momBill.value)));
+        const convertedCurMonthBill = computed(() => Math.abs(parseFloat(momPer.value)).toFixed(3));
+        const convertedMomBill = computed(() => Math.abs(momBill.value));
 
-        // 기호 계산
         const momPerSign = computed(() => (parseFloat(momPer.value) > 0 ? '▲' : '▼'));
         const momBillSign = computed(() => (momBill.value > 0 ? '▲' : '▼'));
 
-        // momPer와 momBill 값을 양수로 변환
         const formattedMomPer = computed(() => Math.abs(parseFloat(momPer.value)).toFixed(2));
         const formattedMomBill = computed(() => Math.abs(convertedMomBill.value));
 
@@ -77,7 +70,7 @@ export default {
                 },
                 stacked: true,
                 zoom: {
-                    enabled: false, // 드래그로 확대 비활성화
+                    enabled: false, 
                 },
             },
             plotOptions: {
@@ -95,7 +88,7 @@ export default {
                 theme: 'dark',
                 y: {
                     formatter: function (val) {
-                        return val.toLocaleString() + " KRW"; // 툴팁에 'USD' 추가
+                        return val.toLocaleString() + " USD";
                     },
                 }
             },
@@ -128,8 +121,8 @@ export default {
             yaxis: {
                 labels: {
                     padding: 4,
-                    fommater: function (val) {
-                        return val.toFixed(2); // 소수점 2자리로 제한
+                    formatter: function (val) {
+                        return val.toFixed(0) + " USD";
                     }
                 },
 
@@ -142,10 +135,8 @@ export default {
         };
 
         const fetchBillingData = () => {
-            // console.log("today: ", store.selectedOptions)
             axios.post(ENDPOINT.be + '/api/v2/getCurMonthBill', store.selectedOptions)
                 .then(response => {
-                    // console.log('response: ', response.data)
                     const data = response.data.Data;
                     curYear.value = data.curYear;
                     curMonth.value = data.curMonth;
@@ -155,9 +146,8 @@ export default {
 
                     // 월, 금액 분리
                     const months = data.monthlyBill.map(item => `${item.year}-${item.month}-01`).reverse();
-                    const bills = data.monthlyBill.map(item => Math.round(currencyStore.usdToKrw(item.bill.toFixed(2)))).reverse();
+                    const bills = data.monthlyBill.map(item => item.bill.toFixed(2)).reverse();
 
-                    // 시리즈 데이터 업데이트
                     series.value = [{
                         name: '월별 청구 금액',
                         data: bills,
@@ -165,10 +155,6 @@ export default {
                     // x축 레이블 업데이트
                     chartOptions.xaxis.categories = months;
 
-                    // console.log('series.value', series.value);
-                    // console.log('chartOptions', chartOptions);
-
-                    // chartOptions.labels = data.monthlyBill.map(item => `${item.year}-${item.month}-01`);
                     if (chart.value) {
                         chart.value.updateOptions({
                             series: series.value,
@@ -185,7 +171,6 @@ export default {
                     }
                 })
                 .catch(error => {
-                    console.log('message: ', store.selectedOptions)
                     console.error("There was an error!", error);
                 });
         };
@@ -221,4 +206,4 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style></style>
