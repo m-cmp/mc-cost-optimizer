@@ -22,6 +22,7 @@ import {
 } from 'vue';
 import ApexCharts from 'apexcharts';
 import axios from 'axios';
+import {ref} from 'vue';
 import ENDPOINT from '@/api/Endpoints'
 import {
     useSelectedOptionsStore
@@ -33,6 +34,7 @@ export default {
         const store = useSelectedOptionsStore();
 
         let chart = null;
+        const init = ref(true);
 
         // 차트 설정 & 스타일
         const chartOptions = {
@@ -95,6 +97,7 @@ export default {
                     show: false,
                 },
                 type: 'datetime',
+                categories:[]
             },
             yaxis: {
                 labels: {
@@ -104,6 +107,7 @@ export default {
                     }
                 },
             },
+            series: [],
             labels: [],
             colors: ['#008FFB', '#00E396', '#FEB019'],
             legend: {
@@ -112,13 +116,14 @@ export default {
         };
 
         const createChart = (options) => {
-            
-            if (chart !== null) {
-                chart.destroy();
+
+            if(init.value === true){
+              chart = new ApexCharts(document.getElementById('chart-active-users-2'), options);
+              chart.render();
+            } else {
+              chart.updateOptions(options);
             }
 
-            chart = new ApexCharts(document.getElementById('chart-active-users-2'), options);
-            chart.render();
         };
 
         const getChartData = async () => {
@@ -155,6 +160,7 @@ export default {
                 };
                 chartOptions.chart.stacked = false;
 
+                init.value = false;
                 createChart(chartOptions);
             } catch (error) {
                 console.error('Error occurred while fetching data:', error);
@@ -168,6 +174,7 @@ export default {
         });
 
         onMounted(() => {
+            createChart(chartOptions);
             getChartData();
         });
 
