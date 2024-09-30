@@ -126,7 +126,12 @@ public class UnusedProcess {
 
             List<DailyAssetAmountModel> dailyAssetAmounts = unusedDao.getDailyAssetAmount(param);
 
-            return dailyAssetAmounts;
+            if(dailyAssetAmounts.isEmpty()){
+                log.warn("Unused Daily Asset Amount INFO is EMPTY!");
+                return null;
+            } else{
+                return dailyAssetAmounts;
+            }
         };
     }
 
@@ -183,10 +188,6 @@ public class UnusedProcess {
                     String cleintErrorMsg = clientError.getMessage();
                     log.error("FAIL TO CALL COST SELECTOR - UNUSED API : " + cleintErrorMsg);
                 }
-
-//                for(DailyAssetAmountModel item : itemList){
-//                    log.info("Writer: " + item);
-//                }
             }
         };
     }
