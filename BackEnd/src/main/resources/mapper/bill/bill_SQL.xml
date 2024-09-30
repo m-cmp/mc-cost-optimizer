@@ -37,7 +37,7 @@
                         #{selectedProject}
                     </foreach>
                 </if>
-                  AND ms.workspace_cd = #{selectedWorkspace}) AS curMonthBill
+                ) AS curMonthBill
              , (SELECT coalesce(sum(total_cost), 0)
                   FROM monthly_summation ms
                  WHERE 1=1
@@ -54,7 +54,7 @@
                         #{selectedProject}
                     </foreach>
                 </if>
-                  AND ms.workspace_cd = #{selectedWorkspace}) AS prevMonthBill
+                ) AS prevMonthBill
     </select>
 
     <select id="getMonthBill" parameterType="com.mcmp.costbe.usage.model.bill.BillingWidgetReqModel" resultType="com.mcmp.costbe.usage.model.bill.MonthlyBillModel">
@@ -81,7 +81,6 @@
                     #{selectedProject}
                 </foreach>
             </if>
-           AND ms.workspace_cd = #{selectedWorkspace}
          GROUP BY ym.year_month
          ORDER BY ym.year_month DESC
     </select>
@@ -106,7 +105,6 @@
                                             #{selectedCsp}
                                             </foreach>
                                          </if>
-                                          AND sm.workspace_cd = #{selectedWorkspace}
                                           <if test="selectedProjects != null and selectedProjects.size() > 0">
                                           AND sm.service_cd IN
                                               <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
@@ -137,7 +135,6 @@
                        #{selectedCsp}
                    </foreach>
                    </if>
-                   AND sm.workspace_cd = #{selectedWorkspace}
                    <if test="selectedProjects != null and selectedProjects.size() > 0">
                    AND sm.service_cd IN
                        <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
@@ -153,7 +150,7 @@
                 ) AS grouped_results
           LEFT JOIN servicegroup_meta sm2
             ON grouped_results.min_resourceid = sm2.csp_instanceid
-         ORDER BY total_cost DESC;
+         ORDER BY total_cost DESC
     </select>
 
     <select id="getBillAssetChild" parameterType="com.mcmp.costbe.usage.model.bill.BillingAssetReqModel" resultType="com.mcmp.costbe.usage.model.bill.BillingAssetChildModel">
@@ -170,7 +167,6 @@
                 #{selectedCsp}
             </foreach>
         </if>
-        AND sm.workspace_cd = #{selectedWorkspace}
         <if test="selectedProjects != null and selectedProjects.size() > 0">
             AND sm.service_cd IN
             <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
@@ -215,7 +211,6 @@
                 #{selectedCsp}
             </foreach>
         </if>
-        AND sm.workspace_cd = #{selectedWorkspace}
         <if test="selectedProjects != null and selectedProjects.size() > 0">
             AND sm.service_cd IN
             <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">

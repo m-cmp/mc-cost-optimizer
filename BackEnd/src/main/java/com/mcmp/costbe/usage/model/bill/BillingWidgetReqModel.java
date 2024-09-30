@@ -20,7 +20,7 @@ public class BillingWidgetReqModel extends PrevMonthsModel {
     @Schema(description = "CSP", example = "[\"AWS\"]", required = true)
     private List<String> selectedCsps;
 
-    @Schema(description = "워크스페이스 코드", example = "workspaceCode1", required = true)
+    @Schema(description = "워크스페이스 코드", example = "workspaceCode1", required = false, deprecated = true)
     private String selectedWorkspace;
 
     @Schema(required = false)

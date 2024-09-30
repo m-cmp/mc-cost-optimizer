@@ -25,9 +25,10 @@ public class UsageController {
     @Autowired
     private UsageService usageService;
 
+    @Deprecated
     @GetMapping(path = "/getWorkspaces")
     @Tag(name = "User", description = "User API")
-    @Operation(summary = "워크스페이스 목록 조회", description = "워크스페이스 목록을 조회합니다.")
+    @Operation(summary = "워크스페이스 목록 조회", description = "워크스페이스 목록을 조회합니다.", deprecated = true)
     @ApiResponses(value={
             @ApiResponse(responseCode = "200", description = "성공"),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
@@ -44,9 +45,10 @@ public class UsageController {
         return ResponseEntity.ok(result);
     }
 
+    @Deprecated
     @GetMapping(path = "/getProjects")
     @Tag(name = "User", description = "User API")
-    @Operation(summary = "프로젝트 목록 조회", description = "워크스페이스에 속한 프로젝트 목록을 조회합니다.")
+    @Operation(summary = "프로젝트 목록 조회", description = "워크스페이스에 속한 프로젝트 목록을 조회합니다.", deprecated = true)
     @ApiResponses(value={
             @ApiResponse(responseCode = "200", description = "성공"),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})

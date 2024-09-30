@@ -51,7 +51,6 @@
                </when>
                <otherwise>
                    AND sm.service_cd = #{project_cd}
-                   AND sm.workspace_cd  = #{workspace_cd}
                  group by tcumr.mcmp_mail_receiver
                </otherwise>
            </choose>

@@ -15,7 +15,6 @@ public class CostOptiAlarmModel {
     private String urgency;
     private String plan;
     private String note;
-    private String workspace_cd;
     private String project_cd;
 
 }

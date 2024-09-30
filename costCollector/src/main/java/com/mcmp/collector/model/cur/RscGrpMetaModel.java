@@ -9,6 +9,5 @@ public class RscGrpMetaModel {
     private String csp;
     private String account;
     private String prj_cd;
-    private String workspace_cd;
     private String year_month;
 }
