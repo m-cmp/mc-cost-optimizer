@@ -12,7 +12,7 @@
           <Column field="csp_type" header="CSP" headerStyle="width: auto; justify-content: center"></Column>
           <Column field="resource_id" header="리소스 ID" headerStyle="width: 200px; justify-content: center"></Column>
           <Column field="resource_type" header="리소스 타입" headerStyle="width: 120px; text-align: center;"></Column>
-          
+
           <Column header="알람 종류" headerStyle="width: 120px; text-align: center;">
             <template #body="slotProps">
               {{ translateEventType(slotProps.data.event_type) }}
@@ -22,7 +22,6 @@
           <!-- note 필드의 body 슬롯 설정 -->
           <Column header="알람 내용" headerStyle="width: auto; text-align: center;">
             <template #body="slotProps">
-
               <span v-if="slotProps.data.event_type === 'Unused' && !slotProps.data.note">
                 미사용 자원으로, 확인이 필요합니다.
               </span>
@@ -35,7 +34,6 @@
           <!-- 조건부 렌더링을 위한 body 슬롯 사용 -->
           <Column header="추천 유형" headerStyle="width: 120px; text-align: center;">
             <template #body="slotProps">
-
               <span v-if="slotProps.data.event_type === 'Abnormal'"
                     :style="getUrgencyStyle(slotProps.data.urgency)">
                 {{ translateUrgency(slotProps.data.urgency) }}
@@ -51,7 +49,6 @@
               </span>
             </template>
           </Column>
-
         </DataTable>
       </div>
     </div>
@@ -62,47 +59,33 @@
 import axios from 'axios';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import { useSelectedOptionsStore } from '@/stores/selectedOptions';
+import { ref, onMounted } from 'vue';
+import ENDPOINT from "@/api/Endpoints";
 
 export default {
-  props: {
-  },
-  data() {
-    return {
-      alarms: Array.from({ length: 10 }, () => ({
-        occure_time: '',
-        csp_type: '',
-        resource_id: '',
-        resource_type: '',
-        event_type: '',
-        note: '',
-        plan: ''
-      })),
-      rows: 10,
-    };
-  },
-  mounted() {
-    this.fetchAlarmHistory();
-  },
-  methods: {
-    async fetchAlarmHistory() {
+  name: 'AlarmHistory',
+  setup() {
+    const store = useSelectedOptionsStore();
+    const alarms = ref([]);
+    const rows = ref(10);
+
+    const fetchAlarmHistory = async () => {
       try {
-        const response = await axios.post('http://localhost:9090/api/v2/alarm/history', {
-          selectedCsps: ["AWS"],
-          selectedWorkspace: "testWs",
-          selectedProjects: ["testPrj", "testPrj2"]
-        });
+        const response = await axios.post(ENDPOINT.be +'/api/v2/alarm/history', store.selectedOptions);
 
         const alarmData = response.data.Data.alarmHistory;
 
-        this.alarms = alarmData.map(alarm => ({
+        alarms.value = alarmData.map(alarm => ({
           ...alarm,
-          occure_time: this.formatDate(alarm.occure_time)
-        })); 
+          occure_time: formatDate(alarm.occure_time)
+        }));
       } catch (error) {
         console.error('API 호출 오류:', error);
       }
-    },
-    translateEventType(eventType) {
+    };
+
+    const translateEventType = (eventType) => {
       switch (eventType) {
         case 'Abnormal':
           return '비정상';
@@ -113,16 +96,18 @@ export default {
         default:
           return eventType;
       }
-    },
-    formatDate(dateString) {
+    };
+
+    const formatDate = (dateString) => {
       if (!dateString) return '';
       const date = new Date(dateString);
       const yyyy = date.getFullYear();
-      const mm = String(date.getMonth() + 1).padStart(2, '0'); 
-      const dd = String(date.getDate()).padStart(2, '0'); 
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
       return `${yyyy}-${mm}-${dd}`;
-    },
-    getUrgencyStyle(urgency) {
+    };
+
+    const getUrgencyStyle = (urgency) => {
       switch (urgency) {
         case 'Caution':
           return { color: 'orange', fontWeight: 'bold' };
@@ -133,8 +118,9 @@ export default {
         default:
           return { color: 'black', fontWeight: 'normal' };
       }
-    },
-    translateUrgency(urgency) {
+    };
+
+    const translateUrgency = (urgency) => {
       switch (urgency) {
         case 'Caution':
           return '주의';
@@ -145,8 +131,9 @@ export default {
         default:
           return urgency;
       }
-    },
-    translatePlan(plan) {
+    };
+
+    const translatePlan = (plan) => {
       switch (plan) {
         case 'Up':
           return '상향';
@@ -157,13 +144,27 @@ export default {
         default:
           return plan;
       }
-    }
+    };
+
+    onMounted(() => {
+      fetchAlarmHistory();
+    });
+
+    return {
+      alarms,
+      rows,
+      translateEventType,
+      getUrgencyStyle,
+      translateUrgency,
+      translatePlan,
+      fetchAlarmHistory
+    };
   },
   components: {
     DataTable,
     Column
-  },
-}
+  }
+};
 </script>
 
 <style>
@@ -173,5 +174,4 @@ export default {
   font-weight: bold;
   color: #3c3c3c;
 }
-
 </style>

@@ -1,67 +1,68 @@
 <template>
-<div class="page-header d-print-none">
-    <div class="container-xl">
-        <div class="row g-2 align-items-center">
-            <div class="col">
-                <div class="page-pretitle">Overview</div>
-                <h2 class="page-title">Dashboard</h2>
-            </div>
-            <div class="col-auto ms-auto d-print-none">
-                <div class="btn-list">
-                    <span class="d-none d-sm-inline">
-                        <a href="#" class="btn">New view</a>
-                    </span>
-                    <a href="#" class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal" data-bs-target="#modal-report">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M12 5l0 14"></path>
-                            <path d="M5 12l14 0"></path>
-                        </svg>
-                        Create new report
-                    </a>
-                    <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-report" aria-label="Create new report">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M12 5l0 14"></path>
-                            <path d="M5 12l14 0"></path>
-                        </svg>
-                        <path d="M12 5l0 14"></path>
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M5 12l14 0"></path>
-                    </a>
-                </div>
-            </div>
-            <div class="selectBoxList">
-                <div class="box">
-                    <div :class="['selectBox2', { 'active': showWorkspaceOptions }]" @click="toggleOptions('workspace')">
-                        <button class="label">{{ selectedOptions.workspace.workspaceNM }}</button>
-                        <ul v-show="showWorkspaceOptions" class="optionList">
-                            <li class="optionItem" v-for="option in workspaceOptions" :key="option" @click.stop="selectOption('workspace', option)">{{ option.workspaceNM }}</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="box">
-                    <div :class="['selectBox2', { 'active': showProjectOptions }]" @click="toggleOptions('project')">
-                        <button class="label">{{ selectedOptions.project.length > 0 ? selectedOptions.project.map(p => p.projectNM).join(', ') : 'Projects' }}</button>
-                        <ul v-show="showProjectOptions" class="optionList">
-                            <li class="optionItem" v-for="option in projectOptions" :key="option.projectCD" :class="{ 'selected': isSelected(option) }" @click.stop="selectOption('project', option)">
-                                {{ option.projectNM }}
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- <div :class="['selectBox2', { 'active': showCSPOptions }]" @click="toggleOptions('csp')">
-                        <button class="label">{{ selectedOptions.csp.length > 0 ? selectedOptions.csp.join(', ') : 'CSP 선택' }}</button>
-                        <ul v-show="showCSPOptions" class="optionList">
-                            <li class="optionItem" v-for="option in cspOptions" :key="option" :class="{ 'selected': isSelected('csp', option) }" @click.stop="selectOption('csp', option)">
-                                {{ option }}
-                            </li>
-                        </ul>
-                    </div> -->
-            </div>
-        </div>
-    </div>
-</div>
+  <div></div>
+<!--<div class="page-header d-print-none">-->
+<!--    <div class="container-xl">-->
+<!--        <div class="row g-2 align-items-center">-->
+<!--            <div class="col">-->
+<!--                <div class="page-pretitle">Overview</div>-->
+<!--                <h2 class="page-title">Dashboard</h2>-->
+<!--            </div>-->
+<!--            <div class="col-auto ms-auto d-print-none">-->
+<!--                <div class="btn-list">-->
+<!--                    <span class="d-none d-sm-inline">-->
+<!--                        <a href="#" class="btn">New view</a>-->
+<!--                    </span>-->
+<!--                    <a href="#" class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal" data-bs-target="#modal-report">-->
+<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">-->
+<!--                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>-->
+<!--                            <path d="M12 5l0 14"></path>-->
+<!--                            <path d="M5 12l14 0"></path>-->
+<!--                        </svg>-->
+<!--                        Create new report-->
+<!--                    </a>-->
+<!--                    <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-report" aria-label="Create new report">-->
+<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">-->
+<!--                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>-->
+<!--                            <path d="M12 5l0 14"></path>-->
+<!--                            <path d="M5 12l14 0"></path>-->
+<!--                        </svg>-->
+<!--                        <path d="M12 5l0 14"></path>-->
+<!--                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>-->
+<!--                        <path d="M5 12l14 0"></path>-->
+<!--                    </a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="selectBoxList">-->
+<!--                <div class="box">-->
+<!--                    <div :class="['selectBox2', { 'active': showWorkspaceOptions }]" @click="toggleOptions('workspace')">-->
+<!--                        <button class="label">{{ selectedOptions.workspace.workspaceNM }}</button>-->
+<!--                        <ul v-show="showWorkspaceOptions" class="optionList">-->
+<!--                            <li class="optionItem" v-for="option in workspaceOptions" :key="option" @click.stop="selectOption('workspace', option)">{{ option.workspaceNM }}</li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="box">-->
+<!--                    <div :class="['selectBox2', { 'active': showProjectOptions }]" @click="toggleOptions('project')">-->
+<!--                        <button class="label">{{ selectedOptions.project.length > 0 ? selectedOptions.project.map(p => p.projectNM).join(', ') : 'Projects' }}</button>-->
+<!--                        <ul v-show="showProjectOptions" class="optionList">-->
+<!--                            <li class="optionItem" v-for="option in projectOptions" :key="option.projectCD" :class="{ 'selected': isSelected(option) }" @click.stop="selectOption('project', option)">-->
+<!--                                {{ option.projectNM }}-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                &lt;!&ndash; <div :class="['selectBox2', { 'active': showCSPOptions }]" @click="toggleOptions('csp')">-->
+<!--                        <button class="label">{{ selectedOptions.csp.length > 0 ? selectedOptions.csp.join(', ') : 'CSP 선택' }}</button>-->
+<!--                        <ul v-show="showCSPOptions" class="optionList">-->
+<!--                            <li class="optionItem" v-for="option in cspOptions" :key="option" :class="{ 'selected': isSelected('csp', option) }" @click.stop="selectOption('csp', option)">-->
+<!--                                {{ option }}-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div> &ndash;&gt;-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 </template>
 
     
@@ -185,6 +186,9 @@ export default {
                 .then(response => {
                     if (response.data.status === "OK") {
                         this.projectOptions = response.data.Data;
+                        if (this.projectOptions.length > 0) {
+                            this.selectOption('project', this.projectOptions[0]);
+                        }
                     } else {
                         console.error('api 호출 실패: ', response.data);
                     }
