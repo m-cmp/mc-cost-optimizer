@@ -48,7 +48,7 @@ export default {
         const series = ref([]);
         const chart = ref(null);
 
-        const convertedCurMonthBill = computed(() => Math.abs(parseFloat(momPer.value)).toFixed(3));
+        const convertedCurMonthBill = computed(() => Math.abs(parseFloat(curMonthBill.value)).toFixed(3));
         const convertedMomBill = computed(() => Math.abs(momBill.value));
 
         const momPerSign = computed(() => (parseFloat(momPer.value) > 0 ? '▲' : '▼'));
