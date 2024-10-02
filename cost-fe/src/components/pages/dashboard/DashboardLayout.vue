@@ -5,8 +5,8 @@
     <div class="page-wrapper">
 
         <!-- selectbox -->
-        <DashboardSelectbox
-          @selectOptions="getWidgetData"/>
+<!--        <DashboardSelectbox-->
+<!--          @selectOptions="getWidgetData"/>-->
 
         <!-- page body -->
         <div class="page-body">
@@ -40,7 +40,7 @@
 
 <script>
 import DashboardHeader from './dashboard-header/DashboardHeader.vue'
-import DashboardSelectbox from './dashboard-selectbox/DashboardSelectbox.vue'
+// import DashboardSelectbox from './dashboard-selectbox/DashboardSelectbox.vue'
 import DashboardFooter from './dashboard-footer/DashboardFooter.vue'
 import DashboardBilling from './dashboard-billing-amount/DashboardBilling.vue'
 import DashboardTop from './dashboard-top-resources/DashboardTop5.vue'
@@ -53,7 +53,7 @@ import {useSelectedOptionsStore} from "@/stores/selectedOptions";
 export default {
     components: {
         DashboardHeader,
-        DashboardSelectbox,
+        // DashboardSelectbox,
         DashboardFooter,
         DashboardBilling,
         DashboardTop,
