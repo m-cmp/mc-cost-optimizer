@@ -201,6 +201,8 @@ export default {
                 });
         },
       handleMessage(event){
+        console.log('Received message event:', event);
+
         const projectCode = event.data && event.data.projectid !== undefined;
         if (projectCode) {
           this.tumblebugWorkspaceid = event.data.workspaceid;
@@ -223,6 +225,7 @@ export default {
       }
     },
     mounted() {
+        console.log('mount 확인');
         window.addEventListener('message', this.handleMessage);
         // this.fetchWorkspaces();
     }
