@@ -31,12 +31,10 @@
                         #{selectedCsp}
                     </foreach>
                 </if>
-                <if test="selectedProjects != null and selectedProjects.size() > 0">
                     AND ms.project_cd IN
                     <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                         #{selectedProject}
                     </foreach>
-                </if>
                 ) AS curMonthBill
              , (SELECT coalesce(sum(total_cost), 0)
                   FROM monthly_summation ms
@@ -48,12 +46,10 @@
                         #{selectedCsp}
                     </foreach>
                 </if>
-                <if test="selectedProjects != null and selectedProjects.size() > 0">
                     AND ms.project_cd IN
                     <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                         #{selectedProject}
                     </foreach>
-                </if>
                 ) AS prevMonthBill
     </select>
 
@@ -75,12 +71,10 @@
                     #{selectedCsp}
                 </foreach>
             </if>
-            <if test="selectedProjects != null and selectedProjects.size() > 0">
                 AND ms.project_cd IN
                 <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                     #{selectedProject}
                 </foreach>
-            </if>
          GROUP BY ym.year_month
          ORDER BY ym.year_month DESC
     </select>
@@ -105,12 +99,10 @@
                                             #{selectedCsp}
                                             </foreach>
                                          </if>
-                                          <if test="selectedProjects != null and selectedProjects.size() > 0">
                                           AND sm.service_cd IN
                                               <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                                               #{selectedProject}
                                           </foreach>
-                                          </if>
         <![CDATA[
                                           AND co.lineitem_usagestartdate >= #{curMonthStartDate}
                                           AND co.lineitem_usageenddate <= #{curMonthEndDate}
@@ -135,12 +127,10 @@
                        #{selectedCsp}
                    </foreach>
                    </if>
-                   <if test="selectedProjects != null and selectedProjects.size() > 0">
                    AND sm.service_cd IN
                        <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                        #{selectedProject}
                    </foreach>
-                   </if>
         <![CDATA[
                    AND co.lineitem_usagestartdate >= #{curMonthStartDate}
                    AND co.lineitem_usageenddate <= #{curMonthEndDate}
@@ -167,12 +157,10 @@
                 #{selectedCsp}
             </foreach>
         </if>
-        <if test="selectedProjects != null and selectedProjects.size() > 0">
             AND sm.service_cd IN
             <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                 #{selectedProject}
             </foreach>
-        </if>
         <![CDATA[
         AND co.lineitem_usagestartdate >= #{curMonthStartDate}
         AND co.lineitem_usageenddate <= #{curMonthEndDate}  ]]>
@@ -211,12 +199,10 @@
                 #{selectedCsp}
             </foreach>
         </if>
-        <if test="selectedProjects != null and selectedProjects.size() > 0">
             AND sm.service_cd IN
             <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                 #{selectedProject}
             </foreach>
-        </if>
         <![CDATA[
            AND co.lineitem_usageenddate <= #{curMonthEndDate}
         ]]>

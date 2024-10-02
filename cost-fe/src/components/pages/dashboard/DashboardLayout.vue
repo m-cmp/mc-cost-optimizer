@@ -5,8 +5,8 @@
     <div class="page-wrapper">
 
         <!-- selectbox -->
-        <DashboardSelectbox
-          @selectOptions="getWidgetData"/>
+<!--        <DashboardSelectbox-->
+<!--          @selectOptions="getWidgetData"/>-->
 
         <!-- page body -->
         <div class="page-body">
@@ -40,7 +40,7 @@
 
 <script>
 import DashboardHeader from './dashboard-header/DashboardHeader.vue'
-import DashboardSelectbox from './dashboard-selectbox/DashboardSelectbox.vue'
+// import DashboardSelectbox from './dashboard-selectbox/DashboardSelectbox.vue'
 import DashboardFooter from './dashboard-footer/DashboardFooter.vue'
 import DashboardBilling from './dashboard-billing-amount/DashboardBilling.vue'
 import DashboardTop from './dashboard-top-resources/DashboardTop5.vue'
@@ -53,7 +53,7 @@ import {useSelectedOptionsStore} from "@/stores/selectedOptions";
 export default {
     components: {
         DashboardHeader,
-        DashboardSelectbox,
+        // DashboardSelectbox,
         DashboardFooter,
         DashboardBilling,
         DashboardTop,
@@ -74,6 +74,14 @@ export default {
   },
   mounted() {
       this.getWidgetData();
+  },
+  watch:{
+    'store.selectedOptions.selectedProjects': {
+      handler() {
+        this.getWidgetData()
+      },
+      deep: true
+    },
   },
   methods: {
     getWidgetData(){
@@ -97,6 +105,9 @@ export default {
           })
           .catch(err => {
             console.log(err);
+            if(this.store.selectedOptions.selectedProjects.length < 1){
+              alert('[ERROR] Project 코드에 맞는 값을 불러올 수 없습니다.')
+            }
           })
     },
     getTop5CostData(){

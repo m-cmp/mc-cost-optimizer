@@ -82,6 +82,9 @@ export default {
         }));
       } catch (error) {
         console.error('API 호출 오류:', error);
+        if(store.selectedOptions.selectedProjects.length < 1){
+          alert('[ERROR] Project 코드에 맞는 값을 불러올 수 없습니다.')
+        }
       }
     };
 

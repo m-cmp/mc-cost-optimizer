@@ -20,7 +20,7 @@ public class NumericCalculator {
 
             return formatted;
         } else {
-            return numStr;
+            return String.format("%.2f", numStr);
         }
 
     }

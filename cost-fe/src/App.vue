@@ -1,17 +1,22 @@
 <template>
   <div>
-    Workspace ID : {{ tumblebugWorkspaceid }}, Project ID : {{ tumblebugProjectid }}, User Token : {{ tumblebugUsertoken }}
+    <div>
+      Workspace ID : {{ tumblebugWorkspaceid }}, Project ID : {{ tumblebugProjectid }}, User Token : {{ tumblebugUsertoken }}
+    </div>
+    <EventListener/>
+    <router-view></router-view>
   </div>
-<router-view></router-view>
+
 </template>
 
 <script>
-
+import EventListener from "@/components/EventListener.vue";
 import {useSelectedOptionsStore} from "@/stores/selectedOptions";
 
 export default {
     name: 'App',
     components: {
+      EventListener
     },
     data(){
       return {
@@ -45,6 +50,9 @@ export default {
       },
       deep: true
     }
+  },
+  methods: {
+
   }
 }
 </script>

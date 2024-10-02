@@ -2,7 +2,7 @@
     <div class="page">
         <DashboardHeader />
         <div class="page-wrapper">
-            <DashboardSelectbox />
+<!--            <DashboardSelectbox />-->
             <div class="page-body">
                 <div class="container-xl">
                     <div class="row row-deck row-cards">
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import DashboardSelectbox from '../dashboard/dashboard-selectbox/DashboardSelectbox.vue'
+// import DashboardSelectbox from '../dashboard/dashboard-selectbox/DashboardSelectbox.vue'
 import DashboardHeader from '../dashboard/dashboard-header/DashboardHeader.vue'
 import BaseInfo from './base-info/BaseInfo.vue'
 import MonthlyOverview from './billing-summary/monthlyOverview.vue'
@@ -27,7 +27,7 @@ export default {
     name: 'BillingInvoiceLayout',
     components: {
         DashboardHeader,
-        DashboardSelectbox,
+        // DashboardSelectbox,
         BaseInfo,
         MonthlyOverview,
         InvoiceTable
