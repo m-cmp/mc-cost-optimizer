@@ -19,12 +19,10 @@
           LEFT JOIN monthly_summation ms
             ON ym.`year_month` = ms.`year_month`
            AND ms.csp = csp_providers.csp
-            <if test="selectedProjects != null and selectedProjects.size() > 0">
                 AND ms.project_cd IN
                 <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                     #{selectedProject}
                 </foreach>
-            </if>
          GROUP BY ym.year_month, csp_providers.csp
          ORDER BY ym.year_month DESC, csp_providers.csp
     </select>
@@ -45,12 +43,10 @@
                 #{selectedCsp}
             </foreach>
         </if>
-        <if test="selectedProjects != null and selectedProjects.size() > 0">
             AND sm.service_cd IN
             <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                 #{selectedProject}
             </foreach>
-        </if>
           <![CDATA[
            AND co.lineitem_usagestartdate >= #{curMonthStartDate}
            AND co.lineitem_usageenddate < #{curMonthEndDate}

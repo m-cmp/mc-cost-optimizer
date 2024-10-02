@@ -55,6 +55,9 @@ export default {
                 CalculateTotalCost();
             } catch (error) {
                 console.error(error);
+              if(selectedOptionsStore.selectedOptions.selectedProjects.length < 1){
+                alert('[ERROR] Project 코드에 맞는 값을 불러올 수 없습니다.')
+              }
             }
         }
 

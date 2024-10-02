@@ -19,12 +19,10 @@
                     #{selectedCsp}
                 </foreach>
             </if>
-            <if test="selectedProjects != null and selectedProjects.size() > 0">
                 AND sm.service_cd IN
                 <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                     #{selectedProject}
                 </foreach>
-            </if>
                 AND ubr.create_dt = #{curDate}
          GROUP BY ubr.csp_type, ubr.csp_account, ubr.csp_instanceid, ubr.plan_type
     </select>
@@ -44,12 +42,10 @@
                     #{selectedCsp}
                 </foreach>
             </if>
-            <if test="selectedProjects != null and selectedProjects.size() > 0">
                 AND dabp.project_cd IN
                 <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                     #{selectedProject}
                 </foreach>
-            </if>
            AND dabp.collect_dt = #{date}
     </select>
 
@@ -72,12 +68,10 @@
                 #{selectedCsp}
             </foreach>
         </if>
-        <if test="selectedProjects != null and selectedProjects.size() > 0">
             AND sm.service_cd IN
             <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                 #{selectedProject}
             </foreach>
-        </if>
         AND iorr.create_dt = #{date}
     </select>
 </mapper>

@@ -105,6 +105,9 @@ export default {
           })
           .catch(err => {
             console.log(err);
+            if(this.store.selectedOptions.selectedProjects.length < 1){
+              alert('[ERROR] Project 코드에 맞는 값을 불러올 수 없습니다.')
+            }
           })
     },
     getTop5CostData(){
