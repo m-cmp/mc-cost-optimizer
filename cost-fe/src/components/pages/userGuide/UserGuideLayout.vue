@@ -18,6 +18,7 @@ import DashboardHeader from "@/components/pages/dashboard/dashboard-header/Dashb
 import Alarm from "@/components/pages/userGuide/Alarm.vue";
 import AlarmGuideGrid from "@/components/pages/userGuide/guideGrid/AlarmGuideGrid.vue";
 // import DashboardSelectbox from "@/components/pages/dashboard/dashboard-selectbox/DashboardSelectbox.vue";
+import {useSelectedOptionsStore} from "@/stores/selectedOptions";
 
 export default {
   name: 'BillingInvoiceLayout',
@@ -28,7 +29,17 @@ export default {
     // DashboardSelectbox
   },
   data() {
-    return {};
+    return {
+      store: useSelectedOptionsStore()
+    };
+  },
+  watch:{
+    'store.selectedOptions.selectedProjects': {
+      handler() {
+        this.getWidgetData()
+      },
+      deep: true
+    },
   },
   methods: {
     getWidgetData(){

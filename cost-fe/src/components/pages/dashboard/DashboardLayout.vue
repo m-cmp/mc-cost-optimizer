@@ -75,6 +75,14 @@ export default {
   mounted() {
       this.getWidgetData();
   },
+  watch:{
+    'store.selectedOptions.selectedProjects': {
+      handler() {
+        this.getWidgetData()
+      },
+      deep: true
+    },
+  },
   methods: {
     getWidgetData(){
       this.getDBoardUsageAssetData();
