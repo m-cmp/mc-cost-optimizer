@@ -17,8 +17,6 @@ export default {
     }
   },
   mounted() {
-    console.log('리스너 확인');
-
     window.removeEventListener('message', this.handleMessage);
     window.addEventListener('message', this.handleMessage);
   },
@@ -28,8 +26,6 @@ export default {
   },
   methods: {
     handleMessage(event){
-      console.log('Received message event:', event);
-
       const projectCode = event.data && event.data.projectid !== undefined;
       if (projectCode) {
         this.tumblebugWorkspaceid = event.data.workspaceid;
