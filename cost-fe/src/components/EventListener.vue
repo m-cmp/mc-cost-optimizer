@@ -25,9 +25,10 @@ export default {
 
     this.messageTimeout = setTimeout(() => {
       if(!this.messageReceived){
-        this.handleEmptyEvent()
+        console.log("메시지가 수신되지 않았습니다. 임시 project 코드를 적용하겠습니다.");
+        this.handleEmptyEvent();
       }
-    }, 1500);
+    }, 3000);
 
   },
   beforeUnmount() {
@@ -56,17 +57,17 @@ export default {
         this.store.setTumblebugUserToken(this.tumblebugUsertoken);
         this.$emit('selectOptions');
       }
+    },
+    handleEmptyEvent(){
+      alert('프로젝트 코드를 전달받지 못했습니다. 임시 코드로 대체합니다.')
+      this.tumblebugWorkspaceid = 'testWs';
+      this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
+      this.tumblebugProjectid = ['testPrj'];
+      this.store.setTumblebugProject(this.tumblebugProjectid);
+      this.tumblebugUsertoken = 'Null';
+      this.store.setTumblebugUserToken(this.tumblebugUsertoken);
+      this.$emit('selectOptions');
     }
-  },
-  handleEmptyEvent(){
-    alert('프로젝트 코드를 전달받지 못했습니다. 임시 코드로 대체합니다.')
-    this.tumblebugWorkspaceid = 'testWs';
-    this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
-    this.tumblebugProjectid = ['testPrj'];
-    this.store.setTumblebugProject(this.tumblebugProjectid);
-    this.tumblebugUsertoken = 'Null';
-    this.store.setTumblebugUserToken(this.tumblebugUsertoken);
-    this.$emit('selectOptions');
   }
 }
 </script>
