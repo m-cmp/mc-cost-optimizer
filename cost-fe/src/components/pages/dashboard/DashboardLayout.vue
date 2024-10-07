@@ -73,7 +73,9 @@ export default {
     };
   },
   mounted() {
+    if (this.store.selectedOptions.selectedProjects.length > 0) {
       this.getWidgetData();
+    }
   },
   watch:{
     'store.selectedOptions.selectedProjects': {
@@ -101,13 +103,13 @@ export default {
               this.usageAssetData = res.data;
             } else {
               console.error('api 호출 실패: ', res.data);
+              if(this.store.selectedOptions.selectedProjects.length < 1){
+                alert('[ERROR] Project 코드에 맞는 값을 불러올 수 없습니다.')
+              }
             }
           })
           .catch(err => {
             console.log(err);
-            if(this.store.selectedOptions.selectedProjects.length < 1){
-              alert('[ERROR] Project 코드에 맞는 값을 불러올 수 없습니다.')
-            }
           })
     },
     getTop5CostData(){

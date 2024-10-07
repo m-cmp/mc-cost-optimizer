@@ -14,11 +14,22 @@ export default {
   data(){
     return{
       store: useSelectedOptionsStore(),
+      messageReceived :false,
+      messageTimeout: null
     }
   },
   mounted() {
-    window.removeEventListener('message', this.handleMessage);
+    this.messageReceived = false;
+
     window.addEventListener('message', this.handleMessage);
+
+    this.messageTimeout = setTimeout(() => {
+      if(!this.messageReceived){
+        console.log("메시지가 수신되지 않았습니다. 임시 project 코드를 적용하겠습니다.");
+        this.handleEmptyEvent();
+      }
+    }, 3000);
+
   },
   beforeUnmount() {
     // 컴포넌트가 파괴되기 전에 이벤트 리스너를 제거해 중복 발생 방지
@@ -26,6 +37,7 @@ export default {
   },
   methods: {
     handleMessage(event){
+      this.messageReceived = true;
       const projectCode = event.data && event.data.projectid !== undefined;
       if (projectCode) {
         this.tumblebugWorkspaceid = event.data.workspaceid;
@@ -45,6 +57,16 @@ export default {
         this.store.setTumblebugUserToken(this.tumblebugUsertoken);
         this.$emit('selectOptions');
       }
+    },
+    handleEmptyEvent(){
+      alert('프로젝트 코드를 전달받지 못했습니다. 임시 코드로 대체합니다.')
+      this.tumblebugWorkspaceid = 'testWs';
+      this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
+      this.tumblebugProjectid = ['testPrj'];
+      this.store.setTumblebugProject(this.tumblebugProjectid);
+      this.tumblebugUsertoken = 'Null';
+      this.store.setTumblebugUserToken(this.tumblebugUsertoken);
+      this.$emit('selectOptions');
     }
   }
 }

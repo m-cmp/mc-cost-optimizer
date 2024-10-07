@@ -150,7 +150,9 @@ export default {
     };
 
     onMounted(() => {
-      fetchAlarmHistory();
+      if (store.selectedOptions.selectedProjects.length > 0) {
+        fetchAlarmHistory();
+      }
     });
 
     return {
