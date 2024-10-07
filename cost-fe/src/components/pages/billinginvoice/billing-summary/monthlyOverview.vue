@@ -175,7 +175,10 @@ export default {
 
         onMounted(() => {
             createChart(chartOptions);
-            getChartData();
+
+            if (store.selectedOptions.selectedProjects.length > 0) {
+                getChartData();
+            }
         });
 
         return {

@@ -182,7 +182,7 @@ export default {
         });
 
         onMounted(() => {
-            if (store.selectedOptions.selectedWorkspace) {
+            if (store.selectedOptions.selectedProjects.length > 0) {
                 fetchBillingData();
             }
         });

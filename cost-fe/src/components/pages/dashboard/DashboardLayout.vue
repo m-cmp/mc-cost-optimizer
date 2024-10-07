@@ -73,7 +73,9 @@ export default {
     };
   },
   mounted() {
+    if (this.store.selectedOptions.selectedProjects.length > 0) {
       this.getWidgetData();
+    }
   },
   watch:{
     'store.selectedOptions.selectedProjects': {
