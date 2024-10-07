@@ -15,7 +15,13 @@ export default {
     return{
       store: useSelectedOptionsStore(),
       messageReceived :false,
-      messageTimeout: null
+      messageTimeout: null,
+      tumblebugWorkspaceid: null,
+      tumblebugProjectid: null,
+      tumblebugUsertoken: null,
+      tumblebugWorkspaceName: null,
+      tumblebugProjectName: null,
+      tumblebugProjectUUID: null
     }
   },
   mounted() {
@@ -38,35 +44,46 @@ export default {
   methods: {
     handleMessage(event){
       this.messageReceived = true;
-      const projectCode = event.data && event.data.projectid !== undefined;
+      const projectCode = event.data && event.data.accessToken !== undefined;
       if (projectCode) {
-        this.tumblebugWorkspaceid = event.data.workspaceid;
+        this.tumblebugWorkspaceid = event.data.workspaceInfo.id;
         this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
-        this.tumblebugProjectid = event.data.projectid;
+        this.tumblebugWorkspaceName = event.data.workspaceInfo.name;
+        this.store.setTumblebugWorkspaceName(this.tumblebugWorkspaceName);
+        this.tumblebugProjectid = event.data.projectInfo.ns_id;
         this.store.setTumblebugProject(this.tumblebugProjectid);
-        this.tumblebugUsertoken = event.data.usertoken;
+        this.tumblebugProjectUUID = event.data.projectInfo.id;
+        this.store.setTumblebugProjectUUID(this.tumblebugProjectUUID);
+        this.tumblebugProjectName = event.data.projectInfo.name;
+        this.store.setTumblebugProjectName(this.tumblebugProjectName);
+        this.tumblebugUsertoken = event.data.accessToken;
         this.store.setTumblebugUserToken(this.tumblebugUsertoken);
-        this.$emit('selectOptions');
       } else {
         alert('프로젝트 코드를 전달받지 못했습니다.')
         this.tumblebugWorkspaceid = 'testWs';
         this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
-        this.tumblebugProjectid = ['testPrj'];
+        this.tumblebugWorkspaceName = 'testWs';
+        this.store.setTumblebugWorkspaceName(this.tumblebugWorkspaceName);
+        this.tumblebugProjectid = 'testPrj';
         this.store.setTumblebugProject(this.tumblebugProjectid);
+        this.tumblebugProjectName = 'testPrj';
+        this.store.setTumblebugProjectName(this.tumblebugProjectName);
         this.tumblebugUsertoken = 'Null';
         this.store.setTumblebugUserToken(this.tumblebugUsertoken);
-        this.$emit('selectOptions');
       }
     },
     handleEmptyEvent(){
       alert('프로젝트 코드를 전달받지 못했습니다. 임시 코드로 대체합니다.')
       this.tumblebugWorkspaceid = 'testWs';
       this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
-      this.tumblebugProjectid = ['testPrj'];
+      this.tumblebugWorkspaceName = 'testWs';
+      this.store.setTumblebugWorkspaceName(this.tumblebugWorkspaceName);
+      this.tumblebugProjectid = 'testPrj';
       this.store.setTumblebugProject(this.tumblebugProjectid);
+      this.tumblebugProjectName = 'testPrj';
+      this.store.setTumblebugProjectName(this.tumblebugProjectName);
       this.tumblebugUsertoken = 'Null';
       this.store.setTumblebugUserToken(this.tumblebugUsertoken);
-      this.$emit('selectOptions');
     }
   }
 }
