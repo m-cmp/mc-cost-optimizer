@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      Workspace ID : {{ tumblebugWorkspaceid }}, Project ID : {{ tumblebugProjectid }}, User Token : {{ tumblebugUsertoken }}
+      Workspace ID : {{ tumblebugWorkspaceName }}, Project ID : {{ tumblebugProjectName }}, User Token : {{ tumblebugUsertoken }}
     </div>
     <EventListener/>
     <router-view></router-view>
@@ -21,26 +21,26 @@ export default {
     data(){
       return {
         store: useSelectedOptionsStore(),
-        tumblebugWorkspaceid: null,
-        tumblebugProjectid: [],
+        tumblebugWorkspaceName: null,
+        tumblebugProjectName: [],
         tumblebugUsertoken: null
       }
     },
   mounted() {
-    this.tumblebugWorkspaceid = this.store.selectedOptions.selectedWorkspace
-    this.tumblebugProjectid = this.store.selectedOptions.selectedProjects
+    this.tumblebugWorkspaceName = this.store.selectedOptions.selectedWorksapceName
+    this.tumblebugProjectName = this.store.selectedOptions.selectedProjectName
     this.tumblebugUsertoken = this.store.selectedOptions.selectedUserToekn
   },
   watch:{
-    'store.selectedOptions.selectedWorkspace': {
+    'store.selectedOptions.selectedWorksapceName': {
       handler(newVal) {
-        this.tumblebugWorkspaceid = newVal
+        this.tumblebugWorkspaceName = newVal
       },
       deep: true
     },
-    'store.selectedOptions.selectedProjects': {
+    'store.selectedOptions.selectedProjectName': {
       handler(newVal) {
-        this.tumblebugProjectid = newVal
+        this.tumblebugProjectName = newVal
       },
       deep: true
     },
