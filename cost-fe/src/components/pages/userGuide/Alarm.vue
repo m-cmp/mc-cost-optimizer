@@ -314,7 +314,7 @@ export default {
     },
     alarmSend() {
       this.toggleSaveBtn = true
-      let userId = '2194155'
+      let userId = 'test'
       // let message = "이상 비용이 발생하였습니다. 자세한 내용은 우측 링크를 클릭해주세요.(테스트 메세지)"
       // let linkUrl = 'http://localhost:8080/dashboard'
       // let linkText = '이동하기'
