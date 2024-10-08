@@ -270,7 +270,7 @@ export default {
     },
     saveToken() {
       this.toggleSaveBtn = true
-      let userId = '2194155'
+      let userId = 'test'
       let token = this.token
       let channel = this.channel
       const params = {
