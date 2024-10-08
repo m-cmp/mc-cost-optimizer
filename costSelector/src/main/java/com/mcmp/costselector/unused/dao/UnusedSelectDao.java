@@ -42,6 +42,10 @@ public class UnusedSelectDao {
         return sqlSessionTemplate.selectOne("unused.getRscEc2OptiSize", req);
     }
 
+    public OptiEC2SizeRstModel getRscEc2ModernizeType(Map<String, Object> req){
+        return sqlSessionTemplate.selectOne("unused.getRscEc2ModernizeType", req);
+    }
+
     public void insertInstOptiRcmd(InstOptiRcmdRst req){
         sqlSessionTemplate.insert("unused.insertInstOptiRcmd", req);
     }
