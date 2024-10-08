@@ -62,7 +62,6 @@
                             class="form-control save-token-input"
                             name="example-text-input"
                             placeholder="Input Slack App Token"
-                            @focus="showTextTk"
                             @blur="hideTextTk"/>
                       </td>
                     </tr>
@@ -77,7 +76,6 @@
                             class="form-control save-token-input"
                             name="example-text-input"
                             placeholder="Input Slack Channel ID"
-                            @focus="showTextCh"
                             @blur="hideTextCh"/>
                       </td>
                     </tr>
@@ -115,7 +113,6 @@
                           class="form-control save-token-input"
                           name="example-text-input"
                           placeholder="Input Mail User ID"
-                          @focus="showTextTk"
                           @blur="hideTextTk"/>
                     </td>
                   </tr>
@@ -130,7 +127,6 @@
                           class="form-control save-token-input"
                           name="example-text-input"
                           placeholder="Input Mail App Password"
-                          @focus="showTextCh"
                           @blur="hideTextCh"/>
                     </td>
                   </tr>
@@ -302,6 +298,7 @@ export default {
                 alert('Error.')
               }
               this.toggleSaveBtn = false
+              alert('Save.')
             })
             .catch(err => {
               console.log(err);
