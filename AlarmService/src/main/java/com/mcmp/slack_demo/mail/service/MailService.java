@@ -133,11 +133,11 @@ public class MailService {
             mimeMessageHelper.setText(html, true);
 
             ClassPathResource resource = new ClassPathResource("static/images/mcmp-logo.png");
-            mimeMessageHelper.addInline("logo_png", resource.getFile());
+            mimeMessageHelper.addInline("logo_png", resource, "image/png");
 
-            if("invoice".equals(type)){
-                mimeMessageHelper.addAttachment(MimeUtility.encodeText("test.txt", "UTF-8", "B"), file.getFile());
-            }
+//            if("invoice".equals(type)){
+//                mimeMessageHelper.addAttachment(MimeUtility.encodeText("test.txt", "UTF-8", "B"), file.getFile());
+//            }
 
             emailSender.send(mimeMessage);
 
