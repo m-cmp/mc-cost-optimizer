@@ -85,7 +85,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveToken">Save Toekns</button>
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveToken">Save</button>
             </div>
           </div>
         </div>
@@ -135,7 +135,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveMailpw">Save Password</button>
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveMailpw">Save</button>
             </div>
           </div>
         </div>
