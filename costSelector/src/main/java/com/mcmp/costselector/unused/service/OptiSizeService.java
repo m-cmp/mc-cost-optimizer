@@ -84,7 +84,6 @@ public class OptiSizeService {
                         rcmdType = unusedSelectDao.getRscEc2OptiSize(paramMap);
                         break;
                     case "Modernize":
-                        System.out.println("모더나이즈 메타 확인 : " + targetMeta);
                         rcmdType = unusedSelectDao.getRscEc2ModernizeType(paramMap);
                         break;
                 }
