@@ -87,7 +87,9 @@
              , TRSE.BASE_ECU      AS ecu
              , COUNT(1)         AS cnt
              , PED.PHYSICAL_PROCESSOR AS physicalProcessor
-          FROM (SELECT #{rsrc_type} AS RSRC_TYPE
+          FROM (SELECT CASE WHEN #{rsrc_type} = 'AmazonEC2' THEN 'ec2'
+                            ELSE #{rsrc_type}
+                       END AS RSRC_TYPE
                    , #{instance_type} AS INST_TYPE
                    , #{region_id} AS RGN_ID
                    , #{operation} AS OPERATION
@@ -177,6 +179,39 @@
           AND NW_PERF_ODR <![CDATA[>=]]> #{targetMeta.nwPerfOdr}
         ORDER BY USD * 1.0
         LIMIT 1
+    </select>
+
+    <select id="getRscEc2ModernizeType" parameterType="map" resultType="com.mcmp.costselector.unused.model.OptiEC2SizeRstModel">
+        SELECT PED.INSTANCE_TYPE         AS instType
+             , PED.NETWORK_PERFORMANCE   AS nwPerfNm
+             , PED.STORAGE               AS storage
+             , TRIM(REPLACE(PED.MEMORY, 'GiB', '')) AS memory
+             , PED.ECU                   AS ecu
+             , APP.USD                   AS usd
+             , NPL.NW_PERF_ODR           AS nwPerfOdr
+          FROM TASM_AWS_PROD_EC2_D PED
+          LEFT OUTER JOIN TASM_AWS_EC2_PRICING_L APP
+            ON PED.SKU = APP.SKU
+           AND APP.OFFER_TERM_CODE = CASE WHEN PED.LOCATION = 'China (Beijing)' THEN '99YE2YK9UR'
+                                        WHEN PED.LOCATION = 'China (Ningxia)' THEN '5Y9WH78GDR'
+                                        ELSE 'JRTCKXETXF' END
+           AND APP.PRICING_TIER = CASE WHEN PED.LOCATION = 'China (Beijing)' THEN 'Q7UJUT2CE6'
+                                        WHEN PED.LOCATION = 'China (Ningxia)' THEN 'Q7UJUT2CE6'
+                                        ELSE '6YS6EN2CT7' END
+          LEFT OUTER JOIN TASM_RIGHT_SIZE_AWS_ECU_L TRSE
+            ON PED.INSTANCE_TYPE = TRSE.INST_TYPE
+          LEFT OUTER JOIN TASM_AWS_PROD_NW_PERF_L NPL
+            ON PED.NETWORK_PERFORMANCE = NPL.NW_PERF_NM
+         WHERE PED.LOCATION = #{rscInfo.region_nm}
+           AND PED.OPERATION = #{rscInfo.operation}
+           AND PED.TENANCY = 'Shared'
+           AND PED.CAPACITYSTATUS = 'Used'
+           AND PED.INSTANCE_TYPE = #{targetMeta.modernType}
+           AND PED.PRODUCT_FAMILY = 'Compute Instance'
+           AND PED.PHYSICAL_PROCESSOR NOT IN ('AWS Graviton Processor', 'AWS Graviton2 Processor')
+           AND APP.USD IS NOT null
+         ORDER BY USD * 1.0
+         LIMIT 1
     </select>
 
     <insert id="insertInstOptiRcmd" parameterType="com.mcmp.costselector.unused.model.InstOptiRcmdRst">

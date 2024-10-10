@@ -61,7 +61,7 @@ public class OptiSizeService {
                 rscStatus.setIsUpsizeTarget(false);
                 rscStatus.setIsDownsizeTarget(true);
             } else {
-                resizingType = "None";
+                resizingType = "Modernize";
             }
         } else {
             resizingType = "None";
@@ -77,7 +77,17 @@ public class OptiSizeService {
                 paramMap.put("rscInfo", rscStatus);
                 paramMap.put("targetMeta", targetMeta);
 
-                OptiEC2SizeRstModel rcmdType = unusedSelectDao.getRscEc2OptiSize(paramMap);
+                OptiEC2SizeRstModel rcmdType = null;
+                switch (resizingType){
+                    case "Up":
+                    case "Down":
+                        rcmdType = unusedSelectDao.getRscEc2OptiSize(paramMap);
+                        break;
+                    case "Modernize":
+                        rcmdType = unusedSelectDao.getRscEc2ModernizeType(paramMap);
+                        break;
+                }
+
                 InstOptiRcmdRst rcmdRst;
                 String alarmNote;
                 if(rcmdType != null){
@@ -94,7 +104,7 @@ public class OptiSizeService {
                             .build();
                     alarmNote = "인스턴스(" + rscStatus.getResource_id() + ")를 기존 타입 : "
                             + rscStatus.getInstance_type() + "에서 추천 타입 : " + rcmdType.getInstType() + "으로 변경하는 것을 추천드립니다.";
-                } else{
+                } else if(rcmdType == null && !"Modernize".equals(resizingType)) {
                     rcmdRst = InstOptiRcmdRst.builder()
                             .createDT(ZonedDateTime.now().toLocalDate())
                             .resourceID(rscStatus.getResource_id())
@@ -108,22 +118,30 @@ public class OptiSizeService {
                             .build();
                     alarmNote = "인스턴스(" + rscStatus.getResource_id() + ")를 기존 타입 : "
                             + rscStatus.getInstance_type() + "에서 " + resizingType + "Sizing으로 변경하는 것을 추천드립니다.";
+                } else { // resizingType이 Modernize 이면서 추천 타입이 없을 때
+                    rcmdRst = null;
+                    alarmNote = "";
+                    log.info("Instance size recommendation results : Modernize - Recommend type is None => Resource id : " + rscStatus.getResource_id());
                 }
-                log.info("Instance size recommendation results : " + rcmdRst);
-                unusedSelectDao.insertInstOptiRcmd(rcmdRst);
 
-                AlarmReqModel alarmReqModel = AlarmReqModel.builder()
-                        .event_type("Resize")
-                        .resource_id(rscStatus.getResource_id())
-                        .resource_type(rscStatus.getRsrc_type())
-                        .csp_type(rscStatus.getCsp_type())
-                        .account_id(rscStatus.getCsp_account())
-                        .urgency("Advise")
-                        .plan(resizingType)
-                        .note(alarmNote)
-                        .build();
+                if(rcmdRst != null){
+                    log.info("Instance size recommendation results : " + rcmdRst);
+                    unusedSelectDao.insertInstOptiRcmd(rcmdRst);
 
-                alarmService.sendAlarm(alarmReqModel);
+                    AlarmReqModel alarmReqModel = AlarmReqModel.builder()
+                            .event_type("Resize")
+                            .resource_id(rscStatus.getResource_id())
+                            .resource_type(rscStatus.getRsrc_type())
+                            .csp_type(rscStatus.getCsp_type())
+                            .account_id(rscStatus.getCsp_account())
+                            .urgency("Advise")
+                            .plan(resizingType)
+                            .note(alarmNote)
+                            .build();
+
+                    alarmService.sendAlarm(alarmReqModel);
+                }
+
             }
         }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="slider-container slack-guide">
     <p class="guide-note">
-      본 가이드는 Gmail을 통한 알림을 받기만을 위한 과정을 포함하고 있습니다. <br/> 사전에 메일 제공 주최가 되는 계정을 만들어 주시기 바랍니다.
+      본 가이드는 Gmail을 통해 알림 받는 과정만을 포함하고 있습니다. <br/> 사전에 메일 제공 주최가 되는 계정을 만들어 주시기 바랍니다.
     </p>
     <h2>1. Gmail 설정 변경</h2>
     <h4>1-1.</h4>
@@ -9,7 +9,7 @@
         class="guideIMG"
         src="@/assets/images/mailingGuide/mailingIMG01.png"
         alt="`Slide 1`"></p>
-    <p class="comment">메일을 제공할 계정으로 로그인한 후 Gamil의 설정에서 전달 및 POP/IMAP 탭에 접속하여 <strong>IMAP 사용</strong>을 체크하고 저장합니다.</p>
+    <p class="comment">메일을 제공할 계정으로 로그인한 후 Gamil의 <strong>설정 탭</strong>에서 '전달 및 POP/IMAP' 탭에 접속하여 <strong>IMAP 사용</strong>을 체크하고 저장합니다.</p>
     <blockquote class="guide-blockquote">
       <p class="comment">
         IMAP은 전자 메일에 액세스하기 위한 방법입니다.
@@ -22,6 +22,15 @@
         src="@/assets/images/mailingGuide/mailingIMG02.png"
         alt="`Slide 2`"></p>
     <p class="comment">Google 계정 설정에 접속하여 <strong>'앱 비밀번호'</strong> 설정을 위한 페이지로 이동합니다.</p>
+    <blockquote class="guide-blockquote">
+      <p class="comment">
+        앱 비밀번호는 <strong>2단계 인증</strong>이 설정된 계정에서만 이용할 수 있습니다. '앱 비밀번호'가 뜨지 않는 경우 <strong>2단계 인증</strong>을 먼저 설정해주시기 바랍니다. <br>
+        <img
+        class="guideIMG"
+        src="@/assets/images/mailingGuide/mailingIMG02-1.png"
+        alt="`Slide 2`">
+      </p>
+    </blockquote>
     <h4>2-2.</h4>
     <p><img
         class="guideIMG"
