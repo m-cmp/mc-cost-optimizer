@@ -147,7 +147,12 @@ public class AbnormalProcess {
                     .project_cd(item.getProject_cd())
                     .build();
 
-            alarmService.sendAlarm(alarmReqModel);
+            try{
+                alarmService.sendAlarm(alarmReqModel);
+            } catch (Exception e){
+                log.error("[Abnoramal] Fail to Send Alarm - Project : {}, Product : {}, due to : {}", item.getProject_cd(), item.getProduct_cd(), e.getMessage());
+            }
+
 
             return item;
         };
