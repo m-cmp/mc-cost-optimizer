@@ -66,7 +66,7 @@ public class VMMetaService {
             log.error("FAIL TO GET TUMBLEBUG META - NS : " + statusCode);
             throw new RuntimeException();
         } catch (Exception e){
-            log.error("FAIL TO GET TUMBLEBUG META - NS : " +e.getMessage());
+            log.error("FAIL TO GET TUMBLEBUG META - NS : " + e.getMessage());
             throw new RuntimeException();
         }
     }
@@ -92,7 +92,7 @@ public class VMMetaService {
                 if(response.getMci() != null && !response.getMci().isEmpty()){
                     return response.getMci();
                 }else{
-                    log.warn("TUMBLEBUG META - MCI => MCI IS EMPTY => response : {}", response);
+                    log.warn("TUMBLEBUG META - MCI => MCI IS EMPTY => ns : {}, response : {}", item.getId(), response);
                     return new ArrayList<>();
                 }
             } catch (HttpClientErrorException | HttpServerErrorException clientError) {
@@ -100,13 +100,52 @@ public class VMMetaService {
                 log.error("FAIL TO GET TUMBLEBUG META - MCI => NS ID : {}, error code : {}", item.getId(), statusCode);
                 throw new RuntimeException();
             } catch (Exception e){
-                log.error("FAIL TO GET TUMBLEBUG META - MCI => NS ID : {}", item.getId());
+                log.error("FAIL TO GET TUMBLEBUG META - MCI => NS ID : {}, error : {}", item.getId(), e.getMessage());
                 throw new RuntimeException();
             }
 
         } else {
             log.error("[ERROR] : GET TUMBLEBUG META - MCI => NS IS EMPTY");
             return new ArrayList<>();
+        }
+    }
+
+    public TbVmInfoModel getTBBVM(TBBNSItemModel item, TBBMCIItemModel mci, TbVmInfoModel vm){
+
+        if(vm != null){
+            String apiUrl = String.format("%s/ns/%s/mci/%s/vm/%s", tumblebugUrl, item.getId(), mci.getId(), vm.getId());
+            RestTemplate restTemplate = new RestTemplate();
+
+            String auth = tumblebugUserNM + ":" + tumblebugPW;
+            byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
+            String authHeader = "Basic " + new String(encodedAuth);
+
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.set("Authorization", authHeader);
+            HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+
+            try{
+                ResponseEntity<TbVmInfoModel> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, httpEntity, TbVmInfoModel.class);
+                TbVmInfoModel response = responseEntity.getBody();
+
+                if(response != null && !response.getId().isEmpty()){
+                    return response;
+                }else{
+                    log.warn("TUMBLEBUG META - VM => VM IS EMPTY => ns : {}, mci : {}, response : {}", item.getId(), mci.getId(), response);
+                    return null;
+                }
+            } catch (HttpClientErrorException | HttpServerErrorException clientError) {
+                HttpStatus statusCode = clientError.getStatusCode();
+                log.error("FAIL TO GET TUMBLEBUG META - VM => NS ID : {}, MCI ID : {}, VM ID : {}, error code : {}", item.getId(), mci.getId(), vm.getId(), statusCode);
+                throw new RuntimeException();
+            } catch (Exception e){
+                log.error("FAIL TO GET TUMBLEBUG META - VM => NS ID : {}, MCI ID : {}, error : {}", item.getId(), mci.getId(), e.getMessage());
+                throw new RuntimeException();
+            }
+
+        } else {
+            log.error("[ERROR] : GET TUMBLEBUG META - MCI => NS IS EMPTY");
+            return null;
         }
     }
 
@@ -121,45 +160,49 @@ public class VMMetaService {
             for(TBBMCIItemModel mci : mciList){
                 if("mci".equals(mci.getResourceType())){
                     try{
-                        List<ResourcegroupMetaModel> resourcegroupMetaList = new ArrayList<>();
 
                         List<TbVmInfoModel> vmList = mci.getVm();
                         for(TbVmInfoModel vm : vmList){
-                            String vmStatus;
-                            if(!vm.getStatus().isEmpty()){
-                                vmStatus = switch (vm.getStatus()){
-                                    case "Running" -> "Y";
-                                    case "Failed" -> "N";
-                                    default -> "Y";
-                                };
-                            }else {
-                                vmStatus = "Y";
+                            List<ResourcegroupMetaModel> resourcegroupMetaList = new ArrayList<>();
+                            TbVmInfoModel vminfo =  getTBBVM(ns, mci, vm);
+
+                            if(vminfo != null){
+                                String vmStatus;
+                                if(!vminfo.getStatus().isEmpty()){
+                                    vmStatus = switch (vminfo.getStatus()){
+                                        case "Running" -> "Y";
+                                        case "Failed" -> "N";
+                                        default -> "Y";
+                                    };
+                                }else {
+                                    vmStatus = "Y";
+                                }
+
+                                if(vminfo.getCspResourceId() != null){
+                                    ResourcegroupMetaModel vmInfo = ResourcegroupMetaModel.builder()
+                                            .cspType("AWS")
+                                            .cspAccount("mcmpcostopti")
+                                            .cspInstanceid(vminfo.getCspResourceId())
+                                            .serviceCd(ns.getId())
+                                            .serviceNm(ns.getName())
+                                            .serviceUid(ns.getUid())
+                                            .vmId(vminfo.getId())
+                                            .vmUid(vminfo.getUid())
+                                            .vmNm(vminfo.getName())
+                                            .mciId(mci.getId())
+                                            .mciUid(mci.getUid())
+                                            .mciNm(mci.getName())
+                                            .instanceRunningStatus(vmStatus)
+                                            .build();
+
+                                    resourcegroupMetaList.add(vmInfo);
+                                }
                             }
 
-                            if(vm.getCspResourceId() != null){
-                                ResourcegroupMetaModel vmInfo = ResourcegroupMetaModel.builder()
-                                        .cspType("AWS")
-                                        .cspAccount("mcmpcostopti")
-                                        .cspInstanceid(vm.getCspResourceId())
-                                        .serviceCd(ns.getId())
-                                        .serviceNm(ns.getName())
-                                        .serviceUid(ns.getUid())
-                                        .vmId(vm.getId())
-                                        .vmUid(vm.getUid())
-                                        .vmNm(vm.getName())
-                                        .mciId(mci.getId())
-                                        .mciUid(mci.getUid())
-                                        .mciNm(mci.getName())
-                                        .instanceRunningStatus(vmStatus)
-                                        .build();
-
-                                resourcegroupMetaList.add(vmInfo);
+                            if(resourcegroupMetaList.size() >= 1){
+                                tbbDao.insertTBBServicegroupMeta(resourcegroupMetaList);
                             }
 
-                        }
-
-                        if(resourcegroupMetaList.size() >= 1){
-                            tbbDao.insertTBBServicegroupMeta(resourcegroupMetaList);
                         }
 
                     } catch (Exception e){
