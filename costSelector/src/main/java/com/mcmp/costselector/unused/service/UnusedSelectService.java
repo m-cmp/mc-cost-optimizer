@@ -84,7 +84,7 @@ public class UnusedSelectService {
                     plan = "None";
                 }
 
-                if(!"Up".equals(plan) && !"Down".equals(plan)){
+                if(!"Up".equals(plan) && !"Down".equals(plan) && !"Modernize".equals(plan)){
                     UnusedBatchRstModel rstModel = UnusedBatchRstModel.builder()
                             .create_dt(ZonedDateTime.now().toLocalDate().atStartOfDay())
                             .csp_type(rsStatus.getCsp_type())

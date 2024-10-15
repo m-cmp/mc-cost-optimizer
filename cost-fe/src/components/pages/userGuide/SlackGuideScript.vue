@@ -32,49 +32,44 @@
     <h4>1-5.</h4>
     <p><img
         class="guideIMG"
-        src="@/assets/images/slackGuide/slackIMG05.png"
+        src="@/assets/images/slackGuide/slackIMG05-1.png"
         alt="`Slide 5`"></p>
-    <p class="comment">생성된 App의 이름을 확인하고 <strong>'Bots'</strong> 부분을 클릭합니다.</p>
-    <p class="comment">Bot 앱이 알림을 보낼 수 있도록 허용 범위를 지정하기 위해 <strong>'Review Scopeds to Add'</strong> 버튼을 클릭합니다.</p>
-    <h4>1-6.</h4>
-    <p><img
-        class="guideIMG"
-        src="@/assets/images/slackGuide/slackIMG06.png"
-        alt="`Slide 6`"></p>
-    <p class="comment">'Bot Token Scopes' 영역에서 <strong>'Add an OAuth Scope'</strong> 버튼을 클릭하고 알림을 보낼 수 있도록 <strong>'chat:write' 권한을 허용</strong>합니다.</p>
+    <p class="comment">Bot 앱이 알림을 보낼 수 있도록 권한을 지정해 주기 위해 <strong>'OAuth & Permissions'</strong>탭에서 <strong>'Scopes'</strong> 영역으로 이동합니다. <br>
+      <br>
+      <strong>'Add an OAuth Scope'</strong> 버튼을 클릭하고 Bot 앱이 알림을 보낼 수 있도록 <strong>'chat:write' 권한을 허용</strong>합니다.</p>
     <h2>2. Slack 앱 설치 및 토큰 발급</h2>
     <h4>2-1.</h4>
     <p><img
         class="guideIMG"
         src="@/assets/images/slackGuide/slackIMG07.png"
-        alt="`Slide 7`"></p>
+        alt="`Slide 6`"></p>
     <p class="comment">지금까지 설정한 앱을 워크스페이스에 설치하기 위해 <strong>'Install to Workspace'</strong>버튼을 클릭합니다.</p>
     <h4>2-2.</h4>
+    <p><img
+        class="guideIMG"
+        src="@/assets/images/slackGuide/slackIMG07-1.png"
+        alt="`Slide 7`"></p>
+    <p class="comment">생성한 앱이 워크스페이스에 접근하여 설치될 수 있도록 권한을 허용해줍니다.</p>
+    <h4>2-3.</h4>
     <p><img
         class="guideIMG"
         src="@/assets/images/slackGuide/slackIMG08.png"
         alt="`Slide 8`"></p>
     <p class="comment">앱 설치가 완료되면 앱에 대한 <strong>OAuth Token을 발급</strong> 받습니다.</p>
     <blockquote class="guide-blockquote"><p class="comment"><strong>발급 받은 토큰은 MCMP 알림 설정을 위해 마지막 단계에 필요하며 토큰이 외부로 노출되지 않도록 주의해야 합니다.</strong></p></blockquote>
-    <h4>2-3.</h4>
-    <p><img
-        class="guideIMG"
-        src="@/assets/images/slackGuide/slackIMG09.png"
-        alt="`Slide 9`"></p>
-    <p class="comment">Slack App을 열고 생성한 워크스페이스, 채널로 이동합니다.</p>
-    <p class="comment">채널명을 클릭합니다. (예시 : #alarm-channel)</p>
     <h4>2-4.</h4>
     <p><img
         class="guideIMG"
-        src="@/assets/images/slackGuide/slackIMG10.png"
-        alt="`Slide 10`"></p>
-    <p class="comment"><strong>'통합'</strong> 탭으로 이동합니다.</p>
+        src="@/assets/images/slackGuide/slackIMG09-1.png"
+        alt="`Slide 9`"></p>
+    <p class="comment">Slack App을 열고 생성한 워크스페이스, 채널로 이동합니다.</p>
+    <p class="comment">채널명을 클릭합니다. (예시 : #alarm-channel)</p>
     <h4>2-5.</h4>
     <p><img
         class="guideIMG"
-        src="@/assets/images/slackGuide/slackIMG11.png"
-        alt="`Slide 11`"></p>
-    <p class="comment"><strong>'앱 추가'</strong> 버튼을 클릭합니다.</p>
+        src="@/assets/images/slackGuide/slackIMG10-1.png"
+        alt="`Slide 10`"></p>
+    <p class="comment">우측 상단에서 <strong>'이 channel의 모든 멤버 보기'</strong>를 누른 후 <strong>'통합'</strong> 탭에서 <strong>'앱 추가'</strong> 버튼을 클릭합니다. </p>
     <h4>2-6.</h4>
     <p><img
         class="guideIMG"

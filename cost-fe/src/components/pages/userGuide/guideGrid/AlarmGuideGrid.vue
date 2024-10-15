@@ -19,7 +19,6 @@
             </template>
           </Column>
 
-          <!-- note 필드의 body 슬롯 설정 -->
           <Column header="알람 내용" headerStyle="width: auto; text-align: center;">
             <template #body="slotProps">
               <span v-if="slotProps.data.event_type === 'Unused' && !slotProps.data.note">
@@ -31,7 +30,6 @@
             </template>
           </Column>
 
-          <!-- 조건부 렌더링을 위한 body 슬롯 사용 -->
           <Column header="추천 유형" headerStyle="width: 120px; text-align: center;">
             <template #body="slotProps">
               <span v-if="slotProps.data.event_type === 'Abnormal'"
@@ -144,13 +142,17 @@ export default {
           return '하향';
         case 'Unused':
           return '미사용';
+        case 'Modernize':
+          return '최신화';
         default:
           return plan;
       }
     };
 
     onMounted(() => {
-      fetchAlarmHistory();
+      if (store.selectedOptions.selectedProjects.length > 0) {
+        fetchAlarmHistory();
+      }
     });
 
     return {

@@ -62,7 +62,6 @@
                             class="form-control save-token-input"
                             name="example-text-input"
                             placeholder="Input Slack App Token"
-                            @focus="showTextTk"
                             @blur="hideTextTk"/>
                       </td>
                     </tr>
@@ -77,7 +76,6 @@
                             class="form-control save-token-input"
                             name="example-text-input"
                             placeholder="Input Slack Channel ID"
-                            @focus="showTextCh"
                             @blur="hideTextCh"/>
                       </td>
                     </tr>
@@ -87,7 +85,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveToken">Save Toekns</button>
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveToken">Save</button>
             </div>
           </div>
         </div>
@@ -97,7 +95,7 @@
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Modal title</h5>
+              <h5 class="modal-title">Mailing Apply/Guide</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -115,7 +113,6 @@
                           class="form-control save-token-input"
                           name="example-text-input"
                           placeholder="Input Mail User ID"
-                          @focus="showTextTk"
                           @blur="hideTextTk"/>
                     </td>
                   </tr>
@@ -130,7 +127,6 @@
                           class="form-control save-token-input"
                           name="example-text-input"
                           placeholder="Input Mail App Password"
-                          @focus="showTextCh"
                           @blur="hideTextCh"/>
                     </td>
                   </tr>
@@ -139,7 +135,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveMailpw">Save Password</button>
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveMailpw">Save</button>
             </div>
           </div>
         </div>
@@ -149,7 +145,7 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Modal title</h5>
+              <h5 class="modal-title">Mail Test</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -270,7 +266,7 @@ export default {
     },
     saveToken() {
       this.toggleSaveBtn = true
-      let userId = '2194155'
+      let userId = 'test'
       let token = this.token
       let channel = this.channel
       const params = {
@@ -302,6 +298,7 @@ export default {
                 alert('Error.')
               }
               this.toggleSaveBtn = false
+              alert('Save.')
             })
             .catch(err => {
               console.log(err);
@@ -314,7 +311,7 @@ export default {
     },
     alarmSend() {
       this.toggleSaveBtn = true
-      let userId = '2194155'
+      let userId = 'test'
       // let message = "이상 비용이 발생하였습니다. 자세한 내용은 우측 링크를 클릭해주세요.(테스트 메세지)"
       // let linkUrl = 'http://localhost:8080/dashboard'
       // let linkText = '이동하기'

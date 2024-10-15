@@ -72,7 +72,9 @@ export default {
         });
 
         onMounted(() => {
-            getCostData();
+            if (selectedOptionsStore.selectedOptions.selectedProjects.length > 0) {
+                getCostData();
+            }
         })
 
         return {

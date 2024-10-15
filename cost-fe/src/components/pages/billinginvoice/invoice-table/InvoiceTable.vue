@@ -152,7 +152,9 @@ export default {
         });
 
         onMounted(() => {
-            getTableData();
+            if (store.selectedOptions.selectedProjects.length > 0) {
+                getTableData();
+            }
         })
         
         return {

@@ -12,6 +12,9 @@ services:
       spring.datasource.hikari.cost.optimize.jdbc-url: ${COST_DB_URL}
       spring.datasource.hikari.cost.optimize.username: ${COST_DB_USERNM}
       spring.datasource.hikari.cost.optimize.password: ${COST_DB_PW}
+      tumblebug.url: ${TUMBLEBUG_URL}
+      tumblebug.username: ${TUMBLEBUG_USERNAME}
+      tumblebug.password: ${TUMBLEBUG_PASSWORD}
   fe:
     restart: always
     build:
