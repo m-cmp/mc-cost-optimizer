@@ -9,7 +9,7 @@ import java.util.Map;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TbVmInfoModel {
-    private Map<String, Object> addtionalDetails;
+    private List<Map<String, Object>> addtionalDetails;
     private Object connectionConfig;
     private String connectionName;
     private String createdTime;
