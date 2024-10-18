@@ -180,7 +180,7 @@ public class VMMetaService {
 
                                 if(vminfo.getCspResourceId() != null){
                                     ResourcegroupMetaModel vmInfo = ResourcegroupMetaModel.builder()
-                                            .cspType("AWS")
+                                            .cspType(vminfo.getConnectionConfig().getProviderName().toUpperCase())
                                             .cspAccount("mcmpcostopti")
                                             .cspInstanceid(vminfo.getCspResourceId())
                                             .serviceCd(ns.getId())
