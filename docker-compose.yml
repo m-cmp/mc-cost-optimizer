@@ -15,6 +15,11 @@ services:
       tumblebug.url: ${TUMBLEBUG_URL}
       tumblebug.username: ${TUMBLEBUG_USERNAME}
       tumblebug.password: ${TUMBLEBUG_PASSWORD}
+      costopti.alarmservice.url: ${ALARM_URL}
+      costopti.assetcollector.url: ${ASSET_COLLECTOR_URL}
+      costopti.costcollector.url: ${COST_COLLECTOR_URL}
+      costopti.costprocessor.url: ${COST_PROCESSOR_URL}
+      costopti.costselector.url: ${COST_SELECTOR_URL}
   fe:
     restart: always
     build:

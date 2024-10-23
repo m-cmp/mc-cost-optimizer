@@ -10,7 +10,7 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TbVmInfoModel {
     private List<Map<String, Object>> addtionalDetails;
-    private Object connectionConfig;
+    private TbVmConnectionConfigModel connectionConfig;
     private String connectionName;
     private String createdTime;
     private String cspImageName;
