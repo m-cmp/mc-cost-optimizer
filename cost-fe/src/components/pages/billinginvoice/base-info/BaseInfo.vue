@@ -50,7 +50,7 @@ export default {
 
         const getCostData = async () => {
             try {
-                const response = await axios.post(ENDPOINT.be + '/api/v2/invoice/getBillingBaseInfo', selectedOptionsStore.selectedOptions)
+                const response = await axios.post(ENDPOINT.be + '/api/costopti/be/invoice/getBillingBaseInfo', selectedOptionsStore.selectedOptions)
                 eachCost.value = response.data.Data;
                 CalculateTotalCost();
             } catch (error) {

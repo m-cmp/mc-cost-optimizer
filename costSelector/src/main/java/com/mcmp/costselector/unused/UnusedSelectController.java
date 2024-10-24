@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/batunused")
+@RequestMapping(value = "/api/costopti/costslt")
 public class UnusedSelectController {
     @Autowired
     private UnusedSelectService unusedSelectService;

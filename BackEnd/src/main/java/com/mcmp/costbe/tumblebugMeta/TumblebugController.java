@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping(path = "/api/v2")
+@RequestMapping(path = "/api/costopti/be")
 public class TumblebugController {
 
     @Autowired

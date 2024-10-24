@@ -109,7 +109,7 @@ export default {
 
         const getTableData = async () => {
             try {
-                const response = await axios.post(ENDPOINT.be + '/api/v2/invoice/getInvoice', store.selectedOptions)
+                const response = await axios.post(ENDPOINT.be + '/api/costopti/be/invoice/getInvoice', store.selectedOptions)
                 const data = response.data.Data.invoice;
                 const additionalData = [{
                         csp: 'NCP',

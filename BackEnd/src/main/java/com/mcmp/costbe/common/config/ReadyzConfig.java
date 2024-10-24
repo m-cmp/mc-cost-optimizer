@@ -48,7 +48,7 @@ public class ReadyzConfig {
     public String getState() {
         String healthStatus;
 
-        Map<String, Object> alarmStatus = checkExternalServiceHealth(alarmServiceUrl + "/alert/healthcheck");
+        Map<String, Object> alarmStatus = checkExternalServiceHealth(alarmServiceUrl + "/api/costopti/alert/healthcheck");
         Map<String, Object> assetCLTStatus = checkExternalServiceHealth(assetCollectorUrl + "/api/costopti/assetclt/healthcheck");
         Map<String, Object> costCLTStatus = checkExternalServiceHealth(costCollectorUrl + "/api/costopti/costctl/healthcheck");
         Map<String, Object> costPRSStatus = checkExternalServiceHealth(costProcessorUrl + "/api/costopti/costprs/healthcheck");

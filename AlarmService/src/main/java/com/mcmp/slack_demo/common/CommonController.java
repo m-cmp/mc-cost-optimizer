@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/alert")
+@RequestMapping(value = "/api/costopti/alert")
 public class CommonController {
 
     @Autowired

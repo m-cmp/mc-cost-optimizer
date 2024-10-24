@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api/v2/alarm")
+@RequestMapping(path = "/api/costopti/be/alarm")
 @Tag(name = "Cost Alarm", description = "Cost Alarm API")
 public class AlarmController {
 

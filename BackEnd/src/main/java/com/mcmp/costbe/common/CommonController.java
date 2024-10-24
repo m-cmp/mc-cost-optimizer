@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api/v2")
+@RequestMapping(path = "/api/costopti/be")
 public class CommonController {
     @Autowired
     private ReadyzConfig readyzConfig;
