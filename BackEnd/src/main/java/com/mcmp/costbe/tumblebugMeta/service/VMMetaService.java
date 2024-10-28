@@ -162,47 +162,49 @@ public class VMMetaService {
                     try{
 
                         List<TbVmInfoModel> vmList = mci.getVm();
-                        for(TbVmInfoModel vm : vmList){
-                            List<ResourcegroupMetaModel> resourcegroupMetaList = new ArrayList<>();
-                            TbVmInfoModel vminfo =  getTBBVM(ns, mci, vm);
+                        if(vmList != null && !vmList.isEmpty()){
+                            for(TbVmInfoModel vm : vmList){
+                                List<ResourcegroupMetaModel> resourcegroupMetaList = new ArrayList<>();
+                                TbVmInfoModel vminfo =  getTBBVM(ns, mci, vm);
 
-                            if(vminfo != null){
-                                String vmStatus;
-                                if(!vminfo.getStatus().isEmpty()){
-                                    vmStatus = switch (vminfo.getStatus()){
-                                        case "Running" -> "Y";
-                                        case "Failed" -> "N";
-                                        default -> "Y";
-                                    };
-                                }else {
-                                    vmStatus = "Y";
+                                if(vminfo != null){
+                                    String vmStatus;
+                                    if(!vminfo.getStatus().isEmpty()){
+                                        vmStatus = switch (vminfo.getStatus()){
+                                            case "Running" -> "Y";
+                                            case "Failed" -> "N";
+                                            default -> "Y";
+                                        };
+                                    }else {
+                                        vmStatus = "Y";
+                                    }
+
+                                    if(vminfo.getCspResourceId() != null){
+                                        ResourcegroupMetaModel vmInfo = ResourcegroupMetaModel.builder()
+                                                .cspType(vminfo.getConnectionConfig().getProviderName().toUpperCase())
+                                                .cspAccount("mcmpcostopti")
+                                                .cspInstanceid(vminfo.getCspResourceId())
+                                                .serviceCd(ns.getId())
+                                                .serviceNm(ns.getName())
+                                                .serviceUid(ns.getUid())
+                                                .vmId(vminfo.getId())
+                                                .vmUid(vminfo.getUid())
+                                                .vmNm(vminfo.getName())
+                                                .mciId(mci.getId())
+                                                .mciUid(mci.getUid())
+                                                .mciNm(mci.getName())
+                                                .instanceRunningStatus(vmStatus)
+                                                .build();
+
+                                        resourcegroupMetaList.add(vmInfo);
+                                    }
                                 }
 
-                                if(vminfo.getCspResourceId() != null){
-                                    ResourcegroupMetaModel vmInfo = ResourcegroupMetaModel.builder()
-                                            .cspType(vminfo.getConnectionConfig().getProviderName().toUpperCase())
-                                            .cspAccount("mcmpcostopti")
-                                            .cspInstanceid(vminfo.getCspResourceId())
-                                            .serviceCd(ns.getId())
-                                            .serviceNm(ns.getName())
-                                            .serviceUid(ns.getUid())
-                                            .vmId(vminfo.getId())
-                                            .vmUid(vminfo.getUid())
-                                            .vmNm(vminfo.getName())
-                                            .mciId(mci.getId())
-                                            .mciUid(mci.getUid())
-                                            .mciNm(mci.getName())
-                                            .instanceRunningStatus(vmStatus)
-                                            .build();
-
-                                    resourcegroupMetaList.add(vmInfo);
+                                if(resourcegroupMetaList.size() >= 1){
+                                    tbbDao.insertTBBServicegroupMeta(resourcegroupMetaList);
                                 }
-                            }
 
-                            if(resourcegroupMetaList.size() >= 1){
-                                tbbDao.insertTBBServicegroupMeta(resourcegroupMetaList);
                             }
-
                         }
 
                     } catch (Exception e){
