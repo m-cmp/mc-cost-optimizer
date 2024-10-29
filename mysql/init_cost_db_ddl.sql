@@ -157,15 +157,15 @@ CREATE TABLE `servicegroup_meta` (
                                      `service_cd` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '서비스 코드',
                                      `service_nm` varchar(100) DEFAULT NULL COMMENT '서비스 명',
                                      `service_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'project' COMMENT '서비스 타입',
-                                     `workspace_cd` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'testWs' COMMENT 'WorkSpace 코드',
+                                     `workspace_cd` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'undefined' COMMENT 'WorkSpace 코드',
                                      `service_uid` varchar(100) DEFAULT NULL,
-                                     `vm_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'testPrj',
+                                     `vm_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'undefined',
                                      `vm_uid` varchar(100) DEFAULT NULL,
                                      `vm_nm` varchar(100) DEFAULT NULL,
-                                     `mci_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'testPrj',
+                                     `mci_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'undefined',
                                      `mci_uid` varchar(100) DEFAULT NULL,
                                      `mci_nm` varchar(100) DEFAULT NULL,
-                                     `instance_running_status` varchar(1) DEFAULT 'Y',
+                                     `instance_running_status` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'N',
                                      PRIMARY KEY (`csp_type`,`csp_instanceid`,`service_cd`,`vm_id`,`mci_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
