@@ -64,9 +64,9 @@ export default {
         this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
         this.tumblebugWorkspaceName = 'testWs';
         this.store.setTumblebugWorkspaceName(this.tumblebugWorkspaceName);
-        this.tumblebugProjectid = 'testPrj';
+        this.tumblebugProjectid = 'undefined';
         this.store.setTumblebugProject(this.tumblebugProjectid);
-        this.tumblebugProjectName = 'testPrj';
+        this.tumblebugProjectName = 'undefined';
         this.store.setTumblebugProjectName(this.tumblebugProjectName);
         this.tumblebugUsertoken = 'Null';
         this.store.setTumblebugUserToken(this.tumblebugUsertoken);
@@ -78,9 +78,9 @@ export default {
       this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
       this.tumblebugWorkspaceName = 'testWs';
       this.store.setTumblebugWorkspaceName(this.tumblebugWorkspaceName);
-      this.tumblebugProjectid = 'testPrj';
+      this.tumblebugProjectid = 'undefined';
       this.store.setTumblebugProject(this.tumblebugProjectid);
-      this.tumblebugProjectName = 'testPrj';
+      this.tumblebugProjectName = 'undefined';
       this.store.setTumblebugProjectName(this.tumblebugProjectName);
       this.tumblebugUsertoken = 'Null';
       this.store.setTumblebugUserToken(this.tumblebugUsertoken);
