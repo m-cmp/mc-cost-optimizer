@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/v2/invoice")
+@RequestMapping(path = "/api/costopti/be/invoice")
 @Tag(name = "Billing Invoice", description = "Billing Invoice API")
 public class InvoiceController {
 

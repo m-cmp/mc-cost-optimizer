@@ -184,7 +184,7 @@ public class Cur {
                 RscGrpMetaModel rscGrpMetaModel = RscGrpMetaModel.builder()
                         .csp("AWS")
                         .account(payerId)
-                        .prj_cd("testPrj")
+                        .prj_cd("undefined")
                         .year_month(todoCollectMonth)
                         .build();
 

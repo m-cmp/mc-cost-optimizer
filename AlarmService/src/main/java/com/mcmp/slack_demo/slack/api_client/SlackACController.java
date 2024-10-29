@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/alert")
+@RequestMapping(value = "/api/costopti/alert")
 public class SlackACController {
 
     private final SlackACService slackACService;

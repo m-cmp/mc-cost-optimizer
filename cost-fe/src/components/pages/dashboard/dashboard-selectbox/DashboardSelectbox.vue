@@ -163,7 +163,7 @@ export default {
             }
         },
         fetchWorkspaces() {
-            axios.get(ENDPOINT.be + '/api/v2/getWorkspaces', {
+            axios.get(ENDPOINT.be + '/api/costopti/be/getWorkspaces', {
                     params: {
                         account: 'mcmpcostopti'
                     }
@@ -181,7 +181,7 @@ export default {
                 });
         },
         fetchProjects(options) {
-            axios.get(ENDPOINT.be + '/api/v2/getProjects', {
+            axios.get(ENDPOINT.be + '/api/costopti/be/getProjects', {
                     params: {
                         workspaceCD: options.workspaceCD
                     }

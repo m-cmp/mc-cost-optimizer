@@ -12,7 +12,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/alert")
+@RequestMapping(value = "/api/costopti/alert")
 public class MailController {
     @Autowired
     private MailService mailService;

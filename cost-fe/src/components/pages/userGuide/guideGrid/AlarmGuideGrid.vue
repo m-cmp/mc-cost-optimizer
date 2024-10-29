@@ -70,7 +70,7 @@ export default {
 
     const fetchAlarmHistory = async () => {
       try {
-        const response = await axios.post(ENDPOINT.be +'/api/v2/alarm/history', store.selectedOptions);
+        const response = await axios.post(ENDPOINT.be +'/api/costopti/be/alarm/history', store.selectedOptions);
 
         const alarmData = response.data.Data.alarmHistory;
 

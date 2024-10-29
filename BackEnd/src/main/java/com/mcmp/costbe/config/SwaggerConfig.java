@@ -11,14 +11,14 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     private static final String API_NAME = "MCMP_COST_OPTIMIZER";
-    private static final String API_VERSION = "1.0.0";
+    private static final String API_VERSION = "0.9.18";
     private static final String API_DESCRIPTION = "MCMP_COST_OPTIMIZER API 명세서";
 
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("mcmp-cost-optimizer")
-                .pathsToMatch("/api/v2/**")
+                .pathsToMatch("/api/costopti/**")
                 .build();
     }
     @Bean

@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v2/invoice")
+@RequestMapping("/api/costopti/be/invoice")
 @Tag(name = "Billing Invoice", description = "Billing Invoice API")
 public class BillingInvoiceController {
     @Autowired

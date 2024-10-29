@@ -172,7 +172,7 @@ public class UnusedProcess {
             for (List<DailyAssetAmountModel> itemList : itemLists) {
                 try{
 
-                    String apiUrl = String.format("%s/batunused/selectRsp", selectURL);
+                    String apiUrl = String.format("%s/api/costopti/costslt/selectRsp", selectURL);
                     RestTemplate restTemplate = new RestTemplate();
 
                     HttpHeaders httpHeaders = new HttpHeaders();
