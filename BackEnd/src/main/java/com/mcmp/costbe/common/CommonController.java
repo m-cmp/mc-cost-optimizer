@@ -3,6 +3,7 @@ package com.mcmp.costbe.common;
 import com.mcmp.costbe.common.config.ReadyzConfig;
 import com.mcmp.costbe.common.model.ReadyzModel;
 import com.mcmp.costbe.common.model.ResultModel;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,8 +43,9 @@ public class CommonController {
     }
 
     @PostMapping(path = "/change/readyz")
-//    @Tag(name = "Application", description = "Status API")
-//    @Operation(summary = "어플리케이션 상태 변경", description = "어플리케이션의 상태를 변경합니다.")
+    @Tag(name = "Application", description = "Status API")
+    @Operation(summary = "어플리케이션 상태 변경", description = "어플리케이션의 상태를 변경합니다.")
+    @Hidden
 //    @ApiResponses(value={
 //            @ApiResponse(responseCode = "200", description = "성공"),
 //            @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})

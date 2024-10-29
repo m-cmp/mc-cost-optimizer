@@ -57,9 +57,6 @@
           "required": true
         },
         "responses": {
-          "500": {
-            "description": "서버 오류"
-          },
           "200": {
             "description": "성공",
             "content": {
@@ -69,6 +66,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "서버 오류"
           }
         }
       }
@@ -127,9 +127,6 @@
           "required": true
         },
         "responses": {
-          "500": {
-            "description": "서버 오류"
-          },
           "200": {
             "description": "성공",
             "content": {
@@ -139,6 +136,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "서버 오류"
           }
         }
       }
@@ -197,9 +197,6 @@
           "required": true
         },
         "responses": {
-          "500": {
-            "description": "서버 오류"
-          },
           "200": {
             "description": "성공",
             "content": {
@@ -209,6 +206,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "서버 오류"
           }
         }
       }
@@ -232,6 +232,9 @@
           "required": true
         },
         "responses": {
+          "500": {
+            "description": "서버 오류"
+          },
           "200": {
             "description": "성공",
             "content": {
@@ -244,9 +247,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "서버 오류"
           }
         }
       }
@@ -340,9 +340,6 @@
           "required": true
         },
         "responses": {
-          "500": {
-            "description": "서버 오류"
-          },
           "200": {
             "description": "성공",
             "content": {
@@ -352,36 +349,9 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/api/costopti/be/change/readyz": {
-      "post": {
-        "tags": [
-          "common-controller"
-        ],
-        "operationId": "changeReadyz",
-        "requestBody": {
-          "content": {
-            "application/json;charset=UTF-8": {
-              "schema": {
-                "$ref": "#/components/schemas/ReadyzModel"
-              }
-            }
           },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json;charset=UTF-8": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+          "500": {
+            "description": "서버 오류"
           }
         }
       }
@@ -405,9 +375,6 @@
           "required": true
         },
         "responses": {
-          "500": {
-            "description": "서버 오류"
-          },
           "200": {
             "description": "성공",
             "content": {
@@ -417,6 +384,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "서버 오류"
           }
         }
       }
@@ -1725,14 +1695,6 @@
           }
         },
         "description": "이번달 리소스 사용량 및 비용 조회 응답 모델"
-      },
-      "ReadyzModel": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string"
-          }
-        }
       },
       "AlarmHistoryReqModel": {
         "required": [
