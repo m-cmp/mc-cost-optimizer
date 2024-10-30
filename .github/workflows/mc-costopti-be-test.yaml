@@ -3,7 +3,6 @@ name: MC-CostOpti-BE-TEST (CI)
 on:
   push:
     branches:
-      - main
       - cicd/241030_gitaction
     paths-ignore:
       - "AlarmService/**"
@@ -19,7 +18,6 @@ on:
   pull_request:
     branches:
       - main
-      - cicd/241030_gitaction
     paths-ignore:
       - "AlarmService/**"
       - "assetCollector/**"
