@@ -51,7 +51,6 @@
            AND co.lineitem_usagestartdate >= #{curMonthStartDate}
            AND co.lineitem_usageenddate < #{curMonthEndDate}
         ]]>
-           AND co.lineitem_unblendedcost >= 0
          GROUP BY co.lineitem_usageaccountid,
                   co.lineitem_productcode,
                   sm.csp_type,

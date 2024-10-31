@@ -234,7 +234,7 @@ export default {
   },
   methods: {
     getInitSlackInfo(){
-      axios.get(ENDPOINT.alaram + '/alert/getSlackIF', {
+      axios.get(ENDPOINT.alaram + '/api/costopti/alert/getSlackIF', {
         params: {
           userId: 'test'
         }})
@@ -251,7 +251,7 @@ export default {
           })
     },
     getInitMailInfo(){
-      axios.get(ENDPOINT.alaram + '/alert/getMailInfo')
+      axios.get(ENDPOINT.alaram + '/api/costopti/alert/getMailInfo')
           .then((res) => {
             if(res.data.status === 'OK'){
               if(res.data.Data && res.data.Data.username){
@@ -274,7 +274,7 @@ export default {
         token: token,
         channel: channel
       }
-      axios.post(ENDPOINT.alaram + '/alert/insertSlackToken', params)
+      axios.post(ENDPOINT.alaram + '/api/costopti/alert/insertSlackToken', params)
           .then(() => {
             alert('Save.')
             this.toggleSaveBtn = false
@@ -288,7 +288,7 @@ export default {
     saveMailpw(){
       this.toggleSaveBtn = true
       if(this.mailuserID && this.mailAppPasswd){
-        axios.post(ENDPOINT.alaram + '/alert/insertMailInfo', {
+        axios.post(ENDPOINT.alaram + '/api/costopti/alert/insertMailInfo', {
           username: this.mailuserID,
           password: this.mailAppPasswd
         })
@@ -325,7 +325,7 @@ export default {
       if (this.linkText) {
         params.append('linkText', this.linkText);
       }
-      axios.post(ENDPOINT.alaram + '/alert/sendSlackAC', params)
+      axios.post(ENDPOINT.alaram + '/api/costopti/alert/sendSlackAC', params)
           .then((res) => {
             alert(res.data)
             this.toggleSaveBtn = false
@@ -342,7 +342,7 @@ export default {
       }else{
         const mailTo = [];
         mailTo.push(this.testMailTo)
-        axios.post(ENDPOINT.alaram + '/alert/sendAlertMail', {
+        axios.post(ENDPOINT.alaram + '/api/costopti/alert/sendAlertMail', {
           to: mailTo,
           subject: this.testMailTitle
         })

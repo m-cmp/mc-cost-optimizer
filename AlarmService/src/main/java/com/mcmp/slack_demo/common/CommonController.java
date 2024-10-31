@@ -2,19 +2,14 @@ package com.mcmp.slack_demo.common;
 
 import com.mcmp.slack_demo.common.model.CommonResultModel;
 import com.mcmp.slack_demo.common.model.costOpti.CostOptiAlarmReqModel;
-import com.mcmp.slack_demo.mail.model.MailMessage;
 import com.mcmp.slack_demo.mail.service.MailService;
 import com.mcmp.slack_demo.slack.api_client.SlackACService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/alert")
+@RequestMapping(value = "/api/costopti/alert")
 public class CommonController {
 
     @Autowired
@@ -42,5 +37,15 @@ public class CommonController {
             result.setError(400, "Send sendOptiAlarmMail Fail");
         }
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/healthcheck")
+    public ResponseEntity getHealthCheck(){
+        try{
+            return ResponseEntity.ok().body("OK");
+        } catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Alarm Service is not running");
+        }
     }
 }

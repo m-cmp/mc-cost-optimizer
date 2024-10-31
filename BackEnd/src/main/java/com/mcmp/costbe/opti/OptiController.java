@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/v2/opti")
+@RequestMapping(path = "/api/costopti/be/opti")
 @Tag(name = "Cost Optimization", description = "Cost Optimization API")
 public class OptiController {
 

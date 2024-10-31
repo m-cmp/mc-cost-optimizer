@@ -135,7 +135,7 @@ export default {
         };
 
         const fetchBillingData = () => {
-            axios.post(ENDPOINT.be + '/api/v2/getCurMonthBill', store.selectedOptions)
+            axios.post(ENDPOINT.be + '/api/costopti/be/getCurMonthBill', store.selectedOptions)
                 .then(response => {
                     const data = response.data.Data;
                     curYear.value = data.curYear;

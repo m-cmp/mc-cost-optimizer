@@ -128,7 +128,7 @@ export default {
 
         const getChartData = async () => {
             try {
-                const response = await axios.post(ENDPOINT.be + '/api/v2/invoice/getSummary', store.selectedOptions);
+                const response = await axios.post(ENDPOINT.be + '/api/costopti/be/invoice/getSummary', store.selectedOptions);
                 const data = response.data.Data;
 
                 // yearMonths를 기준으로 X축 labels 설정

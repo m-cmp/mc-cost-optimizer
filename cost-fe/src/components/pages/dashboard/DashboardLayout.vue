@@ -92,7 +92,7 @@ export default {
       this.$refs.dashboardBilling.fetchBillingData();
     },
     getDBoardUsageAssetData(){
-      axios.post(ENDPOINT.be + '/api/v2/getBillAsset', {
+      axios.post(ENDPOINT.be + '/api/costopti/be/getBillAsset', {
         today: new Date().toISOString().split('T')[0].replace(/-/g, ''),
         selectedProjects: this.store.selectedOptions.selectedProjects,
         selectedCsps: this.store.selectedOptions.selectedCsps,
@@ -113,7 +113,7 @@ export default {
           })
     },
     getTop5CostData(){
-      axios.post(ENDPOINT.be + '/api/v2/getTop5Bill', {
+      axios.post(ENDPOINT.be + '/api/costopti/be/getTop5Bill', {
         today: new Date().toISOString().split('T')[0].replace(/-/g, ''),
         selectedProjects: this.store.selectedOptions.selectedProjects,
         selectedCsps: this.store.selectedOptions.selectedCsps,

@@ -25,7 +25,7 @@ public class AlarmService {
 
     public void sendAlarm(AlarmReqModel req){
         try{
-            String apiUrl = String.format("%s/alert/sendOptiAlarmMail", alarmURL);
+            String apiUrl = String.format("%s/api/costopti/alert/sendOptiAlarmMail", alarmURL);
             RestTemplate restTemplate = new RestTemplate();
 
             HttpHeaders httpHeaders = new HttpHeaders();

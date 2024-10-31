@@ -107,7 +107,6 @@
                                           AND co.lineitem_usagestartdate >= #{curMonthStartDate}
                                           AND co.lineitem_usageenddate <= #{curMonthEndDate}
                                         ]]>
-                                          AND co.lineitem_unblendedcost >= 0
                                         GROUP BY co.lineitem_productcode
                                         ORDER BY total_cost DESC
                                         LIMIT 5
@@ -135,7 +134,6 @@
                    AND co.lineitem_usagestartdate >= #{curMonthStartDate}
                    AND co.lineitem_usageenddate <= #{curMonthEndDate}
                  ]]>
-                   AND co.lineitem_unblendedcost >= 0
                  GROUP BY productcode
                 ) AS grouped_results
           LEFT JOIN servicegroup_meta sm2
@@ -164,7 +162,6 @@
         <![CDATA[
         AND co.lineitem_usagestartdate >= #{curMonthStartDate}
         AND co.lineitem_usageenddate <= #{curMonthEndDate}  ]]>
-        AND co.lineitem_unblendedcost >= 0
         <choose>
             <when test="AWSChildProducts != null and AWSChildProducts.size() > 0">
                 AND co.lineitem_productcode IN
@@ -185,7 +182,6 @@
         <![CDATA[SELECT COALESCE(SUM(CASE
                             WHEN co.lineitem_usagestartdate >= #{curMonthStartDate}
                              AND co.lineitem_usageenddate <= #{curMonthEndDate}
-                             AND co.lineitem_unblendedcost >= 0
                             THEN co.lineitem_unblendedcost
                             ELSE 0
                 END), 0) AS cost]]>
