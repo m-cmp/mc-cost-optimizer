@@ -2,7 +2,7 @@ version: '3'
 services:
   be:
     restart: always
-    image: cloudbaristaorg/mc-costopti-api:latest
+    image: cloudbaristaorg/mc-costopti-api:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -21,14 +21,14 @@ services:
       costopti.costselector.url: ${COST_SELECTOR_URL}
   fe:
     restart: always
-    image: cloudbaristaorg/mc-costopti-ui:latest
+    image: cloudbaristaorg/mc-costopti-ui:edge
     networks:
       - mcmp_cost_network
     ports:
       - "80:80"
   costcollector:
     restart: always
-    image: cloudbaristaorg/mc-costopti-costcollector:latest
+    image: cloudbaristaorg/mc-costopti-costcollector:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -45,7 +45,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
   costprocessor:
     restart: always
-    image: cloudbaristaorg/mc-costopti-costprocessor:latest
+    image: cloudbaristaorg/mc-costopti-costprocessor:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -60,7 +60,7 @@ services:
       opti.alarm.url: ${ALARM_URL}
   costselector:
     restart: always
-    image: cloudbaristaorg/mc-costopti-costselector:latest
+    image: cloudbaristaorg/mc-costopti-costselector:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -72,7 +72,7 @@ services:
       opti.alarm.url: ${ALARM_URL}
   alarmservice:
     restart: always
-    image: cloudbaristaorg/mc-costopti-alarm:latest
+    image: cloudbaristaorg/mc-costopti-alarm:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -89,7 +89,7 @@ services:
       spring.datasource.hikari.history.password: ${COST_DB_PW}
   assetcollector:
     restart: always
-    image: cloudbaristaorg/mc-costopti-assetcollector:latest
+    image: cloudbaristaorg/mc-costopti-assetcollector:edge
     networks:
       - mcmp_cost_network
     ports:
