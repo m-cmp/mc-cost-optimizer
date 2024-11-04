@@ -41,7 +41,7 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
   ## 3. DDL/DML execution
   ### sql file path : /mc-cost-optimizer/mysql
   ### running script
-  mysql -u mcmpcostopti -p < init_cost_db.sql
+  mysql -u mcmpcostopti -p < init_cost_db_ddl.sql
   mysql -u mcmpcostopti -p < init_mail_db.sql
   mysql -u mcmpcostopti -p < init_slack_db.sql
 ```
@@ -76,7 +76,7 @@ A sub-system of [M-CMP platform](https://github.com/m-cmp/docs/tree/main) to dep
 - mysql version : 8
 - run script 
 ```
-- /mc-cost-optimizer/mysql/init_cost_db.sql
+- /mc-cost-optimizer/mysql/init_cost_db_ddl.sql
 - /mc-cost-optimizer/mysql/init_mail_db.sql
 - /mc-cost-optimizer/mysql/init_slack_db.sql
 ```
