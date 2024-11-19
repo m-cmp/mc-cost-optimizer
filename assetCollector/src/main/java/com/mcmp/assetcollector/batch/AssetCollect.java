@@ -52,6 +52,9 @@ public class AssetCollect {
     @Autowired
     private AssetCollectService assetCollectService;
 
+    @Autowired
+    private UpdateMetaBeforeAssetJob updateMetaBeforeAssetJob;
+
     @Bean
     public SkipLogListener skipLogListener(){
         return new SkipLogListener();
@@ -61,6 +64,7 @@ public class AssetCollect {
     public Job assetCollectJob(JobRepository jobRepository, Step assetCollectStep) {
         return new JobBuilder("assetCollectJob", jobRepository)
                 .start(assetCollectStep)
+                .listener(updateMetaBeforeAssetJob)
                 .build();
     }
 
@@ -127,6 +131,10 @@ public class AssetCollect {
                                 OffsetDateTime offsetDateTime = OffsetDateTime.parse(timestampString, DateTimeFormatter.ISO_DATE_TIME);
                                 Timestamp timestamp = Timestamp.valueOf(offsetDateTime.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime());
 
+                                if(value.get(valueIndex) == null){
+                                    log.warn("item : {}'s value is null when {}", item, timestamp);
+                                    continue;
+                                }
                                 Double asset_idle_Value = (Double) value.get(valueIndex);
                                 Double roundedValue = Math.round(asset_idle_Value * 100.0) / 100.0;
                                 Double usageValue = 100 - roundedValue;
