@@ -86,6 +86,10 @@ CREATE TABLE `cur_process_info` (
                                     PRIMARY KEY (`csp`,`payer_account`,`collect_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+INSERT INTO cur_process_info (csp, payer_account, collect_date, object_key, certifed_fixed_yn, certifed_fixed_date)
+VALUES ('AWS', 'mcmpcostopti', DATE_FORMAT(NOW() , '%Y%m'), NULL, 'N', NULL)
+    ON DUPLICATE KEY UPDATE collect_date = VALUES(collect_date);
+
 -- cost.daily_abnormal_by_product definition
 
 CREATE TABLE `daily_abnormal_by_product` (
@@ -204,6 +208,9 @@ CREATE TABLE `temp_cmp_user_info` (
                                       `csp_type` varchar(10) DEFAULT NULL,
                                       `csp_account_id` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO cost.temp_cmp_user_info(mcmp_user_id, csp_type, csp_account_id)
+VALUES('mcmpcostopti', 'AWS', 'mcmpcostopti');
 
 -- cost.temp_cmp_user_mail_receiver definition
 
