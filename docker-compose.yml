@@ -2,8 +2,7 @@ version: '3'
 services:
   be:
     restart: always
-    build:
-      context: ./BackEnd
+    image: cloudbaristaorg/mc-costopti-api:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -22,16 +21,14 @@ services:
       costopti.costselector.url: ${COST_SELECTOR_URL}
   fe:
     restart: always
-    build:
-      context: ./cost-fe
+    image: cloudbaristaorg/mc-costopti-ui:edge
     networks:
       - mcmp_cost_network
     ports:
-      - "8080:80"
+      - "80:80"
   costcollector:
     restart: always
-    build:
-      context: ./costCollector
+    image: cloudbaristaorg/mc-costopti-costcollector:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -48,8 +45,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
   costprocessor:
     restart: always
-    build:
-      context: ./costProcessor
+    image: cloudbaristaorg/mc-costopti-costprocessor:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -64,8 +60,7 @@ services:
       opti.alarm.url: ${ALARM_URL}
   costselector:
     restart: always
-    build:
-      context: ./costSelector
+    image: cloudbaristaorg/mc-costopti-costselector:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -77,8 +72,7 @@ services:
       opti.alarm.url: ${ALARM_URL}
   alarmservice:
     restart: always
-    build:
-      context: ./AlarmService
+    image: cloudbaristaorg/mc-costopti-alarm:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -95,8 +89,7 @@ services:
       spring.datasource.hikari.history.password: ${COST_DB_PW}
   assetcollector:
     restart: always
-    build:
-      context: ./assetCollector
+    image: cloudbaristaorg/mc-costopti-assetcollector:edge
     networks:
       - mcmp_cost_network
     ports:
@@ -105,6 +98,7 @@ services:
       spring.datasource.hikari.batch.jdbc-url: ${COST_DB_URL}
       spring.datasource.hikari.batch.username: ${COST_DB_USERNM}
       spring.datasource.hikari.batch.password: ${COST_DB_PW}
+      costopti.be.url: ${COST_BE_URL}
       asset.collect.url: ${ASSET_MONITORING_SERVER}
       assetCollectBatchCronSchedule: ${ASSET_COLLECT_BATCH_CRON_SCHEDULE}
 networks:

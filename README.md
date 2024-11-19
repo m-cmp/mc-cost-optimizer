@@ -37,7 +37,7 @@ This repository provides a Multi-Cloud Cost Management and Optimizing Framework.
   ## 3. DDL/DML execution
   ### sql file path : /mc-cost-optimizer/mysql
   ### running script
-  mysql -u mcmpcostopti -p < init_cost_db.sql
+  mysql -u mcmpcostopti -p < init_cost_db_ddl.sql
   mysql -u mcmpcostopti -p < init_mail_db.sql
   mysql -u mcmpcostopti -p < init_slack_db.sql
 ```
@@ -72,7 +72,7 @@ This repository provides a Multi-Cloud Cost Management and Optimizing Framework.
 - mysql version : 8
 - run script 
 ```
-- /mc-cost-optimizer/mysql/init_cost_db.sql
+- /mc-cost-optimizer/mysql/init_cost_db_ddl.sql
 - /mc-cost-optimizer/mysql/init_mail_db.sql
 - /mc-cost-optimizer/mysql/init_slack_db.sql
 ```
