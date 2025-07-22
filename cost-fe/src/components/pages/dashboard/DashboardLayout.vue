@@ -32,7 +32,7 @@
         </div>
 
         <!-- footer -->
-        <DashboardFooter />
+        <!-- <DashboardFooter /> -->
 
     </div>
 </div>
@@ -41,7 +41,7 @@
 <script>
 import DashboardHeader from './dashboard-header/DashboardHeader.vue'
 // import DashboardSelectbox from './dashboard-selectbox/DashboardSelectbox.vue'
-import DashboardFooter from './dashboard-footer/DashboardFooter.vue'
+// import DashboardFooter from './dashboard-footer/DashboardFooter.vue'
 import DashboardBilling from './dashboard-billing-amount/DashboardBilling.vue'
 import DashboardTop from './dashboard-top-resources/DashboardTop5.vue'
 import DashboardAsset from './dashboard-asset/DashboardAsset.vue'
@@ -54,7 +54,7 @@ export default {
     components: {
         DashboardHeader,
         // DashboardSelectbox,
-        DashboardFooter,
+        //DashboardFooter,
         DashboardBilling,
         DashboardTop,
         DashboardAsset,
@@ -127,7 +127,19 @@ export default {
             }
           })
           .catch(err => {
-            console.log(err);
+            if (err.code === 'ECONNREFUSED' || err.message.includes('Network Error') || !err.response) {
+              alert('서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+            } else if (err.response) {
+              // 서버에서 에러 상태 코드를 반환한 경우 (4xx, 5xx)
+              const status = err.response.status;
+              if (status >= 500) {
+                alert('서버에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+              } else if (status >= 400) {
+                alert('요청에 문제가 있습니다. 잠시 후 다시 시도해 주세요.');
+              }
+            } else {
+              alert('알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+            }
           })
     }
   }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      Workspace ID : {{ tumblebugWorkspaceName }}, Project ID : {{ tumblebugProjectName }}, User Token : {{ tumblebugUsertoken }}
+      <!--Workspace ID : {{ tumblebugWorkspaceName }}, Project ID : {{ tumblebugProjectName }}, User Token : {{ tumblebugUsertoken }} -->
     </div>
     <EventListener/>
     <router-view></router-view>

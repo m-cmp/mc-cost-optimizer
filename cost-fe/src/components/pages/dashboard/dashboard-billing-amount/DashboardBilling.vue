@@ -135,6 +135,12 @@ export default {
         };
 
         const fetchBillingData = () => {
+            // devmode : front-end independent build
+            if (process.env.NODE_ENV === 'development') {
+                series.value = [];
+                chartOptions.xaxis.categories = [];
+                return;
+            }
             axios.post(ENDPOINT.be + '/api/costopti/be/getCurMonthBill', store.selectedOptions)
                 .then(response => {
                     const data = response.data.Data;
