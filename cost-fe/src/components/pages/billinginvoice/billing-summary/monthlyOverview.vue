@@ -174,19 +174,7 @@ export default {
                 init.value = false;
                 createChart(chartOptions);
             } catch (error) {
-                if (err.code === 'ECONNREFUSED' || err.message.includes('Network Error') || !err.response) {
-                    alert('서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.');
-                    } else if (err.response) {
-                    // 서버에서 에러 상태 코드를 반환한 경우 (4xx, 5xx)
-                    const status = err.response.status;
-                    if (status >= 500) {
-                        alert('서버에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-                    } else if (status >= 400) {
-                        alert('요청에 문제가 있습니다. 잠시 후 다시 시도해 주세요.');
-                    }
-                    } else {
-                    alert('알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-                };
+                console.error('Error occurred while fetching data:', error);
             }
         };
 
