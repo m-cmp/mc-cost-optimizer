@@ -155,22 +155,22 @@ CREATE TABLE `service_category` (
 -- cost.servicegroup_meta definition
 
 CREATE TABLE `servicegroup_meta` (
-                                     `csp_type` varchar(100) NOT NULL COMMENT 'CSP 종류',
-                                     `csp_account` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'mcmpcostopti' COMMENT 'CSP 계정 ID',
-                                     `csp_instanceid` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT 'common' COMMENT ' 인스턴스 구분코드',
-                                     `service_cd` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL COMMENT '서비스 코드',
-                                     `service_nm` varchar(100) DEFAULT NULL COMMENT '서비스 명',
-                                     `service_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'project' COMMENT '서비스 타입',
-                                     `workspace_cd` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'undefined' COMMENT 'WorkSpace 코드',
-                                     `service_uid` varchar(100) DEFAULT NULL,
-                                     `vm_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT 'undefined',
-                                     `vm_uid` varchar(100) DEFAULT NULL,
-                                     `vm_nm` varchar(100) DEFAULT NULL,
-                                     `mci_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT 'undefined',
-                                     `mci_uid` varchar(100) DEFAULT NULL,
-                                     `mci_nm` varchar(100) DEFAULT NULL,
-                                     `instance_running_status` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'N',
-                                     PRIMARY KEY (`csp_type`,`csp_instanceid`,`service_cd`,`vm_id`,`mci_id`)
+                                          `csp_type` varchar(100) COLLATE utf8mb4_unicode_520_ci NOT NULL COMMENT 'CSP 종류',
+                                          `csp_account` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'mcmpcostopti' COMMENT 'CSP 계정 ID',
+                                          `csp_instanceid` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT 'common' COMMENT ' 인스턴스 구분코드',
+                                          `service_cd` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'undefined' COMMENT '서비스 코드',
+                                          `service_nm` varchar(100) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL COMMENT '서비스 명',
+                                          `service_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'project' COMMENT '서비스 타입',
+                                          `workspace_cd` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'undefined' COMMENT 'WorkSpace 코드',
+                                          `service_uid` varchar(100) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+                                          `vm_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'undefined',
+                                          `vm_uid` varchar(100) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+                                          `vm_nm` varchar(100) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+                                          `mci_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'undefined',
+                                          `mci_uid` varchar(100) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+                                          `mci_nm` varchar(100) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+                                          `instance_running_status` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'N',
+                                          PRIMARY KEY (`csp_type`,`csp_instanceid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- cost.tbl_table_billing_detail_202409 definition
