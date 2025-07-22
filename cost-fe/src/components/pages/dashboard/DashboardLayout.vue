@@ -32,7 +32,7 @@
         </div>
 
         <!-- footer -->
-        <DashboardFooter />
+        <!-- <DashboardFooter /> -->
 
     </div>
 </div>
@@ -41,7 +41,7 @@
 <script>
 import DashboardHeader from './dashboard-header/DashboardHeader.vue'
 // import DashboardSelectbox from './dashboard-selectbox/DashboardSelectbox.vue'
-import DashboardFooter from './dashboard-footer/DashboardFooter.vue'
+// import DashboardFooter from './dashboard-footer/DashboardFooter.vue'
 import DashboardBilling from './dashboard-billing-amount/DashboardBilling.vue'
 import DashboardTop from './dashboard-top-resources/DashboardTop5.vue'
 import DashboardAsset from './dashboard-asset/DashboardAsset.vue'
@@ -54,7 +54,7 @@ export default {
     components: {
         DashboardHeader,
         // DashboardSelectbox,
-        DashboardFooter,
+        //DashboardFooter,
         DashboardBilling,
         DashboardTop,
         DashboardAsset,

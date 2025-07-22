@@ -59,7 +59,9 @@ export default {
         this.tumblebugUsertoken = event.data.accessToken;
         this.store.setTumblebugUserToken(this.tumblebugUsertoken);
       } else {
-        alert('프로젝트 코드를 전달받지 못했습니다.')
+        if (process.env.NODE_ENV !== 'development') {
+          alert('프로젝트 코드를 전달받지 못했습니다.')
+        }
         this.tumblebugWorkspaceid = 'testWs';
         this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
         this.tumblebugWorkspaceName = 'testWs';
@@ -73,7 +75,9 @@ export default {
       }
     },
     handleEmptyEvent(){
-      alert('프로젝트 코드를 전달받지 못했습니다. 임시 코드로 대체합니다.')
+      if (process.env.NODE_ENV !== 'development') {
+        alert('프로젝트 코드를 전달받지 못했습니다. 임시 코드로 대체합니다.')
+      }
       this.tumblebugWorkspaceid = 'testWs';
       this.store.setTumblebugWorkspace(this.tumblebugWorkspaceid);
       this.tumblebugWorkspaceName = 'testWs';
