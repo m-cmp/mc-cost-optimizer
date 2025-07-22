@@ -108,6 +108,14 @@ export default {
         })
 
         const getTableData = async () => {
+             // development 모드에서는 빈 데이터로 처리
+            if (process.env.NODE_ENV === 'development') {
+                tableOption.value.data = [];
+                if (tableRef.value) {
+                    new Tabulator(tableRef.value, tableOption.value)
+                }
+                return;
+            }
             try {
                 const response = await axios.post(ENDPOINT.be + '/api/costopti/be/invoice/getInvoice', store.selectedOptions)
                 const data = response.data.Data.invoice;

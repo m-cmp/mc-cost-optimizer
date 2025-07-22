@@ -130,6 +130,17 @@ export default {
             try {
                 const response = await axios.post(ENDPOINT.be + '/api/costopti/be/invoice/getSummary', store.selectedOptions);
                 const data = response.data.Data;
+                // 로컬빌드 관련 코드
+                if (!data || !Array.isArray(data.yearMonths) || !Array.isArray(data.summaryBill)) {
+                    if (process.env.NODE_ENV === 'development') {
+                        chartOptions.xaxis.categories = [];
+                        chartOptions.series = [];
+                        createChart(chartOptions);
+                    } else {
+                        alert('데이터를 불러올 수 없습니다.');
+                    }
+                    return;
+                }
 
                 // yearMonths를 기준으로 X축 labels 설정
                 const categories = data.yearMonths.map(month => `${month.slice(0, 4)}-${month.slice(4, 6)}`);

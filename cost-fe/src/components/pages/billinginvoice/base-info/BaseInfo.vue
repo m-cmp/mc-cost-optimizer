@@ -49,6 +49,12 @@ export default {
         const totalCost = ref(0);
 
         const getCostData = async () => {
+            // development 모드에서는 빈 데이터로 처리
+            if (process.env.NODE_ENV === 'development') {
+                eachCost.value = [];
+                totalCost.value = 0;
+                return;
+            }
             try {
                 const response = await axios.post(ENDPOINT.be + '/api/costopti/be/invoice/getBillingBaseInfo', selectedOptionsStore.selectedOptions)
                 eachCost.value = response.data.Data;
