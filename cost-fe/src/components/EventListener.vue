@@ -44,6 +44,10 @@ export default {
   methods: {
     handleMessage(event){
       this.messageReceived = true;
+
+      //projectCode 확인
+      console.log('event', event);
+
       const projectCode = event.data && event.data.accessToken !== undefined;
       if (projectCode) {
         this.tumblebugWorkspaceid = event.data.workspaceInfo.id;
