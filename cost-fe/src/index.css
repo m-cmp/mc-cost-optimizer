@@ -1,0 +1,91 @@
+/* navbar style */
+/* navbar 안의 모든 링크는 밑줄 제거 */
+.navbar-nav a:hover {
+  text-decoration: none;
+}
+
+/* active 상태에서만 파란 밑줄 */
+.navbar-nav .nav-link.active {
+  border-bottom: 2px solid var(--tblr-primary) !important;
+  color: var(--tblr-primary) !important;
+}
+
+/* tabulator table style */
+/* 컨테이너 */
+.tabulator {
+  font-size: 14px;
+  background: #ffffff;
+  border: none;
+  overflow: hidden;
+}
+
+/* 헤더 영역 */
+.tabulator .tabulator-header {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* 각 컬럼 헤더 셀 */
+.tabulator .tabulator-header .tabulator-col {
+  background: #f9fafb;
+  border-right: 1px solid #e5e7eb;
+  color: #111827;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 12px;
+}
+
+/* 데이터 행 */
+.tabulator .tabulator-row.tabulator-row-odd {
+  background: #ffffff;
+}
+
+.tabulator .tabulator-row.tabulator-row-even {
+  background: #f9fafb;
+}
+
+.tabulator .tabulator-row:hover {
+  background: #e0f2fe;
+  transition: background 0.2s ease-in-out;
+}
+
+/* 그룹 헤더 */
+.tabulator .tabulator-group {
+  background: #f1f5f9;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  background: #f9fafb;
+  border-top: none;
+  border: 1px solid #e5e7eb;
+}
+
+/* 그룹 토글 아이콘 */
+.tabulator .tabulator-group .tabulator-arrow {
+  color: #3b82f6;
+  font-size: 14px;
+}
+
+/* 금액 컬럼 */
+.tabulator .tabulator-cell[tabulator-field="bill"] {
+  text-align: right;
+  font-weight: 500;
+  color: #1f2937;
+  border-right: 1px solid #e5e7eb;
+}
+
+/* 합계 Row */
+.tabulator .tabulator-calcs {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #111827;
+  border-top: 1px solid #e5e7eb;
+  height: 44px;
+}
