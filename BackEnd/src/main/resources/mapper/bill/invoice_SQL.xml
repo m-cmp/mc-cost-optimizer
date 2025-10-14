@@ -2,32 +2,78 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="invoice">
     <select id="getSummaryBill" parameterType="com.mcmp.costbe.invoice.model.SummaryReqModel" resultType="com.mcmp.costbe.invoice.model.SummaryBillItemModel">
+        -- AWS 데이터 (기존 monthly_summation 사용)
         SELECT COALESCE(SUM(ms.total_cost), 0) AS bill
              , ym.`year_month` AS yearMonth
-             , csp_providers.csp AS csp
+             , 'AWS' AS csp
           FROM (
             <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
                 SELECT #{prevMonth} AS `year_month`
             </foreach>
                 ) AS ym
-         CROSS JOIN (
-                SELECT 'AWS' AS csp UNION ALL
-                SELECT 'GCP' UNION ALL
-                SELECT 'AZURE' UNION ALL
-                SELECT 'NCP'
-                ) AS csp_providers
           LEFT JOIN monthly_summation ms
             ON ym.`year_month` = ms.`year_month`
-           AND ms.csp = csp_providers.csp
-                AND ms.project_cd IN
+           AND ms.csp = 'AWS'
+           AND ms.project_cd IN
                 <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                     #{selectedProject}
                 </foreach>
-         GROUP BY ym.year_month, csp_providers.csp
-         ORDER BY ym.year_month DESC, csp_providers.csp
+         WHERE 1=1
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AWS')">
+           AND 1=0
+        </if>
+         GROUP BY ym.year_month
+
+        UNION ALL
+
+        -- NCP 데이터 (Service + VM)
+        SELECT COALESCE(SUM(cost), 0) AS bill, yearMonth, 'NCP' AS csp
+          FROM (
+            <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
+                (
+                SELECT COALESCE(SUM(demand_amount), 0) / 1400.0 AS cost, #{prevMonth} as yearMonth
+                  FROM ncp_cost_service_month
+                 WHERE demand_month = #{prevMonth}
+                UNION ALL
+                SELECT COALESCE(SUM(demand_amount), 0) / 1400.0 AS cost, #{prevMonth} as yearMonth
+                  FROM ncp_cost_vm_month
+                 WHERE demand_month = #{prevMonth}
+                )
+            </foreach>
+          ) AS ncp_data
+         WHERE 1=1
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+           AND 1=0
+        </if>
+         GROUP BY yearMonth
+
+        UNION ALL
+
+        -- Azure 데이터 (Service + VM)
+        SELECT COALESCE(SUM(cost), 0) AS bill, yearMonth, 'AZURE' AS csp
+          FROM (
+            <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
+                (
+                SELECT COALESCE(SUM(pre_tax_cost), 0) / 1400.0 AS cost, #{prevMonth} as yearMonth
+                  FROM azure_cost_service_daily
+                 WHERE usage_date LIKE CONCAT(#{prevMonth}, '%')
+                UNION ALL
+                SELECT COALESCE(SUM(pre_tax_cost), 0) / 1400.0 AS cost, #{prevMonth} as yearMonth
+                  FROM azure_cost_vm_daily
+                 WHERE usage_date LIKE CONCAT(#{prevMonth}, '%')
+                )
+            </foreach>
+          ) AS azure_data
+         WHERE 1=1
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
+           AND 1=0
+        </if>
+         GROUP BY yearMonth
+
+         ORDER BY yearMonth DESC, csp
     </select>
 
-    <select id="getAWSInovice" parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel" resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
+    <select id="getAWSInvoice" parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel" resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
         SELECT co.lineitem_usageaccountid as accountID
              , co.lineitem_productcode  as productID
              , sm.csp_type as csp
@@ -55,5 +101,45 @@
                   co.lineitem_productcode,
                   sm.csp_type,
                   co.lineitem_resourceid
+    </select>
+
+    <select id="getNCPInvoice" parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel" resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
+        SELECT member_no as accountID
+             , product_demand_type as productID
+             , 'NCP' as csp
+             , SUM(demand_amount) / 1400.0 AS bill
+             , '-' as resourceID
+          FROM ncp_cost_service_month
+         WHERE demand_month = #{year_month}
+         GROUP BY member_no, product_demand_type
+--         UNION ALL
+--         SELECT member_no as accountID
+--              , instance_name as productID
+--              , 'NCP' as csp
+--              , SUM(demand_amount) AS bill
+--              , instance_no as resourceID
+--           FROM ncp_cost_vm_month
+--          WHERE demand_month = #{year_month}
+--          GROUP BY member_no, instance_name, instance_no
+    </select>
+
+    <select id="getAzureInvoice" parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel" resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
+        SELECT tenant_id as accountID
+             , service_name as productID
+             , 'AZURE' as csp
+             , SUM(pre_tax_cost) / 1400.0 AS bill
+             , '-' as resourceID
+          FROM azure_cost_service_daily
+         WHERE usage_date LIKE CONCAT(#{year_month}, '%')
+         GROUP BY tenant_id, service_name
+--         UNION ALL
+--         SELECT tenant_id as accountID
+--              , vm_id as productID
+--              , 'AZURE' as csp
+--              , SUM(pre_tax_cost) AS bill
+--              , resource_id as resourceID
+--           FROM azure_cost_vm_daily
+--          WHERE usage_date LIKE CONCAT(#{year_month}, '%')
+--          GROUP BY tenant_id, vm_id, resource_id
     </select>
 </mapper>
