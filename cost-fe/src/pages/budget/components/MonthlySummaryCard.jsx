@@ -13,7 +13,7 @@ export default function MonthlySummaryCard({ data, currency = "USD" }) {
   };
 
   return (
-    <Card title="Monthly Summary">
+    <Card title="Monthly Summary" titleSize={2}>
       <div className="table-responsive">
         <table className="table table-bordered">
           <thead>

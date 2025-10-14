@@ -27,6 +27,12 @@ export const useAlarmHistory = () => {
         selectedProjects: [projectId ?? "ns01"],
       };
 
+      console.log("=== [Alarm API] 요청 Payload ===");
+      console.log("workspaceId:", workspaceId);
+      console.log("projectId:", projectId);
+      console.log("전체 payload:", req);
+      console.log("====================================");
+
       setLoading(true);
 
       try {
