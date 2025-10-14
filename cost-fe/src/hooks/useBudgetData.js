@@ -53,6 +53,12 @@ export const useBudgetData = (year) => {
   useEffect(() => {
     const fetchBudgets = async () => {
       setLoading(true);
+
+      console.log("=== [Budget API] 조회 요청 ===");
+      console.log("year:", year);
+      console.log("⚠️ workspaceId/projectId 포함 여부 확인!");
+      console.log("====================================");
+
       try {
         const response = await getBudgetsByYear(year);
         const uiBudgets = transformApiToUiFormat(response.data);
@@ -81,7 +87,14 @@ export const useBudgetData = (year) => {
   const saveBudgets = async () => {
     try {
       setSaving(true);
-      const payload = transformUiToApiFormat(cspBudgets, year);
+      const payload = transformUiToApiFormat(cspBudgets, year, originalBudgets);
+
+      console.log("=== [Budget API] 저장 요청 Payload ===");
+      console.log("year:", year);
+      console.log("payload:", payload);
+      console.log("⚠️ workspaceId/projectId 포함 여부 확인!");
+      console.log("====================================");
+
       logger.info("Saving budget data:", payload);
 
       const res = await upsertBudgets(payload);
@@ -95,8 +108,19 @@ export const useBudgetData = (year) => {
         return false;
       } else {
         logger.info("Budget saved successfully");
-        // 성공 시 원본 데이터 업데이트
-        setOriginalBudgets(cspBudgets);
+
+        // 서버에서 저장된 최신 데이터 다시 가져오기
+        try {
+          const response = await getBudgetsByYear(year);
+          const uiBudgets = transformApiToUiFormat(response.data);
+          setCspBudgets(uiBudgets);
+          setOriginalBudgets(uiBudgets);
+        } catch (fetchError) {
+          logger.error("Failed to fetch updated budgets:", fetchError);
+          // 가져오기 실패 시에도 현재 데이터를 원본으로 유지
+          setOriginalBudgets(cspBudgets);
+        }
+
         addAlert({
           variant: "success",
           title: "Success",

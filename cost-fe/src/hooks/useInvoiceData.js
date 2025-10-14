@@ -35,6 +35,12 @@ export const useInvoiceData = () => {
         selectedWorkspace: workspaceId ?? "ws01",
       };
 
+      console.log("=== [Invoice API] 요청 Payload ===");
+      console.log("workspaceId:", workspaceId);
+      console.log("projectId:", projectId);
+      console.log("전체 payload:", req);
+      console.log("====================================");
+
       setLoading(true);
 
       try {

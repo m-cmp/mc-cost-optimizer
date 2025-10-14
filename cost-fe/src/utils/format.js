@@ -48,3 +48,30 @@ export const formatLargeNumber = (num) => {
   }
   return num.toString();
 };
+
+/**
+ * Format numbers in compact notation (K, M, B) using Intl.NumberFormat
+ * More standardized and supports internationalization
+ * @param {number} num - The number to format
+ * @returns {string} Formatted compact number string (e.g., "1.5K", "2.3M")
+ */
+export const formatCompactNumber = (num) => {
+  if (num == null || isNaN(num)) return '0';
+
+  return new Intl.NumberFormat('en', {
+    notation: 'compact',
+    compactDisplay: 'short',
+    maximumFractionDigits: 1,
+  }).format(num);
+};
+
+/**
+ * Format numbers with thousand separators
+ * @param {number} num - The number to format
+ * @returns {string} Formatted number with commas (e.g., "1,234,567")
+ */
+export const formatFullNumber = (num) => {
+  if (num == null || isNaN(num)) return '0';
+
+  return new Intl.NumberFormat('en').format(num);
+};

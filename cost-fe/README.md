@@ -27,6 +27,12 @@ podman build --tls-verify=false -t suihnyoon/mc-costopti-ui:test .
 # --tls-verify=false 는 사설 레지스트리 인증을 무시하는 옵션입니다. (공용 빌드시 생략 가능)
 ```
 
+#### (Optional) Step 2-1. 이미지 Push
+
+# 다른 개발자나 서버에서 사용할 경우 push
+
+podman push suihnyoon/mc-costopti-ui:test
+
 \*\* 이미지 저장소 변경 시, mc-cost-optimizer의 docker-compose.yml 에서 fe의 image 설정 변경
 
 ```bash

@@ -35,6 +35,12 @@ export const useBillingData = () => {
         selectedWorkspace: workspaceId,
       };
 
+      console.log("=== [Billing API] 요청 Payload ===");
+      console.log("workspaceId:", workspaceId);
+      console.log("projectId:", projectId);
+      console.log("전체 payload:", req);
+      console.log("====================================");
+
       setLoading(true);
 
       try {

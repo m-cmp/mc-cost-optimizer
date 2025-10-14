@@ -15,7 +15,7 @@ function getApiConfig() {
   if (hostname.includes("localhost")) {
     API_BE_URL = `http://${hostname}:9090`;
     API_ALARM_URL = `http://${hostname}:9000`;
-    USE_MOCK = true; // localhost는 mock 사용
+    USE_MOCK = false; // localhost는 mock 사용, api 테스트 시 false로 변경
   } else if (isNumericAndDotsOnly) {
     API_BE_URL = `http://${hostname}:9090`;
     API_ALARM_URL = `http://${hostname}:9000`;

@@ -8,8 +8,16 @@ export const useProjectStore = create((set) => ({
   projectName: null,
   userToken: null,
 
-  setWorkspace: (id, name) => set({ workspaceId: id, workspaceName: name }),
-  setProject: (id, uuid, name) =>
-    set({ projectId: id, projectUUID: uuid, projectName: name }),
-  setUserToken: (token) => set({ userToken: token }),
+  setWorkspace: (id, name) => {
+    console.log("🔄 [Store Update] setWorkspace 호출:", { id, name });
+    set({ workspaceId: id, workspaceName: name });
+  },
+  setProject: (id, uuid, name) => {
+    console.log("🔄 [Store Update] setProject 호출:", { id, uuid, name });
+    set({ projectId: id, projectUUID: uuid, projectName: name });
+  },
+  setUserToken: (token) => {
+    console.log("🔄 [Store Update] setUserToken 호출:", token);
+    set({ userToken: token });
+  },
 }));

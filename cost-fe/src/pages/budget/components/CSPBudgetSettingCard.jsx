@@ -1,5 +1,7 @@
+import { useState, useRef, useEffect, useMemo } from "react";
 import Card from "@/components/common/card/Card";
 import Button from "@/components/common/button/Button";
+import Tooltip from "@/components/common/tooltip/Tooltip";
 import {
   calculateCSPTotal,
   calculateCurrencyTotal,
@@ -9,7 +11,120 @@ import {
   getCurrencySymbol,
   getCspCurrency,
 } from "@/utils/budgetUtils";
+import { formatCompactNumber, formatFullNumber } from "@/utils/format";
 
+const HOVER_BG_COLOR = "rgba(32, 107, 196, 0.1)";
+const ALLOWED_KEYS = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"];
+const CELL_WIDTH = "80px";
+
+/** EditableCell 스타일 상수 */
+const EDITABLE_CELL_STYLE = {
+  cursor: "pointer",
+  minHeight: "31px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  transition: "background-color 0.2s ease",
+};
+
+/** EditableCell의 key 생성 헬퍼 함수 */
+const getCellKey = (csp, monthIdx, budget, isEditing) => {
+  return isEditing ? `editing-${csp}-${monthIdx}` : `${csp}-${monthIdx}-${budget}`;
+};
+
+/** 통화별 설정 */
+const CURRENCIES = [
+  { currency: "USD", symbol: "$" },
+  { currency: "KRW", symbol: "₩" },
+];
+
+/** 툴팁과 함께 축약된 숫자를 표시 */
+const NumberWithTooltip = ({ value, prefix = "", suffix = "" }) => (
+  <Tooltip
+    title={`${prefix}${formatFullNumber(value)}${suffix}`}
+    placement="top"
+  >
+    {prefix}
+    {formatCompactNumber(value)}
+    {suffix}
+  </Tooltip>
+);
+
+/** 편집 가능한 셀 (클릭 시 input으로 전환) */
+const EditableCell = ({
+  budget,
+  csp,
+  monthIdx,
+  isEditing,
+  tempValue,
+  onCellClick,
+  onTempValueChange,
+  onSave,
+  onKeyDown,
+  inputRef,
+}) => {
+  if (isEditing) {
+    return (
+      <Tooltip title={formatFullNumber(tempValue || 0)} placement="top">
+        <input
+          ref={inputRef}
+          type="text"
+          className="form-control form-control-sm text-end"
+          value={tempValue}
+          onChange={(e) => onTempValueChange(e.target.value)}
+          onBlur={onSave}
+          onKeyDown={onKeyDown}
+        />
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Tooltip title={formatFullNumber(budget)} placement="top">
+      <div
+        onClick={() => onCellClick(csp, monthIdx)}
+        className="text-end px-2 py-1"
+        style={EDITABLE_CELL_STYLE}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = HOVER_BG_COLOR;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "transparent";
+        }}
+      >
+        {formatCompactNumber(budget)}
+      </div>
+    </Tooltip>
+  );
+};
+
+/** 통화별 합계 행 (USD, KRW) */
+const CurrencySummaryRow = ({ cspBudgets, currency, symbol }) => (
+  <tr className="table-info fw-bold">
+    <td>{currency}</td>
+    <td className="text-center">
+      <NumberWithTooltip
+        value={calculateCurrencyTotal(cspBudgets, currency)}
+        prefix={symbol}
+      />
+    </td>
+    {Array.from({ length: 12 }, (_, monthIdx) => (
+      <td key={monthIdx} className="text-center">
+        <NumberWithTooltip
+          value={calculateCurrencyTotal(cspBudgets, currency, monthIdx)}
+          prefix={symbol}
+        />
+      </td>
+    ))}
+  </tr>
+);
+
+/**
+ * CSP별 예산 설정 카드
+ * - 각 CSP별로 월별 예산을 입력할 수 있는 테이블
+ * - 셀 클릭으로 편집 모드 진입
+ * - 통화별(USD, KRW) 합계 자동 계산
+ */
 export default function CSPBudgetSettingCard({
   cspBudgets,
   onBudgetChange,
@@ -17,35 +132,105 @@ export default function CSPBudgetSettingCard({
   onReset,
   isSaving = false,
 }) {
+  const [editingCell, setEditingCell] = useState(null); // 현재 편집 중인 셀 { csp, monthIdx }
+  const [tempValue, setTempValue] = useState(""); // 편집 중인 임시 값
+  const inputRef = useRef(null); // input 요소 참조
+
   if (!cspBudgets) return null;
 
-  const handleBudgetChange = (csp, monthIndex, value) => {
-    // 빈 값이면 0으로 처리
-    if (value === "" || value === null || value === undefined) {
-      const newBudgets = {
-        ...cspBudgets,
-        [csp]: cspBudgets[csp].map((val, idx) =>
-          idx === monthIndex ? 0 : val
-        ),
-      };
-      onBudgetChange(newBudgets);
+  // 편집 모드 진입 시 input 포커스 및 텍스트 선택
+  useEffect(() => {
+    if (editingCell && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editingCell]);
+
+  /** 셀 클릭 시 편집 모드 진입 */
+  const handleCellClick = (csp, monthIdx) => {
+    const currentValue = cspBudgets[csp][monthIdx].toString();
+    setEditingCell({ csp, monthIdx });
+    setTempValue(currentValue);
+  };
+
+  /** 부모 컴포넌트로 예산 데이터 동기화 */
+  const syncBudgetToParent = (csp, monthIndex, newValue) => {
+    const newBudgets = {
+      ...cspBudgets,
+      [csp]: cspBudgets[csp].map((val, idx) =>
+        idx === monthIndex ? newValue : val
+      ),
+    };
+    onBudgetChange(newBudgets);
+  };
+
+  /** 입력값 검증 후 셀 값 저장 */
+  const saveCellValue = (csp, monthIndex, value) => {
+    if (!value) {
+      syncBudgetToParent(csp, monthIndex, 0);
       return;
     }
 
     const validation = validateBudgetInput(value);
     if (validation.isValid) {
-      const newBudgets = {
-        ...cspBudgets,
-        [csp]: cspBudgets[csp].map((val, idx) =>
-          idx === monthIndex ? validation.value : val
-        ),
-      };
-      onBudgetChange(newBudgets);
+      syncBudgetToParent(csp, monthIndex, validation.value);
     }
   };
 
+  /** 편집 저장 및 편집 모드 종료 */
+  const handleSaveCell = () => {
+    if (editingCell) {
+      saveCellValue(editingCell.csp, editingCell.monthIdx, tempValue);
+    }
+    setEditingCell(null);
+    setTempValue("");
+  };
+
+  /** 편집 취소 (변경 사항 버리고 편집 모드 종료) */
+  const handleCancelEdit = () => {
+    setEditingCell(null);
+    setTempValue("");
+  };
+
+  /** 키보드 입력 처리 (Enter: 저장, Escape: 취소, 숫자만 허용) */
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSaveCell();
+      return;
+    }
+
+    if (e.key === "Escape") {
+      handleCancelEdit();
+      return;
+    }
+
+    // 숫자와 허용된 키만 입력 가능
+    const isNumber = /[0-9]/.test(e.key);
+    const isAllowedKey = ALLOWED_KEYS.includes(e.key);
+
+    if (!isNumber && !isAllowedKey) {
+      e.preventDefault();
+    }
+  };
+
+  /** 편집 중인 값을 고려한 예산 데이터 (합계 계산용) */
+  const effectiveBudgets = useMemo(() => {
+    if (!editingCell) return cspBudgets;
+
+    const { csp, monthIdx } = editingCell;
+    const validation = validateBudgetInput(tempValue);
+    const effectiveValue = validation.isValid ? validation.value : (tempValue === "" ? 0 : cspBudgets[csp][monthIdx]);
+
+    return {
+      ...cspBudgets,
+      [csp]: cspBudgets[csp].map((val, idx) =>
+        idx === monthIdx ? effectiveValue : val
+      ),
+    };
+  }, [cspBudgets, editingCell, tempValue]);
+
   return (
-    <Card title="CSP Budget Setting">
+    <Card title="CSP Budget Setting" titleSize={2}>
       <div className="table-responsive">
         <table className="table table-bordered">
           <thead>
@@ -75,73 +260,46 @@ export default function CSPBudgetSettingCard({
                     </span>
                   </td>
                   <td className="text-center fw-bold">
-                    {cspCurrencySymbol}
-                    {calculateCSPTotal(cspBudgets, csp).toLocaleString()}
+                    <NumberWithTooltip
+                      value={calculateCSPTotal(effectiveBudgets, csp)}
+                      prefix={cspCurrencySymbol}
+                    />
                   </td>
-                  {budgets.map((budget, monthIdx) => (
-                    <td key={monthIdx} style={{ width: "80px" }}>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm text-end"
-                        value={budget}
-                        onChange={(e) =>
-                          handleBudgetChange(csp, monthIdx, e.target.value)
-                        }
-                        onKeyDown={(e) => {
-                          // 숫자, Backspace, Delete, Tab, Arrow keys만 허용
-                          if (
-                            !/[0-9]/.test(e.key) &&
-                            ![
-                              "Backspace",
-                              "Delete",
-                              "Tab",
-                              "ArrowLeft",
-                              "ArrowRight",
-                            ].includes(e.key)
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
-                      />
-                    </td>
-                  ))}
+                  {budgets.map((budget, monthIdx) => {
+                    const isEditing =
+                      editingCell?.csp === csp &&
+                      editingCell?.monthIdx === monthIdx;
+
+                    return (
+                      <td key={monthIdx} style={{ width: CELL_WIDTH }}>
+                        <EditableCell
+                          key={getCellKey(csp, monthIdx, budget, isEditing)}
+                          budget={budget}
+                          csp={csp}
+                          monthIdx={monthIdx}
+                          isEditing={isEditing}
+                          tempValue={tempValue}
+                          onCellClick={handleCellClick}
+                          onTempValueChange={setTempValue}
+                          onSave={handleSaveCell}
+                          onKeyDown={handleKeyDown}
+                          inputRef={inputRef}
+                        />
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })}
-            {/* USD */}
-            <tr className="table-info fw-bold">
-              <td>USD</td>
-              <td className="text-center">
-                ${calculateCurrencyTotal(cspBudgets, "USD").toLocaleString()}
-              </td>
-              {Array.from({ length: 12 }, (_, monthIdx) => (
-                <td key={monthIdx} className="text-center">
-                  $
-                  {calculateCurrencyTotal(
-                    cspBudgets,
-                    "USD",
-                    monthIdx
-                  ).toLocaleString()}
-                </td>
-              ))}
-            </tr>
-            {/* KRW */}
-            <tr className="table-info fw-bold">
-              <td>KRW</td>
-              <td className="text-center">
-                ₩{calculateCurrencyTotal(cspBudgets, "KRW").toLocaleString()}
-              </td>
-              {Array.from({ length: 12 }, (_, monthIdx) => (
-                <td key={monthIdx} className="text-center">
-                  ₩
-                  {calculateCurrencyTotal(
-                    cspBudgets,
-                    "KRW",
-                    monthIdx
-                  ).toLocaleString()}
-                </td>
-              ))}
-            </tr>
+            {/* 통화별 합계 */}
+            {CURRENCIES.map(({ currency, symbol }) => (
+              <CurrencySummaryRow
+                key={currency}
+                cspBudgets={effectiveBudgets}
+                currency={currency}
+                symbol={symbol}
+              />
+            ))}
           </tbody>
         </table>
       </div>

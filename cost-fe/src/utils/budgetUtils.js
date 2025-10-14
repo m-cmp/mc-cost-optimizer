@@ -185,15 +185,25 @@ export const transformApiToUiFormat = (apiData) => {
  * UI 형식을 API 요청 형식으로 변환
  * @param {Object} cspBudgets - {AWS: [budget1, budget2, ...], Azure: [...], NCP: [...]}
  * @param {number} year - 연도
+ * @param {Object} originalBudgets - 변경 전 원본 데이터 (선택적, 제공 시 변경된 항목만 포함)
  * @returns {Object} {budgets: [{csp, year, month, budget}, ...]}
  */
-export const transformUiToApiFormat = (cspBudgets, year) => {
+export const transformUiToApiFormat = (cspBudgets, year, originalBudgets = null) => {
   const budgets = [];
 
   Object.entries(cspBudgets).forEach(([csp, monthlyBudgets]) => {
     monthlyBudgets.forEach((budget, index) => {
-      // 0이 아닌 값만 포함 (선택적)
-      if (budget > 0) {
+      // originalBudgets가 제공되면 변경된 항목만 포함
+      if (originalBudgets) {
+        const originalValue = originalBudgets[csp]?.[index];
+        // 값이 변경되지 않았으면 스킵
+        if (originalValue === budget) {
+          return;
+        }
+      }
+
+      // 0을 포함한 모든 유효한 숫자 값 포함 (명시적으로 0으로 설정한 경우도 반영)
+      if (budget !== null && budget !== undefined) {
         budgets.push({
           csp,
           year,
