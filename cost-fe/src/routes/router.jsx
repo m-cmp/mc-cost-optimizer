@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: ROUTES.filter((r) => r.layout === "app").map((r) => ({
-      path: r.path === "/" ? undefined : r.path, // index route 처리
+      path: r.path === "/" ? undefined : r.path, // Handle index route
       index: r.path === "/",
       element: withSuspense(r.element),
     })),

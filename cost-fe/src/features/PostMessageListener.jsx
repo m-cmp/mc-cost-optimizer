@@ -1,25 +1,70 @@
 import { useEffect } from "react";
 import { useProjectStore } from "../stores/useProjectStore";
+import { useAlertStore } from "../stores/useAlertStore";
 import { logger } from "@/utils/logger";
 
 export default function PostMessageListener() {
   const setWorkspace = useProjectStore((s) => s.setWorkspace);
   const setProject = useProjectStore((s) => s.setProject);
   const setUserToken = useProjectStore((s) => s.setUserToken);
+  const addAlert = useAlertStore((s) => s.addAlert);
 
   useEffect(() => {
-    function handleMessage(event) {
-      logger.debug("message received:", event);
+    let messageReceived = false;
 
+    const setDefaultValues = (reason) => {
+      console.warn(`⚠️ [PostMessage] ${reason}`);
+      logger.warn(reason);
+
+      addAlert({
+        variant: "warning",
+        title: "No Message Received",
+        message:
+          "Project data was not received from PostMessage. Applying default values.",
+        duration: 5000,
+      });
+
+      setWorkspace("ws01", "testWs");
+      setProject("ns01", "mock-uuid", "default-project");
+      setUserToken("Null");
+    };
+
+    // Check for initial message stored globally
+    if (window.__INITIAL_POST_MESSAGE__) {
+      const data = window.__INITIAL_POST_MESSAGE__;
+      console.log("[PostMessage] Global message detected, setting Store", {
+        workspaceId: data.workspaceInfo.name,
+        workspaceName: data.workspaceInfo.name,
+        projectId: data.projectInfo.ns_id,
+        projectUUID: data.projectInfo.id,
+        projectName: data.projectInfo.name,
+      });
+      messageReceived = true;
+
+      setWorkspace(data.workspaceInfo.name, data.workspaceInfo.name);
+      setProject(
+        data.projectInfo.ns_id,
+        data.projectInfo.id,
+        data.projectInfo.name
+      );
+      setUserToken(data.accessToken);
+
+      window.__INITIAL_POST_MESSAGE__ = null;
+    }
+
+    function handleMessage(event) {
       if (event.data && event.data.accessToken) {
-        console.log("=== [PostMessage] 외부에서 받은 데이터 ===");
-        console.log("accessToken:", event.data.accessToken);
-        console.log("workspaceInfo:", event.data.workspaceInfo);
-        console.log("projectInfo:", event.data.projectInfo);
-        console.log("====================================");
+        console.log("[PostMessage] New message received, updating Store", {
+          workspaceId: event.data.workspaceInfo.name,
+          workspaceName: event.data.workspaceInfo.name,
+          projectId: event.data.projectInfo.ns_id,
+          projectUUID: event.data.projectInfo.id,
+          projectName: event.data.projectInfo.name,
+        });
+        messageReceived = true;
 
         setWorkspace(
-          event.data.workspaceInfo.id,
+          event.data.workspaceInfo.name,
           event.data.workspaceInfo.name
         );
         setProject(
@@ -28,46 +73,23 @@ export default function PostMessageListener() {
           event.data.projectInfo.name
         );
         setUserToken(event.data.accessToken);
-
-        console.log("=== [Store] 저장된 데이터 ===");
-        console.log("workspaceId:", event.data.workspaceInfo.id);
-        console.log("workspaceName:", event.data.workspaceInfo.name);
-        console.log("projectId (ns_id):", event.data.projectInfo.ns_id);
-        console.log("projectUUID:", event.data.projectInfo.id);
-        console.log("projectName:", event.data.projectInfo.name);
-        console.log("====================================");
-      } else {
-        console.warn("⚠️ [PostMessage] 프로젝트 코드가 없어서 임시 값 적용");
-        logger.warn("프로젝트 코드가 없어서 임시 값 적용");
-        setWorkspace("ws01", "testWs");
-        setProject("ns01", "mock-uuid", "undefined");
-        setUserToken("Null");
       }
     }
 
     window.addEventListener("message", handleMessage);
 
-    if (import.meta.env.MODE === "development") {
-      setTimeout(() => {
-        window.postMessage(
-          {
-            accessToken: "dummy-token",
-            workspaceInfo: { id: "ws01", name: "Test Workspace" },
-            projectInfo: {
-              ns_id: "ns01",
-              id: "mock-uuid",
-              name: "Test Project",
-            },
-          },
-          "*"
-        );
-      }, 1000);
-    }
+    // Set fallback data if message is not received within timeout
+    const fallbackTimeout = setTimeout(() => {
+      if (!messageReceived) {
+        setDefaultValues("No message received, applying default values");
+      }
+    }, 3000);
 
     return () => {
       window.removeEventListener("message", handleMessage);
+      clearTimeout(fallbackTimeout);
     };
-  }, [setWorkspace, setProject, setUserToken]);
+  }, [setWorkspace, setProject, setUserToken, addAlert]);
 
   return null;
 }

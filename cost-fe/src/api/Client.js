@@ -2,10 +2,10 @@ import axios from "axios";
 import { ERROR_MESSAGES } from "../constants/errorMessages";
 import { logger } from "../utils/logger";
 
-// 동적으로 API URL 및 Mock 모드 생성 (도메인 기반)
+// Dynamically generate API URL and Mock mode (based on domain)
 function getApiConfig() {
   const hostname = window.location.hostname;
-  console.log("도메인 확인: " + hostname);
+  console.log("Domain check: " + hostname);
   const isNumericAndDotsOnly = /^[0-9.]+$/.test(hostname);
 
   let API_BE_URL = "";
@@ -15,15 +15,15 @@ function getApiConfig() {
   if (hostname.includes("localhost")) {
     API_BE_URL = `http://${hostname}:9090`;
     API_ALARM_URL = `http://${hostname}:9000`;
-    USE_MOCK = false; // localhost는 mock 사용, api 테스트 시 false로 변경
+    USE_MOCK = false; // localhost uses mock, change to false for API testing
   } else if (isNumericAndDotsOnly) {
     API_BE_URL = `http://${hostname}:9090`;
     API_ALARM_URL = `http://${hostname}:9000`;
-    USE_MOCK = false; // IP는 실제 API 사용
+    USE_MOCK = false; // IP uses real API
   } else {
     API_BE_URL = `https://${hostname}`;
     API_ALARM_URL = `https://${hostname}`;
-    USE_MOCK = false; // 도메인은 실제 API 사용
+    USE_MOCK = false; // Domain uses real API
   }
 
   console.log("API_BE_URL:", API_BE_URL);
@@ -59,7 +59,7 @@ function createClient(baseURL, timeout = 5000) {
         raw: error,
       };
 
-      // Production에서도 표시 (logger.error는 항상 출력)
+      // Also displayed in production (logger.error always outputs)
       logger.error(`[API Error] ${status} ${mapping.code}`, error);
 
       return Promise.reject(formattedError);
@@ -69,10 +69,10 @@ function createClient(baseURL, timeout = 5000) {
   return client;
 }
 
-// costBE API (9090 포트)
+// costBE API (port 9090)
 export const dashboardClient = createClient(API_BE_URL, 5000);
 
-// 도메인별 클라이언트 생성 (base path: /api/costopti/be)
+// Create client by domain (base path: /api/costopti/be)
 const BASE_PATH = "/api/costopti/be";
 export const billingClient = createClient(`${API_BE_URL}${BASE_PATH}`, 5000);
 export const invoiceClient = createClient(
@@ -84,8 +84,8 @@ export const budgetClient = createClient(
   5000
 );
 
-// Alarm Service API (9000 포트)
+// Alarm Service API (port 9000)
 export const alertClient = createClient(API_ALARM_URL, 20000);
 
-// Mock 모드 export (API 파일들에서 사용)
+// Export Mock mode (used in API files)
 export { USE_MOCK };

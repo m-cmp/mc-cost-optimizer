@@ -10,12 +10,12 @@ import { logger } from "@/utils/logger";
 
 /**
  * @hook useInvoiceData
- * @description 청구서 리포트 데이터를 가져오는 Custom Hook
- * @returns {Object} 청구서 데이터 및 로딩 상태
- * @returns {Object|null} returns.baseInfo - 기본 정보 데이터
- * @returns {Object|null} returns.summary - 요약 데이터
- * @returns {Object|null} returns.invoice - 인보이스 데이터
- * @returns {boolean} returns.loading - 로딩 상태
+ * @description Custom Hook for fetching invoice report data
+ * @returns {Object} Invoice data and loading state
+ * @returns {Object|null} returns.baseInfo - Base information data
+ * @returns {Object|null} returns.summary - Summary data
+ * @returns {Object|null} returns.invoice - Invoice data
+ * @returns {boolean} returns.loading - Loading state
  */
 export const useInvoiceData = () => {
   const { projectId, workspaceId } = useProjectStore();
@@ -27,18 +27,24 @@ export const useInvoiceData = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Don't make API request if projectId and workspaceId are not available
+    if (!projectId || !workspaceId) {
+      console.log("⏳ [Invoice API] Waiting for Store data...");
+      return;
+    }
+
     const fetchInvoiceData = async () => {
       const req = {
         today: new Date().toISOString().slice(0, 10).replace(/-/g, ""),
-        selectedProjects: [projectId ?? "ns01"],
+        selectedProjects: [projectId],
         selectedCsps: ["AWS", "AZURE", "NCP"],
-        selectedWorkspace: workspaceId ?? "ws01",
+        selectedWorkspace: workspaceId,
       };
 
-      console.log("=== [Invoice API] 요청 Payload ===");
+      console.log("=== [Invoice API] Request Payload ===");
       console.log("workspaceId:", workspaceId);
       console.log("projectId:", projectId);
-      console.log("전체 payload:", req);
+      console.log("Full payload:", req);
       console.log("====================================");
 
       setLoading(true);
@@ -57,8 +63,8 @@ export const useInvoiceData = () => {
         logger.error("Invoice API Error:", err);
         addAlert({
           variant: "danger",
-          title: "API 에러",
-          message: err.userMessage || "청구서 데이터를 불러오는 중 오류가 발생했습니다.",
+          title: "API Error",
+          message: err.userMessage || "An error occurred while loading invoice data.",
         });
       } finally {
         setLoading(false);

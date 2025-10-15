@@ -1,7 +1,7 @@
 import { alertClient, USE_MOCK, billingClient } from "../Client";
 import { alarmHistoryData } from "../../config/mockData";
 
-// 알림 히스토리 조회
+// Fetch alarm history
 export const getAlarmHistory = async (req) => {
   if (USE_MOCK) {
     return Promise.resolve({ data: alarmHistoryData });
@@ -9,22 +9,22 @@ export const getAlarmHistory = async (req) => {
   return billingClient.post("/alarm/history", req);
 };
 
-// 메일 계정/비밀번호 저장
+// Save email account/password
 export const insertMailInfo = (payload) => {
   return alertClient.post("/insertMailInfo", payload);
 };
 
-// 저장된 메일 계정 조회
+// Fetch saved email account
 export const getMailInfo = () => {
   return alertClient.get("/getMailInfo");
 };
 
-// 메일 발송 (테스트용)
+// Send email (for testing)
 export const sendAlertMail = (payload) => {
   return alertClient.post("/sendAlertMail", payload);
 };
 
-// Slack 메시지 전송
+// Send Slack message
 export const sendSlackMessage = ({ userId, message, linkUrl, linkText }) => {
   const params = new URLSearchParams({ userId, message });
   if (linkUrl) params.append("linkUrl", linkUrl);
@@ -33,12 +33,12 @@ export const sendSlackMessage = ({ userId, message, linkUrl, linkText }) => {
   return alertClient.post(`/sendSlackAC?${params.toString()}`);
 };
 
-// Slack Token 저장
+// Save Slack Token
 export const insertSlackToken = (payload) => {
   return alertClient.post("/insertSlackToken", payload);
 };
 
-// Slack Token/Channel 조회
+// Fetch Slack Token/Channel
 export const getSlackInfo = (userId) => {
   return alertClient.get(`/getSlackIF`, { params: { userId } });
 };
