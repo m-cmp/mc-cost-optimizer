@@ -1,14 +1,14 @@
 /**
  * @file historyUtils.js
- * @description Alarm History 관련 유틸리티 함수들
+ * @description Utility functions related to Alarm History
  */
 
 import { logger } from "./logger";
 
 /**
- * ISO 날짜 문자열을 읽기 쉬운 형식으로 변환
- * @param {string} isoDateString - "2025-09-23T14:21:57" 형식의 날짜
- * @returns {string} "2025-09-23 14:21" 형식의 날짜
+ * Converts ISO date string to readable format
+ * @param {string} isoDateString - Date in "2025-09-23T14:21:57" format
+ * @returns {string} Date in "2025-09-23 14:21" format
  */
 export const formatOccureTime = (isoDateString) => {
   if (!isoDateString) return "";
@@ -24,14 +24,14 @@ export const formatOccureTime = (isoDateString) => {
     return `${year}-${month}-${day} ${hour}:${minute}`;
   } catch (error) {
     logger.error("Date formatting error:", error);
-    return isoDateString; // 에러 시 원본 반환
+    return isoDateString; // Return original on error
   }
 };
 
 /**
- * API 응답 데이터를 테이블 형식으로 변환
- * @param {Array} apiData - API에서 받은 alarmHistory 배열
- * @returns {Array} 테이블에 맞는 형식으로 변환된 데이터
+ * Converts API response data to table format
+ * @param {Array} apiData - alarmHistory array received from API
+ * @returns {Array} Data converted to table-compatible format
  */
 export const transformAlarmData = (apiData) => {
   if (!Array.isArray(apiData)) return [];

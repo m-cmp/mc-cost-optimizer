@@ -17,7 +17,7 @@ const HOVER_BG_COLOR = "rgba(32, 107, 196, 0.1)";
 const ALLOWED_KEYS = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"];
 const CELL_WIDTH = "80px";
 
-/** EditableCell 스타일 상수 */
+/** EditableCell style constants */
 const EDITABLE_CELL_STYLE = {
   cursor: "pointer",
   minHeight: "31px",
@@ -27,18 +27,18 @@ const EDITABLE_CELL_STYLE = {
   transition: "background-color 0.2s ease",
 };
 
-/** EditableCell의 key 생성 헬퍼 함수 */
+/** Helper function to generate key for EditableCell */
 const getCellKey = (csp, monthIdx, budget, isEditing) => {
   return isEditing ? `editing-${csp}-${monthIdx}` : `${csp}-${monthIdx}-${budget}`;
 };
 
-/** 통화별 설정 */
+/** Currency configurations */
 const CURRENCIES = [
   { currency: "USD", symbol: "$" },
   { currency: "KRW", symbol: "₩" },
 ];
 
-/** 툴팁과 함께 축약된 숫자를 표시 */
+/** Displays abbreviated number with tooltip */
 const NumberWithTooltip = ({ value, prefix = "", suffix = "" }) => (
   <Tooltip
     title={`${prefix}${formatFullNumber(value)}${suffix}`}
@@ -50,7 +50,7 @@ const NumberWithTooltip = ({ value, prefix = "", suffix = "" }) => (
   </Tooltip>
 );
 
-/** 편집 가능한 셀 (클릭 시 input으로 전환) */
+/** Editable cell (switches to input on click) */
 const EditableCell = ({
   budget,
   csp,
@@ -98,7 +98,7 @@ const EditableCell = ({
   );
 };
 
-/** 통화별 합계 행 (USD, KRW) */
+/** Currency summary row (USD, KRW) */
 const CurrencySummaryRow = ({ cspBudgets, currency, symbol }) => (
   <tr className="table-info fw-bold">
     <td>{currency}</td>
@@ -120,10 +120,10 @@ const CurrencySummaryRow = ({ cspBudgets, currency, symbol }) => (
 );
 
 /**
- * CSP별 예산 설정 카드
- * - 각 CSP별로 월별 예산을 입력할 수 있는 테이블
- * - 셀 클릭으로 편집 모드 진입
- * - 통화별(USD, KRW) 합계 자동 계산
+ * CSP Budget Setting Card
+ * - Table for entering monthly budgets per CSP
+ * - Enter edit mode by clicking cells
+ * - Automatically calculates totals by currency (USD, KRW)
  */
 export default function CSPBudgetSettingCard({
   cspBudgets,
@@ -132,13 +132,13 @@ export default function CSPBudgetSettingCard({
   onReset,
   isSaving = false,
 }) {
-  const [editingCell, setEditingCell] = useState(null); // 현재 편집 중인 셀 { csp, monthIdx }
-  const [tempValue, setTempValue] = useState(""); // 편집 중인 임시 값
-  const inputRef = useRef(null); // input 요소 참조
+  const [editingCell, setEditingCell] = useState(null); // Currently editing cell { csp, monthIdx }
+  const [tempValue, setTempValue] = useState(""); // Temporary value being edited
+  const inputRef = useRef(null); // Input element reference
 
   if (!cspBudgets) return null;
 
-  // 편집 모드 진입 시 input 포커스 및 텍스트 선택
+  // Focus input and select text when entering edit mode
   useEffect(() => {
     if (editingCell && inputRef.current) {
       inputRef.current.focus();
@@ -146,14 +146,14 @@ export default function CSPBudgetSettingCard({
     }
   }, [editingCell]);
 
-  /** 셀 클릭 시 편집 모드 진입 */
+  /** Enter edit mode on cell click */
   const handleCellClick = (csp, monthIdx) => {
     const currentValue = cspBudgets[csp][monthIdx].toString();
     setEditingCell({ csp, monthIdx });
     setTempValue(currentValue);
   };
 
-  /** 부모 컴포넌트로 예산 데이터 동기화 */
+  /** Synchronize budget data to parent component */
   const syncBudgetToParent = (csp, monthIndex, newValue) => {
     const newBudgets = {
       ...cspBudgets,
@@ -164,7 +164,7 @@ export default function CSPBudgetSettingCard({
     onBudgetChange(newBudgets);
   };
 
-  /** 입력값 검증 후 셀 값 저장 */
+  /** Save cell value after input validation */
   const saveCellValue = (csp, monthIndex, value) => {
     if (!value) {
       syncBudgetToParent(csp, monthIndex, 0);
@@ -177,7 +177,7 @@ export default function CSPBudgetSettingCard({
     }
   };
 
-  /** 편집 저장 및 편집 모드 종료 */
+  /** Save edit and exit edit mode */
   const handleSaveCell = () => {
     if (editingCell) {
       saveCellValue(editingCell.csp, editingCell.monthIdx, tempValue);
@@ -186,13 +186,13 @@ export default function CSPBudgetSettingCard({
     setTempValue("");
   };
 
-  /** 편집 취소 (변경 사항 버리고 편집 모드 종료) */
+  /** Cancel edit (discard changes and exit edit mode) */
   const handleCancelEdit = () => {
     setEditingCell(null);
     setTempValue("");
   };
 
-  /** 키보드 입력 처리 (Enter: 저장, Escape: 취소, 숫자만 허용) */
+  /** Keyboard input handling (Enter: save, Escape: cancel, numbers only) */
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSaveCell();
@@ -204,7 +204,7 @@ export default function CSPBudgetSettingCard({
       return;
     }
 
-    // 숫자와 허용된 키만 입력 가능
+    // Only numbers and allowed keys are permitted
     const isNumber = /[0-9]/.test(e.key);
     const isAllowedKey = ALLOWED_KEYS.includes(e.key);
 
@@ -213,7 +213,7 @@ export default function CSPBudgetSettingCard({
     }
   };
 
-  /** 편집 중인 값을 고려한 예산 데이터 (합계 계산용) */
+  /** Budget data considering editing value (for total calculation) */
   const effectiveBudgets = useMemo(() => {
     if (!editingCell) return cspBudgets;
 
@@ -291,7 +291,7 @@ export default function CSPBudgetSettingCard({
                 </tr>
               );
             })}
-            {/* 통화별 합계 */}
+            {/* Currency totals */}
             {CURRENCIES.map(({ currency, symbol }) => (
               <CurrencySummaryRow
                 key={currency}

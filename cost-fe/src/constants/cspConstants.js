@@ -1,8 +1,8 @@
 /**
- * CSP(Cloud Service Provider) 관련 통합 상수 정의
+ * CSP(Cloud Service Provider) related unified constant definitions
  *
- * 모든 CSP 관련 색상, 라벨, 설정을 중앙화하여 관리합니다.
- * CSP 추가/수정 시 이 파일만 변경하면 전체 애플리케이션에 반영됩니다.
+ * Centrally manages all CSP-related colors, labels, and configurations.
+ * Changes to this file only will be reflected across the entire application when adding/modifying CSPs.
  */
 
 export const CSP_NAMES = {
@@ -14,10 +14,10 @@ export const CSP_NAMES = {
 };
 
 /**
- * CSP별 통합 설정
- * @property {string} name - CSP 표시 이름
- * @property {string} color - Hex 색상 코드 (차트 등에 사용)
- * @property {string} colorClass - Bootstrap/Tabler 색상 클래스 (배지 등에 사용)
+ * Unified configuration per CSP
+ * @property {string} name - CSP display name
+ * @property {string} color - Hex color code (used in charts, etc.)
+ * @property {string} colorClass - Bootstrap/Tabler color class (used in badges, etc.)
  */
 export const CSP_CONFIG = {
   [CSP_NAMES.AWS]: {
@@ -48,7 +48,7 @@ export const CSP_CONFIG = {
 };
 
 /**
- * CSP별 Hex 색상 코드 맵 (차트 라이브러리용)
+ * Hex color code map per CSP (for chart libraries)
  */
 export const cspColorMap = Object.entries(CSP_CONFIG).reduce((acc, [key, config]) => {
   acc[key] = config.color;
@@ -56,26 +56,26 @@ export const cspColorMap = Object.entries(CSP_CONFIG).reduce((acc, [key, config]
 }, {});
 
 /**
- * CSP별 Bootstrap/Tabler 색상 클래스 반환
- * @param {string} csp - CSP 이름
- * @returns {string} Bootstrap 색상 클래스
+ * Returns Bootstrap/Tabler color class per CSP
+ * @param {string} csp - CSP name
+ * @returns {string} Bootstrap color class
  */
 export const getCSPColorClass = (csp) => {
   return CSP_CONFIG[csp]?.colorClass || CSP_CONFIG.OTHERS.colorClass;
 };
 
 /**
- * CSP별 Hex 색상 코드 반환
- * @param {string} csp - CSP 이름
- * @returns {string} Hex 색상 코드
+ * Returns Hex color code per CSP
+ * @param {string} csp - CSP name
+ * @returns {string} Hex color code
  */
 export const getCSPColor = (csp) => {
   return CSP_CONFIG[csp]?.color || CSP_CONFIG.OTHERS.color;
 };
 
 /**
- * 모든 CSP 목록 반환
- * @returns {Array<string>} CSP 이름 배열
+ * Returns all CSP list
+ * @returns {Array<string>} CSP name array
  */
 export const getAllCSPs = () => {
   return Object.keys(CSP_CONFIG);

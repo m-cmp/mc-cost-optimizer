@@ -4,14 +4,12 @@ import BaseInfoCard from "./components/BaseInfoCard";
 import InvoiceTable from "./components/InvoiceTable";
 import MonthlyOverviewCard from "./components/MonthlyOverviewCard";
 import Loading from "@/components/common/loading/Loading";
-import AlertProvider from "@/components/common/alert/AlertProvider";
 import { useInvoiceData } from "@/hooks/useInvoiceData";
 
 export default function BillingReportPage() {
   const { baseInfo, summary, invoice, loading } = useInvoiceData();
 
-  if (loading)
-    return <Loading fullscreen withLabel label="Loading data..." />;
+  if (loading) return <Loading fullscreen withLabel label="Loading data..." />;
 
   return (
     <>
@@ -25,7 +23,6 @@ export default function BillingReportPage() {
         {summary && <MonthlyOverviewCard data={summary} />}
         {invoice && <InvoiceTable invoice={invoice.invoice} colSpan={12} />}
       </Grid>
-      <AlertProvider />
     </>
   );
 }

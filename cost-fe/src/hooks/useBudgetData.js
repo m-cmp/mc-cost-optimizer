@@ -13,16 +13,16 @@ import { logger } from "@/utils/logger";
 
 /**
  * @hook useBudgetData
- * @description 예산 데이터를 관리하는 Custom Hook
- * @param {number} year - 조회할 연도
- * @returns {Object} 예산 데이터 및 상태
- * @returns {Array<number>} returns.availableYears - 존재하는 연도 목록
- * @returns {Object} returns.cspBudgets - CSP별 월별 예산 데이터
- * @returns {Function} returns.setCspBudgets - 예산 데이터 설정 함수
- * @returns {boolean} returns.loading - 데이터 로딩 상태
- * @returns {boolean} returns.saving - 저장 중 상태
- * @returns {Function} returns.saveBudgets - 예산 저장 함수
- * @returns {Function} returns.resetBudgets - 예산 초기화 함수
+ * @description Custom Hook for managing budget data
+ * @param {number} year - Year to query
+ * @returns {Object} Budget data and state
+ * @returns {Array<number>} returns.availableYears - List of available years
+ * @returns {Object} returns.cspBudgets - Monthly budget data by CSP
+ * @returns {Function} returns.setCspBudgets - Function to set budget data
+ * @returns {boolean} returns.loading - Data loading state
+ * @returns {boolean} returns.saving - Saving state
+ * @returns {Function} returns.saveBudgets - Function to save budgets
+ * @returns {Function} returns.resetBudgets - Function to reset budgets
  */
 export const useBudgetData = (year) => {
   const { addAlert } = useAlertStore();
@@ -33,7 +33,7 @@ export const useBudgetData = (year) => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // 초기 로드: 존재하는 연도 목록 조회
+  // Initial load: fetch available years list
   useEffect(() => {
     const fetchAvailableYears = async () => {
       try {
@@ -41,7 +41,7 @@ export const useBudgetData = (year) => {
         setAvailableYears(response.data || []);
       } catch (error) {
         logger.error("Failed to fetch available years:", error);
-        // 에러 시 기본 연도 설정
+        // Set default years on error
         setAvailableYears([2023, 2024, 2025]);
       }
     };
@@ -49,14 +49,14 @@ export const useBudgetData = (year) => {
     fetchAvailableYears();
   }, []);
 
-  // Year 변경 시 데이터 로드
+  // Load data when year changes
   useEffect(() => {
     const fetchBudgets = async () => {
       setLoading(true);
 
-      console.log("=== [Budget API] 조회 요청 ===");
+      console.log("=== [Budget API] Fetch Request ===");
       console.log("year:", year);
-      console.log("⚠️ workspaceId/projectId 포함 여부 확인!");
+      console.log("⚠️ Check if workspaceId/projectId included!");
       console.log("====================================");
 
       try {
@@ -72,7 +72,7 @@ export const useBudgetData = (year) => {
           message:
             error.userMessage || "Failed to load budget data. Please try again.",
         });
-        // 에러 발생 시 빈 상태로 초기화
+        // Initialize to empty state on error
         setCspBudgets({});
         setOriginalBudgets({});
       } finally {
@@ -83,16 +83,16 @@ export const useBudgetData = (year) => {
     fetchBudgets();
   }, [year, addAlert]);
 
-  // 예산 저장 함수
+  // Budget save function
   const saveBudgets = async () => {
     try {
       setSaving(true);
       const payload = transformUiToApiFormat(cspBudgets, year, originalBudgets);
 
-      console.log("=== [Budget API] 저장 요청 Payload ===");
+      console.log("=== [Budget API] Save Request Payload ===");
       console.log("year:", year);
       console.log("payload:", payload);
-      console.log("⚠️ workspaceId/projectId 포함 여부 확인!");
+      console.log("⚠️ Check if workspaceId/projectId included!");
       console.log("====================================");
 
       logger.info("Saving budget data:", payload);
@@ -109,7 +109,7 @@ export const useBudgetData = (year) => {
       } else {
         logger.info("Budget saved successfully");
 
-        // 서버에서 저장된 최신 데이터 다시 가져오기
+        // Fetch latest saved data from server again
         try {
           const response = await getBudgetsByYear(year);
           const uiBudgets = transformApiToUiFormat(response.data);
@@ -117,7 +117,7 @@ export const useBudgetData = (year) => {
           setOriginalBudgets(uiBudgets);
         } catch (fetchError) {
           logger.error("Failed to fetch updated budgets:", fetchError);
-          // 가져오기 실패 시에도 현재 데이터를 원본으로 유지
+          // Keep current data as original even if fetch fails
           setOriginalBudgets(cspBudgets);
         }
 
@@ -141,7 +141,7 @@ export const useBudgetData = (year) => {
     }
   };
 
-  // 예산 초기화 함수
+  // Budget reset function
   const resetBudgets = () => {
     setCspBudgets(originalBudgets);
   };

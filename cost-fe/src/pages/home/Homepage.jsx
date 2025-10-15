@@ -4,7 +4,6 @@ import BillingSummaryCard from "./components/BillingSummaryCard";
 import TopServicesCard from "./components/TopServicesCard";
 import ServiceCostListCard from "./components/ServiceCostListCard";
 import Loading from "@/components/common/loading/Loading";
-import AlertProvider from "@/components/common/alert/AlertProvider";
 import { useBillingData } from "@/hooks/useBillingData";
 
 export default function HomePage() {
@@ -21,7 +20,6 @@ export default function HomePage() {
         <TopServicesCard data={top5} />
         <ServiceCostListCard services={services} />
       </Grid>
-      <AlertProvider />
     </>
   );
 }

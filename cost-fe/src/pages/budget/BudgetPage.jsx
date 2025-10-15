@@ -5,7 +5,6 @@ import Dropdown from "@/components/common/dropdown/Dropdown";
 import BudgetComparisonCard from "./components/BudgetComparisonCard";
 import MonthlySummaryCard from "./components/MonthlySummaryCard";
 import CSPBudgetSettingCard from "./components/CSPBudgetSettingCard";
-import AlertProvider from "@/components/common/alert/AlertProvider";
 import Loading from "@/components/common/loading/Loading";
 import { useBudgetData } from "@/hooks/useBudgetData";
 
@@ -23,7 +22,7 @@ export default function BudgetPage() {
 
   const monthlyData = budgetData.Data.monthly;
 
-  // API로 받은 연도 목록을 Dropdown 형식으로 변환
+  // Convert the year list received from API to Dropdown format
   const yearOptions = availableYears.map((year) => ({
     value: year,
     label: year.toString(),
@@ -66,7 +65,6 @@ export default function BudgetPage() {
           <MonthlySummaryCard data={monthlyData} currency="USD" colSpan={12} />
         </Grid>
       </div>
-      <AlertProvider />
     </>
   );
 }

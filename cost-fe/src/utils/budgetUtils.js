@@ -1,29 +1,29 @@
 /**
- * Budget 관련 유틸리티 함수들
+ * Budget-related utility functions
  */
 
 import { MONTH_NAMES } from "../constants/dateConstants";
 import { getCSPColorClass as getCSPColorClassFromConstants } from "../constants/cspConstants";
 
-// MONTH_NAMES를 re-export하여 기존 import 경로 유지
+// Re-export MONTH_NAMES to maintain existing import path
 export { MONTH_NAMES };
 
 /**
- * 통화 기호 반환
- * @param {string} currency - 통화 코드 ("USD" | "KRW")
- * @returns {string} 통화 기호
+ * Return currency symbol
+ * @param {string} currency - Currency code ("USD" | "KRW")
+ * @returns {string} Currency symbol
  */
 export const getCurrencySymbol = (currency) => {
   return currency === "USD" ? "$" : "₩";
 };
 
 /**
- * 통화 변환 (USD <-> KRW)
- * TODO: 향후 API로 실시간 환율을 받아오도록 변경 예정
- * @param {number} value - 변환할 금액
- * @param {string} currency - 대상 통화 ("USD" | "KRW")
- * @param {number} [exchangeRate=1400] - 환율 (1 USD = KRW)
- * @returns {number} 변환된 금액
+ * Currency conversion (USD <-> KRW)
+ * TODO: Plan to change to fetch real-time exchange rate from API
+ * @param {number} value - Amount to convert
+ * @param {string} currency - Target currency ("USD" | "KRW")
+ * @param {number} [exchangeRate=1400] - Exchange rate (1 USD = KRW)
+ * @returns {number} Converted amount
  */
 export const convertCurrency = (value, currency, exchangeRate = 1400) => {
   if (currency === "KRW") {
@@ -33,10 +33,10 @@ export const convertCurrency = (value, currency, exchangeRate = 1400) => {
 };
 
 /**
- * CSP별 월별 예산 총합 계산
- * @param {Object} cspBudgets - CSP별 월별 예산 데이터
- * @param {string} csp - CSP 이름
- * @returns {number} CSP별 총 예산
+ * Calculate total monthly budget by CSP
+ * @param {Object} cspBudgets - Monthly budget data by CSP
+ * @param {string} csp - CSP name
+ * @returns {number} Total budget by CSP
  */
 export const calculateCSPTotal = (cspBudgets, csp) => {
   if (!cspBudgets[csp]) return 0;
@@ -44,10 +44,10 @@ export const calculateCSPTotal = (cspBudgets, csp) => {
 };
 
 /**
- * 특정 월의 모든 CSP 예산 총합 계산
- * @param {Object} cspBudgets - CSP별 월별 예산 데이터
- * @param {number} monthIndex - 월 인덱스 (0-11)
- * @returns {number} 해당 월의 총 예산
+ * Calculate total budget for all CSPs in a specific month
+ * @param {Object} cspBudgets - Monthly budget data by CSP
+ * @param {number} monthIndex - Month index (0-11)
+ * @returns {number} Total budget for the month
  */
 export const calculateMonthTotal = (cspBudgets, monthIndex) => {
   return Object.values(cspBudgets).reduce((sum, budgets) => {
@@ -56,9 +56,9 @@ export const calculateMonthTotal = (cspBudgets, monthIndex) => {
 };
 
 /**
- * 전체 연간 예산 총합 계산
- * @param {Object} cspBudgets - CSP별 월별 예산 데이터
- * @returns {number} 연간 총 예산
+ * Calculate total annual budget
+ * @param {Object} cspBudgets - Monthly budget data by CSP
+ * @returns {number} Total annual budget
  */
 export const calculateYearTotal = (cspBudgets) => {
   return Object.values(cspBudgets).reduce((sum, budgets) => {
@@ -67,10 +67,10 @@ export const calculateYearTotal = (cspBudgets) => {
 };
 
 /**
- * 월별 예산 대비 실사용량 분석
- * @param {number} budget - 예산
- * @param {number} actual - 실사용량
- * @returns {Object} 분석 결과 (차이, 달성률, 상태)
+ * Analyze actual usage against monthly budget
+ * @param {number} budget - Budget
+ * @param {number} actual - Actual usage
+ * @returns {Object} Analysis result (difference, achievement rate, status)
  */
 export const analyzeBudgetPerformance = (budget, actual) => {
   const difference = actual - budget;
@@ -90,19 +90,19 @@ export const analyzeBudgetPerformance = (budget, actual) => {
 };
 
 /**
- * CSP별 색상 클래스 반환
- * @deprecated 대신 cspConstants.js의 getCSPColorClass 사용 권장
- * @param {string} csp - CSP 이름
- * @returns {string} Bootstrap 색상 클래스
+ * Return color class by CSP
+ * @deprecated Recommend using getCSPColorClass from cspConstants.js instead
+ * @param {string} csp - CSP name
+ * @returns {string} Bootstrap color class
  */
 export const getCSPColorClass = (csp) => {
   return getCSPColorClassFromConstants(csp);
 };
 
 /**
- * 예산 입력값 유효성 검사
- * @param {number} value - 입력값
- * @returns {Object} 검사 결과
+ * Validate budget input value
+ * @param {number} value - Input value
+ * @returns {Object} Validation result
  */
 export const validateBudgetInput = (value) => {
   const numValue = parseFloat(value);
@@ -115,25 +115,25 @@ export const validateBudgetInput = (value) => {
 };
 
 /**
- * CSP별 통화 반환
- * @param {string} csp - CSP 이름
- * @returns {string} 통화 코드 ("USD" | "KRW")
+ * Return currency by CSP
+ * @param {string} csp - CSP name
+ * @returns {string} Currency code ("USD" | "KRW")
  */
 export const getCspCurrency = (csp) => {
   const upperCsp = csp?.toUpperCase();
   if (upperCsp === "NCP") {
     return "KRW";
   }
-  // AWS, Azure, GCP 등은 USD
+  // AWS, Azure, GCP, etc. use USD
   return "USD";
 };
 
 /**
- * 특정 통화의 총 예산 계산
- * @param {Object} cspBudgets - CSP별 월별 예산 데이터
- * @param {string} currency - 통화 코드 ("USD" | "KRW")
- * @param {number|null} monthIdx - 월 인덱스 (0-11), null이면 전체 합계
- * @returns {number} 해당 통화의 총 예산
+ * Calculate total budget for a specific currency
+ * @param {Object} cspBudgets - Monthly budget data by CSP
+ * @param {string} currency - Currency code ("USD" | "KRW")
+ * @param {number|null} monthIdx - Month index (0-11), null for total sum
+ * @returns {number} Total budget for the currency
  */
 export const calculateCurrencyTotal = (cspBudgets, currency, monthIdx = null) => {
   let total = 0;
@@ -150,12 +150,12 @@ export const calculateCurrencyTotal = (cspBudgets, currency, monthIdx = null) =>
 };
 
 /**
- * API 응답을 UI 형식으로 변환
+ * Transform API response to UI format
  * @param {Array} apiData - [{csp, year, month, budget, currency}, ...]
  * @returns {Object} {AWS: [budget1, budget2, ...], Azure: [...], NCP: [...]}
  */
 export const transformApiToUiFormat = (apiData) => {
-  // 기본 CSP 목록을 0으로 초기화
+  // Initialize default CSP list to 0
   const result = {
     AWS: Array(12).fill(0),
     Azure: Array(12).fill(0),
@@ -166,7 +166,7 @@ export const transformApiToUiFormat = (apiData) => {
     return result;
   }
 
-  // API 데이터로 채우기 (month는 1-12, 인덱스는 0-11)
+  // Fill with API data (month is 1-12, index is 0-11)
   apiData.forEach((item) => {
     const csp = item.csp;
     if (!result[csp]) {
@@ -182,10 +182,10 @@ export const transformApiToUiFormat = (apiData) => {
 };
 
 /**
- * UI 형식을 API 요청 형식으로 변환
+ * Transform UI format to API request format
  * @param {Object} cspBudgets - {AWS: [budget1, budget2, ...], Azure: [...], NCP: [...]}
- * @param {number} year - 연도
- * @param {Object} originalBudgets - 변경 전 원본 데이터 (선택적, 제공 시 변경된 항목만 포함)
+ * @param {number} year - Year
+ * @param {Object} originalBudgets - Original data before changes (optional, includes only changed items if provided)
  * @returns {Object} {budgets: [{csp, year, month, budget}, ...]}
  */
 export const transformUiToApiFormat = (cspBudgets, year, originalBudgets = null) => {
@@ -193,21 +193,21 @@ export const transformUiToApiFormat = (cspBudgets, year, originalBudgets = null)
 
   Object.entries(cspBudgets).forEach(([csp, monthlyBudgets]) => {
     monthlyBudgets.forEach((budget, index) => {
-      // originalBudgets가 제공되면 변경된 항목만 포함
+      // Include only changed items if originalBudgets is provided
       if (originalBudgets) {
         const originalValue = originalBudgets[csp]?.[index];
-        // 값이 변경되지 않았으면 스킵
+        // Skip if value hasn't changed
         if (originalValue === budget) {
           return;
         }
       }
 
-      // 0을 포함한 모든 유효한 숫자 값 포함 (명시적으로 0으로 설정한 경우도 반영)
+      // Include all valid numeric values including 0 (also reflect when explicitly set to 0)
       if (budget !== null && budget !== undefined) {
         budgets.push({
           csp,
           year,
-          month: index + 1, // 인덱스 0-11 -> 월 1-12
+          month: index + 1, // Index 0-11 -> Month 1-12
           budget: parseFloat(budget),
         });
       }

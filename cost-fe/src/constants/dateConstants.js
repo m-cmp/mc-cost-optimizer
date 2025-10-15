@@ -1,11 +1,11 @@
 /**
- * 날짜 관련 상수 정의
+ * Date-related constant definitions
  */
 
 /**
- * 월 이름 (영문 약자)
+ * Month names (abbreviated)
  * @constant {Array<string>}
- * @description 1월부터 12월까지의 영문 약자 배열
+ * @description Array of month abbreviations from January to December
  */
 export const MONTH_NAMES = [
   "Jan",
@@ -23,9 +23,9 @@ export const MONTH_NAMES = [
 ];
 
 /**
- * 월 이름 (영문 전체)
+ * Month names (full)
  * @constant {Array<string>}
- * @description 1월부터 12월까지의 영문 전체 이름 배열
+ * @description Array of full month names from January to December
  */
 export const MONTH_NAMES_FULL = [
   "January",
@@ -43,18 +43,18 @@ export const MONTH_NAMES_FULL = [
 ];
 
 /**
- * 월 인덱스로 월 이름 반환 (영문 약자)
- * @param {number} monthIndex - 월 인덱스 (0-11)
- * @returns {string} 월 이름 (예: "Jan")
+ * Returns month name by month index (abbreviated)
+ * @param {number} monthIndex - Month index (0-11)
+ * @returns {string} Month name (e.g., "Jan")
  */
 export const getMonthName = (monthIndex) => {
   return MONTH_NAMES[monthIndex] || "";
 };
 
 /**
- * 월 인덱스로 월 이름 반환 (영문 전체)
- * @param {number} monthIndex - 월 인덱스 (0-11)
- * @returns {string} 월 이름 (예: "January")
+ * Returns month name by month index (full)
+ * @param {number} monthIndex - Month index (0-11)
+ * @returns {string} Month name (e.g., "January")
  */
 export const getMonthNameFull = (monthIndex) => {
   return MONTH_NAMES_FULL[monthIndex] || "";

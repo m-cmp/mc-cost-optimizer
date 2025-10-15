@@ -19,7 +19,7 @@ export default function SlackGuideModal() {
   const handleSave = async () => {
     try {
       const payload = {
-        id: "mcmp-user", // 고정값
+        id: "mcmp-user", // Fixed value
         token: slackToken,
         channel: channelId,
       };

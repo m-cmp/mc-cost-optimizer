@@ -2,7 +2,7 @@ import { budgetClient, USE_MOCK } from "../Client";
 import { mockBudgetData } from "@/config/mockData";
 
 /**
- * 존재하는 연도 목록 조회
+ * Fetch available years list
  * @returns {Promise<Array<number>>} [2023, 2024, 2025, ...]
  */
 export const getAvailableYears = () => {
@@ -13,7 +13,7 @@ export const getAvailableYears = () => {
 };
 
 /**
- * 연도별 예산 조회
+ * Fetch budget by year
  * @param {number} year
  * @returns {Promise<Array>} [{csp, year, month, budget, currency}, ...]
  */
@@ -25,7 +25,7 @@ export const getBudgetsByYear = (year) => {
 };
 
 /**
- * 예산 일괄 저장/업데이트
+ * Bulk save/update budget
  * @param {Object} payload - {budgets: [{csp, year, month, budget}, ...]}
  * @returns {Promise<Array>}
  */
