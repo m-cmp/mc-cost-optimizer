@@ -1,14 +1,14 @@
 /**
- * 개발 환경 전용 로거 유틸리티
+ * Development-only logger utility
  *
- * Production 환경에서는 자동으로 비활성화됩니다.
- * console.log 대신 이 logger를 사용하면 환경별 로그 관리가 용이합니다.
+ * Automatically disabled in production environment.
+ * Using this logger instead of console.log makes environment-specific log management easier.
  */
 
 const isDevelopment = import.meta.env.MODE === 'development';
 
 /**
- * 로그 레벨별 색상 정의
+ * Color definitions for each log level
  */
 const LOG_STYLES = {
   info: 'color: #3B82F6; font-weight: bold',
@@ -20,9 +20,9 @@ const LOG_STYLES = {
 
 class Logger {
   /**
-   * 일반 정보 로그
-   * @param {string} message - 로그 메시지
-   * @param  {...any} args - 추가 인자
+   * General information log
+   * @param {string} message - Log message
+   * @param  {...any} args - Additional arguments
    */
   info(message, ...args) {
     if (!isDevelopment) return;
@@ -30,9 +30,9 @@ class Logger {
   }
 
   /**
-   * 경고 로그
-   * @param {string} message - 로그 메시지
-   * @param  {...any} args - 추가 인자
+   * Warning log
+   * @param {string} message - Log message
+   * @param  {...any} args - Additional arguments
    */
   warn(message, ...args) {
     if (!isDevelopment) return;
@@ -40,18 +40,18 @@ class Logger {
   }
 
   /**
-   * 에러 로그 (Production에서도 표시)
-   * @param {string} message - 로그 메시지
-   * @param  {...any} args - 추가 인자
+   * Error log (also displayed in production)
+   * @param {string} message - Log message
+   * @param  {...any} args - Additional arguments
    */
   error(message, ...args) {
     console.error(`%c[ERROR]`, LOG_STYLES.error, message, ...args);
   }
 
   /**
-   * 성공 로그
-   * @param {string} message - 로그 메시지
-   * @param  {...any} args - 추가 인자
+   * Success log
+   * @param {string} message - Log message
+   * @param  {...any} args - Additional arguments
    */
   success(message, ...args) {
     if (!isDevelopment) return;
@@ -59,9 +59,9 @@ class Logger {
   }
 
   /**
-   * 디버그 로그 (개발 환경 전용)
-   * @param {string} message - 로그 메시지
-   * @param  {...any} args - 추가 인자
+   * Debug log (development environment only)
+   * @param {string} message - Log message
+   * @param  {...any} args - Additional arguments
    */
   debug(message, ...args) {
     if (!isDevelopment) return;
@@ -69,10 +69,10 @@ class Logger {
   }
 
   /**
-   * API 요청/응답 로그
-   * @param {string} method - HTTP 메서드
+   * API request/response log
+   * @param {string} method - HTTP method
    * @param {string} url - API URL
-   * @param {object} data - 요청/응답 데이터
+   * @param {object} data - Request/response data
    */
   api(method, url, data = null) {
     if (!isDevelopment) return;
@@ -82,8 +82,8 @@ class Logger {
   }
 
   /**
-   * 테이블 형식 로그
-   * @param {Array|Object} data - 테이블로 표시할 데이터
+   * Table format log
+   * @param {Array|Object} data - Data to display in table format
    */
   table(data) {
     if (!isDevelopment) return;
@@ -91,8 +91,8 @@ class Logger {
   }
 
   /**
-   * 그룹 로그 시작
-   * @param {string} label - 그룹 라벨
+   * Start group log
+   * @param {string} label - Group label
    */
   group(label) {
     if (!isDevelopment) return;
@@ -100,7 +100,7 @@ class Logger {
   }
 
   /**
-   * 그룹 로그 종료
+   * End group log
    */
   groupEnd() {
     if (!isDevelopment) return;
@@ -111,7 +111,7 @@ class Logger {
 export const logger = new Logger();
 
 /**
- * 사용 예시:
+ * Usage example:
  *
  * import { logger } from '@/utils/logger';
  *

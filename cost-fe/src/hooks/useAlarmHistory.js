@@ -7,10 +7,10 @@ import { logger } from "@/utils/logger";
 
 /**
  * @hook useAlarmHistory
- * @description 알람 히스토리 데이터를 가져오는 Custom Hook
- * @returns {Object} 알람 데이터 및 로딩 상태
- * @returns {Array} returns.alarmData - 변환된 알람 히스토리 데이터
- * @returns {boolean} returns.loading - 로딩 상태
+ * @description Custom Hook for fetching alarm history data
+ * @returns {Object} Alarm data and loading state
+ * @returns {Array} returns.alarmData - Transformed alarm history data
+ * @returns {boolean} returns.loading - Loading state
  */
 export const useAlarmHistory = () => {
   const { projectId, workspaceId } = useProjectStore();
@@ -20,17 +20,23 @@ export const useAlarmHistory = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Don't make API request if projectId and workspaceId are not available
+    if (!projectId || !workspaceId) {
+      console.log("⏳ [Alarm API] Waiting for Store data...");
+      return;
+    }
+
     const fetchAlarmHistory = async () => {
       const req = {
         selectedCsps: ["AWS", "AZURE", "NCP"],
-        selectedWorkspace: workspaceId ?? "ws01",
-        selectedProjects: [projectId ?? "ns01"],
+        selectedWorkspace: workspaceId,
+        selectedProjects: [projectId],
       };
 
-      console.log("=== [Alarm API] 요청 Payload ===");
+      console.log("=== [Alarm API] Request Payload ===");
       console.log("workspaceId:", workspaceId);
       console.log("projectId:", projectId);
-      console.log("전체 payload:", req);
+      console.log("Full payload:", req);
       console.log("====================================");
 
       setLoading(true);
@@ -46,10 +52,10 @@ export const useAlarmHistory = () => {
         logger.error("Alarm API Error:", err);
         addAlert({
           variant: "danger",
-          title: "API 에러",
+          title: "API Error",
           message:
             err.userMessage ||
-            "알람 히스토리를 불러오는 중 오류가 발생했습니다.",
+            "An error occurred while loading alarm history.",
         });
       } finally {
         setLoading(false);

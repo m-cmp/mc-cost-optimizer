@@ -1,24 +1,24 @@
 /**
  * @prop {string} path
- *   라우터의 URL 경로. (예: "/", "/billing-report")
+ *   The URL path for the router. (e.g., "/", "/billing-report")
  *
  * @prop {React.ReactElement} element
- *   해당 경로에서 렌더링할 React 컴포넌트.
+ *   The React component to render at this path.
  *
  * @prop {string} label
- *   네비게이션 바나 메뉴에서 표시할 라벨 텍스트.
+ *   The label text to display in the navigation bar or menu.
  *
  * @prop {string} [icon]
- *   네비게이션 바에서 표시할 Tabler 아이콘 키값.
- *   (src/icons/Icons.jsx 파일에서 정의된 이름과 매칭)
+ *   The Tabler icon key value to display in the navigation bar.
+ *   (Matches the names defined in src/icons/Icons.jsx file)
  *
  * @prop {"app" | "none"} layout
- *   어떤 레이아웃을 적용할지 여부.
- *   - `"app"`: 공통 Layout으로 감쌈
- *   - `"none"`: Layout 없이 독립 페이지 (예: 로그인, 404)
+ *   Which layout to apply.
+ *   - `"app"`: Wrapped with common Layout
+ *   - `"none"`: Independent page without Layout (e.g., login, 404)
  *
  * @prop {boolean} showInNav
- *   네비게이션 바 메뉴에 표시할지 여부.
+ *   Whether to display in the navigation bar menu.
  */
 import HomePage from "../pages/home/Homepage";
 import BillingReportPage from "../pages/billingReport/BillingReportPage";

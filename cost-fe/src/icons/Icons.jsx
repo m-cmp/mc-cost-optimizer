@@ -29,7 +29,7 @@ export const Icons = {
   alarm: (props) => <IconAlarm {...defaultProps} {...props} />,
   budget: (props) => <IconDeviceIpadDollar {...defaultProps} {...props} />,
 
-  // 서비스 아이콘
+  // Service icons
   virtualMachine: (props) => <IconServer {...defaultProps} {...props} />,
   storage: (props) => <IconBucket {...defaultProps} {...props} />,
   database: (props) => <IconDatabase {...defaultProps} {...props} />,
@@ -40,7 +40,7 @@ export const Icons = {
   exportCsv: (props) => <IconFileTypeCsv {...defaultProps} {...props} />,
   exportXls: (props) => <IconFileTypeXls {...defaultProps} {...props} />,
 
-  // Alert 상태 아이콘
+  // Alert status icons
   success: (props) => <IconCheck {...defaultProps} {...props} />,
   info: (props) => <IconInfoCircle {...defaultProps} {...props} />,
   warning: (props) => <IconAlertTriangle {...defaultProps} {...props} />,

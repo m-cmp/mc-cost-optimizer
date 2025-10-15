@@ -1,7 +1,7 @@
 import { billingClient, USE_MOCK } from "../Client";
 import { chartData, top5billData, billingAsset } from "../../config/mockData";
 
-// 이번달 요약 (지난달 대비)
+// Current month summary (compared to last month)
 export const getCurMonthBill = (payload) => {
   if (USE_MOCK) {
     return Promise.resolve({ data: chartData });
@@ -9,7 +9,7 @@ export const getCurMonthBill = (payload) => {
   return billingClient.post("/getCurMonthBill", payload);
 };
 
-// 이번달 상위 5개 리소스
+// Top 5 resources for current month
 export const getTop5Bill = (payload) => {
   if (USE_MOCK) {
     return Promise.resolve({ data: top5billData });
@@ -17,7 +17,7 @@ export const getTop5Bill = (payload) => {
   return billingClient.post("/getTop5Bill", payload);
 };
 
-// 이번달 서비스별 비용
+// Current month cost by service
 export const getBillAsset = (payload) => {
   if (USE_MOCK) {
     return Promise.resolve({ data: billingAsset });

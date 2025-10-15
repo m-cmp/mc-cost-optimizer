@@ -10,12 +10,12 @@ import { logger } from "@/utils/logger";
 
 /**
  * @hook useBillingData
- * @description 홈페이지 청구 데이터를 가져오는 Custom Hook
- * @returns {Object} 청구 데이터 및 로딩 상태
- * @returns {Object|null} returns.summary - 월별 요약 데이터
- * @returns {Array} returns.top5 - Top 5 서비스 데이터
- * @returns {Array} returns.services - 서비스 비용 목록
- * @returns {boolean} returns.loading - 로딩 상태
+ * @description Custom Hook for fetching homepage billing data
+ * @returns {Object} Billing data and loading state
+ * @returns {Object|null} returns.summary - Monthly summary data
+ * @returns {Array} returns.top5 - Top 5 service data
+ * @returns {Array} returns.services - Service cost list
+ * @returns {boolean} returns.loading - Loading state
  */
 export const useBillingData = () => {
   const { projectId, workspaceId } = useProjectStore();
@@ -27,18 +27,24 @@ export const useBillingData = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Don't make API request if projectId and workspaceId are not available
+    if (!projectId || !workspaceId) {
+      console.log("⏳ [Billing API] Waiting for Store data...");
+      return;
+    }
+
     const fetchBillingData = async () => {
       const req = {
         today: new Date().toISOString().slice(0, 10).replace(/-/g, ""),
-        selectedProjects: [projectId ?? "mock-proj"],
+        selectedProjects: [projectId],
         selectedCsps: ["AWS", "AZURE", "NCP"],
         selectedWorkspace: workspaceId,
       };
 
-      console.log("=== [Billing API] 요청 Payload ===");
+      console.log("=== [Billing API] Request Payload ===");
       console.log("workspaceId:", workspaceId);
       console.log("projectId:", projectId);
-      console.log("전체 payload:", req);
+      console.log("Full payload:", req);
       console.log("====================================");
 
       setLoading(true);
@@ -57,8 +63,8 @@ export const useBillingData = () => {
         logger.error("API Error:", err);
         addAlert({
           variant: "danger",
-          title: "API 에러",
-          message: err.userMessage || "홈 데이터를 불러오는 중 오류가 발생했습니다.",
+          title: "API Error",
+          message: err.userMessage || "An error occurred while loading home data.",
         });
       } finally {
         setLoading(false);
