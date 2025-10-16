@@ -34,4 +34,10 @@ public class BudgetController {
     public List<BudgetResModel> upsertBudgets(@RequestBody BudgetReqModel req) {
         return budgetService.upsertBudgets(req);
     }
+
+    @GetMapping("/comparison/{year}")
+    @Operation(summary = "연도별 예산 vs 실제 사용 비교", description = "월별로 예산과 실제 사용 금액을 CSP별로 비교합니다.")
+    public BudgetComparisonResModel getBudgetComparison(@PathVariable int year) {
+        return budgetService.getBudgetComparison(year);
+    }
 }

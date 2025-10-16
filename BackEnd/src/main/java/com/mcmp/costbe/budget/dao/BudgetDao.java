@@ -1,5 +1,6 @@
 package com.mcmp.costbe.budget.dao;
 
+import com.mcmp.costbe.budget.model.ActualUsageItemModel;
 import com.mcmp.costbe.budget.model.BudgetItemModel;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,11 @@ public class BudgetDao {
     /** 단일 예산 upsert */
     public void upsertBudget(BudgetItemModel item) {
         sqlSession.insert("budget.upsertBudget", item);
+    }
+
+    /** 연도별 실제 사용 금액 조회 (AWS, NCP, Azure 통합) */
+    public List<ActualUsageItemModel> selectActualUsageByYear(int year) {
+        return sqlSession.selectList("budget.selectActualUsageByYear", year);
     }
 }
 

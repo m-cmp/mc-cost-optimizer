@@ -1,76 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="invoice">
-    <select id="getSummaryBill" parameterType="com.mcmp.costbe.invoice.model.SummaryReqModel" resultType="com.mcmp.costbe.invoice.model.SummaryBillItemModel">
-        -- AWS 데이터 (기존 monthly_summation 사용)
-        SELECT COALESCE(SUM(ms.total_cost), 0) AS bill
-             , ym.`year_month` AS yearMonth
-             , 'AWS' AS csp
-          FROM (
-            <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
-                SELECT #{prevMonth} AS `year_month`
-            </foreach>
-                ) AS ym
-          LEFT JOIN monthly_summation ms
-            ON ym.`year_month` = ms.`year_month`
-           AND ms.csp = 'AWS'
-           AND ms.project_cd IN
-                <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                    #{selectedProject}
-                </foreach>
-         WHERE 1=1
+    <select id="getSummaryBill"
+            parameterType="com.mcmp.costbe.invoice.model.SummaryReqModel"
+            resultType="com.mcmp.costbe.invoice.model.SummaryBillItemModel">
+
+        <!-- AWS 데이터 (기존 monthly_summation 사용) -->
+        SELECT
+        COALESCE(SUM(ms.total_cost), 0) AS bill,
+        ym.`year_month` AS yearMonth,
+        'AWS' AS csp
+        FROM (
+        <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
+            SELECT #{prevMonth} AS `year_month`
+        </foreach>
+        ) AS ym
+        LEFT JOIN monthly_summation ms
+        ON ym.`year_month` = ms.`year_month`
+        AND ms.csp = 'AWS'
+        AND ms.project_cd IN
+        <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+            #{selectedProject}
+        </foreach>
+        <if test="selectedWorkspace != null and selectedWorkspace != ''">
+            AND ms.workspace_cd = #{selectedWorkspace}
+        </if>
+        WHERE 1=1
         <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AWS')">
-           AND 1=0
+            AND 1=0
         </if>
-         GROUP BY ym.year_month
+        GROUP BY ym.year_month
 
         UNION ALL
 
-        -- NCP 데이터 (Service + VM)
-        SELECT COALESCE(SUM(cost), 0) AS bill, yearMonth, 'NCP' AS csp
-          FROM (
-            <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
-                (
-                SELECT COALESCE(SUM(demand_amount), 0) / 1400.0 AS cost, #{prevMonth} as yearMonth
-                  FROM ncp_cost_service_month
-                 WHERE demand_month = #{prevMonth}
-                UNION ALL
-                SELECT COALESCE(SUM(demand_amount), 0) / 1400.0 AS cost, #{prevMonth} as yearMonth
-                  FROM ncp_cost_vm_month
-                 WHERE demand_month = #{prevMonth}
-                )
-            </foreach>
-          ) AS ncp_data
-         WHERE 1=1
+        <!-- NCP 데이터 (Service만, product_demand_type별 최신 write_date만 반영) -->
+        SELECT
+        COALESCE(SUM(cost), 0) AS bill,
+        yearMonth,
+        'NCP' AS csp
+        FROM (
+        <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
+            SELECT
+            COALESCE(SUM(vm_latest.demand_amount), 0) / 1400.0 AS cost,
+            #{prevMonth} AS yearMonth
+            FROM (
+                SELECT n1.product_demand_type, n1.demand_amount
+                FROM ncp_cost_service_month n1
+                INNER JOIN (
+                    SELECT product_demand_type, demand_month, MAX(write_date) AS latest_write_date
+                    FROM ncp_cost_service_month
+                    WHERE demand_month = #{prevMonth}
+                    GROUP BY product_demand_type, demand_month
+                ) n2
+                ON n1.product_demand_type = n2.product_demand_type
+                AND n1.demand_month = n2.demand_month
+                AND n1.write_date = n2.latest_write_date
+            ) vm_latest
+        </foreach>
+        ) AS ncp_data
+        WHERE 1=1
         <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
-           AND 1=0
+            AND 1=0
         </if>
-         GROUP BY yearMonth
+        GROUP BY yearMonth
 
         UNION ALL
 
-        -- Azure 데이터 (Service + VM)
-        SELECT COALESCE(SUM(cost), 0) AS bill, yearMonth, 'AZURE' AS csp
-          FROM (
-            <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
-                (
-                SELECT COALESCE(SUM(pre_tax_cost), 0) / 1400.0 AS cost, #{prevMonth} as yearMonth
-                  FROM azure_cost_service_daily
-                 WHERE usage_date LIKE CONCAT(#{prevMonth}, '%')
-                UNION ALL
-                SELECT COALESCE(SUM(pre_tax_cost), 0) / 1400.0 AS cost, #{prevMonth} as yearMonth
-                  FROM azure_cost_vm_daily
-                 WHERE usage_date LIKE CONCAT(#{prevMonth}, '%')
-                )
-            </foreach>
-          ) AS azure_data
-         WHERE 1=1
+        <!-- Azure 데이터 (Service만) -->
+        SELECT
+        COALESCE(SUM(cost), 0) AS bill,
+        yearMonth,
+        'AZURE' AS csp
+        FROM (
+        <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
+            SELECT
+            COALESCE(SUM(pre_tax_cost), 0) / 1400.0 AS cost,
+            #{prevMonth} AS yearMonth
+            FROM azure_cost_service_daily
+            WHERE usage_date LIKE CONCAT(#{prevMonth}, '%')
+        </foreach>
+        ) AS azure_data
+        WHERE 1=1
         <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
-           AND 1=0
+            AND 1=0
         </if>
-         GROUP BY yearMonth
+        GROUP BY yearMonth
 
-         ORDER BY yearMonth DESC, csp
+        ORDER BY yearMonth DESC, csp
     </select>
 
     <select id="getAWSInvoice" parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel" resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
@@ -104,14 +120,29 @@
     </select>
 
     <select id="getNCPInvoice" parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel" resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
-        SELECT member_no as accountID
-             , product_demand_type as productID
+        SELECT vm_latest.member_no as accountID
+             , vm_latest.product_demand_type as productID
              , 'NCP' as csp
-             , SUM(demand_amount) / 1400.0 AS bill
+             , SUM(vm_latest.demand_amount) / 1400.0 AS bill
              , '-' as resourceID
-          FROM ncp_cost_service_month
-         WHERE demand_month = #{year_month}
-         GROUP BY member_no, product_demand_type
+          FROM (
+                SELECT n1.member_no, n1.product_demand_type, n1.demand_amount
+                FROM ncp_cost_service_month n1
+                INNER JOIN (
+                    SELECT product_demand_type, demand_month, MAX(write_date) AS latest_write_date
+                    FROM ncp_cost_service_month
+                    WHERE demand_month = #{year_month}
+                    GROUP BY product_demand_type, demand_month
+                ) n2
+                ON n1.product_demand_type = n2.product_demand_type
+                AND n1.demand_month = n2.demand_month
+                AND n1.write_date = n2.latest_write_date
+          ) vm_latest
+         WHERE 1=1
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+            AND 1=0
+        </if>
+         GROUP BY vm_latest.member_no, vm_latest.product_demand_type
 --         UNION ALL
 --         SELECT member_no as accountID
 --              , instance_name as productID
@@ -131,6 +162,9 @@
              , '-' as resourceID
           FROM azure_cost_service_daily
          WHERE usage_date LIKE CONCAT(#{year_month}, '%')
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
+            AND 1=0
+        </if>
          GROUP BY tenant_id, service_name
 --         UNION ALL
 --         SELECT tenant_id as accountID
