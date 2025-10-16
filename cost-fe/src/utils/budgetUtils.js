@@ -167,7 +167,6 @@ export const transformApiToUiFormat = (apiData) => {
   }
 
   // Fill with API data (month is 1-12, index is 0-11)
-  // NCP는 KRW 그대로, 화면 표시 시 CSPBudgetSettingCard에서 USD로 변환
   apiData.forEach((item) => {
     const csp = item.csp;
     if (!result[csp]) {
@@ -205,7 +204,6 @@ export const transformUiToApiFormat = (cspBudgets, year, originalBudgets = null)
 
       // Include all valid numeric values including 0 (also reflect when explicitly set to 0)
       if (budget !== null && budget !== undefined) {
-        // NCP는 이미 KRW로 state에 저장되어 있으므로 그대로 전송
         budgets.push({
           csp,
           year,
