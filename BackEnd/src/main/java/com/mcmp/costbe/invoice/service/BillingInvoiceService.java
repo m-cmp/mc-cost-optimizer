@@ -37,30 +37,22 @@ public class BillingInvoiceService {
 
         List<BillingInvoiceBaseInfoModel> result = new ArrayList<>();
         try {
-            BillingInvoiceBaseInfoModel aws_result = billingInvoiceDao.getCurMonthBill(req);
-            aws_result.setCsp("AWS");
-            aws_result.setColorClass("bg-google");
+            List<BillingInvoiceBaseInfoModel> queryResults = billingInvoiceDao.getCurMonthBill(req);
 
-            BillingInvoiceBaseInfoModel gcp_result = new BillingInvoiceBaseInfoModel();
-            gcp_result.setCsp("GCP");
-            gcp_result.setCost(0);
-            gcp_result.setColorClass("bg-facebook");
+            if (queryResults != null) {
+                for (BillingInvoiceBaseInfoModel item : queryResults) {
+                    item.setColorClass(getColorClass(item.getCsp()));
+                    result.add(item);
+                }
+            }
 
-            BillingInvoiceBaseInfoModel azure_result = new BillingInvoiceBaseInfoModel();
-            azure_result.setCsp("AZURE");
-            azure_result.setCost(0);
-            azure_result.setColorClass("bg-red");
-
-            BillingInvoiceBaseInfoModel ncp_result = new BillingInvoiceBaseInfoModel();
-            ncp_result.setCsp("NCP");
-            ncp_result.setCost(0);
-            ncp_result.setColorClass("bg-green");
-
-
-            result.add(aws_result);
-            result.add(gcp_result);
-            result.add(azure_result);
-            result.add(ncp_result);
+            // 결과가 없으면 모든 CSP를 0원으로 추가
+            if (result.isEmpty()) {
+                addDefaultCsps(result);
+            } else {
+                // 누락된 CSP들을 0원으로 추가
+                addMissingCsps(result);
+            }
 
         } catch (BadSqlGrammarException ex){
             if(exceptionService.isTableNotFound(ex)){
@@ -71,5 +63,43 @@ public class BillingInvoiceService {
             }
         }
         return result;
+    }
+
+    private String getColorClass(String csp) {
+        switch(csp) {
+            case "AWS": return "bg-google";
+            case "NCP": return "bg-green";
+            case "AZURE": return "bg-red";
+            case "GCP": return "bg-facebook";
+            default: return "bg-gray";
+        }
+    }
+
+    private void addDefaultCsps(List<BillingInvoiceBaseInfoModel> result) {
+        String[] csps = {"AWS", "GCP", "AZURE", "NCP"};
+        for (String csp : csps) {
+            BillingInvoiceBaseInfoModel item = new BillingInvoiceBaseInfoModel();
+            item.setCsp(csp);
+            item.setCost(0);
+            item.setColorClass(getColorClass(csp));
+            result.add(item);
+        }
+    }
+
+    private void addMissingCsps(List<BillingInvoiceBaseInfoModel> result) {
+        String[] allCsps = {"AWS", "GCP", "AZURE", "NCP"};
+        List<String> existingCsps = result.stream()
+                .map(BillingInvoiceBaseInfoModel::getCsp)
+                .collect(java.util.stream.Collectors.toList());
+
+        for (String csp : allCsps) {
+            if (!existingCsps.contains(csp)) {
+                BillingInvoiceBaseInfoModel item = new BillingInvoiceBaseInfoModel();
+                item.setCsp(csp);
+                item.setCost(0);
+                item.setColorClass(getColorClass(csp));
+                result.add(item);
+            }
+        }
     }
 }

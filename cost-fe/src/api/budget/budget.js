@@ -1,5 +1,5 @@
 import { budgetClient, USE_MOCK } from "../Client";
-import { mockBudgetData } from "@/config/mockData";
+import { mockBudgetData, mockBudgetComparisonData } from "@/config/mockData";
 
 /**
  * Fetch available years list
@@ -34,4 +34,16 @@ export const upsertBudgets = (payload) => {
     return Promise.resolve({ data: mockBudgetData });
   }
   return budgetClient.post("/save", payload);
+};
+
+/**
+ * Fetch budget vs actual comparison by year
+ * @param {number} year
+ * @returns {Promise<Object>} { year, months: [{month, yearMonth, budget: {total, AWS, NCP, AZURE}, actual: {...}}, ...] }
+ */
+export const getBudgetComparison = (year) => {
+  if (USE_MOCK) {
+    return Promise.resolve({ data: mockBudgetComparisonData });
+  }
+  return budgetClient.get(`/comparison/${year}`);
 };

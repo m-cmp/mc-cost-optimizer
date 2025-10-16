@@ -1,16 +1,9 @@
 import Card from "@/components/common/card/Card";
 import { analyzeBudgetPerformance } from "@/utils/budgetUtils";
+import { MONTH_NAMES } from "@/constants/dateConstants";
 
-export default function MonthlySummaryCard({ data, currency = "USD" }) {
-  if (!data) return null;
-
-  const currencySymbol = currency === "USD" ? "$" : "₩";
-  const convertValue = (value) => {
-    if (currency === "KRW") {
-      return Math.round(value * 1300); // 1 USD = 1300 KRW 임시 환율
-    }
-    return value;
-  };
+export default function MonthlySummaryCard({ data }) {
+  if (!data || !data.months) return null;
 
   return (
     <Card title="Monthly Summary" titleSize={2}>
@@ -18,43 +11,32 @@ export default function MonthlySummaryCard({ data, currency = "USD" }) {
         <table className="table table-bordered">
           <thead>
             <tr>
-              <th>Month</th>
-              <th className="text-end">Budget</th>
-              <th className="text-end">Actual</th>
-              <th className="text-end">Difference</th>
-              <th className="text-end">Achievement</th>
+              <th>MONTH</th>
+              <th className="text-end">BUDGET</th>
+              <th className="text-end">ACTUAL</th>
+              <th className="text-end">DIFFERENCE</th>
+              <th className="text-end">ACHIEVEMENT</th>
             </tr>
           </thead>
           <tbody>
-            {data.categories.map((month, idx) => {
-              const budget = convertValue(data.budget[idx]);
-              const actual = convertValue(data.actual[idx]);
-              const analysis = analyzeBudgetPerformance(
-                data.budget[idx],
-                data.actual[idx]
-              );
+            {data.months.map((monthData) => {
+              const budget = monthData.budget.total;
+              const actual = monthData.actual.total;
+              const analysis = analyzeBudgetPerformance(budget, actual);
+              const monthName = MONTH_NAMES[monthData.month - 1];
 
               return (
-                <tr key={month}>
-                  <td>{month}</td>
-                  <td className="text-end">
-                    {currencySymbol}
-                    {budget.toLocaleString()}
-                  </td>
-                  <td className="text-end">
-                    {currencySymbol}
-                    {actual.toLocaleString()}
-                  </td>
+                <tr key={monthData.yearMonth}>
+                  <td>{monthName}</td>
+                  <td className="text-end">${budget.toLocaleString()}</td>
+                  <td className="text-end">${actual.toLocaleString()}</td>
                   <td
                     className={`text-end ${
                       analysis.isOverBudget ? "text-danger" : "text-success"
                     }`}
                   >
-                    {analysis.difference >= 0 ? "+" : ""}
-                    {currencySymbol}
-                    {convertValue(
-                      Math.abs(analysis.difference)
-                    ).toLocaleString()}
+                    {analysis.difference >= 0 ? "+" : ""}$
+                    {Math.abs(analysis.difference).toLocaleString()}
                   </td>
                   <td
                     className={`text-end ${

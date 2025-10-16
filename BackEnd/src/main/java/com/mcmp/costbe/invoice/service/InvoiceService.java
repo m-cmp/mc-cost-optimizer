@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,17 +47,44 @@ public class InvoiceService {
 
         req.setYear_month(req.getToday().substring(0, 6));
 
+        List<InvoiceItemModel> result = new ArrayList<>();
+
         try {
-            return invoiceDao.getAWSInvoice(req);
+            List<InvoiceItemModel> awsData = invoiceDao.getAWSInvoice(req);
+            if(awsData != null) {
+                result.addAll(awsData);
+            }
         } catch (BadSqlGrammarException ex){
             if(exceptionService.isTableNotFound(ex)){
-                log.warn("[Invoice Widget Log] NotFoundTable : {}", ex.getMessage());
+                log.warn("[Invoice Widget Log] AWS NotFoundTable : {}", ex.getMessage());
             } else {
                 ex.printStackTrace();
                 throw new RuntimeException();
             }
         }
 
-        return null;
+        try {
+            List<InvoiceItemModel> ncpData = invoiceDao.getNCPInvoice(req);
+            if(ncpData != null) {
+                result.addAll(ncpData);
+            }
+        } catch (BadSqlGrammarException ex){
+            if(exceptionService.isTableNotFound(ex)){
+                log.warn("[Invoice Widget Log] NCP NotFoundTable : {}", ex.getMessage());
+            } else {
+                log.warn("[Invoice Widget Log] NCP Error : {}", ex.getMessage());
+            }
+        }
+
+        try {
+            List<InvoiceItemModel> azureData = invoiceDao.getAzureInvoice(req);
+            if(azureData != null) {
+                result.addAll(azureData);
+            }
+        } catch (Exception ex){
+            log.error("[Invoice Widget Log] Azure Error : {}", ex.getMessage(), ex);
+        }
+
+        return result.isEmpty() ? null : result;
     }
 }
