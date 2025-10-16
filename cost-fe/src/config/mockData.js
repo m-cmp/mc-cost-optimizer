@@ -344,3 +344,82 @@ export const mockBudgetData = [
     currency: "KRW",
   },
 ];
+
+// Budget vs Actual Comparison Mock 데이터
+export const mockBudgetComparisonData = {
+  year: 2025,
+  months: [
+    {
+      month: 1,
+      yearMonth: "202501",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 720, AWS: 350, NCP: 220, AZURE: 150 },
+    },
+    {
+      month: 2,
+      yearMonth: "202502",
+      budget: { total: 850, AWS: 450, NCP: 250, AZURE: 150 },
+      actual: { total: 780, AWS: 380, NCP: 240, AZURE: 160 },
+    },
+    {
+      month: 3,
+      yearMonth: "202503",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 850, AWS: 420, NCP: 260, AZURE: 170 },
+    },
+    {
+      month: 4,
+      yearMonth: "202504",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 690, AWS: 330, NCP: 210, AZURE: 150 },
+    },
+    {
+      month: 5,
+      yearMonth: "202505",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 750, AWS: 370, NCP: 230, AZURE: 150 },
+    },
+    {
+      month: 6,
+      yearMonth: "202506",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 810, AWS: 400, NCP: 250, AZURE: 160 },
+    },
+    {
+      month: 7,
+      yearMonth: "202507",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 770, AWS: 380, NCP: 240, AZURE: 150 },
+    },
+    {
+      month: 8,
+      yearMonth: "202508",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 790, AWS: 390, NCP: 250, AZURE: 150 },
+    },
+    {
+      month: 9,
+      yearMonth: "202509",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 730, AWS: 360, NCP: 220, AZURE: 150 },
+    },
+    {
+      month: 10,
+      yearMonth: "202510",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 680, AWS: 340, NCP: 200, AZURE: 140 },
+    },
+    {
+      month: 11,
+      yearMonth: "202511",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 0, AWS: 0, NCP: 0, AZURE: 0 },
+    },
+    {
+      month: 12,
+      yearMonth: "202512",
+      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
+      actual: { total: 0, AWS: 0, NCP: 0, AZURE: 0 },
+    },
+  ],
+};

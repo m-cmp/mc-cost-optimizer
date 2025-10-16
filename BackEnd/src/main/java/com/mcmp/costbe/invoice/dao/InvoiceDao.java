@@ -22,6 +22,15 @@ public class InvoiceDao {
     }
 
     public List<InvoiceItemModel> getAWSInvoice(InvoiceReqModel req){
-        return sqlSession.selectList("invoice.getAWSInovice", req);
+        return sqlSession.selectList("invoice.getAWSInvoice", req);
     }
+
+    public List<InvoiceItemModel> getNCPInvoice(InvoiceReqModel req){
+        return sqlSession.selectList("invoice.getNCPInvoice", req);
+    }
+
+    public List<InvoiceItemModel> getAzureInvoice(InvoiceReqModel req){
+        return sqlSession.selectList("invoice.getAzureInvoice", req);
+    }
+
 }

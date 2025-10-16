@@ -11,196 +11,397 @@
 
     <select id="getProjects" parameterType="Map" resultType="com.mcmp.costbe.usage.model.filter.ProjectsModel">
         select DISTINCT service_cd as projectCD
-             , csp_type as cspType
-             , csp_account as userID
-             , service_nm as projectNM
-             , workspace_cd as workspaceCD
+                      , csp_type as cspType
+                      , csp_account as userID
+                      , service_nm as projectNM
+                      , workspace_cd as workspaceCD
         from servicegroup_meta
         where workspace_cd = #{workspaceCD}
     </select>
 
+    <!-- 현재/이전 월 비용 -->
     <select id="getCurPrevMonthBill" parameterType="com.mcmp.costbe.usage.model.bill.BillingWidgetReqModel" resultType="com.mcmp.costbe.usage.model.bill.BillingWidgetModel">
         /*bill.getCurPrevMonthBill*/
-        SELECT (SELECT coalesce(sum(total_cost), 0)
-                  FROM monthly_summation ms
-                 WHERE 1=1
-                  AND ms.`year_month` = #{curYearMonth}
-                <if test="selectedCsps != null and selectedCsps.size() > 0">
-                    AND ms.csp IN
-                    <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                        #{selectedCsp}
-                    </foreach>
-                </if>
-                    AND ms.project_cd IN
-                    <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                        #{selectedProject}
-                    </foreach>
-                ) AS curMonthBill
-             , (SELECT coalesce(sum(total_cost), 0)
-                  FROM monthly_summation ms
-                 WHERE 1=1
-                  AND ms.`year_month` = #{prevYearMonth}
-                <if test="selectedCsps != null and selectedCsps.size() > 0">
-                    AND ms.csp IN
-                    <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                        #{selectedCsp}
-                    </foreach>
-                </if>
-                    AND ms.project_cd IN
-                    <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                        #{selectedProject}
-                    </foreach>
-                ) AS prevMonthBill
-    </select>
+        SELECT (
+        -- 현재월 AWS 데이터
+        SELECT COALESCE(SUM(ms.total_cost), 0)
+        FROM monthly_summation ms
+        WHERE ms.year_month = #{curYearMonth}
+        <if test="selectedCsps != null and selectedCsps.size() > 0">
+            AND ms.csp IN
+            <foreach item="selectedCsp" collection="selectedCsps" open="(" separator="," close=")">
+                #{selectedCsp}
+            </foreach>
+        </if>
+        AND ms.project_cd IN
+        <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+            #{selectedProject}
+        </foreach>
+        <if test="selectedWorkspace != null and selectedWorkspace != ''">
+            AND ms.workspace_cd = #{selectedWorkspace}
+        </if>
+        ) + (
+        -- 현재월 NCP VM 데이터 (instance_no별 최신 write_date만 반영)
+        SELECT COALESCE(SUM(vm_latest.demand_amount), 0) / 1400.0
+        FROM (
+        SELECT n1.instance_no, n1.demand_amount
+        FROM ncp_cost_vm_month n1
+        INNER JOIN (
+        SELECT instance_no, demand_month, MAX(write_date) AS latest_write_date
+        FROM ncp_cost_vm_month
+        WHERE demand_month = #{curYearMonth}
+        GROUP BY instance_no, demand_month
+        ) n2
+        ON n1.instance_no = n2.instance_no
+        AND n1.demand_month = n2.demand_month
+        AND n1.write_date = n2.latest_write_date
+        ) vm_latest
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+            WHERE 1=0
+        </if>
+        ) + (
+        -- 현재월 Azure VM 데이터
+        SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0
+        FROM azure_cost_vm_daily acvd
+        WHERE acvd.usage_date LIKE CONCAT(#{curYearMonth}, '%')
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
+            AND 1=0
+        </if>
+        ) AS curMonthBill,
 
+        (
+        -- 이전월 AWS 데이터
+        SELECT COALESCE(SUM(ms.total_cost), 0)
+        FROM monthly_summation ms
+        WHERE ms.year_month = #{prevYearMonth}
+        <if test="selectedCsps != null and selectedCsps.size() > 0">
+            AND ms.csp IN
+            <foreach item="selectedCsp" collection="selectedCsps" open="(" separator="," close=")">
+                #{selectedCsp}
+            </foreach>
+        </if>
+        AND ms.project_cd IN
+        <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+            #{selectedProject}
+        </foreach>
+        ) + (
+        -- 이전월 NCP VM 데이터 (instance_no별 최신 write_date만 반영)
+        SELECT COALESCE(SUM(vm_latest.demand_amount), 0) / 1400.0
+        FROM (
+        SELECT n1.instance_no, n1.demand_amount
+        FROM ncp_cost_vm_month n1
+        INNER JOIN (
+        SELECT instance_no, demand_month, MAX(write_date) AS latest_write_date
+        FROM ncp_cost_vm_month
+        WHERE demand_month = #{prevYearMonth}
+        GROUP BY instance_no, demand_month
+        ) n2
+        ON n1.instance_no = n2.instance_no
+        AND n1.demand_month = n2.demand_month
+        AND n1.write_date = n2.latest_write_date
+        ) vm_latest
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+            WHERE 1=0
+        </if>
+        ) + (
+        -- 이전월 Azure VM 데이터
+        SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0
+        FROM azure_cost_vm_daily acvd
+        WHERE acvd.usage_date LIKE CONCAT(#{prevYearMonth}, '%')
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
+            AND 1=0
+        </if>
+        ) AS prevMonthBill
+    </select>
+    <!-- 월별 비용 -->
     <select id="getMonthBill" parameterType="com.mcmp.costbe.usage.model.bill.BillingWidgetReqModel" resultType="com.mcmp.costbe.usage.model.bill.MonthlyBillModel">
         /*bill.getMonthBill*/
-        SELECT COALESCE(SUM(ms.total_cost), 0) AS bill
-             , SUBSTRING(ym.`year_month`, 1, 4) as year
-             , substring(ym.`year_month`, 5, 2) as month
-          FROM (
-              <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
-                  SELECT #{prevMonth} AS `year_month`
-              </foreach>
-               ) AS ym
-          LEFT JOIN monthly_summation ms
-            ON ym.`year_month` = ms.`year_month`
-            <if test="selectedCsps != null and selectedCsps.size() > 0">
-                AND ms.csp IN
-                <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                    #{selectedCsp}
-                </foreach>
-            </if>
-                AND ms.project_cd IN
-                <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                    #{selectedProject}
-                </foreach>
-         GROUP BY ym.year_month
-         ORDER BY ym.year_month DESC
-    </select>
-
-    <select id="getTop5Bill" parameterType="com.mcmp.costbe.usage.model.bill.Top5WidgetReqModel" resultType="com.mcmp.costbe.usage.model.bill.Top5BillModel">
-        SELECT productcode AS resourceNm
-             , total_cost AS bill
-             , sm2.csp_type AS csp
-          FROM (
-                SELECT CASE WHEN co.lineitem_productcode IN (
-                                 SELECT lineitem_productcode
-                                 FROM (
-                                       SELECT co.lineitem_productcode
-                                            , COALESCE(SUM(co.lineitem_unblendedcost), 0) AS total_cost
-                                         FROM tbl_table_billing_detail_${year_month} co
-                                         LEFT JOIN servicegroup_meta sm
-                                           ON co.lineitem_resourceid = sm.csp_instanceid
-                                        WHERE 1=1
-                                         <if test="selectedCsps != null and selectedCsps.size() > 0">
-                                          AND sm.csp_type IN
-                                            <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                                            #{selectedCsp}
-                                            </foreach>
-                                         </if>
-                                          AND sm.service_cd IN
-                                              <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                                              #{selectedProject}
-                                          </foreach>
-        <![CDATA[
-                                          AND co.lineitem_usagestartdate >= #{curMonthStartDate}
-                                          AND co.lineitem_usageenddate <= #{curMonthEndDate}
-                                        ]]>
-                                        GROUP BY co.lineitem_productcode
-                                        ORDER BY total_cost DESC
-                                        LIMIT 5
-                                 ) AS Top5
-                             ) THEN co.lineitem_productcode
-                               ELSE 'others'
-                          END AS productcode
-                     , COALESCE(SUM(co.lineitem_unblendedcost), 0) AS total_cost
-                     , MIN(co.lineitem_resourceid) AS min_resourceid
-                  FROM tbl_table_billing_detail_${year_month} co
-                  LEFT JOIN servicegroup_meta sm
-                    ON co.lineitem_resourceid = sm.csp_instanceid
-                 WHERE 1=1
-                   <if test="selectedCsps != null and selectedCsps.size() > 0">
-                   AND sm.csp_type IN
-                       <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                       #{selectedCsp}
-                   </foreach>
-                   </if>
-                   AND sm.service_cd IN
-                       <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                       #{selectedProject}
-                   </foreach>
-        <![CDATA[
-                   AND co.lineitem_usagestartdate >= #{curMonthStartDate}
-                   AND co.lineitem_usageenddate <= #{curMonthEndDate}
-                 ]]>
-                 GROUP BY productcode
-                ) AS grouped_results
-          LEFT JOIN servicegroup_meta sm2
-            ON grouped_results.min_resourceid = sm2.csp_instanceid
-         ORDER BY total_cost DESC
-    </select>
-
-    <select id="getBillAssetChild" parameterType="com.mcmp.costbe.usage.model.bill.BillingAssetReqModel" resultType="com.mcmp.costbe.usage.model.bill.BillingAssetChildModel">
-        SELECT COALESCE(SUM(co.lineitem_unblendedcost), 0) AS bill
-             , co.lineitem_productcode AS childProductCode
-             , count(DISTINCT co.lineitem_resourceid) as unit
-          FROM tbl_table_billing_detail_${year_month} co
-          LEFT JOIN servicegroup_meta sm
-            ON co.lineitem_resourceid = sm.csp_instanceid
-         WHERE 1=1
+        SELECT ym.`year_month`,
+        SUBSTRING(ym.`year_month`, 1, 4) as `year`,
+        SUBSTRING(ym.`year_month`, 5, 2) as `month`,
+        COALESCE(SUM(all_data.total_cost), 0) AS bill
+        FROM (
+        <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
+            SELECT #{prevMonth} COLLATE utf8mb4_unicode_ci AS `year_month`
+        </foreach>
+        ) AS ym
+        LEFT JOIN (
+        -- AWS 데이터
+        SELECT ms.`year_month` COLLATE utf8mb4_unicode_ci AS `year_month`,
+        SUM(ms.total_cost) AS total_cost
+        FROM monthly_summation ms
+        WHERE ms.project_cd IN
+        <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+            #{selectedProject}
+        </foreach>
         <if test="selectedCsps != null and selectedCsps.size() > 0">
-            AND sm.csp_type IN
+            AND ms.csp IN
             <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
                 #{selectedCsp}
             </foreach>
         </if>
-            AND sm.service_cd IN
-            <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                #{selectedProject}
-            </foreach>
-        <![CDATA[
-        AND co.lineitem_usagestartdate >= #{curMonthStartDate}
-        AND co.lineitem_usageenddate <= #{curMonthEndDate}  ]]>
-        <choose>
-            <when test="AWSChildProducts != null and AWSChildProducts.size() > 0">
-                AND co.lineitem_productcode IN
-                <foreach item="AWSChildProduct" index="index" collection="AWSChildProducts" open="(" separator="," close=")">
-                    #{AWSChildProduct}
-                </foreach>
-            </when>
-            <otherwise>
-                AND sm.service_cd IN ('')
-            </otherwise>
-        </choose>
-        GROUP BY co.lineitem_productcode
+        AND ms.`year_month` IN
+        <foreach item="prevMonth" index="index" collection="prevMonths" open="(" separator="," close=")">
+            #{prevMonth}
+        </foreach>
+        GROUP BY ms.`year_month`
+
+        UNION ALL
+
+        -- NCP VM 데이터 (instance_no별 최신 write_date만 반영)
+        SELECT vm_latest.demand_month COLLATE utf8mb4_unicode_ci AS `year_month`,
+        SUM(vm_latest.demand_amount) / 1400.0 AS total_cost
+        FROM (
+        SELECT n1.instance_no,
+        n1.demand_month,
+        n1.demand_amount
+        FROM ncp_cost_vm_month n1
+        INNER JOIN (
+        SELECT instance_no, demand_month, MAX(write_date) AS latest_write_date
+        FROM ncp_cost_vm_month
+        WHERE demand_month IN
+        <foreach item="prevMonth" index="index" collection="prevMonths" open="(" separator="," close=")">
+            #{prevMonth}
+        </foreach>
+        GROUP BY instance_no, demand_month
+        ) n2
+        ON n1.instance_no = n2.instance_no
+        AND n1.demand_month = n2.demand_month
+        AND n1.write_date = n2.latest_write_date
+        ) vm_latest
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+            WHERE 1=0
+        </if>
+        GROUP BY vm_latest.demand_month
+
+        UNION ALL
+
+        -- Azure VM 데이터
+        SELECT DATE_FORMAT(STR_TO_DATE(acvd.usage_date, '%Y%m%d'), '%Y%m') COLLATE utf8mb4_unicode_ci AS `year_month`,
+        SUM(acvd.pre_tax_cost) / 1400.0 AS total_cost
+        FROM azure_cost_vm_daily acvd
+        WHERE DATE_FORMAT(STR_TO_DATE(acvd.usage_date, '%Y%m%d'), '%Y%m') IN
+        <foreach item="prevMonth" index="index" collection="prevMonths" open="(" separator="," close=")">
+            #{prevMonth}
+        </foreach>
+        <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
+            AND 1=0
+        </if>
+        GROUP BY DATE_FORMAT(STR_TO_DATE(acvd.usage_date, '%Y%m%d'), '%Y%m')
+        ) all_data ON ym.`year_month` = all_data.`year_month`
+        GROUP BY ym.`year_month`
+        ORDER BY ym.`year_month` DESC
     </select>
 
-
-    <select id="getCurMonthBill" parameterType="com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoReqModel" resultType="com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoModel">
-        /*bill.getCurPrevMonthBill*/
-        <![CDATA[SELECT COALESCE(SUM(CASE
-                            WHEN co.lineitem_usagestartdate >= #{curMonthStartDate}
-                             AND co.lineitem_usageenddate <= #{curMonthEndDate}
-                            THEN co.lineitem_unblendedcost
-                            ELSE 0
-                END), 0) AS cost]]>
+    <!-- TOP5 -->
+    <select id="getTop5Bill" parameterType="com.mcmp.costbe.usage.model.bill.Top5WidgetReqModel" resultType="com.mcmp.costbe.usage.model.bill.Top5BillModel">
+        SELECT service_name AS resourceNm,
+        total_cost AS bill,
+        csp
+        FROM (
+        <!-- AWS -->
+        SELECT co.lineitem_productcode COLLATE utf8mb4_unicode_ci AS service_name,
+        COALESCE(SUM(co.lineitem_unblendedcost), 0) AS total_cost,
+        'AWS' COLLATE utf8mb4_unicode_ci AS csp
         FROM tbl_table_billing_detail_${year_month} co
         LEFT JOIN servicegroup_meta sm
         ON co.lineitem_resourceid = sm.csp_instanceid
-        WHERE 1=1
-        <if test="selectedCsps != null and selectedCsps.size() > 0">
-            AND sm.csp_type IN
-            <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                #{selectedCsp}
-            </foreach>
-        </if>
-            AND sm.service_cd IN
+        WHERE sm.service_cd IN
+        <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+            #{selectedProject}
+        </foreach>
+        <![CDATA[
+               AND co.lineitem_usagestartdate >= #{curMonthStartDate}
+               AND co.lineitem_usageenddate <= #{curMonthEndDate}
+        ]]>
+        GROUP BY co.lineitem_productcode
+
+        UNION ALL
+
+        <!-- Azure (service_name별 월 집계) -->
+        SELECT acsd.service_name COLLATE utf8mb4_unicode_ci AS service_name,
+        COALESCE(SUM(acsd.pre_tax_cost), 0) / 1400.0 AS total_cost,
+        'AZURE' COLLATE utf8mb4_unicode_ci AS csp
+        FROM azure_cost_service_daily acsd
+        WHERE DATE_FORMAT(STR_TO_DATE(acsd.usage_date, '%Y%m%d'), '%Y%m') = #{year_month}
+        GROUP BY acsd.service_name
+
+        UNION ALL
+
+        <!-- NCP (product_demand_type별, 최신 write_date만 반영) -->
+        SELECT vm_latest.product_demand_type COLLATE utf8mb4_unicode_ci AS service_name,
+        COALESCE(SUM(vm_latest.demand_amount), 0) / 1400.0 AS total_cost,
+        'NCP' COLLATE utf8mb4_unicode_ci AS csp
+        FROM (
+        SELECT n1.product_demand_type, n1.demand_amount
+        FROM ncp_cost_service_month n1
+        INNER JOIN (
+        SELECT product_demand_type, demand_month, MAX(write_date) AS latest_write_date
+        FROM ncp_cost_service_month
+        WHERE demand_month = #{year_month}
+        GROUP BY product_demand_type, demand_month
+        ) n2
+        ON n1.product_demand_type = n2.product_demand_type
+        AND n1.demand_month = n2.demand_month
+        AND n1.write_date = n2.latest_write_date
+        ) vm_latest
+        GROUP BY vm_latest.product_demand_type
+        ) AS all_services
+        WHERE total_cost > 0
+        ORDER BY total_cost DESC
+        LIMIT 5
+    </select>
+    <!-- 자식 단위별 비용 -->
+    <select id="getBillAssetChild" parameterType="com.mcmp.costbe.usage.model.bill.BillingAssetReqModel" resultType="com.mcmp.costbe.usage.model.bill.BillingAssetChildModel">
+        SELECT childProductCode, SUM(bill) AS bill, SUM(unit) AS unit, csp
+        FROM (
+            -- AWS 데이터
+            SELECT COALESCE(SUM(co.lineitem_unblendedcost), 0) AS bill,
+                   co.lineitem_productcode COLLATE utf8mb4_unicode_ci AS childProductCode,
+                   COUNT(DISTINCT co.lineitem_resourceid) AS unit,
+                   'AWS' COLLATE utf8mb4_unicode_ci AS csp
+            FROM tbl_table_billing_detail_${year_month} co
+            LEFT JOIN servicegroup_meta sm ON co.lineitem_resourceid = sm.csp_instanceid
+            WHERE sm.service_cd IN
             <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                 #{selectedProject}
             </foreach>
+            <![CDATA[
+            AND co.lineitem_usagestartdate >= #{curMonthStartDate}
+            AND co.lineitem_usageenddate <= #{curMonthEndDate}
+            ]]>
+            <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AWS')">
+                AND 1=0
+            </if>
+            <if test="multiCSPChildProducts != null and multiCSPChildProducts.size() > 0">
+                AND co.lineitem_productcode IN
+                <foreach item="product" index="index" collection="multiCSPChildProducts" open="(" separator="," close=")">
+                    #{product}
+                </foreach>
+            </if>
+            <if test="multiCSPChildProducts == null or multiCSPChildProducts.size() == 0">
+                AND 1=0
+            </if>
+            GROUP BY co.lineitem_productcode
+
+            UNION ALL
+
+            -- NCP Service 데이터
+            SELECT COALESCE(SUM(ncsm.demand_amount), 0) / 1400.0 AS bill,
+                   ncsm.product_demand_type COLLATE utf8mb4_unicode_ci AS childProductCode,
+                   1 AS unit,
+                   'NCP' COLLATE utf8mb4_unicode_ci AS csp
+            FROM ncp_cost_service_month ncsm
+            WHERE ncsm.demand_month = #{year_month}
+            <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+                AND 1=0
+            </if>
+            <if test="multiCSPChildProducts != null and multiCSPChildProducts.size() > 0">
+                AND ncsm.product_demand_type IN
+                <foreach item="product" index="index" collection="multiCSPChildProducts" open="(" separator="," close=")">
+                    #{product}
+                </foreach>
+            </if>
+            <if test="multiCSPChildProducts == null or multiCSPChildProducts.size() == 0">
+                AND 1=0
+            </if>
+            GROUP BY ncsm.product_demand_type
+
+            UNION ALL
+
+            -- NCP VM 데이터
+            SELECT COALESCE(SUM(ncvm.demand_amount), 0) / 1400.0 AS bill,
+                   'Server(VPC)' COLLATE utf8mb4_unicode_ci AS childProductCode,
+                   COUNT(DISTINCT ncvm.instance_no) AS unit,
+                   'NCP' COLLATE utf8mb4_unicode_ci AS csp
+            FROM ncp_cost_vm_month ncvm
+            WHERE ncvm.demand_month = #{year_month}
+            <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+                AND 1=0
+            </if>
+            <if test="multiCSPChildProducts != null and multiCSPChildProducts.size() > 0 and !multiCSPChildProducts.contains('Server(VPC)')">
+                AND 1=0
+            </if>
+
+            UNION ALL
+
+            -- Azure Service 데이터
+            SELECT COALESCE(SUM(acsd.pre_tax_cost), 0) / 1400.0 AS bill,
+                   acsd.service_name COLLATE utf8mb4_unicode_ci AS childProductCode,
+                   1 AS unit,
+                   'AZURE' COLLATE utf8mb4_unicode_ci AS csp
+            FROM azure_cost_service_daily acsd
+            WHERE acsd.usage_date LIKE CONCAT(#{year_month}, '%')
+            <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
+                AND 1=0
+            </if>
+            <if test="multiCSPChildProducts != null and multiCSPChildProducts.size() > 0">
+                AND acsd.service_name IN
+                <foreach item="product" index="index" collection="multiCSPChildProducts" open="(" separator="," close=")">
+                    #{product}
+                </foreach>
+            </if>
+            <if test="multiCSPChildProducts == null or multiCSPChildProducts.size() == 0">
+                AND 1=0
+            </if>
+            GROUP BY acsd.service_name
+
+            UNION ALL
+
+            -- Azure VM 데이터
+            SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0 AS bill,
+                   'Virtual Machines' COLLATE utf8mb4_unicode_ci AS childProductCode,
+                   COUNT(DISTINCT acvd.resource_id) AS unit,
+                   'AZURE' COLLATE utf8mb4_unicode_ci AS csp
+            FROM azure_cost_vm_daily acvd
+            WHERE acvd.usage_date LIKE CONCAT(#{year_month}, '%')
+            <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
+                AND 1=0
+            </if>
+            <if test="multiCSPChildProducts != null and multiCSPChildProducts.size() > 0 and !multiCSPChildProducts.contains('Virtual Machines')">
+                AND 1=0
+            </if>
+        ) AS all_csp_data
+        WHERE bill > 0
+        GROUP BY childProductCode, csp
+        ORDER BY bill DESC
+    </select>
+
+    <!-- 현재 월 CSP별 합계 -->
+    <select id="getCurMonthBill" parameterType="com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoReqModel" resultType="com.mcmp.costbe.invoice.model.BillingInvoiceBaseInfoModel">
+        SELECT csp, SUM(cost) AS cost
+        FROM (
+        <!-- AWS -->
+        SELECT 'AWS' AS csp,
+        COALESCE(SUM(co.lineitem_unblendedcost), 0) AS cost
+        FROM tbl_table_billing_detail_${year_month} co
+        LEFT JOIN servicegroup_meta sm
+        ON co.lineitem_resourceid = sm.csp_instanceid
+        WHERE sm.service_cd IN
+        <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+            #{selectedProject}
+        </foreach>
         <![CDATA[
-           AND co.lineitem_usageenddate <= #{curMonthEndDate}
+            AND co.lineitem_usagestartdate >= #{curMonthStartDate}
+            AND co.lineitem_usageenddate < #{curMonthEndDate}
         ]]>
+
+        UNION ALL
+
+        <!-- NCP (Service 데이터만 집계) -->
+        SELECT 'NCP' AS csp,
+        COALESCE(SUM(demand_amount), 0) / 1400.0 AS cost
+        FROM ncp_cost_service_month
+        WHERE demand_month = #{year_month}
+
+        UNION ALL
+
+        <!-- AZURE (Service 데이터만 집계) -->
+        SELECT 'AZURE' AS csp,
+        COALESCE(SUM(pre_tax_cost), 0) / 1400.0 AS cost
+        FROM azure_cost_service_daily
+        WHERE DATE_FORMAT(STR_TO_DATE(usage_date, '%Y%m%d'), '%Y%m') = #{year_month}
+        ) AS combined_costs
+        GROUP BY csp
     </select>
 </mapper>

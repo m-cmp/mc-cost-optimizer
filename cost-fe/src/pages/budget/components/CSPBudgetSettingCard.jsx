@@ -4,20 +4,18 @@ import Button from "@/components/common/button/Button";
 import Tooltip from "@/components/common/tooltip/Tooltip";
 import {
   calculateCSPTotal,
-  calculateCurrencyTotal,
-  getCSPColorClass,
   validateBudgetInput,
   MONTH_NAMES,
-  getCurrencySymbol,
-  getCspCurrency,
 } from "@/utils/budgetUtils";
 import { formatCompactNumber, formatFullNumber } from "@/utils/format";
+import { CSP_CONFIG, getCSPColorClass } from "@/constants/cspConstants";
+import { convertKrwToUsd } from "@/constants/currencyConstants";
 
 const HOVER_BG_COLOR = "rgba(32, 107, 196, 0.1)";
 const ALLOWED_KEYS = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"];
 const CELL_WIDTH = "80px";
 
-/** EditableCell style constants */
+/** Inline cell styling */
 const EDITABLE_CELL_STYLE = {
   cursor: "pointer",
   minHeight: "31px",
@@ -27,18 +25,11 @@ const EDITABLE_CELL_STYLE = {
   transition: "background-color 0.2s ease",
 };
 
-/** Helper function to generate key for EditableCell */
-const getCellKey = (csp, monthIdx, budget, isEditing) => {
-  return isEditing ? `editing-${csp}-${monthIdx}` : `${csp}-${monthIdx}-${budget}`;
-};
+/** Generate a stable key for each cell */
+const getCellKey = (csp, monthIdx, budget, isEditing) =>
+  isEditing ? `editing-${csp}-${monthIdx}` : `${csp}-${monthIdx}-${budget}`;
 
-/** Currency configurations */
-const CURRENCIES = [
-  { currency: "USD", symbol: "$" },
-  { currency: "KRW", symbol: "₩" },
-];
-
-/** Displays abbreviated number with tooltip */
+/** Displays a number in compact form with full value on hover tooltip */
 const NumberWithTooltip = ({ value, prefix = "", suffix = "" }) => (
   <Tooltip
     title={`${prefix}${formatFullNumber(value)}${suffix}`}
@@ -50,7 +41,7 @@ const NumberWithTooltip = ({ value, prefix = "", suffix = "" }) => (
   </Tooltip>
 );
 
-/** Editable cell (switches to input on click) */
+/** A single table cell that switches between display and input mode */
 const EditableCell = ({
   budget,
   csp,
@@ -63,9 +54,15 @@ const EditableCell = ({
   onKeyDown,
   inputRef,
 }) => {
+  const isNCP = csp === "NCP";
+  const currencySymbol = isNCP ? "₩" : "$";
+
   if (isEditing) {
     return (
-      <Tooltip title={formatFullNumber(tempValue || 0)} placement="top">
+      <Tooltip
+        title={`${currencySymbol}${formatFullNumber(tempValue || 0)}`}
+        placement="top"
+      >
         <input
           ref={inputRef}
           type="text"
@@ -80,17 +77,20 @@ const EditableCell = ({
   }
 
   return (
-    <Tooltip title={formatFullNumber(budget)} placement="top">
+    <Tooltip
+      title={`${currencySymbol}${formatFullNumber(budget)}`}
+      placement="top"
+    >
       <div
         onClick={() => onCellClick(csp, monthIdx)}
         className="text-end px-2 py-1"
         style={EDITABLE_CELL_STYLE}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = HOVER_BG_COLOR;
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "transparent";
-        }}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.backgroundColor = HOVER_BG_COLOR)
+        }
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.backgroundColor = "transparent")
+        }
       >
         {formatCompactNumber(budget)}
       </div>
@@ -98,32 +98,40 @@ const EditableCell = ({
   );
 };
 
-/** Currency summary row (USD, KRW) */
-const CurrencySummaryRow = ({ cspBudgets, currency, symbol }) => (
-  <tr className="table-info fw-bold">
-    <td>{currency}</td>
-    <td className="text-center">
-      <NumberWithTooltip
-        value={calculateCurrencyTotal(cspBudgets, currency)}
-        prefix={symbol}
-      />
-    </td>
-    {Array.from({ length: 12 }, (_, monthIdx) => (
-      <td key={monthIdx} className="text-center">
-        <NumberWithTooltip
-          value={calculateCurrencyTotal(cspBudgets, currency, monthIdx)}
-          prefix={symbol}
-        />
+/** Displays the total budget summary in USD */
+const TotalSummaryRow = ({ cspBudgets }) => {
+  const getTotalInUSD = (monthIdx = null) => {
+    let total = 0;
+    Object.entries(cspBudgets).forEach(([csp, budgets]) => {
+      const isNCP = csp === "NCP";
+      const values = monthIdx !== null ? [budgets[monthIdx] || 0] : budgets;
+      const subtotal = values.reduce((sum, val) => sum + val, 0);
+      total += isNCP ? convertKrwToUsd(subtotal) : subtotal;
+    });
+    return Math.round(total * 100) / 100;
+  };
+
+  return (
+    <tr className="table-info fw-bold">
+      <td>Total (USD)</td>
+      <td className="text-center">
+        <NumberWithTooltip value={getTotalInUSD()} prefix="$" />
       </td>
-    ))}
-  </tr>
-);
+      {Array.from({ length: 12 }).map((_, monthIdx) => (
+        <td key={monthIdx} className="text-center">
+          <NumberWithTooltip value={getTotalInUSD(monthIdx)} prefix="$" />
+        </td>
+      ))}
+    </tr>
+  );
+};
 
 /**
- * CSP Budget Setting Card
- * - Table for entering monthly budgets per CSP
- * - Enter edit mode by clicking cells
- * - Automatically calculates totals by currency (USD, KRW)
+ * CSPBudgetSettingCard
+ * Displays a table for setting monthly budgets per CSP.
+ * - Cells are editable
+ * - Shows compact numbers with hover tooltips
+ * - Calculates totals (converted to USD)
  */
 export default function CSPBudgetSettingCard({
   cspBudgets,
@@ -132,13 +140,13 @@ export default function CSPBudgetSettingCard({
   onReset,
   isSaving = false,
 }) {
-  const [editingCell, setEditingCell] = useState(null); // Currently editing cell { csp, monthIdx }
-  const [tempValue, setTempValue] = useState(""); // Temporary value being edited
-  const inputRef = useRef(null); // Input element reference
+  const [editingCell, setEditingCell] = useState(null);
+  const [tempValue, setTempValue] = useState("");
+  const inputRef = useRef(null);
 
   if (!cspBudgets) return null;
 
-  // Focus input and select text when entering edit mode
+  // Focus and select the text when entering edit mode
   useEffect(() => {
     if (editingCell && inputRef.current) {
       inputRef.current.focus();
@@ -146,85 +154,63 @@ export default function CSPBudgetSettingCard({
     }
   }, [editingCell]);
 
-  /** Enter edit mode on cell click */
+  /** Handle clicking a cell to edit */
   const handleCellClick = (csp, monthIdx) => {
-    const currentValue = cspBudgets[csp][monthIdx].toString();
     setEditingCell({ csp, monthIdx });
-    setTempValue(currentValue);
+    setTempValue(cspBudgets[csp][monthIdx].toString());
   };
 
-  /** Synchronize budget data to parent component */
-  const syncBudgetToParent = (csp, monthIndex, newValue) => {
-    const newBudgets = {
+  /** Update parent component with new data */
+  const syncBudgetToParent = (csp, monthIdx, newValue) => {
+    const updated = {
       ...cspBudgets,
-      [csp]: cspBudgets[csp].map((val, idx) =>
-        idx === monthIndex ? newValue : val
-      ),
+      [csp]: cspBudgets[csp].map((v, i) => (i === monthIdx ? newValue : v)),
     };
-    onBudgetChange(newBudgets);
+    onBudgetChange(updated);
   };
 
-  /** Save cell value after input validation */
-  const saveCellValue = (csp, monthIndex, value) => {
-    if (!value) {
-      syncBudgetToParent(csp, monthIndex, 0);
-      return;
-    }
-
-    const validation = validateBudgetInput(value);
-    if (validation.isValid) {
-      syncBudgetToParent(csp, monthIndex, validation.value);
-    }
+  /** Validate and save edited value */
+  const saveCellValue = (csp, monthIdx, value) => {
+    const { isValid, value: parsedValue } = validateBudgetInput(value);
+    syncBudgetToParent(csp, monthIdx, isValid ? parsedValue : 0);
   };
 
-  /** Save edit and exit edit mode */
   const handleSaveCell = () => {
-    if (editingCell) {
+    if (editingCell)
       saveCellValue(editingCell.csp, editingCell.monthIdx, tempValue);
-    }
     setEditingCell(null);
     setTempValue("");
   };
 
-  /** Cancel edit (discard changes and exit edit mode) */
   const handleCancelEdit = () => {
     setEditingCell(null);
     setTempValue("");
   };
 
-  /** Keyboard input handling (Enter: save, Escape: cancel, numbers only) */
+  /** Handle keyboard events */
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSaveCell();
-      return;
-    }
+    if (e.key === "Enter") return handleSaveCell();
+    if (e.key === "Escape") return handleCancelEdit();
+    if (e.ctrlKey || e.metaKey) return;
 
-    if (e.key === "Escape") {
-      handleCancelEdit();
-      return;
-    }
-
-    // Only numbers and allowed keys are permitted
     const isNumber = /[0-9]/.test(e.key);
-    const isAllowedKey = ALLOWED_KEYS.includes(e.key);
-
-    if (!isNumber && !isAllowedKey) {
-      e.preventDefault();
-    }
+    if (!isNumber && !ALLOWED_KEYS.includes(e.key)) e.preventDefault();
   };
 
-  /** Budget data considering editing value (for total calculation) */
+  /** Adjust active editing value in total calculation */
   const effectiveBudgets = useMemo(() => {
     if (!editingCell) return cspBudgets;
-
     const { csp, monthIdx } = editingCell;
-    const validation = validateBudgetInput(tempValue);
-    const effectiveValue = validation.isValid ? validation.value : (tempValue === "" ? 0 : cspBudgets[csp][monthIdx]);
-
+    const { isValid, value } = validateBudgetInput(tempValue);
+    const effectiveValue = isValid
+      ? value
+      : tempValue === ""
+      ? 0
+      : cspBudgets[csp][monthIdx];
     return {
       ...cspBudgets,
-      [csp]: cspBudgets[csp].map((val, idx) =>
-        idx === monthIdx ? effectiveValue : val
+      [csp]: cspBudgets[csp].map((v, i) =>
+        i === monthIdx ? effectiveValue : v
       ),
     };
   }, [cspBudgets, editingCell, tempValue]);
@@ -237,8 +223,8 @@ export default function CSPBudgetSettingCard({
             <tr>
               <th>CSP</th>
               <th className="text-center">Total</th>
-              {MONTH_NAMES.map((month, idx) => (
-                <th key={idx} className="text-center">
+              {MONTH_NAMES.map((month, i) => (
+                <th key={i} className="text-center">
                   {month}
                 </th>
               ))}
@@ -246,8 +232,12 @@ export default function CSPBudgetSettingCard({
           </thead>
           <tbody>
             {Object.entries(cspBudgets).map(([csp, budgets]) => {
-              const cspCurrency = getCspCurrency(csp);
-              const cspCurrencySymbol = getCurrencySymbol(cspCurrency);
+              const isNCP = csp === "NCP";
+              const total = calculateCSPTotal(effectiveBudgets, csp);
+              const displayTotal = isNCP
+                ? Math.round(convertKrwToUsd(total) * 100) / 100
+                : total;
+
               return (
                 <tr key={csp}>
                   <td>
@@ -256,20 +246,16 @@ export default function CSPBudgetSettingCard({
                         csp
                       )}`}
                     >
-                      {csp}
+                      {CSP_CONFIG[csp]?.name || csp}
                     </span>
                   </td>
                   <td className="text-center fw-bold">
-                    <NumberWithTooltip
-                      value={calculateCSPTotal(effectiveBudgets, csp)}
-                      prefix={cspCurrencySymbol}
-                    />
+                    <NumberWithTooltip value={displayTotal} prefix="$" />
                   </td>
                   {budgets.map((budget, monthIdx) => {
                     const isEditing =
                       editingCell?.csp === csp &&
                       editingCell?.monthIdx === monthIdx;
-
                     return (
                       <td key={monthIdx} style={{ width: CELL_WIDTH }}>
                         <EditableCell
@@ -291,33 +277,22 @@ export default function CSPBudgetSettingCard({
                 </tr>
               );
             })}
-            {/* Currency totals */}
-            {CURRENCIES.map(({ currency, symbol }) => (
-              <CurrencySummaryRow
-                key={currency}
-                cspBudgets={effectiveBudgets}
-                currency={currency}
-                symbol={symbol}
-              />
-            ))}
+            <TotalSummaryRow cspBudgets={effectiveBudgets} />
           </tbody>
         </table>
       </div>
 
-      {/* Action Buttons */}
-      <div className="mt-3">
-        <div className="btn-list">
-          <Button variant="primary" onClick={onSave} disabled={isSaving}>
-            {isSaving ? "Saving..." : "Save Budget"}
-          </Button>
-          <Button
-            variant="outline-secondary"
-            onClick={onReset}
-            disabled={isSaving}
-          >
-            Reset
-          </Button>
-        </div>
+      <div className="mt-3 d-flex gap-2">
+        <Button variant="primary" onClick={onSave} disabled={isSaving}>
+          {isSaving ? "Saving..." : "Save Budget"}
+        </Button>
+        <Button
+          variant="outline-secondary"
+          onClick={onReset}
+          disabled={isSaving}
+        >
+          Reset
+        </Button>
       </div>
     </Card>
   );

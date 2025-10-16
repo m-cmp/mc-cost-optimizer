@@ -18,7 +18,7 @@ export default function HomePage() {
       <Grid cols={2} minColWidth={320} equalHeight>
         {summary && <BillingSummaryCard chartData={summary} />}
         <TopServicesCard data={top5} />
-        <ServiceCostListCard services={services} />
+        {/*<ServiceCostListCard services={services} />*/}
       </Grid>
     </>
   );
