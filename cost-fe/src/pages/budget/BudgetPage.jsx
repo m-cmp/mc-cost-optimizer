@@ -7,6 +7,7 @@ import MonthlySummaryCard from "./components/MonthlySummaryCard";
 import CSPBudgetSettingCard from "./components/CSPBudgetSettingCard";
 import Loading from "@/components/common/loading/Loading";
 import { useBudgetData } from "@/hooks/useBudgetData";
+import { useBudgetComparison } from "@/hooks/useBudgetComparison";
 
 export default function BudgetPage() {
   const [selectedYear, setSelectedYear] = useState(budgetData.Data.year);
@@ -20,7 +21,8 @@ export default function BudgetPage() {
     resetBudgets,
   } = useBudgetData(selectedYear);
 
-  const monthlyData = budgetData.Data.monthly;
+  const { comparisonData, loading: comparisonLoading } =
+    useBudgetComparison(selectedYear);
 
   // Convert the year list received from API to Dropdown format
   const yearOptions = availableYears.map((year) => ({
@@ -50,10 +52,11 @@ export default function BudgetPage() {
 
         <Grid>
           <BudgetComparisonCard
-            data={monthlyData}
-            currency="USD"
+            data={comparisonData}
+            loading={comparisonLoading}
             colSpan={12}
           />
+          <MonthlySummaryCard data={comparisonData} colSpan={12} />
           <CSPBudgetSettingCard
             cspBudgets={cspBudgets}
             onBudgetChange={setCspBudgets}
@@ -62,7 +65,6 @@ export default function BudgetPage() {
             isSaving={saving}
             colSpan={12}
           />
-          <MonthlySummaryCard data={monthlyData} currency="USD" colSpan={12} />
         </Grid>
       </div>
     </>

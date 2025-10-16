@@ -3,7 +3,7 @@ package com.mcmp.costbe.usage.service;
 import com.mcmp.costbe.common.model.DateRangeModel;
 import com.mcmp.costbe.common.service.DateCalculator;
 import com.mcmp.costbe.common.service.ExceptionService;
-import com.mcmp.costbe.resourceMapping.aws.AWSResourceMapping;
+import com.mcmp.costbe.resourceMapping.MultiCSPResourceMapping;
 import com.mcmp.costbe.usage.dao.BillDao;
 import com.mcmp.costbe.usage.dao.FilterDao;
 import com.mcmp.costbe.usage.model.bill.*;
@@ -120,14 +120,30 @@ public class UsageService {
         req.setCurMonthEndDate(curMonthRange.getEndDate());
         req.setYear_month(req.getToday().substring(0, 6));
 
-        List<String> familyCode = List.of("Virtual Machine", "Storage", "Database", "LB");
+        List<String> familyCode = MultiCSPResourceMapping.getAllCategories();
         List<BillingAssetModel> billingAsset = new ArrayList<>();
 
         try{
-            for(String item : familyCode){
+            for(String category : familyCode){
                 BillingAssetModel familyItem = new BillingAssetModel();
-                List<String> childProducts = AWSResourceMapping.getData(item);
-                req.setAWSChildProducts(childProducts);
+
+                // 모든 CSP의 해당 카테고리 서비스들을 수집
+                List<String> allChildProducts = new ArrayList<>();
+                if(req.getSelectedCsps() != null && !req.getSelectedCsps().isEmpty()) {
+                    for(String csp : req.getSelectedCsps()) {
+                        List<String> cspServices = MultiCSPResourceMapping.getServicesByCategory(csp, category);
+                        allChildProducts.addAll(cspServices);
+                    }
+                } else {
+                    // CSP 선택이 없으면 모든 CSP 포함
+                    for(String csp : List.of("AWS", "NCP", "AZURE")) {
+                        List<String> cspServices = MultiCSPResourceMapping.getServicesByCategory(csp, category);
+                        allChildProducts.addAll(cspServices);
+                    }
+                }
+
+
+                req.setMultiCSPChildProducts(allChildProducts);
 
                 List<BillingAssetChildModel> childItem = billDao.getBillAssetChild(req);
                 double childsTotalBill = 0.0;
@@ -140,7 +156,7 @@ public class UsageService {
                 familyItem.setChildProductCode(childItem);
                 familyItem.setTotalCost(childsTotalBill);
                 familyItem.setTotalUnit(childsTotalUnit);
-                familyItem.setFamilyProductCode(item);
+                familyItem.setFamilyProductCode(category);
 
                 billingAsset.add(familyItem);
             }
@@ -164,7 +180,7 @@ public class UsageService {
 
     public double calculatePercentageChange(double prevMonthBill, double curMonthBill) {
         if (prevMonthBill == 0) {
-            return curMonthBill == 0 ? 0 : (curMonthBill > 0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY);
+            return curMonthBill == 0 ? 0 : (curMonthBill > 0 ? 100 : -100);
         }
         return ((curMonthBill - prevMonthBill) / Math.abs(prevMonthBill)) * 100;
     }

@@ -11,4 +11,6 @@ public class BillingAssetChildModel {
     private Integer unit;
     @Schema(description = "비용", example = "13.0")
     private double bill;
+    @Schema(description = "CSP", example = "AWS")
+    private String csp;
 }
