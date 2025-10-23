@@ -20,6 +20,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -36,6 +39,179 @@ public class VMMetaService {
 
     @Autowired
     private TBBDao tbbDao;
+
+    /**
+     * CSP별 계정 ID 추출
+     * AWS: NetworkInterfaces의 OwnerId (12자리 숫자)
+     * NCP: additionalDetails에서 memberNo 추출 또는 별도 필드
+     * Azure: resourceId에서 subscription_id 파싱
+     *
+     * @param vminfo VM 상세 정보
+     * @param cspType CSP 타입 (AWS, NCP, AZURE 등)
+     * @return CSP 계정 ID, 없으면 null
+     */
+    private String extractCspAccountId(TbVmInfoModel vminfo, String cspType) {
+        if(vminfo == null) {
+            return null;
+        }
+
+        String accountId = null;
+
+        switch(cspType.toUpperCase()) {
+            case "AWS":
+                accountId = extractAwsAccountId(vminfo.getAddtionalDetails());
+                break;
+            case "NCP":
+                accountId = extractNcpAccountId(vminfo.getAddtionalDetails());
+                break;
+            case "AZURE":
+                accountId = extractAzureAccountId(vminfo.getCspResourceId(), vminfo.getAddtionalDetails());
+                break;
+            case "GCP":
+                accountId = extractGcpAccountId(vminfo.getAddtionalDetails());
+                break;
+            default:
+                log.warn("Unsupported CSP type: {}", cspType);
+        }
+
+        if(accountId != null) {
+            log.debug("Extracted {} Account ID: {}", cspType, accountId);
+        } else {
+            log.warn("Could not extract {} Account ID", cspType);
+        }
+
+        return accountId;
+    }
+
+    /**
+     * AWS 계정 ID (OwnerId) 추출
+     * NetworkInterfaces의 OwnerId에서 12자리 숫자 추출
+     */
+    private String extractAwsAccountId(List<Map<String, Object>> additionalDetails) {
+        if(additionalDetails == null || additionalDetails.isEmpty()) {
+            return null;
+        }
+
+        Pattern ownerIdPattern = Pattern.compile("OwnerId:(\\d{12})");
+
+        for(Map<String, Object> detail : additionalDetails) {
+            String key = (String) detail.get("key");
+            String value = (String) detail.get("value");
+
+            if("NetworkInterfaces".equals(key) && value != null) {
+                Matcher matcher = ownerIdPattern.matcher(value);
+                if(matcher.find()) {
+                    return matcher.group(1);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * NCP 계정 ID (memberNo) 추출
+     * additionalDetails에서 memberNo 또는 accountNo 패턴 찾기
+     */
+    private String extractNcpAccountId(List<Map<String, Object>> additionalDetails) {
+        if(additionalDetails == null || additionalDetails.isEmpty()) {
+            return null;
+        }
+
+        // memberNo 또는 accountNo 패턴 찾기
+        Pattern memberNoPattern = Pattern.compile("(?:memberNo|accountNo|member_no):(\\d+)", Pattern.CASE_INSENSITIVE);
+
+        for(Map<String, Object> detail : additionalDetails) {
+            String key = (String) detail.get("key");
+            String value = (String) detail.get("value");
+
+            if(value != null) {
+                Matcher matcher = memberNoPattern.matcher(value);
+                if(matcher.find()) {
+                    return matcher.group(1);
+                }
+            }
+
+            // key 자체가 memberNo나 accountNo인 경우
+            if(key != null && (key.equalsIgnoreCase("memberNo") ||
+                    key.equalsIgnoreCase("accountNo") ||
+                    key.equalsIgnoreCase("member_no"))) {
+                return (String) detail.get("value");
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Azure 계정 ID (subscription_id) 추출
+     * 1. resourceId에서 파싱: /subscriptions/{subscription_id}/...
+     * 2. additionalDetails에서 찾기
+     */
+    private String extractAzureAccountId(String resourceId, List<Map<String, Object>> additionalDetails) {
+        // 1. resourceId에서 subscription_id 파싱 (우선순위 높음)
+        if(resourceId != null && resourceId.contains("/subscriptions/")) {
+            Pattern subscriptionPattern = Pattern.compile("/subscriptions/([a-f0-9-]{36})", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = subscriptionPattern.matcher(resourceId);
+            if(matcher.find()) {
+                return matcher.group(1);
+            }
+        }
+
+        // 2. additionalDetails에서 찾기
+        if(additionalDetails != null && !additionalDetails.isEmpty()) {
+            Pattern subIdPattern = Pattern.compile("(?:subscriptionId|subscription_id)\\s*[:\\=]\\s*([a-f0-9-]{36})", Pattern.CASE_INSENSITIVE);
+
+            for(Map<String, Object> detail : additionalDetails) {
+                String key = (String) detail.get("key");
+                String value = (String) detail.get("value");
+
+                if(value != null) {
+                    Matcher matcher = subIdPattern.matcher(value);
+                    if(matcher.find()) {
+                        return matcher.group(1);
+                    }
+                }
+
+                // key 자체가 subscriptionId인 경우
+                if(key != null && (key.equalsIgnoreCase("subscriptionId") ||
+                        key.equalsIgnoreCase("subscription_id"))) {
+                    return (String) detail.get("value");
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * GCP 계정 ID (project_id) 추출
+     * additionalDetails에서 projectId 또는 projectNumber 찾기
+     */
+    private String extractGcpAccountId(List<Map<String, Object>> additionalDetails) {
+        if(additionalDetails == null || additionalDetails.isEmpty()) {
+            return null;
+        }
+
+        Pattern projectPattern = Pattern.compile("(?:projectId|project_id|projectNumber)\\s*[:\\=]\\s*([\\w-]+)", Pattern.CASE_INSENSITIVE);
+
+        for(Map<String, Object> detail : additionalDetails) {
+            String key = (String) detail.get("key");
+            String value = (String) detail.get("value");
+
+            if(value != null) {
+                Matcher matcher = projectPattern.matcher(value);
+                if(matcher.find()) {
+                    return matcher.group(1);
+                }
+            }
+
+            // key 자체가 projectId인 경우
+            if(key != null && (key.equalsIgnoreCase("projectId") ||
+                    key.equalsIgnoreCase("project_id") ||
+                    key.equalsIgnoreCase("projectNumber"))) {
+                return (String) detail.get("value");
+            }
+        }
+        return null;
+    }
 
 
     public List<TBBNSItemModel> getTbbNS(){
@@ -180,13 +356,25 @@ public class VMMetaService {
                                     }
 
                                     if(vminfo.getCspResourceId() != null){
+                                        // CSP 타입 확인
+                                        String cspType = vminfo.getConnectionConfig().getProviderName().toUpperCase();
+
+                                        // CSP별 계정 ID 추출
+                                        String cspAccountId = extractCspAccountId(vminfo, cspType);
+
+                                        // 추출 실패 시 기본값 사용
+                                        if(cspAccountId == null || cspAccountId.isEmpty()) {
+                                            cspAccountId = "mcmpcostopti";
+                                            log.warn("Could not extract {} Account ID, using default: {}", cspType, cspAccountId);
+                                        }
+
                                         ResourcegroupMetaModel vmInfo = ResourcegroupMetaModel.builder()
-                                                .cspType(vminfo.getConnectionConfig().getProviderName().toUpperCase())
-                                                .cspAccount("mcmpcostopti")
+                                                .cspType(cspType)
+                                                .cspAccount(cspAccountId)
                                                 .cspInstanceid(vminfo.getCspResourceId())
                                                 .serviceCd(ns.getId())
                                                 .serviceNm(ns.getName())
-                                                .serviceUid(ns.getUid())
+                                                .workspaceCd("ws1")  // TODO: 추후 동적으로 변경 필요
                                                 .vmId(vminfo.getId())
                                                 .vmUid(vminfo.getUid())
                                                 .vmNm(vminfo.getName())
