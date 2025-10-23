@@ -5,43 +5,44 @@
     <select id="getAlarmHistory"
             parameterType="com.mcmp.costbe.alarm.model.AlarmHistoryReqModel"
             resultType="com.mcmp.costbe.alarm.model.AlarmHistoryItemModel">
-        SELECT
-        ah.csp_type AS csp_type,
-        ah.event_type AS event_type,
-        ah.resource_id AS resource_id,
-        ah.resource_type AS resource_type,
-        ah.occure_dt AS occure_time,
-        ah.urgency AS urgency,
-        ah.plan AS plan,
-        ah.note AS note,
-        ah.project_cd AS project_cd,
-        ah.account_id AS account_id
-        FROM alarm_history ah
-        INNER JOIN servicegroup_meta sm
-        ON ah.resource_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
-        WHERE 1=1
-        <!-- CSP 필터 -->
-        <if test="selectedCsps != null and selectedCsps.size() > 0">
-            AND sm.csp_type IN
-            <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
-                #{selectedCsp}
-            </foreach>
-        </if>
-        <!-- 워크스페이스 필터 -->
-        <if test="selectedWorkspace != null and selectedWorkspace != ''">
-            AND sm.workspace_cd = #{selectedWorkspace}
-        </if>
-        <!-- 프로젝트 필터 -->
-        <if test="selectedProjects != null and selectedProjects.size() > 0">
-            AND sm.service_cd IN
-            <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
-                #{selectedProject}
-            </foreach>
-        </if>
-<!--        &lt;!&ndash; 최근 7일치만 조회 &ndash;&gt;-->
-<!--        AND ah.occure_date >= DATE_SUB(#{curDate}, INTERVAL 7 DAY)-->
-<!--        AND ah.alarm_impl = 'mail'-->
-<!--        ORDER BY ah.occure_dt DESC-->
+        SELECT ah.csp_type      AS csp_type
+               , ah.event_type    AS event_type
+               , ah.resource_id   AS resource_id
+               , ah.resource_type AS resource_type
+               , ah.occure_dt     AS occure_time
+               , ah.urgency       AS urgency
+               , ah.plan          AS plan
+               , ah.note          AS note
+               , ah.project_cd    AS project_cd
+               , ah.account_id    AS account_id
+          FROM alarm_history ah
+         INNER JOIN servicegroup_meta sm
+            ON ah.resource_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+         WHERE 1 = 1
+               <!-- CSP 필터 -->
+               <if test="selectedCsps != null and selectedCsps.size() > 0">
+           AND sm.csp_type IN
+               <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
+               #{selectedCsp}
+               </foreach>
+               </if>
+               <!-- 워크스페이스 필터 -->
+               <if test="selectedWorkspace != null and selectedWorkspace != ''">
+           AND sm.workspace_cd = #{selectedWorkspace}
+               </if>
+               <!-- 프로젝트 필터 -->
+               <if test="selectedProjects != null and selectedProjects.size() > 0">
+           AND sm.service_cd IN
+               <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
+               #{selectedProject}
+               </foreach>
+               </if>
+               <!-- 최근 7일치만 조회 -->
+               <!--
+               AND ah.occure_date >= DATE_SUB(#{curDate}, INTERVAL 7 DAY)
+               AND ah.alarm_impl = 'mail'
+               ORDER BY ah.occure_dt DESC
+               -->
     </select>
 
 </mapper>
