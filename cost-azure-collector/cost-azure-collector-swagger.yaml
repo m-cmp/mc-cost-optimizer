@@ -1,0 +1,41 @@
+openapi: "3.1.0"
+info:
+  title: "Cost Azure Collector API"
+  description: "Cost Azure Collector API"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8093"
+paths:
+  /api/batch/azure/service:
+    get:
+      summary: "Azure Service 들의 전날의 이용 금액을 수집한다."
+      operationId: "batchAzureService"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/batch/azure/vm:
+    get:
+      summary: "Azure VM 들의 전일 이용 금액을 수집한다. 이번달 비용이 설정한 예산을 초과하는지를 확인하여 메일 발송까지 기능까지 연동."
+      operationId: "batchAzureVm"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/azure/budget/test:
+    get:
+      summary: "이번달 비용이 설정한 예산을 초과하는지 확인하는 테스트용 API."
+      operationId: "test1"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
