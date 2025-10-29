@@ -26,10 +26,6 @@
                #{selectedCsp}
                </foreach>
                </if>
-               <!-- 워크스페이스 필터 -->
-               <if test="selectedWorkspace != null and selectedWorkspace != ''">
-           AND sm.workspace_cd = #{selectedWorkspace}
-               </if>
                <!-- 프로젝트 필터 -->
                <if test="selectedProjects != null and selectedProjects.size() > 0">
            AND sm.service_cd IN

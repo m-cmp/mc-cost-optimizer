@@ -22,9 +22,6 @@
                       <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
                       #{selectedProject}
                       </foreach>
-                      <if test="selectedWorkspace != null and selectedWorkspace != ''">
-                  AND ms.workspace_cd = #{selectedWorkspace}
-                      </if>
                       <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AWS')">
                   AND 1=0
                       </if>
@@ -64,9 +61,6 @@
                 INNER JOIN servicegroup_meta sm
                    ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
                   AND sm.csp_type = 'NCP'
-                      <if test="selectedWorkspace != null and selectedWorkspace != ''">
-                  AND sm.workspace_cd = #{selectedWorkspace}
-                      </if>
                       <if test="selectedProjects != null and selectedProjects.size() > 0">
                   AND sm.service_cd IN
                       <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
@@ -95,9 +89,6 @@
                 INNER JOIN servicegroup_meta sm
                    ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
                   AND sm.csp_type = 'AZURE'
-                      <if test="selectedWorkspace != null and selectedWorkspace != ''">
-                  AND sm.workspace_cd = #{selectedWorkspace}
-                      </if>
                       <if test="selectedProjects != null and selectedProjects.size() > 0">
                   AND sm.service_cd IN
                       <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
@@ -127,9 +118,6 @@
          INNER JOIN servicegroup_meta sm
             ON co.lineitem_resourceid = sm.csp_instanceid
            AND sm.csp_type = 'AWS'
-               <if test="selectedWorkspace != null and selectedWorkspace != ''">
-           AND sm.workspace_cd = #{selectedWorkspace}
-               </if>
                <if test="selectedProjects != null and selectedProjects.size() > 0">
            AND sm.service_cd IN
                <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
@@ -200,9 +188,6 @@
          INNER JOIN servicegroup_meta sm
             ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
            AND sm.csp_type = 'AZURE'
-               <if test="selectedWorkspace != null and selectedWorkspace != ''">
-           AND sm.workspace_cd = #{selectedWorkspace}
-               </if>
                <if test="selectedProjects != null and selectedProjects.size() > 0">
            AND sm.service_cd IN
                <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">

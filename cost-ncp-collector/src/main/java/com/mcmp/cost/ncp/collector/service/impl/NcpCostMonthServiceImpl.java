@@ -67,6 +67,8 @@ public class NcpCostMonthServiceImpl implements NcpCostMonthService {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
+        log.info("getCostByService - today: {}, givenDate: {}", today, givenDate);
+
         if (!givenDate.equals(today)) {
             log.info("{} 비용 데이터가 NCP에서 제공되지 않아 수집을 종료합니다.", givenDate);
             return ncpCostServiceMonthList;
@@ -96,6 +98,7 @@ public class NcpCostMonthServiceImpl implements NcpCostMonthService {
                 ncpApiCredentialDto.getIamSecretKey());
 
         LocalDate today = LocalDate.now(ZoneId.systemDefault());
+
         String yearMonth = DateUtils.getYearMonth(today);
         // 설정 기간에 따라 VM별 청구 비용을 조회 (월단위),
         String url = NcpApiUrl.CONTRACT_DEMAND_COST_LIST_URL
@@ -120,6 +123,8 @@ public class NcpCostMonthServiceImpl implements NcpCostMonthService {
                 .toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
+
+        log.info("getCostByVm - today: {}, givenDate: {}", today, givenDate);
 
         List<NcpCostVmMonth> ncpCostVmMonthList = new ArrayList<>();
         if (!givenDate.equals(today)) {
