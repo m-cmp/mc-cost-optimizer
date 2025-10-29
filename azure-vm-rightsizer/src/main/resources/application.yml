@@ -1,0 +1,40 @@
+server:
+  port: 8092
+
+spring:
+  application:
+    name: azure-vm-rightsizer
+  datasource:
+    url: jdbc:mariadb://localhost:3307/cost?autoReconnect=true&allowMultiQueries=true&useSSL=false
+    username: mcmpcostopti
+    password: "0000"
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+azure:
+  credential:
+    tenant-id: ${TENANT_ID:tenantId}
+    client-id: ${CLIENT_ID:clientId}
+    client-secret: ${CLIENT_SECRET:clientSecret}
+    subscription-id: ${SUBSCRIPTION_ID:subscriptionId}
+
+costopti:
+  alarmservice:
+    url: ${ALARM_SERVICE:alarm_service}
+  assetcollector:
+    url: http://localhost:8091
+  costcollector:
+    url: http://localhost:8081
+  costprocessor:
+    url: http://localhost:8082
+  costselector:
+    url: http://localhost:8083
