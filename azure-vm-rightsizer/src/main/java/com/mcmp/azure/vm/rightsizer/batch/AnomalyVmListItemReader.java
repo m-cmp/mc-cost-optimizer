@@ -27,6 +27,13 @@ public class AnomalyVmListItemReader implements ItemReader<AzureCostVmDailyDto> 
         if (vmDailyDtoIterator == null) {
             List<AzureCostVmDailyDto> vmLists = azureCostVmDailyMapper
                     .findLatestBySubscriptionId(azureCredentialProperties.getSubscriptionId());
+
+            if (vmLists == null || vmLists.isEmpty()) {
+                log.warn("No VMs found for subscriptionId: {}",
+                    azureCredentialProperties.getSubscriptionId());
+                vmLists = List.of();
+            }
+
             vmDailyDtoIterator = vmLists.iterator();
             log.info("Azure Vm loaded: {} items", vmLists.size());
         }

@@ -28,7 +28,16 @@ public class RecommendVmListItemReader implements ItemReader<AzureCostVmDailyDto
             String vmId = "vm-capshp-prd-krc-web01";
             AzureCostVmDailyDto sizeUpTagetVm = azureCostVmDailyMapper
                     .findLatestBySubscriptionIdAndVmId(azureCredentialProperties.getSubscriptionId(), vmId);
-            List<AzureCostVmDailyDto> azureCostVmDailyDtoList = List.of(sizeUpTagetVm);
+
+            List<AzureCostVmDailyDto> azureCostVmDailyDtoList;
+            if (sizeUpTagetVm == null) {
+                log.warn("VM not found: subscriptionId={}, vmId={}",
+                    azureCredentialProperties.getSubscriptionId(), vmId);
+                azureCostVmDailyDtoList = List.of();
+            } else {
+                azureCostVmDailyDtoList = List.of(sizeUpTagetVm);
+            }
+
             vmDailyDtoIterator = azureCostVmDailyDtoList.iterator();
             log.info("Azure Vm loaded: {} items", azureCostVmDailyDtoList.size());
         }
