@@ -24,6 +24,13 @@ public class BudgetMonthlyServiceImpl implements BudgetMonthlyService {
     @Override
     public BigDecimal getCalculateBudgetRate(Double budgetAmount) {
         BudgetMonthlyDto budgetMonthlyDto = this.getCurrentMonthBudget();
+
+        // 예산이 설정되지 않은 경우 null 반환 (알람 미발송)
+        if (budgetMonthlyDto == null || budgetMonthlyDto.getBudget() == null) {
+            log.info("예산이 설정되지 않아 예산 사용률 계산을 건너뜁니다.");
+            return null;
+        }
+
         BigDecimal budget = budgetMonthlyDto.getBudget();
         BigDecimal demandAmountDecimal = BigDecimal.valueOf(budgetAmount);
         BigDecimal remainingBudget = budget.subtract(demandAmountDecimal);

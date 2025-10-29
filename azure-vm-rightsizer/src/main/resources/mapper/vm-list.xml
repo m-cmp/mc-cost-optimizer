@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.azure.vm.rightsizer.mapper.AzureCostVmDailyMapper">
+    <resultMap id="AzureCostVmDailyMap" type="com.mcmp.azure.vm.rightsizer.dto.AzureCostVmDailyDto">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="subscriptionId" column="subscription_id"/>
+        <result property="preTaxCost" column="pre_tax_cost"/>
+        <result property="usageDate" column="usage_date"/>
+        <result property="resourceGroupName" column="resource_group_name"/>
+        <result property="resourceId" column="resource_id"/>
+        <result property="region" column="region"/>
+        <result property="instanceType" column="instance_type"/>
+        <result property="osType" column="os_type"/>
+        <result property="vmId" column="vm_id"/>
+        <result property="resourceGuid" column="resource_guid"/>
+        <result property="currency" column="currency"/>
+        <result property="created" column="created"/>
+        <result property="updated" column="updated"/>
+    </resultMap>
+
+    <select id="findLatestBySubscriptionId" resultMap="AzureCostVmDailyMap">
+        SELECT
+            t.*
+        FROM azure_cost_vm_daily t
+            INNER JOIN (
+                SELECT subscription_id, vm_id, MAX(created) AS max_created
+                FROM azure_cost_vm_daily
+                WHERE subscription_id = #{subscriptionId}
+                GROUP BY subscription_id, vm_id
+            ) t2
+        ON t.subscription_id = t2.subscription_id
+            AND t.vm_id = t2.vm_id
+            AND t.created = t2.max_created
+    </select>
+
+    <select id="findLatestBySubscriptionIdAndVmId" resultMap="AzureCostVmDailyMap">
+        SELECT
+            t.*
+        FROM azure_cost_vm_daily t
+            INNER JOIN (
+                SELECT subscription_id, vm_id, MAX(created) AS max_created
+                FROM azure_cost_vm_daily
+                WHERE subscription_id = #{subscriptionId}
+                    AND vm_id = #{vmId}
+                GROUP BY subscription_id, vm_id
+        ) t2
+        ON t.subscription_id = t2.subscription_id
+            AND t.vm_id = t2.vm_id
+            AND t.created = t2.max_created
+    </select>
+
+</mapper>

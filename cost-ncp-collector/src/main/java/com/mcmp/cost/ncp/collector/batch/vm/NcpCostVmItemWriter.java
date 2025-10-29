@@ -59,9 +59,13 @@ public class NcpCostVmItemWriter implements ItemWriter<List<NcpCostVmMonth>> {
 
             // 예산 초과 체크 및 메일 발송
             BigDecimal usageRate = budgetMonthlyService.getCalculateBudgetRate(demandAmount);
-            AlarmHistoryDto alarmHistoryDto = createBudgetAlarmDto(usageRate, memberNo);
-            if (alarmHistoryDto != null) {
-                sendEmail(alarmHistoryDto);
+            if (usageRate != null) {
+                AlarmHistoryDto alarmHistoryDto = createBudgetAlarmDto(usageRate, memberNo);
+                if (alarmHistoryDto != null) {
+                    sendEmail(alarmHistoryDto);
+                }
+            } else {
+                log.info("예산이 설정되지 않아 예산 초과 알람을 전송하지 않습니다.");
             }
         }
     }

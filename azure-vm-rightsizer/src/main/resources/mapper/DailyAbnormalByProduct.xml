@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.azure.vm.rightsizer.mapper.DailyAbnormalByProductMapper">
+
+    <insert id="insertDailyAbnormalByProduct" parameterType="com.mcmp.azure.vm.rightsizer.dto.AnomalyDto">
+        INSERT INTO daily_abnormal_by_product (collect_dt,
+                                               product_cd,
+                                               abnormal_rating,
+                                               percentage_point,
+                                               standard_cost,
+                                               subject_cost,
+                                               project_cd,
+                                               workspace_cd,
+                                               csp_type)
+        VALUES (#{collectDt},
+                #{productCd},
+                #{abnormalRating},
+                #{percentagePoint},
+                #{standardCost},
+                #{subjectCost},
+                #{projectCd},
+                #{workspaceCd},
+                #{cspType})
+    </insert>
+</mapper>
