@@ -263,7 +263,8 @@ public class NcpCostMonthServiceImpl implements NcpCostMonthService {
 
             // 서버 상세조회 URL 로그
             String instanceDetailUrl = NcpApiUrl.SERVER_DETAIL_URL
-                    + "?serverInstanceNo=" + instanceNo
+                    + "?regionCode=" + contractDemandCost.getRegionCode()
+                    + "&serverInstanceNo=" + instanceNo
                     + "&responseFormatType=json";
             log.debug("서버 상세 조회 URL: {}", instanceDetailUrl);
 
