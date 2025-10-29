@@ -16,7 +16,7 @@ public interface BudgetMonthlyService {
      * 예산 사용률 계산 (사용한 금액 / 전체 예산 * 100)
      *
      * @param budgetAmount 이번달 사용 비용.
-     * @return 예산 사용률 계산 (사용한 금액 / 전체 예산 * 100).
+     * @return 예산 사용률 계산 (사용한 금액 / 전체 예산 * 100). 예산이 설정되지 않은 경우 null 반환.
      */
     BigDecimal getCalculateBudgetRate(Double budgetAmount);
 }
