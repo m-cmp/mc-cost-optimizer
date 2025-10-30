@@ -14,8 +14,10 @@ export default function InvoiceTable({ invoice }) {
   const tabulatorInstance = useRef(null);
   const today = new Date().toISOString().split("T")[0];
 
+  const hasData = invoice && invoice.length > 0;
+
   useEffect(() => {
-    if (!tableRef.current || !invoice) return;
+    if (!tableRef.current || !hasData) return;
 
     if (tabulatorInstance.current) {
       tabulatorInstance.current.replaceData(invoice);
@@ -98,7 +100,13 @@ export default function InvoiceTable({ invoice }) {
         </div>
       }
     >
-      <div ref={tableRef} style={{ width: "100%", height: "450px" }} />
+      {!hasData ? (
+        <div className="text-center py-5 text-muted">
+          No invoice data available
+        </div>
+      ) : (
+        <div ref={tableRef} style={{ width: "100%", height: "450px" }} />
+      )}
     </Card>
   );
 }

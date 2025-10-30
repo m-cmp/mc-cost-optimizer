@@ -19,7 +19,15 @@ export default function BudgetComparisonCard({ data, loading }) {
     );
   }
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <Card title="Budget vs Usage Comparison" titleSize={2}>
+        <div className="text-center py-5 text-muted">
+          No data available
+        </div>
+      </Card>
+    );
+  }
   const categories = data.months.flatMap(() => ["Budget", "Usage"]);
   let series, colors, legendItems;
 
