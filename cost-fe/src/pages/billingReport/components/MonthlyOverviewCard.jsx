@@ -6,7 +6,15 @@ import {
 } from "@/utils/chartUtils";
 
 export default function MonthlyOverviewCard({ data }) {
-  if (!data) return null;
+  if (!data) {
+    return (
+      <Card title="Monthly Overview" titleSize={2}>
+        <div className="text-center py-5 text-muted">
+          No data available
+        </div>
+      </Card>
+    );
+  }
 
   const { curYear, curMonth, yearMonths, summaryBill } = data;
   const selectedMonths = pickQuarterMonths(yearMonths, curYear, curMonth);
