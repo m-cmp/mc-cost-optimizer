@@ -15,7 +15,7 @@ function getApiConfig() {
   if (hostname.includes("localhost")) {
     API_BE_URL = `http://${hostname}:9090`;
     API_ALARM_URL = `http://${hostname}:9000`;
-    USE_MOCK = false; // localhost uses mock, change to false for API testing
+    USE_MOCK = true; // localhost uses mock, change to false for API testing
   } else if (isNumericAndDotsOnly) {
     API_BE_URL = `http://${hostname}:9090`;
     API_ALARM_URL = `http://${hostname}:9000`;

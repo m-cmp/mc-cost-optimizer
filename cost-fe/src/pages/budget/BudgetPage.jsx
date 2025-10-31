@@ -21,7 +21,7 @@ export default function BudgetPage() {
     resetBudgets,
   } = useBudgetData(selectedYear);
 
-  const { comparisonData, loading: comparisonLoading } =
+  const { comparisonData, loading: comparisonLoading, refetch: refetchComparison } =
     useBudgetComparison(selectedYear);
 
   // Convert the year list received from API to Dropdown format
@@ -29,6 +29,14 @@ export default function BudgetPage() {
     value: year,
     label: year.toString(),
   }));
+
+  const handleSaveBudgets = async () => {
+    const success = await saveBudgets();
+    if (success) {
+      // Refetch comparison data to reflect the saved budget
+      refetchComparison();
+    }
+  };
 
   if (loading) {
     return <Loading fullscreen withLabel label="Loading data..." />;
@@ -60,7 +68,7 @@ export default function BudgetPage() {
           <CSPBudgetSettingCard
             cspBudgets={cspBudgets}
             onBudgetChange={setCspBudgets}
-            onSave={saveBudgets}
+            onSave={handleSaveBudgets}
             onReset={resetBudgets}
             isSaving={saving}
             colSpan={12}

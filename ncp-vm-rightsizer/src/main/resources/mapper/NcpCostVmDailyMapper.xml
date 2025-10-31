@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.ncp.vm.rightsizer.mapper.NcpCostVmDailyMapper">
+    <resultMap id="ncpVmCostStatsResultMap" type="com.mcmp.ncp.vm.rightsizer.dto.NcpVmMonthlyAvgCostDto">
+        <result property="memberNo" column="member_no"/>
+        <result property="instanceNo" column="instance_no"/>
+        <result property="instanceName" column="instance_name"/>
+        <result property="avgCost" column="avg_cost"/>
+        <result property="dayCount" column="day_count"/>
+        <result property="latestCost" column="latest_cost"/>
+        <result property="totalCost" column="total_cost"/>
+        <result property="fromDate" column="from_date"/>
+        <result property="toDate" column="to_date"/>
+        <result property="dataRange" column="data_range"/>
+    </resultMap>
+
+    <select id="getAvgCostByRegion" resultMap="ncpVmCostStatsResultMap">
+        SELECT base.member_no,
+               base.instance_no,
+               base.instance_name,
+               base.avg_cost,
+               base.day_count,
+               COALESCE(latest.latest_cost, 0) as latest_cost,
+               base.total_cost,
+               base.from_date,
+               base.to_date,
+               base.data_range
+        FROM (SELECT member_no,
+                     instance_no,
+                     instance_name,
+                     AVG(daily_charge_amount)                                                            as avg_cost,
+                     COUNT(*)                                                                            as day_count,
+                     SUM(daily_charge_amount)                                                            as total_cost,
+                     MIN(target_date)                                                                    as from_date,
+                     MAX(target_date)                                                                    as to_date,
+                     IF(MIN(target_date) <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01'), 'LAST_MONTH', 'ALL_DATA') as data_range
+              FROM ncp_cost_vm_daily
+              WHERE region_code = #{region}
+                AND (
+                  -- 지난달 데이터가 있으면 지난달만
+                  (target_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+                      AND target_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                      AND instance_no IN (SELECT DISTINCT instance_no
+                                          FROM ncp_cost_vm_daily
+                                          WHERE region_code = #{region}
+                                            AND target_date >=
+                                                DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+                                            AND target_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01')))
+                      -- 지난달 데이터가 없으면 전체
+                      OR instance_no NOT IN (SELECT DISTINCT instance_no
+                                             FROM ncp_cost_vm_daily
+                                             WHERE region_code = #{region}
+                                               AND target_date >=
+                                                   DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+                                               AND target_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01'))
+                  )
+              GROUP BY member_no, instance_no, instance_name) base
+                 LEFT JOIN (
+            -- 각 instance의 가장 최신 날짜 데이터
+            SELECT t.instance_no,
+                   t.daily_charge_amount as latest_cost
+            FROM ncp_cost_vm_daily t
+                     INNER JOIN (SELECT instance_no, MAX(target_date) as max_date
+                                 FROM ncp_cost_vm_daily
+                                 WHERE region_code = #{region}
+                                 GROUP BY instance_no) m
+                                ON t.instance_no = m.instance_no AND t.target_date = m.max_date) latest
+                           ON base.instance_no = latest.instance_no
+        ORDER BY base.instance_no
+    </select>
+
+    <!-- 지난달 평균 비용 조회 -->
+    <select id="getAvgCostByInstanceNoAndRegion" resultMap="ncpVmCostStatsResultMap">
+        SELECT base.member_no,
+               base.instance_no,
+               base.instance_name,
+               base.avg_cost,
+               base.day_count,
+               COALESCE(latest.latest_cost, 0) as latest_cost,
+               base.total_cost,
+               base.from_date,
+               base.to_date,
+               base.data_range
+        FROM (SELECT member_no,
+                     instance_no,
+                     instance_name,
+                     AVG(daily_charge_amount)                                                            as avg_cost,
+                     COUNT(*)                                                                            as day_count,
+                     SUM(daily_charge_amount)                                                            as total_cost,
+                     MIN(target_date)                                                                    as from_date,
+                     MAX(target_date)                                                                    as to_date,
+                     IF(MIN(target_date) <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01'), 'LAST_MONTH', 'ALL_DATA') as data_range
+              FROM ncp_cost_vm_daily
+              WHERE instance_no = #{instanceNo}
+                AND region_code = #{region}
+                AND (
+                  -- 지난달 데이터가 있으면 지난달만
+                  (target_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+                      AND target_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                      AND instance_no IN (SELECT DISTINCT instance_no
+                                          FROM ncp_cost_vm_daily
+                                          WHERE instance_no = #{instanceNo}
+                                            AND region_code = #{region}
+                                            AND target_date >=
+                                                DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+                                            AND target_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01')))
+                      -- 지난달 데이터가 없으면 전체
+                      OR instance_no NOT IN (SELECT DISTINCT instance_no
+                                             FROM ncp_cost_vm_daily
+                                             WHERE instance_no = #{instanceNo}
+                                               AND region_code = #{region}
+                                               AND target_date >=
+                                                   DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+                                               AND target_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01'))
+                  )
+              GROUP BY member_no, instance_no, instance_name) base
+                 LEFT JOIN (
+            -- 전체 데이터 중 가장 최신 날짜의 비용
+            SELECT instance_no,
+                   daily_charge_amount as latest_cost
+            FROM ncp_cost_vm_daily
+            WHERE instance_no = #{instanceNo}
+              AND region_code = #{region}
+              AND target_date = (SELECT MAX(target_date)
+                                 FROM ncp_cost_vm_daily
+                                 WHERE instance_no = #{instanceNo}
+                                   AND region_code = #{region})
+            LIMIT 1) latest
+                           ON base.instance_no = latest.instance_no;
+    </select>
+</mapper>
