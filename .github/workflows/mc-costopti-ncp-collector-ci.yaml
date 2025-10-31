@@ -63,8 +63,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           builder: ${{ steps.buildx.outputs.name }}
-          context: ./ncp-collector
-          file: ./ncp-collector/Dockerfile
+          context: ./cost-ncp-collector
+          file: ./cost-ncp-collector/Dockerfile
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
