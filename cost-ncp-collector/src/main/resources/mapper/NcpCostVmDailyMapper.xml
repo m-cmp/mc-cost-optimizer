@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.cost.ncp.collector.mapper.NcpCostVmDailyMapper">
+
+    <resultMap id="ncpCostVmDailyResultMap" type="com.mcmp.cost.ncp.collector.dto.NcpCostVmDailyDto">
+        <id property="id" column="id"/>
+        <result property="created" column="created"/>
+        <result property="updated" column="updated"/>
+        <result property="memberNo" column="member_no"/>
+        <result property="demandMonth" column="demand_month"/>
+        <result property="regionCode" column="region_code"/>
+        <result property="serverSpecCode" column="server_spec_code"/>
+        <result property="instanceNo" column="instance_no"/>
+        <result property="instanceName" column="instance_name"/>
+        <result property="usageUnitCode" column="usage_unit_code"/>
+        <result property="usageUnitName" column="usage_unit_name"/>
+        <result property="productPrice" column="product_price"/>
+        <result property="unitUsageQuantity" column="unit_usage_quantity"/>
+        <result property="totalUnitUsageQuantity" column="total_unit_usage_quantity"/>
+        <result property="useAmount" column="use_amount"/>
+        <result property="demandAmount" column="demand_amount"/>
+        <result property="writeDate" column="write_date"/>
+        <result property="payCurrency" column="pay_currency"/>
+        <result property="targetDate" column="target_date"/>
+        <result property="dailyChargeAmount" column="daily_charge_amount"/>
+    </resultMap>
+
+    <insert id="insertDailyCost">
+        INSERT INTO ncp_cost_vm_daily (
+            created,
+            updated,
+            member_no,
+            demand_month,
+            region_code,
+            server_spec_code,
+            instance_no,
+            instance_name,
+            usage_unit_code,
+            usage_unit_name,
+            product_price,
+            unit_usage_quantity,
+            total_unit_usage_quantity,
+            use_amount,
+            demand_amount,
+            write_date,
+            pay_currency,
+            target_date,
+            daily_charge_amount
+        )
+        SELECT
+            NOW() AS created,
+            NOW() AS updated,
+            today.member_no,
+            today.demand_month,
+            today.region_code,
+            today.server_spec_code,
+            today.instance_no,
+            today.instance_name,
+            today.usage_unit_code,
+            today.usage_unit_name,
+            today.product_price,
+            today.unit_usage_quantity,
+            today.total_unit_usage_quantity,
+            today.use_amount,
+            today.demand_amount,
+            today.write_date,
+            today.pay_currency,
+            DATE(today.write_date) AS target_date,
+            today.demand_amount - COALESCE(yesterday.demand_amount, 0) AS daily_charge_amount
+        FROM
+            ncp_cost_vm_month today
+                LEFT JOIN
+            ncp_cost_vm_month yesterday
+            ON today.instance_no = yesterday.instance_no
+                AND today.demand_month = yesterday.demand_month
+                AND DATE(yesterday.write_date) = DATE(today.write_date) - INTERVAL 1 DAY
+        WHERE
+            today.instance_no = #{instanceNo}
+          AND DATE(today.write_date) = #{targetDate}
+    </insert>
+</mapper>

@@ -1,0 +1,57 @@
+server:
+  port: 8093
+
+spring:
+  application:
+    name: cost-azure-collector
+  # 데이터베이스 설정
+  datasource:
+    url: jdbc:mariadb://localhost:3307/cost?autoReconnect=true&allowMultiQueries=true&useSSL=false
+    username: mcmpcostopti
+    password: "0000"
+    driver-class-name: org.mariadb.jdbc.Driver
+  # JPA 설정
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  # Spring Batch 설정
+  batch:
+    job:
+      enabled: false # 애플리케이션 시작 시 자동 실행 방지
+    jdbc:
+      initialize-schema: NEVER  # 배치 메타데이터 테이블 자동 생성, 근데, 테이블 안생긴다.
+  sql:
+    init:
+      mode: NEVER # ALWAYS 와 설정 와따가따하면서...
+      schema-locations: classpath:org/springframework/batch/core/schema-mariadb.sql
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+logging:
+  level:
+    com.mcmp.cost.azure.collector.service: debug
+
+azure:
+  credential:
+    tenant-id: ${TENANT_ID:tenantId}
+    client-id: ${CLIENT_ID:clientId}
+    client-secret: ${CLIENT_SECRET:clientSecret}
+    subscription-id: ${SUBSCRIPTION_ID:subscriptionId}
+
+costopti:
+  alarmservice:
+    url: ${ALARM_SERVICE:alarm_service}
+  assetcollector:
+    url: http://localhost:8091
+  costcollector:
+    url: http://localhost:8081
+  costprocessor:
+    url: http://localhost:8082
+  costselector:
+    url: http://localhost:8083

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.cost.ncp.collector.mapper.BudgetMonthlyMapper">
+
+    <resultMap id="budgetMonthlyResultMap" type="com.mcmp.cost.ncp.collector.dto.BudgetMonthlyDto">
+        <id property="id" column="id"/>
+        <result property="csp" column="csp"/>
+        <result property="year" column="year"/>
+        <result property="month" column="month"/>
+        <result property="budget" column="budget"/>
+        <result property="currency" column="currency"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 현재 월 예산 조회 -->
+    <select id="selectCurrentMonthBudget" resultMap="budgetMonthlyResultMap">
+        SELECT *
+        FROM budget_monthly
+        WHERE csp = #{csp}
+          AND year = YEAR(CURDATE())
+          AND month = MONTH(CURDATE())
+    </select>
+</mapper>
