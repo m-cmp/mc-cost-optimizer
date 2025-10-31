@@ -1,0 +1,52 @@
+server:
+  port: 8094
+
+spring:
+  application:
+    name: cost-ncp-collector
+  datasource:
+    url: jdbc:mariadb://localhost:3307/cost?autoReconnect=true&allowMultiQueries=true&useSSL=false
+    username: mcmpcostopti
+    password: "0000"
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: NEVER
+  sql:
+    init:
+      mode: NEVER
+      schema-locations: classpath:org/springframework/batch/core/schema-mariadb.sql
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+logging:
+  level:
+    com.mcmp.cost.ncp.collector.service: debug
+
+ncp:
+  credential:
+    iam-access-key: ${IAM_ACCESS_KEY:iamAccessKey}
+    iam-secret-key: ${IAM_SECRET_KEY:iamSecretKey}
+
+costopti:
+  alarmservice:
+    url: ${ALARM_SERVICE:alarm_service}
+  assetcollector:
+    url: http://localhost:8091
+  costcollector:
+    url: http://localhost:8081
+  costprocessor:
+    url: http://localhost:8082
+  costselector:
+    url: http://localhost:8083

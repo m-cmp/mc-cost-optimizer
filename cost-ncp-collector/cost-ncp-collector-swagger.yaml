@@ -1,0 +1,41 @@
+openapi: "3.1.0"
+info:
+  title: "Cost NCP Collector API"
+  description: "Cost NCP Collector API"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8094"
+paths:
+  /api/batch/ncp/service:
+    get:
+      summary: "NCP Service 들의 이달의 월간 이용 누적금액을 수집한다. 이번달 비용이 설정한 예산을 초과하는지를 확인하여 메일 발송까지 기능까지 연동."
+      operationId: "batchNcpService"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/batch/ncp/vm:
+    get:
+      summary: "NCP VM 들의 이 달의 월간 이용 누적금액을 수집한다."
+      operationId: "batchNcpVm"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/ncp/budget/test:
+    get:
+      summary: "이번달 비용이 설정한 예산을 초과하는지 확인하는 테스트용 API."
+      operationId: "test1"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
