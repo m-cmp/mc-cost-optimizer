@@ -5,7 +5,6 @@ import { logger } from "../utils/logger";
 // Dynamically generate API URL and Mock mode (based on domain)
 function getApiConfig() {
   const hostname = window.location.hostname;
-  // const hostname = "35.239.209.190";
   console.log("Domain check: " + hostname);
   const isNumericAndDotsOnly = /^[0-9.]+$/.test(hostname);
 
