@@ -63,8 +63,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           builder: ${{ steps.buildx.outputs.name }}
-          context: ./azure-collector
-          file: ./azure-collector/Dockerfile
+          context: ./cost-azure-collector
+          file: ./cost-azure-collector/Dockerfile
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
