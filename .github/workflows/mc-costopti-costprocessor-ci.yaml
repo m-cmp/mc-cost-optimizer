@@ -15,6 +15,8 @@ on:
       - "cost-fe/**"
       - "costCollector/**"
       - "costSelector/**"
+      - "cost-azure-collector/**"
+      - "cost-ncp-collector/**"
       - "mysql/**"
       - "**.md"
       - "LICENSE.txt"
