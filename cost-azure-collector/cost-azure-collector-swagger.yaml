@@ -39,3 +39,5 @@ paths:
             '*/*':
               schema:
                 type: "string"
+
+# for ci trigger
