@@ -3,7 +3,15 @@ import { analyzeBudgetPerformance } from "@/utils/budgetUtils";
 import { MONTH_NAMES } from "@/constants/dateConstants";
 
 export default function MonthlySummaryCard({ data }) {
-  if (!data || !data.months) return null;
+  if (!data || !data.months) {
+    return (
+      <Card title="Monthly Summary" titleSize={2}>
+        <div className="text-center py-5 text-muted">
+          No data available
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card title="Monthly Summary" titleSize={2}>

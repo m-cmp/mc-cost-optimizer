@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.ncp.vm.rightsizer.mapper.NcpRightSizeMapper">
+
+    <resultMap id="RecommendedVmResultMap" type="com.mcmp.ncp.vm.rightsizer.dto.RecommendVmTypeDto">
+        <result property="recommendType"    column="INSTANCE_TYPE"/>
+        <result property="core"             column="CORES"/>
+        <result property="memory"           column="RAM"/>
+        <result property="usd"              column="PER_HOUR"/>
+    </resultMap>
+
+    <select id="getRecommendSizeUpVmType" resultMap="RecommendedVmResultMap">
+        SELECT
+            APP.SKU AS INSTANCE_TYPE,
+            APP.CORES AS CORES,
+            ROUND(APP.MEMORY, 4) AS RAM,
+            APP.USD AS PER_HOUR
+        FROM TASM_NCP_INSTANCE_PRICING_L APP
+            LEFT OUTER JOIN TASM_CLOUD_RGN_M RGN
+                ON RGN.RGN_ID = APP.REGION
+                AND RGN.CLOUD_VNDR_ID = 'ncp'
+                    INNER JOIN (
+                        SELECT SERIES, CORES, MEMORY
+                        FROM TASM_NCP_INSTANCE_PRICING_L
+                        WHERE INSTANCE_TYPE = #{instanceType}
+                            AND REGION = #{region}
+                        LIMIT 1
+                    ) BI ON APP.SERIES = BI.SERIES
+        WHERE RGN.RGN_ID = #{region}
+            AND APP.USD IS NOT NULL
+            AND APP.CORES > BI.CORES
+            AND APP.MEMORY > BI.MEMORY
+        ORDER BY APP.USD * 1.0
+        LIMIT 1;
+    </select>
+
+
+    <select id="getRecommendSizeDownVmType" resultMap="RecommendedVmResultMap">
+        SELECT
+            APP.SKU AS INSTANCE_TYPE,
+            APP.CORES AS CORES,
+            ROUND(APP.MEMORY, 4) AS RAM,
+            APP.USD AS PER_HOUR
+        FROM TASM_NCP_INSTANCE_PRICING_L APP
+                 LEFT OUTER JOIN TASM_CLOUD_RGN_M RGN
+                                 ON RGN.RGN_ID = APP.REGION
+                                     AND RGN.CLOUD_VNDR_ID = 'ncp'
+                 INNER JOIN (
+            SELECT SERIES, CORES, MEMORY, USD
+            FROM TASM_NCP_INSTANCE_PRICING_L
+            WHERE INSTANCE_TYPE = #{instanceType}
+              AND REGION = #{region}
+            LIMIT 1
+        ) BI ON APP.SERIES = BI.SERIES
+        WHERE RGN.RGN_ID = #{region}
+            AND APP.USD IS NOT NULL
+            AND APP.CORES >= BI.CORES * #{discountRate}
+            AND APP.MEMORY >= BI.MEMORY * #{discountRate}
+            AND APP.USD <![CDATA[<]]> BI.USD * 1.0
+        ORDER BY APP.USD * 1.0
+        LIMIT 1;
+    </select>
+</mapper>

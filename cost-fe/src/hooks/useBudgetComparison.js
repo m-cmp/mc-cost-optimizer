@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getBudgetComparison } from "@/api/budget/budget";
 import { useAlertStore } from "@/stores/useAlertStore";
 import { logger } from "@/utils/logger";
@@ -10,45 +10,46 @@ import { logger } from "@/utils/logger";
  * @returns {Object} Comparison data and state
  * @returns {Object} returns.comparisonData - Budget vs actual comparison data
  * @returns {boolean} returns.loading - Data loading state
+ * @returns {Function} returns.refetch - Function to manually refetch data
  */
 export const useBudgetComparison = (year) => {
   const { addAlert } = useAlertStore();
   const [comparisonData, setComparisonData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchComparison = async () => {
-      setLoading(true);
+  const fetchComparison = useCallback(async () => {
+    setLoading(true);
 
-      console.log("=== [Budget Comparison API] Fetch Request ===");
-      console.log("year:", year);
+    console.log("=== [Budget Comparison API] Fetch Request ===");
+    console.log("year:", year);
+    console.log("====================================");
+
+    try {
+      const response = await getBudgetComparison(year);
+      console.log("=== [Budget Comparison API] Response ===");
+      console.log("response.data:", response.data);
       console.log("====================================");
-
-      try {
-        const response = await getBudgetComparison(year);
-        console.log("=== [Budget Comparison API] Response ===");
-        console.log("response.data:", response.data);
-        console.log("====================================");
-        setComparisonData(response.data);
-      } catch (error) {
-        logger.error("Failed to fetch budget comparison:", error);
-        addAlert({
-          variant: "danger",
-          title: "Error",
-          message:
-            error.userMessage ||
-            "Failed to load comparison data. Please try again.",
-        });
-        setComparisonData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (year) {
-      fetchComparison();
+      setComparisonData(response.data);
+    } catch (error) {
+      logger.error("Failed to fetch budget comparison:", error);
+      addAlert({
+        variant: "danger",
+        title: "Error",
+        message:
+          error.userMessage ||
+          "Failed to load comparison data. Please try again.",
+      });
+      setComparisonData(null);
+    } finally {
+      setLoading(false);
     }
   }, [year, addAlert]);
 
-  return { comparisonData, loading };
+  useEffect(() => {
+    if (year) {
+      fetchComparison();
+    }
+  }, [year, fetchComparison]);
+
+  return { comparisonData, loading, refetch: fetchComparison };
 };

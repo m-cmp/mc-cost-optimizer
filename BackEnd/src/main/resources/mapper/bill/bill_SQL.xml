@@ -40,23 +40,13 @@ SELECT (
                      #{selectedProject}
                      </foreach>
               ) + (
-              -- 현재월 NCP VM 데이터 (조인 후 계산)
               SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0
-                FROM (
-                     SELECT n1.instance_no, n1.demand_amount
-                       FROM ncp_cost_vm_daily n1
-                      INNER JOIN (
-                            SELECT instance_no, MAX(target_date) AS latest_date
-                              FROM ncp_cost_vm_daily
-                             WHERE DATE_FORMAT(target_date, '%Y%m') = #{curYearMonth}
-                             GROUP BY instance_no
-                            ) n2
-                         ON n1.instance_no = n2.instance_no
-                        AND n1.target_date = n2.latest_date
-                     ) nvd_latest
-               INNER JOIN servicegroup_meta sm
-                  ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
-                 AND sm.csp_type = 'NCP'
+                FROM ncp_cost_vm_month nvd_latest
+          INNER JOIN servicegroup_meta sm
+               ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+              AND sm.csp_type = 'NCP'
+            WHERE nvd_latest.demand_month = #{curYearMonth}
+
                      <if test="selectedProjects != null and selectedProjects.size() > 0">
                  AND sm.service_cd IN
                      <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
@@ -102,31 +92,21 @@ SELECT (
                      </foreach>
               ) + (
               -- 이전월 NCP VM 데이터 (조인 후 계산)
-              SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0
-                FROM (
-                     SELECT n1.instance_no, n1.demand_amount
-                       FROM ncp_cost_vm_daily n1
-                      INNER JOIN (
-                            SELECT instance_no, MAX(target_date) AS latest_date
-                              FROM ncp_cost_vm_daily
-                             WHERE DATE_FORMAT(target_date, '%Y%m') = #{prevYearMonth}
-                             GROUP BY instance_no
-                            ) n2
-                         ON n1.instance_no = n2.instance_no
-                        AND n1.target_date = n2.latest_date
-                     ) nvd_latest
-               INNER JOIN servicegroup_meta sm
-                  ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
-                 AND sm.csp_type = 'NCP'
-                     <if test="selectedProjects != null and selectedProjects.size() > 0">
-                 AND sm.service_cd IN
-                     <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
-                     #{selectedProject}
-                     </foreach>
-                     </if>
-                     <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
-               WHERE 1=0
-                     </if>
+                SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0
+                  FROM ncp_cost_vm_month nvd_latest
+            INNER JOIN servicegroup_meta sm
+                    ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+                   AND sm.csp_type = 'NCP'
+                 WHERE nvd_latest.demand_month = #{prevYearMonth}
+                    <if test="selectedProjects != null and selectedProjects.size() > 0">
+                   AND sm.service_cd IN
+                    <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                    #{selectedProject}
+                    </foreach>
+                    </if>
+                    <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+                AND 1=0
+                    </if>
               ) + (
               -- 이전월 Azure VM 데이터 (조인 후 계산)
               SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0
@@ -184,40 +164,26 @@ SELECT ym.`year_month`
        UNION ALL
 
        -- NCP VM 데이터 (servicegroup_meta 조인 후 필터링)
-       SELECT DATE_FORMAT(nvd_latest.target_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS `year_month`
-              , SUM(nvd_latest.demand_amount) / 1400.0 AS total_cost
-         FROM (
-              SELECT n1.instance_no,
-                     n1.target_date,
-                     n1.demand_amount
-                FROM ncp_cost_vm_daily n1
-               INNER JOIN (
-                     SELECT instance_no,
-                            DATE_FORMAT(target_date, '%Y%m') AS ym,
-                            MAX(target_date) AS latest_date
-                       FROM ncp_cost_vm_daily
-                      WHERE DATE_FORMAT(target_date, '%Y%m') IN
-                            <foreach item="prevMonth" collection="prevMonths" open="(" separator="," close=")">
-                            #{prevMonth}
-                            </foreach>
-                      GROUP BY instance_no, DATE_FORMAT(target_date, '%Y%m')
-                     ) n2
-                  ON n1.instance_no = n2.instance_no
-                 AND n1.target_date = n2.latest_date
-              ) nvd_latest
+        SELECT nvd_latest.demand_month COLLATE utf8mb4_unicode_ci AS `year_month`,
+            SUM(nvd_latest.demand_amount) / 1400.0 AS total_cost
+        FROM ncp_cost_vm_month nvd_latest
         INNER JOIN servicegroup_meta sm
-           ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
-          AND sm.csp_type = 'NCP'
-              <if test="selectedProjects != null and selectedProjects.size() > 0">
-          AND sm.service_cd IN
-              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
-              #{selectedProject}
-              </foreach>
-              </if>
-              <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
-        WHERE 1=0
-              </if>
-        GROUP BY DATE_FORMAT(nvd_latest.target_date, '%Y%m')
+            ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+        AND sm.csp_type = 'NCP'
+            <if test="selectedProjects != null and selectedProjects.size() > 0">
+        AND sm.service_cd IN
+            <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+            #{selectedProject}
+            </foreach>
+            </if>
+            <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+        AND 1=0
+            </if>
+        WHERE nvd_latest.demand_month IN
+            <foreach item="prevMonth" collection="prevMonths" open="(" separator="," close=")">
+            #{prevMonth}
+            </foreach>
+        GROUP BY nvd_latest.demand_month
 
        UNION ALL
 
@@ -274,8 +240,8 @@ SELECT service_name AS resourceNm
        UNION ALL
 
        <!-- Azure (service_name별 월 집계) -->
-       SELECT acsd.service_name COLLATE utf8mb4_unicode_ci AS service_name,
-              , COALESCE(SUM(acsd.pre_tax_cost), 0) / 1400.0  AS total_cost,
+       SELECT acsd.service_name COLLATE utf8mb4_unicode_ci AS service_name
+              , COALESCE(SUM(acsd.pre_tax_cost), 0) / 1400.0  AS total_cost
               , 'AZURE' COLLATE utf8mb4_unicode_ci AS csp
          FROM azure_cost_service_daily acsd
         WHERE DATE_FORMAT(STR_TO_DATE(acsd.usage_date, '%Y%m%d'), '%Y%m') = #{year_month}

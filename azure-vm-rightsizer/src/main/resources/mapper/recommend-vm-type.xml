@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.azure.vm.rightsizer.mapper.AzureRightSizeMapper">
+
+    <resultMap id="RecommendedVmResultMap" type="com.mcmp.azure.vm.rightsizer.dto.RecommendVmTypeDto">
+        <result property="recommendType" column="INSTANCE_TYPE"/>
+        <result property="core"         column="CORES"/>
+        <result property="memory"       column="RAM"/>
+        <result property="usd"          column="PER_HOUR"/>
+    </resultMap>
+
+    <select id="getRecommendSizeUpVmType" resultMap="RecommendedVmResultMap">
+        SELECT
+            APP.INSTANCE_TYPE,
+            APP.CORES,
+            ROUND(APP.RAM, 4) AS RAM,
+            APP.PER_HOUR
+        FROM TASM_AZR_VM_PRICING_L APP
+            LEFT JOIN TASM_CLOUD_RGN_M RGN
+                ON RGN.UNIT_PRICE_RGN = APP.REGION
+                AND RGN.CLOUD_VNDR_ID = 'azu'
+            LEFT JOIN TASM_AZR_RSRC_OPT_MODN_L MODN
+                ON MODN.PREV_GENTH = APP.INSTANCE_TYPE
+                AND MODN.RGN_ID = APP.REGION
+        WHERE APP.SERIES = (
+                SELECT SERIES
+                FROM TASM_AZR_VM_PRICING_L
+                WHERE INSTANCE_TYPE = #{instanceType}
+                LIMIT 1
+            )
+            AND RGN.RGN_ID = #{region}
+            AND APP.OS = #{osType}
+            AND APP.PER_HOUR IS NOT NULL
+            AND MODN.NEW_GENTH IS NULL
+            AND APP.CORES > (
+                SELECT CORES
+                FROM TASM_AZR_VM_PRICING_L
+                WHERE INSTANCE_TYPE = #{instanceType}
+                    LIMIT 1
+            )
+            AND APP.RAM > (
+                SELECT RAM
+                FROM TASM_AZR_VM_PRICING_L
+                WHERE INSTANCE_TYPE = #{instanceType}
+                    LIMIT 1
+            )
+        ORDER BY APP.PER_HOUR * 1.0
+            LIMIT 1
+    </select>
+
+    <select id="getRecommendSizeDownVmType" resultMap="RecommendedVmResultMap">
+        SELECT
+            APP.INSTANCE_TYPE,
+            APP.CORES,
+            ROUND(APP.RAM, 4) AS RAM,
+            APP.PER_HOUR
+        FROM TASM_AZR_VM_PRICING_L APP
+                 LEFT JOIN TASM_CLOUD_RGN_M RGN
+                           ON RGN.UNIT_PRICE_RGN = APP.REGION
+                               AND RGN.CLOUD_VNDR_ID = 'azu'
+                 LEFT JOIN TASM_AZR_RSRC_OPT_MODN_L MODN
+                           ON MODN.PREV_GENTH = APP.INSTANCE_TYPE
+                               AND MODN.RGN_ID = APP.REGION
+        WHERE APP.SERIES = (
+            SELECT SERIES
+            FROM TASM_AZR_VM_PRICING_L
+            WHERE INSTANCE_TYPE = #{instanceType}
+            LIMIT 1
+            )
+        AND RGN.RGN_ID = #{region}
+        AND APP.OS = #{osType}
+        AND APP.PER_HOUR IS NOT NULL
+        AND MODN.NEW_GENTH IS NULL
+        AND APP.CORES >= (
+            SELECT CORES
+            FROM TASM_AZR_VM_PRICING_L
+            WHERE INSTANCE_TYPE = #{instanceType}
+                LIMIT 1
+        ) * #{discountRate}
+        AND APP.RAM >= (
+            SELECT RAM
+            FROM TASM_AZR_VM_PRICING_L
+            WHERE INSTANCE_TYPE = #{instanceType}
+                LIMIT 1
+        ) * #{discountRate}
+        AND APP.PER_HOUR <![CDATA[<]]> (
+            SELECT PER_HOUR
+            FROM TASM_AZR_VM_PRICING_L
+            WHERE INSTANCE_TYPE = #{instanceType}
+                LIMIT 1
+        ) * 1.0
+        ORDER BY APP.PER_HOUR * 1.0
+            LIMIT 1
+    </select>
+
+    <select id="getRecommendModernizeVmType" resultMap="RecommendedVmResultMap">
+        SELECT
+            APP.INSTANCE_TYPE,
+            APP.CORES,
+            ROUND(APP.RAM, 4) AS RAM,
+            APP.PER_HOUR
+        FROM TASM_AZR_VM_PRICING_L APP
+        WHERE APP.INSTANCE_TYPE = (
+            SELECT NEW_GENTH
+            FROM TASM_AZR_RSRC_OPT_MODN_L
+            WHERE PREV_GENTH = #{instanceType}
+              AND RGN_ID = (
+                SELECT UNIT_PRICE_RGN
+                FROM TASM_CLOUD_RGN_M
+                WHERE RGN_ID = #{region} AND CLOUD_VNDR_ID = 'azu'
+            )
+        )
+          AND APP.OS = #{osType}
+          AND APP.REGION = (
+            SELECT UNIT_PRICE_RGN
+            FROM TASM_CLOUD_RGN_M
+            WHERE RGN_ID = #{region} AND CLOUD_VNDR_ID = 'azu'
+        )
+    </select>
+</mapper>

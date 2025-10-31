@@ -38,42 +38,30 @@
 
                 <!-- NCP (VM 기준, 월 마지막 날짜만 반영) -->
         SELECT COALESCE(SUM(cost), 0) AS bill
-             , yearMonth
-             , 'NCP' AS csp
-          FROM (
-               <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
-               SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0 AS cost
+              , yearMonth
+              , 'NCP' AS csp
+        FROM (
+            <foreach collection="prevMonths" item="prevMonth" separator=" UNION ALL ">
+            SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0 AS cost
                     , #{prevMonth} AS yearMonth
-                 FROM (
-                      SELECT n1.instance_no
-                           , n1.demand_amount
-                        FROM ncp_cost_vm_daily n1
-                       INNER JOIN (
-                             SELECT instance_no
-                                  , MAX(target_date) AS latest_date
-                               FROM ncp_cost_vm_daily
-                              WHERE DATE_FORMAT(target_date, '%Y%m') = #{prevMonth}
-                              GROUP BY instance_no
-                             ) n2
-                          ON n1.instance_no = n2.instance_no
-                         AND n1.target_date = n2.latest_date
-                      ) nvd_latest
+                FROM ncp_cost_vm_month nvd_latest
                 INNER JOIN servicegroup_meta sm
-                   ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
-                  AND sm.csp_type = 'NCP'
-                      <if test="selectedProjects != null and selectedProjects.size() > 0">
-                  AND sm.service_cd IN
-                      <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
-                      #{selectedProject}
-                      </foreach>
-                      </if>
-               </foreach>
-               ) AS ncp_data
-         WHERE 1=1
-               <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
-           AND 1=0
-               </if>
-         GROUP BY yearMonth
+                ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+                AND sm.csp_type = 'NCP'
+                WHERE nvd_latest.demand_month = #{prevMonth}
+                    <if test="selectedProjects != null and selectedProjects.size() > 0">
+                AND sm.service_cd IN
+                    <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                    #{selectedProject}
+                    </foreach>
+                    </if>
+            </foreach>
+            ) AS ncp_data
+        WHERE 1=1
+            <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+        AND 1=0
+            </if>
+        GROUP BY yearMonth
 
         UNION ALL
 
@@ -135,46 +123,35 @@
     </select>
 
     <select id="getNCPInvoice"
-            parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel"
-            resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
-        SELECT nvd_latest.member_no                  AS accountID
-             , 'Server(VPC)'                         AS productID
-             , 'NCP'                                 AS csp
-             , SUM(nvd_latest.demand_amount) / 1400.0 AS bill
-             , nvd_latest.instance_no                AS resourceID
-          FROM (
-               SELECT n1.instance_no
-                    , n1.demand_amount
-                    , n1.member_no
-                 FROM ncp_cost_vm_daily n1
-                INNER JOIN (
-                      SELECT instance_no
-                           , MAX(target_date) AS latest_date
-                        FROM ncp_cost_vm_daily
-                       WHERE DATE_FORMAT(target_date, '%Y%m') = #{year_month}
-                       GROUP BY instance_no
-                      ) n2
-                   ON n1.instance_no = n2.instance_no
-                  AND n1.target_date = n2.latest_date
-               ) nvd_latest
-         INNER JOIN servicegroup_meta sm
-            ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
-           AND sm.csp_type = 'NCP'
-               <if test="selectedWorkspace != null and selectedWorkspace != ''">
-           AND sm.workspace_cd = #{selectedWorkspace}
-               </if>
-               <if test="selectedProjects != null and selectedProjects.size() > 0">
-           AND sm.service_cd IN
-               <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
-               #{selectedProject}
-               </foreach>
-               </if>
-         WHERE 1=1
-               <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
-           AND 1=0
-               </if>
-         GROUP BY nvd_latest.member_no, nvd_latest.instance_no
+        parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel"
+        resultType="com.mcmp.costbe.invoice.model.InvoiceItemModel">
+
+        SELECT nvd.member_no AS accountID
+            , 'Server(VPC)' AS productID
+            , 'NCP' AS csp
+            , SUM(nvd.demand_amount) / 1400.0 AS bill
+            , nvd.instance_no AS resourceID
+        FROM ncp_cost_vm_month nvd
+        INNER JOIN servicegroup_meta sm
+            ON nvd.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+        AND sm.csp_type = 'NCP'
+        WHERE nvd.demand_month = #{year_month}
+            <if test="selectedWorkspace != null and selectedWorkspace != ''">
+            AND sm.workspace_cd = #{selectedWorkspace}
+            </if>
+            <if test="selectedProjects != null and selectedProjects.size() > 0">
+            AND sm.service_cd IN
+                <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                #{selectedProject}
+                </foreach>
+            </if>
+            <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+            AND 1=0
+            </if>
+        GROUP BY nvd.member_no
+                , nvd.instance_no
     </select>
+
 
     <select id="getAzureInvoice"
             parameterType="com.mcmp.costbe.invoice.model.InvoiceReqModel"
@@ -200,5 +177,4 @@
                </if>
          GROUP BY acvd.tenant_id, acvd.vm_id, acvd.resource_id
     </select>
-
 </mapper>

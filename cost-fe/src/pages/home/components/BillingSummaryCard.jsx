@@ -4,6 +4,16 @@ import BarChart from "@/components/common/chart/BarChart";
 import ChangeIndicator from "@/components/common/indicator/ChangeIndicator";
 import { toBarChartData, formatYearMonth } from "@/utils/chartUtils";
 export default function BillingSummaryCard({ chartData }) {
+  if (!chartData) {
+    return (
+      <Card title="Billing Summary" titleSize={2}>
+        <div className="text-center py-5 text-muted">
+          No billing data available
+        </div>
+      </Card>
+    );
+  }
+
   const { curYear, curMonth, momPer, momBill, curMonthBill, monthlyBill } =
     chartData;
   const { categories, series } = toBarChartData(monthlyBill, 4);

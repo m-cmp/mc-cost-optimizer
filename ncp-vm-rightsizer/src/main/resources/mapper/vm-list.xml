@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.ncp.vm.rightsizer.mapper.NcpCostVmMonthMapper">
+
+    <resultMap id="NcpCostVmMonthResultMap" type="com.mcmp.ncp.vm.rightsizer.dto.NcpCostVmMonthDto">
+        <id     property="id"                   column="id"/>
+        <result property="memberNo"             column="member_no"/>
+        <result property="demandMonth"          column="demand_month"/>
+        <result property="regionCode"           column="region_code"/>
+        <result property="serverSpecCode"       column="server_spec_code"/>
+        <result property="instanceNo"           column="instance_no"/>
+        <result property="instanceName"         column="instance_name"/>
+        <result property="usageUnitCode"        column="usage_unit_code"/>
+        <result property="usageUnitName"        column="usage_unit_name"/>
+        <result property="productPrice"         column="product_price"/>
+        <result property="unitUsageQuantity"    column="unit_usage_quantity"/>
+        <result property="totalUnitUsageQuantity" column="total_unit_usage_quantity"/>
+        <result property="useAmount"            column="use_amount"/>
+        <result property="demandAmount"         column="demand_amount"/>
+        <result property="writeDate"            column="write_date"/>
+        <result property="payCurrency"          column="pay_currency"/>
+    </resultMap>
+
+    <select id="findVmListCurrentMonth" resultMap="NcpCostVmMonthResultMap">
+        SELECT DISTINCT
+            t.*
+        FROM ncp_cost_vm_month t
+        WHERE demand_month = DATE_FORMAT(CURDATE(), '%Y%m')
+        GROUP BY instance_no
+        ORDER BY instance_no;
+    </select>
+
+    <select id="selectVmListByMonth" resultMap="NcpCostVmMonthResultMap">
+        SELECT DISTINCT
+            t.*
+        FROM ncp_cost_vm_month t
+        WHERE demand_month = #{demandMonth}
+        GROUP BY instance_no
+        ORDER BY instance_no
+    </select>
+
+    <select id="findLatestByMemberNo" resultMap="NcpCostVmMonthResultMap">
+        SELECT
+            t.*
+        FROM ncp_cost_vm_month t
+            INNER JOIN (
+                SELECT member_no, instance_no, MAX(created) AS max_created
+                FROM ncp_cost_vm_month
+                WHERE member_no = #{memberNo}
+                GROUP BY member_no, instance_no
+        ) t2
+        ON t.member_no = t2.member_no
+            AND t.created = t2.max_created;
+    </select>
+
+    <select id="findLatestByMemberNoAndInstanceNo" resultMap="NcpCostVmMonthResultMap">
+        SELECT
+            t.*
+        FROM ncp_cost_vm_month t
+            INNER JOIN (
+                SELECT member_no, instance_no, MAX(created) AS max_created
+                FROM ncp_cost_vm_month
+                WHERE member_no = #{memberNo}
+                    AND instance_no = #{instanceNo}
+                GROUP BY member_no, instance_no
+        ) t2
+        ON t.member_no = t2.member_no
+            AND t.instance_no = t2.instance_no
+            AND t.created = t2.max_created;
+    </select>
+</mapper>
