@@ -4,8 +4,8 @@ import { logger } from "../utils/logger";
 
 // Dynamically generate API URL and Mock mode (based on domain)
 function getApiConfig() {
-  // const hostname = window.location.hostname;
-  const hostname = "35.239.209.190";
+  const hostname = window.location.hostname;
+  // const hostname = "35.239.209.190";
   console.log("Domain check: " + hostname);
   const isNumericAndDotsOnly = /^[0-9.]+$/.test(hostname);
 
@@ -16,7 +16,7 @@ function getApiConfig() {
   if (hostname.includes("localhost")) {
     API_BE_URL = `http://${hostname}:9090`;
     API_ALARM_URL = `http://${hostname}:9000`;
-    USE_MOCK = false; // localhost uses mock, change to false for API testing
+    USE_MOCK = true; // localhost uses mock, change to false for API testing
   } else if (isNumericAndDotsOnly) {
     API_BE_URL = `http://${hostname}:9090`;
     API_ALARM_URL = `http://${hostname}:9000`;
