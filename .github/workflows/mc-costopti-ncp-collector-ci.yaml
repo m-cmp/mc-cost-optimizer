@@ -1,0 +1,71 @@
+name: MC-CostOpti-NCP-Collector-CI (CI)
+on:
+  push:
+    branches:
+      - main
+      - release
+    tags:
+      - "v*.*.*"
+    paths-ignore:
+      - ".github/**"
+      - "AlarmService/**"
+      - "assetCollector/**"
+      - "BackEnd/**"
+      - "cost-fe/**"
+      - "costProcessor/**"
+      - "costSelector/**"
+      - "mysql/**"
+      - "**.md"
+      - "LICENSE.txt"
+      - ".gitignore"
+env:
+  DOCKER_REGISTRY_NAME: cloudbaristaorg
+  GHCR_REGISTRY_NAME: ${{ github.repository_owner }}
+  IMAGE_NAME: mc-costopti-ncp-collector
+jobs:
+  publish-container-image:
+    name: Publish a container image
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Extract metadata from Git reference and GitHub events
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            # image name for Docker Hub
+            ${{env.DOCKER_REGISTRY_NAME}}/${{env.IMAGE_NAME}}
+            # image name for GitHub Container Registry (GHCR)
+            ghcr.io/${{env.GHCR_REGISTRY_NAME}}/${{env.IMAGE_NAME}}
+          tags: |
+            type=semver,enable=true,pattern={{version}}
+            type=edge,enable=true,branch=main
+            type=ref,event=branch
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+      - name: Build and publish
+        id: docker_build
+        uses: docker/build-push-action@v6
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: ./ncp-collector
+          file: ./ncp-collector/Dockerfile
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
