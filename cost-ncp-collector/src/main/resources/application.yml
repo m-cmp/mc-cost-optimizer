@@ -33,6 +33,15 @@ mybatis:
 logging:
   level:
     com.mcmp.cost.ncp.collector.service: debug
+    org.quartz: info
+
+# NCP Batch Schedule (한국시간 기준)
+# 09:00 KST = 00:00 UTC (NCP Service Cost)
+# 09:30 KST = 00:30 UTC (NCP VM Cost)
+# Cron format: second minute hour day month dayOfWeek
+ncp-schedule:
+  service-batch-cron: ${NCP_SERVICE_BATCH_CRON_SCHEDULE:0 0 0 * * ?}
+  vm-batch-cron: ${NCP_VM_BATCH_CRON_SCHEDULE:0 30 0 * * ?}
 
 ncp:
   credential:

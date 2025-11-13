@@ -20,14 +20,16 @@ public class RecommendVmTypeDto {
     private Double core;
     private Double memory;
     private Double usd;
+    private String plan;  // "Up" or "Down"
 
     @Builder
-    public RecommendVmTypeDto(String currentType, String recommendType, String vmId, Double core, Double memory, Double usd) {
+    public RecommendVmTypeDto(String currentType, String recommendType, String vmId, Double core, Double memory, Double usd, String plan) {
         this.currentType = currentType;
         this.recommendType = recommendType;
         this.vmId = vmId;
         this.core = core;
         this.memory = memory;
         this.usd = usd;
+        this.plan = plan;
     }
 }

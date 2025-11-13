@@ -18,22 +18,15 @@
             ROUND(APP.RAM, 4) AS RAM,
             APP.PER_HOUR
         FROM TASM_AZR_VM_PRICING_L APP
-            LEFT JOIN TASM_CLOUD_RGN_M RGN
-                ON RGN.UNIT_PRICE_RGN = APP.REGION
-                AND RGN.CLOUD_VNDR_ID = 'azu'
-            LEFT JOIN TASM_AZR_RSRC_OPT_MODN_L MODN
-                ON MODN.PREV_GENTH = APP.INSTANCE_TYPE
-                AND MODN.RGN_ID = APP.REGION
         WHERE APP.SERIES = (
                 SELECT SERIES
                 FROM TASM_AZR_VM_PRICING_L
                 WHERE INSTANCE_TYPE = #{instanceType}
                 LIMIT 1
             )
-            AND RGN.RGN_ID = #{region}
+            AND APP.REGION = #{region}
             AND APP.OS = #{osType}
             AND APP.PER_HOUR IS NOT NULL
-            AND MODN.NEW_GENTH IS NULL
             AND APP.CORES > (
                 SELECT CORES
                 FROM TASM_AZR_VM_PRICING_L
@@ -57,22 +50,15 @@
             ROUND(APP.RAM, 4) AS RAM,
             APP.PER_HOUR
         FROM TASM_AZR_VM_PRICING_L APP
-                 LEFT JOIN TASM_CLOUD_RGN_M RGN
-                           ON RGN.UNIT_PRICE_RGN = APP.REGION
-                               AND RGN.CLOUD_VNDR_ID = 'azu'
-                 LEFT JOIN TASM_AZR_RSRC_OPT_MODN_L MODN
-                           ON MODN.PREV_GENTH = APP.INSTANCE_TYPE
-                               AND MODN.RGN_ID = APP.REGION
         WHERE APP.SERIES = (
             SELECT SERIES
             FROM TASM_AZR_VM_PRICING_L
             WHERE INSTANCE_TYPE = #{instanceType}
             LIMIT 1
             )
-        AND RGN.RGN_ID = #{region}
+        AND APP.REGION = #{region}
         AND APP.OS = #{osType}
         AND APP.PER_HOUR IS NOT NULL
-        AND MODN.NEW_GENTH IS NULL
         AND APP.CORES >= (
             SELECT CORES
             FROM TASM_AZR_VM_PRICING_L
@@ -106,17 +92,9 @@
             SELECT NEW_GENTH
             FROM TASM_AZR_RSRC_OPT_MODN_L
             WHERE PREV_GENTH = #{instanceType}
-              AND RGN_ID = (
-                SELECT UNIT_PRICE_RGN
-                FROM TASM_CLOUD_RGN_M
-                WHERE RGN_ID = #{region} AND CLOUD_VNDR_ID = 'azu'
-            )
+              AND RGN_ID = #{region}
         )
           AND APP.OS = #{osType}
-          AND APP.REGION = (
-            SELECT UNIT_PRICE_RGN
-            FROM TASM_CLOUD_RGN_M
-            WHERE RGN_ID = #{region} AND CLOUD_VNDR_ID = 'azu'
-        )
+          AND APP.REGION = #{region}
     </select>
 </mapper>

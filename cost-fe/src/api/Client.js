@@ -85,7 +85,7 @@ export const budgetClient = createClient(
 );
 
 // Alarm Service API (port 9000)
-export const alertClient = createClient(API_ALARM_URL, 20000);
-
+const ALERT_PATH="/api/costopti/alert"
+export const alertClient = createClient(`${API_ALARM_URL}${ALERT_PATH}`, 20000);
 // Export Mock mode (used in API files)
 export { USE_MOCK };

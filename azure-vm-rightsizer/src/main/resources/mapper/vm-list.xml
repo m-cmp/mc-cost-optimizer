@@ -26,14 +26,15 @@
             t.*
         FROM azure_cost_vm_daily t
             INNER JOIN (
-                SELECT subscription_id, vm_id, MAX(created) AS max_created
+                SELECT subscription_id, vm_id, MAX(usage_date) AS max_usage_date
                 FROM azure_cost_vm_daily
                 WHERE subscription_id = #{subscriptionId}
                 GROUP BY subscription_id, vm_id
             ) t2
         ON t.subscription_id = t2.subscription_id
             AND t.vm_id = t2.vm_id
-            AND t.created = t2.max_created
+            AND t.usage_date = t2.max_usage_date
+        GROUP BY t.subscription_id, t.vm_id
     </select>
 
     <select id="findLatestBySubscriptionIdAndVmId" resultMap="AzureCostVmDailyMap">
@@ -41,7 +42,7 @@
             t.*
         FROM azure_cost_vm_daily t
             INNER JOIN (
-                SELECT subscription_id, vm_id, MAX(created) AS max_created
+                SELECT subscription_id, vm_id, MAX(usage_date) AS max_usage_date
                 FROM azure_cost_vm_daily
                 WHERE subscription_id = #{subscriptionId}
                     AND vm_id = #{vmId}
@@ -49,7 +50,8 @@
         ) t2
         ON t.subscription_id = t2.subscription_id
             AND t.vm_id = t2.vm_id
-            AND t.created = t2.max_created
+            AND t.usage_date = t2.max_usage_date
+        LIMIT 1
     </select>
 
 </mapper>

@@ -8,6 +8,7 @@ public enum RightSizeType {
     NCP_SIZE_UP_VM(RightSizeBatchConstants.SIZE_UP_JOB, "NCP Vm Size Up"),
     NCP_SIZE_DOWN_VM(RightSizeBatchConstants.SIZE_DOWN_JOB, "NCP Vm Size Down"),
     NCP_ANOMALY_VM(RightSizeBatchConstants.ANOMALY_JOB, "NCP Vm Anomaly"),
+    NCP_UNUSED_VM(RightSizeBatchConstants.UNUSED_JOB, "NCP Unused Resource"),
     ;
 
     private final String jobBeanName;

@@ -20,6 +20,17 @@ spring:
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 
+logging:
+  level:
+    com.mcmp.azure.vm.rightsizer.service: debug
+    org.quartz: info
+
+# Azure VM Rightsizer Batch Schedule (한국시간 기준)
+# 09:30 KST = 00:30 UTC (Azure VM Rightsizer)
+# Cron format: second minute hour day month dayOfWeek
+azure-vm-rightsizer-schedule:
+  rightsizer-batch-cron: ${AZURE_RIGHTSIZER_BATCH_CRON_SCHEDULE:0 30 0 * * ?}
+
 azure:
   credential:
     tenant-id: ${TENANT_ID:tenantId}

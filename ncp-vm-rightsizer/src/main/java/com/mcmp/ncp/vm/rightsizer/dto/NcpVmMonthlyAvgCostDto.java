@@ -25,9 +25,11 @@ public class NcpVmMonthlyAvgCostDto {
     private LocalDate fromDate;    // 집계 시작일
     private LocalDate toDate;      // 집계 종료일
     private String dataRange;      // LAST_MONTH 또는 ALL_DATA
+    private String projectCd;      // 프로젝트 코드 (servicegroup_meta.service_cd)
+    private String workspaceCd;    // 워크스페이스 코드 (servicegroup_meta.workspace_cd)
 
     @Builder
-    public NcpVmMonthlyAvgCostDto(String memberNo, String instanceNo, String instanceName, Double avgCost, Integer dayCount, Double latestCost, Double totalCost, LocalDate fromDate, LocalDate toDate, String dataRange) {
+    public NcpVmMonthlyAvgCostDto(String memberNo, String instanceNo, String instanceName, Double avgCost, Integer dayCount, Double latestCost, Double totalCost, LocalDate fromDate, LocalDate toDate, String dataRange, String projectCd, String workspaceCd) {
         this.memberNo = memberNo;
         this.instanceNo = instanceNo;
         this.instanceName = instanceName;
@@ -38,5 +40,7 @@ public class NcpVmMonthlyAvgCostDto {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.dataRange = dataRange;
+        this.projectCd = projectCd;
+        this.workspaceCd = workspaceCd;
     }
 }

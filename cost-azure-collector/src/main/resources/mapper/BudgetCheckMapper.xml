@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.cost.azure.collector.mapper.BudgetCheckMapper">
+
+    <resultMap id="budgetUsageResultMap" type="com.mcmp.cost.azure.collector.dto.BudgetUsageDto">
+        <result property="projectCd" column="project_cd"/>
+        <result property="cspType" column="csp_type"/>
+        <result property="totalCost" column="total_cost"/>
+        <result property="budget" column="budget"/>
+        <result property="currency" column="currency"/>
+        <result property="usageRate" column="usage_rate"/>
+        <result property="vmCount" column="vm_count"/>
+        <result property="accountId" column="account_id"/>
+    </resultMap>
+
+    <!-- Azure 프로젝트별 예산 초과 조회 -->
+    <select id="selectBudgetExceededProjects" resultMap="budgetUsageResultMap">
+        WITH azure_costs AS (
+            SELECT
+                meta.service_cd AS project_cd,
+                'AZURE' AS csp_type,
+                SUM(cost.pre_tax_cost) AS total_cost,
+                COUNT(DISTINCT cost.vm_id) AS vm_count,
+                MAX(cost.subscription_id) AS account_id
+            FROM azure_cost_vm_daily cost
+            INNER JOIN servicegroup_meta meta
+                ON cost.subscription_id COLLATE utf8mb4_unicode_520_ci = meta.csp_account
+                AND meta.csp_type = 'AZURE'
+            WHERE cost.usage_date LIKE CONCAT(DATE_FORMAT(CURDATE(), '%Y%m'), '%')
+              AND meta.service_cd != 'undefined'
+            GROUP BY meta.service_cd
+        )
+        SELECT
+            costs.project_cd,
+            costs.csp_type,
+            costs.total_cost,
+            budget.budget,
+            budget.currency,
+            ROUND((costs.total_cost / budget.budget * 100), 2) AS usage_rate,
+            costs.vm_count,
+            costs.account_id
+        FROM azure_costs costs
+        INNER JOIN budget_monthly budget
+            ON budget.project_cd COLLATE utf8mb4_unicode_520_ci = costs.project_cd COLLATE utf8mb4_unicode_520_ci
+            AND budget.csp = 'AZURE'
+            AND budget.year = YEAR(CURDATE())
+            AND budget.month = MONTH(CURDATE())
+        WHERE budget.budget > 0
+          AND (costs.total_cost / budget.budget * 100) >= 80
+        ORDER BY usage_rate DESC
+    </select>
+
+</mapper>

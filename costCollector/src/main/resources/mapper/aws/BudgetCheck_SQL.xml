@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="budgetCheck">
+
+    <resultMap id="budgetUsageResultMap" type="com.mcmp.collector.dto.BudgetUsageDto">
+        <result property="projectCd" column="project_cd"/>
+        <result property="cspType" column="csp_type"/>
+        <result property="totalCost" column="total_cost"/>
+        <result property="budget" column="budget"/>
+        <result property="currency" column="currency"/>
+        <result property="usageRate" column="usage_rate"/>
+        <result property="vmCount" column="vm_count"/>
+        <result property="accountId" column="account_id"/>
+    </resultMap>
+
+    <!-- AWS 프로젝트별 예산 초과 조회 -->
+    <select id="selectBudgetExceededProjects" resultMap="budgetUsageResultMap" parameterType="String">
+        <![CDATA[
+        WITH aws_costs AS (
+            -- AWS 비용 데이터를 프로젝트별로 집계
+            SELECT
+                meta.service_cd AS project_cd,
+                'AWS' AS csp_type,
+                SUM(CAST(COALESCE(cost.lineitem_unblendedcost, '0') AS DECIMAL(20,8))) AS total_cost,
+                COUNT(DISTINCT cost.lineitem_resourceid) AS vm_count,
+                MAX(cost.lineitem_usageaccountid) AS account_id
+            FROM tbl_table_billing_detail_${value} cost
+            INNER JOIN servicegroup_meta meta
+                ON cost.lineitem_resourceid COLLATE utf8mb4_unicode_520_ci = meta.csp_instanceid COLLATE utf8mb4_unicode_520_ci
+                AND meta.csp_type = 'AWS'
+            WHERE meta.service_cd != 'undefined'
+              AND cost.lineitem_usagestartdate >= CONCAT(
+                  SUBSTRING(#{value}, 1, 4), '-',
+                  SUBSTRING(#{value}, 5, 2), '-01 00:00:00'
+              )
+              AND cost.lineitem_usagestartdate < DATE_ADD(
+                  CONCAT(
+                      SUBSTRING(#{value}, 1, 4), '-',
+                      SUBSTRING(#{value}, 5, 2), '-01'
+                  ),
+                  INTERVAL 1 MONTH
+              )
+            GROUP BY meta.service_cd
+        )
+        SELECT
+            costs.project_cd,
+            costs.csp_type,
+            costs.total_cost,
+            budget.budget,
+            budget.currency,
+            ROUND((costs.total_cost / budget.budget * 100), 2) AS usage_rate,
+            costs.vm_count,
+            costs.account_id
+        FROM aws_costs costs
+        INNER JOIN budget_monthly budget
+            ON budget.project_cd COLLATE utf8mb4_unicode_520_ci = costs.project_cd COLLATE utf8mb4_unicode_520_ci
+            AND budget.csp = 'AWS'
+            AND budget.year = YEAR(CURDATE())
+            AND budget.month = MONTH(CURDATE())
+        WHERE budget.budget > 0
+          AND (costs.total_cost / budget.budget * 100) >= 80
+        ORDER BY usage_rate DESC
+        ]]>
+    </select>
+
+</mapper>

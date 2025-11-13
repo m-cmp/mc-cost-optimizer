@@ -35,18 +35,25 @@ public class AnomalyCostVmServiceImpl implements AnomalyCostVmService {
     @Override
     public AnomalyDto getAnomalyCostByVmId(AzureCostVmDailyDto azureCostVmDailyDto) {
         VmMonthlyAvgCostDto vmMonthlyAvgCostDto = vmCostAnalysisMapper.selectMonthlyAvgCostByVmId(azureCostVmDailyDto.getVmId());
+
+        // 과거 비용 데이터가 없는 경우 이상비용 검사 skip
+        if (vmMonthlyAvgCostDto == null) {
+            log.debug("No historical cost data found for VM: {}. Skipping anomaly detection.", azureCostVmDailyDto.getVmId());
+            return null;
+        }
+
         LocalDateTime collectDate = LocalDateTime.now();
         double percentagePoint = getPercentagePoint(vmMonthlyAvgCostDto);
         AnomalyDto anomalyDto = AnomalyDto.builder()
                 .collectDt(collectDate)
                 .vmId(azureCostVmDailyDto.getVmId())
-                .productCd("Virtual Machine(" + vmMonthlyAvgCostDto.getVmId() + ")")
+                .productCd("Virtual Machine")
                 .abnormalRating(getAnomalyRating(percentagePoint))
                 .percentagePoint(percentagePoint)
                 .standardCost(vmMonthlyAvgCostDto.getLatestCost())
                 .subjectCost(vmMonthlyAvgCostDto.getAvgCost())
-                .projectCd("projectCd")
-                .workspaceCd("workspaceCd")
+                .projectCd(vmMonthlyAvgCostDto.getProjectCd())
+                .workspaceCd(vmMonthlyAvgCostDto.getWorkspaceCd())
                 .cspType("AZURE")
                 .build();
 
@@ -55,7 +62,9 @@ public class AnomalyCostVmServiceImpl implements AnomalyCostVmService {
     }
 
     private double getPercentagePoint(VmMonthlyAvgCostDto vmMonthlyAvgCostDto) {
-        if (vmMonthlyAvgCostDto.getAvgCost() == null ||
+        // DTO 자체가 null이거나 비용 데이터가 없는 경우
+        if (vmMonthlyAvgCostDto == null ||
+                vmMonthlyAvgCostDto.getAvgCost() == null ||
                 vmMonthlyAvgCostDto.getAvgCost() == 0 ||
                 vmMonthlyAvgCostDto.getLatestCost() == null) {
             return 0.0;

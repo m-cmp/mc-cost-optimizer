@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.azure.vm.rightsizer.mapper.UnusedProcessMartMapper">
+
+    <!-- ResultMap 정의 -->
+    <resultMap id="unused14DaysStatsResultMap" type="com.mcmp.azure.vm.rightsizer.dto.UnusedVmDto">
+        <result property="avgCpu14Days" column="avg_cpu_14days"/>
+        <result property="maxCpu14Days" column="max_cpu_14days"/>
+        <result property="dayCount" column="day_count"/>
+    </resultMap>
+
+    <!-- unused_daily_mart에 메트릭 평균 데이터 저장 -->
+    <insert id="insertUnusedProcessMart">
+        INSERT INTO unused_daily_mart (
+            create_dt,
+            csp_type,
+            resource_id,
+            collect_dt,
+            metric_type,
+            metric_avg_amount
+        ) VALUES (
+            #{createDt},
+            'AZURE',
+            #{resourceId},
+            #{collectDt},
+            #{metricType},
+            #{metricAvgAmount}
+        )
+        ON DUPLICATE KEY UPDATE
+            create_dt = #{createDt},
+            metric_avg_amount = #{metricAvgAmount}
+    </insert>
+
+    <!-- 특정 VM의 14일간 메트릭 데이터 분석 -->
+    <select id="select14DaysMetricStats" resultMap="unused14DaysStatsResultMap">
+        SELECT
+            AVG(metric_avg_amount) as avg_cpu_14days,
+            MAX(metric_avg_amount) as max_cpu_14days,
+            COUNT(DISTINCT collect_dt) as day_count
+        FROM unused_daily_mart
+        WHERE csp_type = 'AZURE'
+          AND resource_id = #{resourceId}
+          AND metric_type = 'cpu'
+          AND collect_dt >= DATE(DATE_SUB(NOW(), INTERVAL 14 DAY))
+          AND collect_dt <![CDATA[ <= ]]> DATE(DATE_SUB(NOW(), INTERVAL 1 DAY))
+    </select>
+
+    <!-- ResultMap for RecommendCandidateDto -->
+    <resultMap id="recommendCandidateResultMap" type="com.mcmp.azure.vm.rightsizer.dto.RecommendCandidateDto">
+        <result property="resourceId" column="resource_id"/>
+        <result property="subscriptionId" column="subscription_id"/>
+        <result property="avg4DaysCpu" column="avg_cpu_4days"/>
+        <result property="max4DaysCpu" column="max_cpu_4days"/>
+        <result property="region" column="region"/>
+        <result property="instanceType" column="instance_type"/>
+        <result property="vmId" column="vm_id"/>
+        <result property="osType" column="os_type"/>
+        <result property="recommendType" column="recommend_type"/>
+    </resultMap>
+
+    <!-- 4일간 메트릭 데이터 기반 SizeUp/Down 추천 대상 조회 -->
+    <select id="selectRecommendCandidates" resultMap="recommendCandidateResultMap">
+        WITH daily_stats AS (
+            SELECT
+                resource_id,
+                AVG(metric_avg_amount) as avg_cpu_4days,
+                MAX(metric_avg_amount) as max_cpu_4days,
+                COUNT(DISTINCT collect_dt) as day_count
+            FROM unused_daily_mart
+            WHERE csp_type = 'AZURE'
+              AND metric_type = 'cpu'
+              AND collect_dt BETWEEN
+                  DATE_SUB(CURDATE(), INTERVAL 4 DAY) AND
+                  DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+            GROUP BY resource_id
+            HAVING day_count = 4
+        ),
+        recommend_candidates AS (
+            SELECT
+                resource_id,
+                avg_cpu_4days,
+                max_cpu_4days,
+                CASE
+                    WHEN avg_cpu_4days > 80 THEN 'Up'
+                    WHEN avg_cpu_4days <![CDATA[ <= ]]> 10 OR max_cpu_4days <![CDATA[ <= ]]> 50 THEN 'Down'
+                    ELSE 'Modernize'
+                END as recommend_type
+            FROM daily_stats
+        )
+        SELECT
+            rc.resource_id,
+            rc.avg_cpu_4days,
+            rc.max_cpu_4days,
+            rc.recommend_type,
+            azure.subscription_id,
+            azure.region,
+            azure.instance_type,
+            azure.vm_id,
+            azure.os_type
+        FROM recommend_candidates rc
+        INNER JOIN (
+            SELECT
+                t.subscription_id,
+                t.vm_id,
+                t.region,
+                t.instance_type,
+                t.os_type
+            FROM azure_cost_vm_daily t
+            INNER JOIN (
+                SELECT vm_id, MAX(created) as max_created
+                FROM azure_cost_vm_daily
+                GROUP BY vm_id
+            ) latest ON t.vm_id = latest.vm_id
+                     AND t.created = latest.max_created
+        ) azure ON rc.resource_id COLLATE utf8mb4_unicode_520_ci = azure.vm_id
+        ORDER BY rc.recommend_type, rc.resource_id
+    </select>
+
+</mapper>

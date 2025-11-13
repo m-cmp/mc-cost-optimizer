@@ -64,8 +64,18 @@ public class VmMonthlyAvgCostDto {
      */
     private String dataRange;
 
+    /**
+     * 프로젝트 코드 (servicegroup_meta.service_cd)
+     */
+    private String projectCd;
+
+    /**
+     * 워크스페이스 코드 (servicegroup_meta.workspace_cd)
+     */
+    private String workspaceCd;
+
     @Builder
-    public VmMonthlyAvgCostDto(String subscriptionId, String vmId, Double avgCost, Integer dayCount, Double totalCost, Double latestCost, String fromDate, String toDate, String dataRange) {
+    public VmMonthlyAvgCostDto(String subscriptionId, String vmId, Double avgCost, Integer dayCount, Double totalCost, Double latestCost, String fromDate, String toDate, String dataRange, String projectCd, String workspaceCd) {
         this.subscriptionId = subscriptionId;
         this.vmId = vmId;
         this.avgCost = avgCost;
@@ -75,5 +85,7 @@ public class VmMonthlyAvgCostDto {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.dataRange = dataRange;
+        this.projectCd = projectCd;
+        this.workspaceCd = workspaceCd;
     }
 }

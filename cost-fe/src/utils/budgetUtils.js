@@ -186,9 +186,10 @@ export const transformApiToUiFormat = (apiData) => {
  * @param {Object} cspBudgets - {AWS: [budget1, budget2, ...], Azure: [...], NCP: [...]}
  * @param {number} year - Year
  * @param {Object} originalBudgets - Original data before changes (optional, includes only changed items if provided)
- * @returns {Object} {budgets: [{csp, year, month, budget}, ...]}
+ * @param {string} projectId - Project ID
+ * @returns {Object} {budgets: [{csp, year, month, budget, projectId}, ...]}
  */
-export const transformUiToApiFormat = (cspBudgets, year, originalBudgets = null) => {
+export const transformUiToApiFormat = (cspBudgets, year, originalBudgets = null, projectId) => {
   const budgets = [];
 
   Object.entries(cspBudgets).forEach(([csp, monthlyBudgets]) => {
@@ -209,6 +210,7 @@ export const transformUiToApiFormat = (cspBudgets, year, originalBudgets = null)
           year,
           month: index + 1, // Index 0-11 -> Month 1-12
           budget: parseFloat(budget),
+          projectId,
         });
       }
     });

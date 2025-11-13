@@ -4,6 +4,7 @@ import {
   getBudgetsByYear,
   upsertBudgets,
 } from "@/api/budget/budget";
+import { useProjectStore } from "@/stores/useProjectStore";
 import { useAlertStore } from "@/stores/useAlertStore";
 import {
   transformApiToUiFormat,
@@ -25,6 +26,7 @@ import { logger } from "@/utils/logger";
  * @returns {Function} returns.resetBudgets - Function to reset budgets
  */
 export const useBudgetData = (year) => {
+  const { projectId } = useProjectStore();
   const { addAlert } = useAlertStore();
 
   const [availableYears, setAvailableYears] = useState([]);
@@ -51,16 +53,22 @@ export const useBudgetData = (year) => {
 
   // Load data when year changes
   useEffect(() => {
+    // Don't make API request if projectId is not available
+    if (!projectId) {
+      console.log("⏳ [Budget API] Waiting for projectId...");
+      return;
+    }
+
     const fetchBudgets = async () => {
       setLoading(true);
 
       console.log("=== [Budget API] Fetch Request ===");
       console.log("year:", year);
-      console.log("⚠️ Check if workspaceId/projectId included!");
+      console.log("projectId:", projectId);
       console.log("====================================");
 
       try {
-        const response = await getBudgetsByYear(year);
+        const response = await getBudgetsByYear(year, projectId);
         const uiBudgets = transformApiToUiFormat(response.data);
         setCspBudgets(uiBudgets);
         setOriginalBudgets(uiBudgets);
@@ -81,18 +89,18 @@ export const useBudgetData = (year) => {
     };
 
     fetchBudgets();
-  }, [year, addAlert]);
+  }, [year, projectId, addAlert]);
 
   // Budget save function
   const saveBudgets = async () => {
     try {
       setSaving(true);
-      const payload = transformUiToApiFormat(cspBudgets, year, originalBudgets);
+      const payload = transformUiToApiFormat(cspBudgets, year, originalBudgets, projectId);
 
       console.log("=== [Budget API] Save Request Payload ===");
       console.log("year:", year);
+      console.log("projectId:", projectId);
       console.log("payload:", payload);
-      console.log("⚠️ Check if workspaceId/projectId included!");
       console.log("====================================");
 
       logger.info("Saving budget data:", payload);
@@ -111,7 +119,7 @@ export const useBudgetData = (year) => {
 
         // Fetch latest saved data from server again
         try {
-          const response = await getBudgetsByYear(year);
+          const response = await getBudgetsByYear(year, projectId);
           const uiBudgets = transformApiToUiFormat(response.data);
           setCspBudgets(uiBudgets);
           setOriginalBudgets(uiBudgets);

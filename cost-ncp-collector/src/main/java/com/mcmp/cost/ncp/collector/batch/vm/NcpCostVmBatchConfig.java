@@ -26,11 +26,13 @@ public class NcpCostVmBatchConfig {
     private final NcpCredentialItemReader ncpCredentialItemReader;
     private final NcpCostVmItemProcessor ncpCostVmItemProcessor;
     private final NcpCostVmItemWriter ncpCostVmItemWriter;
+    private final BudgetCheckTasklet budgetCheckTasklet;
 
     @Bean(name = NcpBatchConstants.NCP_COST_VM_JOB)
     public Job ncpCostVmJob() {
         return new JobBuilder(NcpBatchConstants.NCP_COST_VM_JOB, jobRepository)
                 .start(ncpCostVmStep())
+                .next(budgetCheckStep())
                 .build();
     }
 
@@ -41,6 +43,14 @@ public class NcpCostVmBatchConfig {
                 .reader(ncpCredentialItemReader)
                 .processor(ncpCostVmItemProcessor)
                 .writer(ncpCostVmItemWriter)
+                .allowStartIfComplete(true)
+                .build();
+    }
+
+    @Bean(name = "ncpBudgetCheckStep")
+    public Step budgetCheckStep() {
+        return new StepBuilder("ncpBudgetCheckStep", jobRepository)
+                .tasklet(budgetCheckTasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }

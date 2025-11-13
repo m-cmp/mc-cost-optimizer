@@ -10,6 +10,7 @@ import com.azure.resourcemanager.costmanagement.models.QueryResult;
 import com.mcmp.cost.azure.collector.dto.AzureApiCredentialDto;
 import com.mcmp.cost.azure.collector.entity.AzureCostServiceDaily;
 import com.mcmp.cost.azure.collector.entity.AzureCostVmDaily;
+import com.mcmp.cost.azure.collector.properties.AzureSslProperties;
 import com.mcmp.cost.azure.collector.service.AzureCostDailyService;
 import com.mcmp.cost.azure.collector.utils.AzureUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AzureCostDailyServiceImpl implements AzureCostDailyService {
 
+    private final AzureSslProperties azureSslProperties;
+
     @Override
     public List<AzureCostServiceDaily> getCostByService(AzureApiCredentialDto azureApiCredentialDto) {
         // 0. 인증 생성
-        ClientSecretCredential credential = AzureUtils.buildCredential(azureApiCredentialDto);
+        ClientSecretCredential credential = AzureUtils.buildCredential(azureApiCredentialDto, azureSslProperties.isDisabled());
 
         // 1. Profile 생성
         AzureProfile profile = AzureUtils.buildProfile(azureApiCredentialDto);
@@ -65,7 +68,7 @@ public class AzureCostDailyServiceImpl implements AzureCostDailyService {
     @Override
     public List<AzureCostVmDaily> getCostByVirtualMachines(AzureApiCredentialDto azureApiCredentialDto) {
         // 0. 인증 생성
-        ClientSecretCredential credential = AzureUtils.buildCredential(azureApiCredentialDto);
+        ClientSecretCredential credential = AzureUtils.buildCredential(azureApiCredentialDto, azureSslProperties.isDisabled());
 
         // 1. Profile 생성
         AzureProfile profile = AzureUtils.buildProfile(azureApiCredentialDto);

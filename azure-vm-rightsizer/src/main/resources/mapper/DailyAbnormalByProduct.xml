@@ -4,23 +4,27 @@
 <mapper namespace="com.mcmp.azure.vm.rightsizer.mapper.DailyAbnormalByProductMapper">
 
     <insert id="insertDailyAbnormalByProduct" parameterType="com.mcmp.azure.vm.rightsizer.dto.AnomalyDto">
-        INSERT INTO daily_abnormal_by_product (collect_dt,
-                                               product_cd,
-                                               abnormal_rating,
-                                               percentage_point,
-                                               standard_cost,
-                                               subject_cost,
-                                               project_cd,
-                                               workspace_cd,
-                                               csp_type)
-        VALUES (#{collectDt},
-                #{productCd},
-                #{abnormalRating},
-                #{percentagePoint},
-                #{standardCost},
-                #{subjectCost},
-                #{projectCd},
-                #{workspaceCd},
-                #{cspType})
+        INSERT IGNORE INTO daily_abnormal_by_product (
+        collect_dt,
+        product_cd,
+        abnormal_rating,
+        percentage_point,
+        standard_cost,
+        subject_cost,
+        project_cd,
+        workspace_cd,
+        csp_type
+    )
+    VALUES (
+        #{collectDt},
+        #{productCd},
+        #{abnormalRating},
+        #{percentagePoint},
+        #{standardCost},
+        #{subjectCost},
+        #{projectCd},
+        #{workspaceCd},
+        #{cspType}
+        )
     </insert>
 </mapper>

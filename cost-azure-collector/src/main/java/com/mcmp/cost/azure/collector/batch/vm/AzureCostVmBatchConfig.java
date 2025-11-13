@@ -28,11 +28,13 @@ public class AzureCostVmBatchConfig {
     private final AzureCredentialItemReader azureCredentialItemReader;
     private final AzureCostVmItemProcessor azureCostVmItemProcessor;
     private final AzureCostVmItemWriter azureCostVmItemWriter;
+    private final BudgetCheckTasklet budgetCheckTasklet;
 
     @Bean(name = AzureBatchConstants.AZURE_COST_VM_JOB)
     public Job azureCostVmJob() {
         return new JobBuilder(AzureBatchConstants.AZURE_COST_VM_JOB, jobRepository)
                 .start(azureCostVmStep())
+                .next(budgetCheckStep())
                 .build();
     }
 
@@ -43,6 +45,14 @@ public class AzureCostVmBatchConfig {
                 .reader(azureCredentialItemReader)
                 .processor(azureCostVmItemProcessor)
                 .writer(azureCostVmItemWriter)
+                .allowStartIfComplete(true)
+                .build();
+    }
+
+    @Bean(name = "azureBudgetCheckStep")
+    public Step budgetCheckStep() {
+        return new StepBuilder("azureBudgetCheckStep", jobRepository)
+                .tasklet(budgetCheckTasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }

@@ -75,7 +75,7 @@
                     , #{prevMonth} AS yearMonth
                  FROM azure_cost_vm_daily acvd
                 INNER JOIN servicegroup_meta sm
-                   ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+                   ON acvd.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
                   AND sm.csp_type = 'AZURE'
                       <if test="selectedProjects != null and selectedProjects.size() > 0">
                   AND sm.service_cd IN
@@ -83,7 +83,7 @@
                       #{selectedProject}
                       </foreach>
                       </if>
-                WHERE DATE_FORMAT(STR_TO_DATE(acvd.usage_date, '%Y%m%d'), '%Y%m') = #{prevMonth}
+                WHERE DATE_FORMAT(acvd.usage_date, '%Y%m') = #{prevMonth}
                </foreach>
                ) AS azure_data
          WHERE 1=1
@@ -136,9 +136,6 @@
             ON nvd.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
         AND sm.csp_type = 'NCP'
         WHERE nvd.demand_month = #{year_month}
-            <if test="selectedWorkspace != null and selectedWorkspace != ''">
-            AND sm.workspace_cd = #{selectedWorkspace}
-            </if>
             <if test="selectedProjects != null and selectedProjects.size() > 0">
             AND sm.service_cd IN
                 <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
@@ -163,7 +160,7 @@
              , acvd.resource_id                AS resourceID
           FROM azure_cost_vm_daily acvd
          INNER JOIN servicegroup_meta sm
-            ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+            ON acvd.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
            AND sm.csp_type = 'AZURE'
                <if test="selectedProjects != null and selectedProjects.size() > 0">
            AND sm.service_cd IN
@@ -171,7 +168,7 @@
                #{selectedProject}
                </foreach>
                </if>
-         WHERE acvd.usage_date LIKE CONCAT(#{year_month}, '%')
+         WHERE DATE_FORMAT(acvd.usage_date, '%Y%m') = #{year_month}
                <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
            AND 1=0
                </if>

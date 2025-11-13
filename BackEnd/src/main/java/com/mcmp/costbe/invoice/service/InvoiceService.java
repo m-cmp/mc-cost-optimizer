@@ -48,6 +48,7 @@ public class InvoiceService {
         req.setYear_month(req.getToday().substring(0, 6));
 
         List<InvoiceItemModel> result = new ArrayList<>();
+        boolean hasTableNotFoundError = false;
 
         try {
             List<InvoiceItemModel> awsData = invoiceDao.getAWSInvoice(req);
@@ -57,6 +58,7 @@ public class InvoiceService {
         } catch (BadSqlGrammarException ex){
             if(exceptionService.isTableNotFound(ex)){
                 log.warn("[Invoice Widget Log] AWS NotFoundTable : {}", ex.getMessage());
+                hasTableNotFoundError = true;
             } else {
                 ex.printStackTrace();
                 throw new RuntimeException();
@@ -85,6 +87,11 @@ public class InvoiceService {
             log.error("[Invoice Widget Log] Azure Error : {}", ex.getMessage(), ex);
         }
 
-        return result.isEmpty() ? null : result;
+        // 테이블 없음 또는 데이터 없음 -> null 반환
+        if(hasTableNotFoundError || result.isEmpty()) {
+            return null;
+        }
+
+        return result;
     }
 }

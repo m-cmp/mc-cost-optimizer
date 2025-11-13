@@ -98,6 +98,26 @@ public class MailService {
                             "추천 Plan : " + mailFormModel.getPlan() + "<br>" +
                             mailFormModel.getNote();
                     break;
+                case "Budget":
+                    String urgencyLevel = "Caution".equals(mailFormModel.getUrgency()) ? "주의" : "위험";
+                    mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : " +
+                            (urgencyLevel.equals("위험") ? "Critical" : "Caution") + " Budget Usage");
+                    mailMessage = "MCMP Cost에서 예산 초과 " + urgencyLevel + " 알람이 발생했습니다." +
+                            "<br><br>" +
+                            "CSP : " + mailFormModel.getCsp_type() + "<br>" +
+                            "프로젝트 : " + mailFormModel.getProject_cd() + "<br>" +
+                            "예산 사용률 등급 : " + mailFormModel.getUrgency() + "<br>" +
+                            mailFormModel.getNote();
+                    break;
+                default:
+                    log.warn("Unknown event_type: {}", optiAlarmReqModel.getEvent_type());
+                    mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Unknown Event");
+                    mailMessage = "MCMP Cost에서 알람이 발생했습니다." +
+                            "<br><br>" +
+                            "Event Type : " + optiAlarmReqModel.getEvent_type() + "<br>" +
+                            "CSP : " + mailFormModel.getCsp_type() + "<br>" +
+                            mailFormModel.getNote();
+                    break;
             }
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");

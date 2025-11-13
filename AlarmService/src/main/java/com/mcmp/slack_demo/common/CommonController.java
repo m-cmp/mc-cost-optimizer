@@ -21,21 +21,34 @@ public class CommonController {
     @PostMapping("/sendOptiAlarmMail")
     public ResponseEntity<CommonResultModel> sendOptiAlarmMail(@RequestBody CostOptiAlarmReqModel reqModel){
         CommonResultModel result = new CommonResultModel();
-        try{
-            for (String alarmType: reqModel.getAlarm_type()) {
+        boolean anySuccess = false;
+        StringBuilder errorMessages = new StringBuilder();
+
+        for (String alarmType: reqModel.getAlarm_type()) {
+            try{
                 switch (alarmType){
                     case "mail":
                         mailService.sendEmail(reqModel, null);
+                        anySuccess = true;
                         break;
                     case "slack":
                         slackService.sendSlack(reqModel);
+                        anySuccess = true;
                         break;
                 }
+            } catch (Exception e){
+                // 개별 알림 타입에서 에러가 발생해도 다른 알림은 계속 시도
+                String errorMsg = String.format("Failed to send %s alarm: %s", alarmType, e.getMessage());
+                errorMessages.append(errorMsg).append("; ");
+                e.printStackTrace();
             }
-
-        } catch (Exception e){
-            result.setError(400, "Send sendOptiAlarmMail Fail");
         }
+
+        // 모든 알림이 실패한 경우에만 에러 처리
+        if (!anySuccess && errorMessages.length() > 0) {
+            result.setError(400, "All alarm sending failed: " + errorMessages.toString());
+        }
+
         return ResponseEntity.ok(result);
     }
 

@@ -32,7 +32,7 @@ public class MailController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("insertMailInfo")
+    @PostMapping("/insertMailInfo")
     public ResponseEntity<CommonResultModel> insertMailingInfo(@RequestBody MailingInfoModel model){
         CommonResultModel result = new CommonResultModel();
         try{

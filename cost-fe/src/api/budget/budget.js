@@ -15,13 +15,14 @@ export const getAvailableYears = () => {
 /**
  * Fetch budget by year
  * @param {number} year
+ * @param {string} projectId
  * @returns {Promise<Array>} [{csp, year, month, budget, currency}, ...]
  */
-export const getBudgetsByYear = (year) => {
+export const getBudgetsByYear = (year, projectId) => {
   if (USE_MOCK) {
     return Promise.resolve({ data: mockBudgetData });
   }
-  return budgetClient.get(`/${year}`);
+  return budgetClient.get(`/${year}?projectId=${projectId}`);
 };
 
 /**
@@ -39,11 +40,12 @@ export const upsertBudgets = (payload) => {
 /**
  * Fetch budget vs actual comparison by year
  * @param {number} year
+ * @param {string} projectId
  * @returns {Promise<Object>} { year, months: [{month, yearMonth, budget: {total, AWS, NCP, AZURE}, actual: {...}}, ...] }
  */
-export const getBudgetComparison = (year) => {
+export const getBudgetComparison = (year, projectId) => {
   if (USE_MOCK) {
     return Promise.resolve({ data: mockBudgetComparisonData });
   }
-  return budgetClient.get(`/comparison/${year}`);
+  return budgetClient.get(`/comparison/${year}?projectId=${projectId}`);
 };

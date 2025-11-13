@@ -16,6 +16,9 @@ public class BudgetItemModel {
     @Schema(description = "월", example = "1", required = true)
     private int month;
 
+    @Schema(description = "프로젝트 코드", example = "project-001", required = true)
+    private String projectId;
+
     @Schema(description = "예산 금액", example = "400.00", required = true)
     private double budget;
 

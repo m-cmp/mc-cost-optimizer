@@ -38,8 +38,8 @@ public class UsageService {
         return filterDao.getWorkspaces();
     }
 
-    public List<ProjectsModel> getProjects(String workspaceCD){
-        return filterDao.getProjects(workspaceCD);
+    public List<ProjectsModel> getProjects(){
+        return filterDao.getProjects();
     }
 
     public BillingWidgetModel getBillingMonthlyWidget(BillingWidgetReqModel req){
@@ -85,19 +85,16 @@ public class UsageService {
             }
 
             if(top5bill.isEmpty()){
-                Top5BillModel temp = new Top5BillModel();
-                temp.setBill(0.0);
-                temp.setCsp("Null");
-                temp.setIsOthers(false);
-                temp.setResourceNm("Null");
-
-                top5bill.add(temp);
+                // 데이터 없음 -> null 반환
+                result.setTop5bill(null);
+            } else {
+                result.setTop5bill(top5bill);
             }
-
-            result.setTop5bill(top5bill);
         } catch (BadSqlGrammarException ex){
             if(exceptionService.isTableNotFound(ex)){
                 log.warn("[Top5 Widget Log]NotFoundTable : {}", ex.getMessage());
+                // 테이블 없음 -> null 반환
+                result.setTop5bill(null);
             }else {
                 ex.printStackTrace();
                 throw new RuntimeException();
@@ -160,9 +157,18 @@ public class UsageService {
 
                 billingAsset.add(familyItem);
             }
+
+            // 데이터 없음 -> null 반환
+            if(billingAsset.isEmpty()){
+                result.setBillingAsset(null);
+            } else {
+                result.setBillingAsset(billingAsset);
+            }
         } catch (BadSqlGrammarException ex){
             if(exceptionService.isTableNotFound(ex)){
                 log.warn("[BillAsset Widget Log]NotFoundTable : {}", ex.getMessage());
+                // 테이블 없음 -> null 반환
+                result.setBillingAsset(null);
             } else {
                 ex.printStackTrace();
                 throw new RuntimeException();
@@ -173,7 +179,6 @@ public class UsageService {
         result.setSelectedCsps(req.getSelectedCsps());
         result.setCurYear(req.getToday().substring(0, 4));
         result.setCurMonth(req.getToday().substring(4,6));
-        result.setBillingAsset(billingAsset);
 
         return result;
     }

@@ -36,10 +36,14 @@ public class CurCollect {
     @Autowired
     private AwsDao awsDao;
 
+    @Autowired
+    private BudgetCheckTasklet budgetCheckTasklet;
+
     @Bean
-    public Job curCollectJob(JobRepository jobRepository, Step curCollectStep) {
+    public Job curCollectJob(JobRepository jobRepository, Step curCollectStep, Step budgetCheckStep) {
         return new JobBuilder("curCollectJob", jobRepository)
                 .start(curCollectStep)
+                .next(budgetCheckStep)
                 .build();
     }
 
@@ -84,5 +88,13 @@ public class CurCollect {
 
            return RepeatStatus.FINISHED;
         });
+    }
+
+    @Bean
+    @JobScope
+    public Step budgetCheckStep(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager) {
+        return new StepBuilder("budgetCheckStep", jobRepository)
+                .tasklet(budgetCheckTasklet, platformTransactionManager)
+                .build();
     }
 }

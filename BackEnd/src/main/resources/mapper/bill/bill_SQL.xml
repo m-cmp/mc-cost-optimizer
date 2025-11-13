@@ -9,14 +9,13 @@
         from workspace_meta wm
     </select>
 
-    <select id="getProjects" parameterType="Map" resultType="com.mcmp.costbe.usage.model.filter.ProjectsModel">
+    <select id="getProjects" resultType="com.mcmp.costbe.usage.model.filter.ProjectsModel">
         select DISTINCT service_cd as projectCD
                       , csp_type as cspType
                       , csp_account as userID
                       , service_nm as projectNM
                       , workspace_cd as workspaceCD
         from servicegroup_meta
-        where workspace_cd = #{workspaceCD}
     </select>
 
     <!-- 현재/이전 월 비용 -->
@@ -61,7 +60,7 @@ SELECT (
               SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0
                 FROM azure_cost_vm_daily acvd
                INNER JOIN servicegroup_meta sm
-                  ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+                  ON acvd.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
                  AND sm.csp_type = 'AZURE'
                      <if test="selectedProjects != null and selectedProjects.size() > 0">
                  AND sm.service_cd IN
@@ -69,7 +68,7 @@ SELECT (
                      #{selectedProject}
                      </foreach>
                      </if>
-               WHERE acvd.usage_date LIKE CONCAT(#{curYearMonth}, '%')
+               WHERE DATE_FORMAT(acvd.usage_date, '%Y%m') = #{curYearMonth}
                      <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
                  AND 1=0
                      </if>
@@ -112,7 +111,7 @@ SELECT (
               SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0
                 FROM azure_cost_vm_daily acvd
                INNER JOIN servicegroup_meta sm
-                  ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+                  ON acvd.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
                  AND sm.csp_type = 'AZURE'
                      <if test="selectedProjects != null and selectedProjects.size() > 0">
                  AND sm.service_cd IN
@@ -120,7 +119,7 @@ SELECT (
                      #{selectedProject}
                      </foreach>
                      </if>
-               WHERE acvd.usage_date LIKE CONCAT(#{prevYearMonth}, '%')
+               WHERE DATE_FORMAT(acvd.usage_date, '%Y%m') = #{prevYearMonth}
                      <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
                  AND 1=0
                      </if>
@@ -188,11 +187,11 @@ SELECT ym.`year_month`
        UNION ALL
 
        -- Azure VM 데이터 (servicegroup_meta 조인 후 필터링)
-       SELECT DATE_FORMAT(STR_TO_DATE(acvd.usage_date, '%Y%m%d'), '%Y%m') COLLATE utf8mb4_unicode_ci AS `year_month`
+       SELECT DATE_FORMAT(acvd.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS `year_month`
               , SUM(acvd.pre_tax_cost) / 1400.0 AS total_cost
          FROM azure_cost_vm_daily acvd
         INNER JOIN servicegroup_meta sm
-           ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+           ON acvd.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
           AND sm.csp_type = 'AZURE'
               <if test="selectedProjects != null and selectedProjects.size() > 0">
           AND sm.service_cd IN
@@ -200,14 +199,14 @@ SELECT ym.`year_month`
               #{selectedProject}
               </foreach>
               </if>
-        WHERE DATE_FORMAT(STR_TO_DATE(acvd.usage_date, '%Y%m%d'), '%Y%m') IN
+        WHERE DATE_FORMAT(acvd.usage_date, '%Y%m') IN
               <foreach item="prevMonth" collection="prevMonths" open="(" separator="," close=")">
               #{prevMonth}
               </foreach>
               <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
           AND 1=0
               </if>
-        GROUP BY DATE_FORMAT(STR_TO_DATE(acvd.usage_date, '%Y%m%d'), '%Y%m')
+        GROUP BY DATE_FORMAT(acvd.usage_date, '%Y%m')
        ) AS all_data
     ON ym.`year_month` = all_data.`year_month`
  GROUP BY ym.`year_month`
@@ -244,7 +243,16 @@ SELECT service_name AS resourceNm
               , COALESCE(SUM(acsd.pre_tax_cost), 0) / 1400.0  AS total_cost
               , 'AZURE' COLLATE utf8mb4_unicode_ci AS csp
          FROM azure_cost_service_daily acsd
-        WHERE DATE_FORMAT(STR_TO_DATE(acsd.usage_date, '%Y%m%d'), '%Y%m') = #{year_month}
+        INNER JOIN servicegroup_meta sm
+           ON acsd.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
+          AND sm.csp_type = 'AZURE'
+        WHERE DATE_FORMAT(acsd.usage_date, '%Y%m') = #{year_month}
+              <if test="selectedProjects != null and selectedProjects.size() > 0">
+          AND sm.service_cd IN
+              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+              #{selectedProject}
+              </foreach>
+              </if>
         GROUP BY acsd.service_name
 
        UNION ALL
@@ -254,7 +262,7 @@ SELECT service_name AS resourceNm
               , COALESCE(SUM(vm_latest.demand_amount), 0) / 1400.0 AS total_cost
               , 'NCP' COLLATE utf8mb4_unicode_ci AS csp
          FROM (
-              SELECT n1.product_demand_type, n1.demand_amount
+              SELECT n1.product_demand_type, n1.demand_amount, n1.member_no
                 FROM ncp_cost_service_month n1
                INNER JOIN (
                      SELECT product_demand_type, demand_month, MAX(write_date) AS latest_write_date
@@ -266,6 +274,16 @@ SELECT service_name AS resourceNm
                  AND n1.demand_month = n2.demand_month
                  AND n1.write_date = n2.latest_write_date
               ) vm_latest
+        INNER JOIN servicegroup_meta sm
+           ON vm_latest.member_no COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
+          AND sm.csp_type = 'NCP'
+        WHERE 1=1
+              <if test="selectedProjects != null and selectedProjects.size() > 0">
+          AND sm.service_cd IN
+              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+              #{selectedProject}
+              </foreach>
+              </if>
         GROUP BY vm_latest.product_demand_type
        ) AS all_services
  WHERE total_cost > 0
@@ -339,7 +357,16 @@ SELECT service_name AS resourceNm
               COUNT(DISTINCT ncvm.instance_no)              AS unit,
               'NCP' COLLATE utf8mb4_unicode_ci              AS csp
          FROM ncp_cost_vm_month ncvm
+        INNER JOIN servicegroup_meta sm
+           ON ncvm.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+          AND sm.csp_type = 'NCP'
         WHERE ncvm.demand_month = #{year_month}
+              <if test="selectedProjects != null and selectedProjects.size() > 0">
+          AND sm.service_cd IN
+              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+              #{selectedProject}
+              </foreach>
+              </if>
               <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
           AND 1=0
               </if>
@@ -378,7 +405,16 @@ SELECT service_name AS resourceNm
               COUNT(DISTINCT acvd.resource_id)              AS unit,
               'AZURE' COLLATE utf8mb4_unicode_ci            AS csp
          FROM azure_cost_vm_daily acvd
-        WHERE acvd.usage_date LIKE CONCAT(#{year_month}, '%')
+        INNER JOIN servicegroup_meta sm
+           ON acvd.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
+          AND sm.csp_type = 'AZURE'
+        WHERE DATE_FORMAT(acvd.usage_date, '%Y%m') = #{year_month}
+              <if test="selectedProjects != null and selectedProjects.size() > 0">
+          AND sm.service_cd IN
+              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+              #{selectedProject}
+              </foreach>
+              </if>
               <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
           AND 1=0
               </if>
@@ -449,7 +485,7 @@ SELECT csp, SUM(cost) AS cost
               COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0  AS cost
          FROM azure_cost_vm_daily acvd
         INNER JOIN servicegroup_meta sm
-           ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+           ON acvd.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
           AND sm.csp_type = 'AZURE'
               <if test="selectedProjects != null and selectedProjects.size() > 0">
           AND sm.service_cd IN
@@ -457,7 +493,7 @@ SELECT csp, SUM(cost) AS cost
               #{selectedProject}
               </foreach>
               </if>
-        WHERE DATE_FORMAT(STR_TO_DATE(acvd.usage_date, '%Y%m%d'), '%Y%m') = #{year_month}
+        WHERE DATE_FORMAT(acvd.usage_date, '%Y%m') = #{year_month}
        ) AS combined_costs
  GROUP BY csp
     </select>

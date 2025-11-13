@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.azure.vm.rightsizer.mapper.UnusedBatchRstMapper">
+
+    <!-- unused_batch_rst에 Unused 판정 결과 저장 -->
+    <insert id="insertUnusedBatchRst">
+        INSERT INTO unused_batch_rst (
+            create_dt,
+            csp_type,
+            csp_account,
+            csp_instanceid,
+            plan_type
+        ) VALUES (
+            NOW(),
+            #{cspType},
+            #{cspAccount},
+            #{cspInstanceId},
+            #{planType}
+        )
+        ON DUPLICATE KEY UPDATE
+            plan_type = #{planType}
+    </insert>
+
+    <!-- 오늘 날짜의 Unused 판정 여부 확인 -->
+    <select id="checkTodayUnusedExists" resultType="int">
+        SELECT COUNT(*)
+        FROM unused_batch_rst
+        WHERE csp_type = #{cspType}
+          AND csp_instanceid = #{cspInstanceId}
+          AND DATE(create_dt) = CURDATE()
+    </select>
+
+</mapper>

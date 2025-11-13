@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { getBudgetComparison } from "@/api/budget/budget";
+import { useProjectStore } from "@/stores/useProjectStore";
 import { useAlertStore } from "@/stores/useAlertStore";
 import { logger } from "@/utils/logger";
 
@@ -13,19 +14,27 @@ import { logger } from "@/utils/logger";
  * @returns {Function} returns.refetch - Function to manually refetch data
  */
 export const useBudgetComparison = (year) => {
+  const { projectId } = useProjectStore();
   const { addAlert } = useAlertStore();
   const [comparisonData, setComparisonData] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const fetchComparison = useCallback(async () => {
+    // Don't make API request if projectId is not available
+    if (!projectId) {
+      console.log("⏳ [Budget Comparison API] Waiting for projectId...");
+      return;
+    }
+
     setLoading(true);
 
     console.log("=== [Budget Comparison API] Fetch Request ===");
     console.log("year:", year);
+    console.log("projectId:", projectId);
     console.log("====================================");
 
     try {
-      const response = await getBudgetComparison(year);
+      const response = await getBudgetComparison(year, projectId);
       console.log("=== [Budget Comparison API] Response ===");
       console.log("response.data:", response.data);
       console.log("====================================");
@@ -43,7 +52,7 @@ export const useBudgetComparison = (year) => {
     } finally {
       setLoading(false);
     }
-  }, [year, addAlert]);
+  }, [year, projectId, addAlert]);
 
   useEffect(() => {
     if (year) {

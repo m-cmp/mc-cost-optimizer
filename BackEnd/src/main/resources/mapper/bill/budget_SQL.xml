@@ -14,19 +14,20 @@
 
     <!-- 연도별 예산 조회 -->
     <select id="selectBudgetByYear"
-            parameterType="int"
+            parameterType="map"
             resultType="com.mcmp.costbe.budget.model.BudgetItemModel">
-        SELECT csp, year, month, budget, currency
+        SELECT csp, year, month, project_cd AS projectId, budget, currency
           FROM budget_monthly
          WHERE year = #{year}
+           AND project_cd = #{projectId}
          ORDER BY csp, month
     </select>
 
     <!-- 예산 upsert -->
     <insert id="upsertBudget"
             parameterType="com.mcmp.costbe.budget.model.BudgetItemModel">
-        INSERT INTO budget_monthly (csp, year, month, budget, currency)
-        VALUES (#{csp}, #{year}, #{month}, #{budget}, #{currency})
+        INSERT INTO budget_monthly (csp, year, month, project_cd, budget, currency)
+        VALUES (#{csp}, #{year}, #{month}, #{projectId}, #{budget}, #{currency})
             ON DUPLICATE KEY UPDATE
                budget = VALUES(budget),
                currency = VALUES(currency),
@@ -35,7 +36,7 @@
 
     <!-- 실제 사용량 (연도별) -->
     <select id="selectActualUsageByYear"
-            parameterType="int"
+            parameterType="map"
             resultType="com.mcmp.costbe.budget.model.ActualUsageItemModel">
         <![CDATA[
         SELECT ms.year_month COLLATE utf8mb4_unicode_ci AS yearMonth,
@@ -44,6 +45,7 @@
           FROM monthly_summation ms
          WHERE ms.year_month >= CONCAT(#{year}, '01')
            AND ms.year_month <= CONCAT(#{year}, '12')
+           AND ms.project_cd = #{projectId}
          GROUP BY ms.year_month
 
         UNION ALL
@@ -52,7 +54,7 @@
                'NCP' COLLATE utf8mb4_unicode_ci                       AS csp,
                COALESCE(SUM(vm_latest.demand_amount), 0) / 1400.0     AS bill
           FROM (
-               SELECT n1.demand_month, n1.demand_amount
+               SELECT n1.demand_month, n1.demand_amount, n1.member_no
                  FROM ncp_cost_service_month n1
                 INNER JOIN (
                       SELECT product_demand_type, demand_month, MAX(write_date) AS latest_write_date
@@ -65,17 +67,25 @@
                   AND n1.demand_month = n2.demand_month
                   AND n1.write_date = n2.latest_write_date
                ) vm_latest
+         INNER JOIN servicegroup_meta sm
+            ON vm_latest.member_no COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
+           AND sm.csp_type = 'NCP'
+           AND sm.service_cd = #{projectId}
          GROUP BY vm_latest.demand_month
 
         UNION ALL
 
-        SELECT DATE_FORMAT(STR_TO_DATE(a.usage_date, '%Y%m%d'), '%Y%m') COLLATE utf8mb4_unicode_ci AS yearMonth,
-               'Azure' COLLATE utf8mb4_unicode_ci                                                    AS csp,
-               COALESCE(SUM(a.pre_tax_cost), 0) / 1400.0                                             AS bill
+        SELECT DATE_FORMAT(a.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS yearMonth,
+               'Azure' COLLATE utf8mb4_unicode_ci                            AS csp,
+               COALESCE(SUM(a.pre_tax_cost), 0) / 1400.0                     AS bill
           FROM azure_cost_service_daily a
+         INNER JOIN servicegroup_meta sm
+            ON a.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
+           AND sm.csp_type = 'AZURE'
+           AND sm.service_cd = #{projectId}
          WHERE a.usage_date >= CONCAT(#{year}, '0101')
            AND a.usage_date <= CONCAT(#{year}, '1231')
-         GROUP BY DATE_FORMAT(STR_TO_DATE(a.usage_date, '%Y%m%d'), '%Y%m')
+         GROUP BY DATE_FORMAT(a.usage_date, '%Y%m')
 
          ORDER BY yearMonth ASC, csp ASC
                 ]]>

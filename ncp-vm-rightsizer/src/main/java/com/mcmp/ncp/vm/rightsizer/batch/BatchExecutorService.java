@@ -30,6 +30,14 @@ public class BatchExecutorService {
             log.info("{} Batch Job started with execution id: {}",
                     rightSizeType.getDisplayName(), jobExecution.getId());
 
+            // Wait for job completion (비동기 실행 시 완료 대기)
+            while (jobExecution.isRunning()) {
+                Thread.sleep(1000);
+            }
+
+            log.info("{} Batch Job completed with status: {}",
+                    rightSizeType.getDisplayName(), jobExecution.getStatus());
+
         } catch (Exception e) {
             log.error("Error running {} Batch Job", rightSizeType.getDisplayName(), e);
             throw new RuntimeException("Batch execution failed: " + rightSizeType.getDisplayName(), e);

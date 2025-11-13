@@ -1,8 +1,7 @@
 package com.mcmp.azure.vm.rightsizer.batch;
 
-import com.mcmp.azure.vm.rightsizer.dto.AzureCostVmDailyDto;
-import com.mcmp.azure.vm.rightsizer.mapper.AzureCostVmDailyMapper;
-import com.mcmp.azure.vm.rightsizer.properties.AzureCredentialProperties;
+import com.mcmp.azure.vm.rightsizer.dto.RecommendCandidateDto;
+import com.mcmp.azure.vm.rightsizer.mapper.UnusedProcessMartMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -15,37 +14,28 @@ import java.util.List;
 @StepScope
 @Component
 @RequiredArgsConstructor
-public class RecommendVmListItemReader implements ItemReader<AzureCostVmDailyDto> {
+public class RecommendVmListItemReader implements ItemReader<RecommendCandidateDto> {
 
-    private final AzureCredentialProperties azureCredentialProperties;
-    private final AzureCostVmDailyMapper azureCostVmDailyMapper;
-    private Iterator<AzureCostVmDailyDto> vmDailyDtoIterator;
+    private final UnusedProcessMartMapper unusedProcessMartMapper;
+    private Iterator<RecommendCandidateDto> candidateIterator;
 
     @Override
-    public AzureCostVmDailyDto read() {
-        if (vmDailyDtoIterator == null) {
-            // TODO : for Test 추후 정확한 요건에 따라 조회 방식을 변경해야한다.
-            String vmId = "vm-capshp-prd-krc-web01";
-            AzureCostVmDailyDto sizeUpTagetVm = azureCostVmDailyMapper
-                    .findLatestBySubscriptionIdAndVmId(azureCredentialProperties.getSubscriptionId(), vmId);
-
-            List<AzureCostVmDailyDto> azureCostVmDailyDtoList;
-            if (sizeUpTagetVm == null) {
-                log.warn("VM not found: subscriptionId={}, vmId={}",
-                    azureCredentialProperties.getSubscriptionId(), vmId);
-                azureCostVmDailyDtoList = List.of();
-            } else {
-                azureCostVmDailyDtoList = List.of(sizeUpTagetVm);
-            }
-
-            vmDailyDtoIterator = azureCostVmDailyDtoList.iterator();
-            log.info("Azure Vm loaded: {} items", azureCostVmDailyDtoList.size());
+    public RecommendCandidateDto read() {
+        if (candidateIterator == null) {
+            // 4일간 메트릭 데이터 기반 SizeUp/Down 추천 대상 조회
+            List<RecommendCandidateDto> candidates = unusedProcessMartMapper.selectRecommendCandidates();
+            candidateIterator = candidates.iterator();
+            log.info("Recommend VM candidates loaded: {} items", candidates.size());
         }
 
-        if (vmDailyDtoIterator.hasNext()) {
-            AzureCostVmDailyDto azureCostVmDailyDto = vmDailyDtoIterator.next();
-            log.debug("Reading Vm for subscription.");
-            return azureCostVmDailyDto;
+        if (candidateIterator.hasNext()) {
+            RecommendCandidateDto candidate = candidateIterator.next();
+            log.debug("Reading candidate: resourceId={}, type={}, avgCpu={}, maxCpu={}",
+                candidate.getResourceId(),
+                candidate.getRecommendType(),
+                candidate.getAvg4DaysCpu(),
+                candidate.getMax4DaysCpu());
+            return candidate;
         }
 
         return null;

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.cost.ncp.collector.mapper.BudgetCheckMapper">
+
+    <resultMap id="budgetUsageResultMap" type="com.mcmp.cost.ncp.collector.dto.BudgetUsageDto">
+        <result property="projectCd" column="project_cd"/>
+        <result property="cspType" column="csp_type"/>
+        <result property="totalCost" column="total_cost"/>
+        <result property="budget" column="budget"/>
+        <result property="currency" column="currency"/>
+        <result property="usageRate" column="usage_rate"/>
+        <result property="vmCount" column="vm_count"/>
+        <result property="accountId" column="account_id"/>
+    </resultMap>
+
+    <!-- NCP 프로젝트별 예산 초과 조회 -->
+    <select id="selectBudgetExceededProjects" resultMap="budgetUsageResultMap">
+        WITH ncp_latest_costs AS (
+            -- 각 인스턴스별 최신 데이터만 선택 (누적 금액이므로)
+            SELECT
+                t1.member_no,
+                t1.instance_no,
+                t1.demand_amount
+            FROM ncp_cost_vm_month t1
+            INNER JOIN (
+                SELECT
+                    instance_no,
+                    demand_month,
+                    MAX(write_date) AS max_write_date
+                FROM ncp_cost_vm_month
+                WHERE demand_month = DATE_FORMAT(CURDATE(), '%Y%m')
+                GROUP BY instance_no, demand_month
+            ) t2 ON t1.instance_no COLLATE utf8mb4_unicode_520_ci = t2.instance_no COLLATE utf8mb4_unicode_520_ci
+                AND t1.demand_month COLLATE utf8mb4_unicode_520_ci = t2.demand_month COLLATE utf8mb4_unicode_520_ci
+                AND t1.write_date = t2.max_write_date
+        ),
+        ncp_costs AS (
+            SELECT
+                meta.service_cd AS project_cd,
+                'NCP' AS csp_type,
+                SUM(latest.demand_amount) AS total_cost,
+                COUNT(DISTINCT latest.instance_no) AS vm_count,
+                MAX(latest.member_no) AS account_id
+            FROM ncp_latest_costs latest
+            INNER JOIN servicegroup_meta meta
+                ON latest.member_no COLLATE utf8mb4_unicode_520_ci = meta.csp_account COLLATE utf8mb4_unicode_520_ci
+                AND meta.csp_type = 'NCP'
+            WHERE meta.service_cd != 'undefined'
+            GROUP BY meta.service_cd
+        )
+        SELECT
+            costs.project_cd,
+            costs.csp_type,
+            costs.total_cost,
+            budget.budget,
+            budget.currency,
+            ROUND((costs.total_cost / budget.budget * 100), 2) AS usage_rate,
+            costs.vm_count,
+            costs.account_id
+        FROM ncp_costs costs
+        INNER JOIN budget_monthly budget
+            ON budget.project_cd COLLATE utf8mb4_unicode_520_ci = costs.project_cd COLLATE utf8mb4_unicode_520_ci
+            AND budget.csp = 'NCP'
+            AND budget.year = YEAR(CURDATE())
+            AND budget.month = MONTH(CURDATE())
+        WHERE budget.budget > 0
+          AND (costs.total_cost / budget.budget * 100) >= 80
+        ORDER BY usage_rate DESC
+    </select>
+
+</mapper>

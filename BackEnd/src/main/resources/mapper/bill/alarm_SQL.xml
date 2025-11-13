@@ -16,19 +16,17 @@
                , ah.project_cd    AS project_cd
                , ah.account_id    AS account_id
           FROM alarm_history ah
-         INNER JOIN servicegroup_meta sm
-            ON ah.resource_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
-         WHERE 1 = 1
+          WHERE 1 = 1
                <!-- CSP 필터 -->
                <if test="selectedCsps != null and selectedCsps.size() > 0">
-           AND sm.csp_type IN
+           AND ah.csp_type IN
                <foreach item="selectedCsp" index="index" collection="selectedCsps" open="(" separator="," close=")">
                #{selectedCsp}
                </foreach>
                </if>
                <!-- 프로젝트 필터 -->
                <if test="selectedProjects != null and selectedProjects.size() > 0">
-           AND sm.service_cd IN
+           AND ah.project_cd IN
                <foreach item="selectedProject" index="index" collection="selectedProjects" open="(" separator="," close=")">
                #{selectedProject}
                </foreach>

@@ -2,7 +2,9 @@ package com.mcmp.ncp.vm.rightsizer.batch;
 
 import com.mcmp.ncp.vm.rightsizer.dto.AnomalyDto;
 import com.mcmp.ncp.vm.rightsizer.dto.NcpCostVmMonthDto;
+import com.mcmp.ncp.vm.rightsizer.dto.RecommendCandidateDto;
 import com.mcmp.ncp.vm.rightsizer.dto.RecommendVmTypeDto;
+import com.mcmp.ncp.vm.rightsizer.dto.UnusedDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -27,6 +29,9 @@ public class RightSizeBatchConfig {
     private final AnomalyVmListItemReader anomalyVmListItemReader;
     private final AnomalyVmListItemProcessor anomalyVmItemProcessor;
     private final AnomalyVmListItemWriter anomalyVmItemWriter;
+    private final UnusedVMListItemReader unusedVMListItemReader;
+    private final UnusedVMListItemProcessor unusedVMListItemProcessor;
+    private final UnusedVMListItemWriter unusedVMListItemWriter;
 
     @Bean(name = RightSizeBatchConstants.SIZE_DOWN_JOB)
     public Job recommendVmJob() {
@@ -38,7 +43,7 @@ public class RightSizeBatchConfig {
     @Bean(name = RightSizeBatchConstants.SIZE_DOWN_STEP)
     public Step recommendVmStep() {
         return new StepBuilder(RightSizeBatchConstants.SIZE_DOWN_STEP, jobRepository)
-                .<NcpCostVmMonthDto, RecommendVmTypeDto>chunk(1, transactionManager)
+                .<RecommendCandidateDto, RecommendVmTypeDto>chunk(1, transactionManager)
                 .reader(recommendVmListItemReader)
                 .processor(recommendVmItemProcessor)
                 .writer(recommendVmListItemWriter)
@@ -60,6 +65,24 @@ public class RightSizeBatchConfig {
                 .reader(anomalyVmListItemReader)
                 .processor(anomalyVmItemProcessor)
                 .writer(anomalyVmItemWriter)
+                .allowStartIfComplete(true)
+                .build();
+    }
+
+    @Bean(name = RightSizeBatchConstants.UNUSED_JOB)
+    public Job unusedResourceJob() {
+        return new JobBuilder(RightSizeBatchConstants.UNUSED_JOB, jobRepository)
+                .start(unusedResourceStep())
+                .build();
+    }
+
+    @Bean(name = RightSizeBatchConstants.UNUSED_STEP)
+    public Step unusedResourceStep() {
+        return new StepBuilder(RightSizeBatchConstants.UNUSED_STEP, jobRepository)
+                .<UnusedDto, UnusedDto>chunk(10, transactionManager)
+                .reader(unusedVMListItemReader)
+                .processor(unusedVMListItemProcessor)
+                .writer(unusedVMListItemWriter)
                 .allowStartIfComplete(true)
                 .build();
     }

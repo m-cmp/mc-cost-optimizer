@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class BudgetDao {
@@ -20,8 +21,8 @@ public class BudgetDao {
     }
 
     /** 연도별 예산 조회 */
-    public List<BudgetItemModel> selectBudgetByYear(int year) {
-        return sqlSession.selectList("budget.selectBudgetByYear", year);
+    public List<BudgetItemModel> selectBudgetByYear(Map<String, Object> params) {
+        return sqlSession.selectList("budget.selectBudgetByYear", params);
     }
 
     /** 단일 예산 upsert */
@@ -30,8 +31,8 @@ public class BudgetDao {
     }
 
     /** 연도별 실제 사용 금액 조회 (AWS, NCP, Azure 통합) */
-    public List<ActualUsageItemModel> selectActualUsageByYear(int year) {
-        return sqlSession.selectList("budget.selectActualUsageByYear", year);
+    public List<ActualUsageItemModel> selectActualUsageByYear(Map<String, Object> params) {
+        return sqlSession.selectList("budget.selectActualUsageByYear", params);
     }
 }
 

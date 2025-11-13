@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.azure.vm.rightsizer.mapper.ServiceGroupMetaMapper">
+
+    <!-- subscription ID로 project_cd, workspace_cd 조회 -->
+    <select id="selectProjectAndWorkspaceByVmId" resultType="map">
+        SELECT service_cd    as projectCd,
+               workspace_cd  as workspaceCd
+        FROM servicegroup_meta
+        WHERE csp_type = 'AZURE'
+          AND csp_account = #{subscriptionId}
+        LIMIT 1
+    </select>
+
+</mapper>

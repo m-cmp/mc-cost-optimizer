@@ -17,4 +17,9 @@ public interface NcpRightSizeMapper {
             @Param("instanceType") String instanceType,
             @Param("discountRate") double discountRate
     );
+
+    RecommendVmTypeDto getRecommendModernizeVmType(
+            @Param("region") String region,
+            @Param("instanceType") String instanceType
+    );
 }

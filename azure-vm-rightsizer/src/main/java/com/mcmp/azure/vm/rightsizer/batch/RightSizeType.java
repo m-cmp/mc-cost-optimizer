@@ -8,6 +8,7 @@ public enum RightSizeType {
     AZURE_SIZE_UP_VM(RightSizeBatchConstants.SIZE_UP_JOB, "Azure Vm Size Up"),
     AZURE_SIZE_DOWN_VM(RightSizeBatchConstants.SIZE_DOWN_JOB, "Azure Vm Size Down"),
     AZURE_ANOMALY_VM(RightSizeBatchConstants.ANOMALY_JOB, "Azure Vm Anomaly"),
+    AZURE_UNUSED_VM(RightSizeBatchConstants.UNUSED_JOB, "Azure Unused Resource"),
     ;
 
     private final String jobBeanName;

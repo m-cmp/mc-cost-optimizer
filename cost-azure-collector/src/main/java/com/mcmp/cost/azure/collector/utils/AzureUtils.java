@@ -1,9 +1,14 @@
 package com.mcmp.cost.azure.collector.utils;
 
+import com.azure.core.http.HttpClient;
+import com.azure.core.http.netty.NettyAsyncHttpClientBuilder;
 import com.azure.core.management.AzureEnvironment;
 import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.ClientSecretCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import lombok.extern.slf4j.Slf4j;
 import com.azure.resourcemanager.costmanagement.models.ExportType;
 import com.azure.resourcemanager.costmanagement.models.FunctionType;
 import com.azure.resourcemanager.costmanagement.models.GranularityType;
@@ -18,24 +23,67 @@ import com.azure.resourcemanager.costmanagement.models.QueryOperatorType;
 import com.azure.resourcemanager.costmanagement.models.QueryTimePeriod;
 import com.azure.resourcemanager.costmanagement.models.TimeframeType;
 import com.mcmp.cost.azure.collector.dto.AzureApiCredentialDto;
+
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class AzureUtils {
 
     private AzureUtils() {
         throw new IllegalStateException("Cannot instantiate a utility class.");
     }
 
+    /**
+     * SSL 검증을 우회하는 HttpClient 생성
+     * WARNING: 개발 환경 전용. 운영 환경에서는 적절한 인증서를 사용하세요.
+     */
+    private static HttpClient createInsecureHttpClient() {
+        try {
+            log.warn("Azure HttpClient configured with SSL verification DISABLED. This is for development only!");
+
+            // Reactor Netty HttpClient with insecure SSL
+            reactor.netty.http.client.HttpClient reactorClient = reactor.netty.http.client.HttpClient.create()
+                    .secure(sslSpec -> {
+                        try {
+                            sslSpec.sslContext(
+                                SslContextBuilder.forClient()
+                                    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                                    .build()
+                            );
+                        } catch (Exception e) {
+                            log.error("Failed to configure SSL context", e);
+                        }
+                    });
+
+            return new NettyAsyncHttpClientBuilder(reactorClient).build();
+
+        } catch (Exception e) {
+            log.error("Failed to create insecure HttpClient, falling back to default", e);
+            return new NettyAsyncHttpClientBuilder().build();
+        }
+    }
+
     public static ClientSecretCredential buildCredential(AzureApiCredentialDto azureApiCredentialDto) {
-        return new ClientSecretCredentialBuilder()
+        return buildCredential(azureApiCredentialDto, false);
+    }
+
+    public static ClientSecretCredential buildCredential(AzureApiCredentialDto azureApiCredentialDto, boolean disableSslVerify) {
+        ClientSecretCredentialBuilder builder = new ClientSecretCredentialBuilder()
                 .tenantId(azureApiCredentialDto.getTenantId())
                 .clientId(azureApiCredentialDto.getClientId())
-                .clientSecret(azureApiCredentialDto.getClientSecret())
-                .build();
+                .clientSecret(azureApiCredentialDto.getClientSecret());
+
+        if (disableSslVerify) {
+            builder.httpClient(createInsecureHttpClient());
+        } else {
+            log.info("Azure ClientSecretCredential configured with SSL verification ENABLED");
+        }
+
+        return builder.build();
     }
 
     public static AzureProfile buildProfile(AzureApiCredentialDto azureApiCredentialDto) {

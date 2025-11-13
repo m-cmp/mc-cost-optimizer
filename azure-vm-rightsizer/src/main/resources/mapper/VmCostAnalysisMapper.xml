@@ -14,9 +14,11 @@
         <result property="fromDate" column="from_date"/>
         <result property="toDate" column="to_date"/>
         <result property="dataRange" column="data_range"/>
+        <result property="projectCd" column="project_cd"/>
+        <result property="workspaceCd" column="workspace_cd"/>
     </resultMap>
 
-    <!-- 특정 VM의 월별 평균 비용 조회 -->
+    <!-- 특정 VM의 월별 평균 비용 조회 (servicegroup_meta 조인 추가) -->
     <select id="selectMonthlyAvgCostByVmId" resultMap="vmMonthlyAvgCostResultMap">
         SELECT base.subscription_id,
                base.vm_id,
@@ -26,7 +28,9 @@
                base.total_cost,
                base.from_date,
                base.to_date,
-               base.data_range
+               base.data_range,
+               COALESCE(meta.service_cd, 'default') as project_cd,
+               COALESCE(meta.workspace_cd, 'undefined') as workspace_cd
         FROM (SELECT subscription_id,
                      vm_id,
                      AVG(pre_tax_cost)                                                                as avg_cost,
@@ -54,16 +58,26 @@
                                          AND usage_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y%m01'))
                   )
               GROUP BY subscription_id, vm_id) base
-                 LEFT JOIN (SELECT vm_id,
-                                   usage_date,
-                                   SUM(pre_tax_cost) as latest_cost
-                            FROM azure_cost_vm_daily
-                            WHERE vm_id = #{vmId}
-                            GROUP BY vm_id, usage_date) latest
-                           ON base.vm_id = latest.vm_id AND base.to_date = latest.usage_date
+                 LEFT JOIN (
+                     -- 오늘(금일) 비용 = 전체 데이터 중 가장 최신 날짜의 비용
+                     SELECT t.vm_id,
+                            t.usage_date,
+                            t.pre_tax_cost as latest_cost
+                     FROM azure_cost_vm_daily t
+                     INNER JOIN (
+                         SELECT vm_id, MAX(usage_date) as max_date
+                         FROM azure_cost_vm_daily
+                         WHERE vm_id = #{vmId}
+                         GROUP BY vm_id
+                     ) m ON t.vm_id = m.vm_id AND t.usage_date = m.max_date
+                     LIMIT 1
+                 ) latest ON base.vm_id = latest.vm_id
+                 LEFT JOIN servicegroup_meta meta
+                           ON meta.csp_type = 'AZURE'
+                           AND meta.csp_account COLLATE utf8mb4_unicode_520_ci = base.subscription_id
     </select>
 
-    <!-- 전체 VM의 월별 평균 비용 조회 -->
+    <!-- 전체 VM의 월별 평균 비용 조회 (servicegroup_meta 조인 추가) -->
     <select id="selectMonthlyAvgCostAllVm" resultMap="vmMonthlyAvgCostResultMap">
         SELECT base.subscription_id,
                base.vm_id,
@@ -73,7 +87,9 @@
                base.total_cost,
                base.from_date,
                base.to_date,
-               base.data_range
+               base.data_range,
+               COALESCE(meta.service_cd, 'default') as project_cd,
+               COALESCE(meta.workspace_cd, 'undefined') as workspace_cd
         FROM (SELECT subscription_id,
                      vm_id,
                      AVG(pre_tax_cost)                                                                as avg_cost,
@@ -100,12 +116,22 @@
                                                AND usage_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y%m01'))
                         )
               GROUP BY subscription_id, vm_id) base
-                 LEFT JOIN (SELECT vm_id,
-                                   usage_date,
-                                   SUM(pre_tax_cost) as latest_cost
-                            FROM azure_cost_vm_daily
-                            GROUP BY vm_id, usage_date) latest
-                           ON base.vm_id = latest.vm_id AND base.to_date = latest.usage_date
+                 LEFT JOIN (
+                     -- 오늘(금일) 비용 = 전체 데이터 중 가장 최신 날짜의 비용
+                     SELECT t.vm_id,
+                            t.usage_date,
+                            SUM(t.pre_tax_cost) as latest_cost
+                     FROM azure_cost_vm_daily t
+                     INNER JOIN (
+                         SELECT vm_id, MAX(usage_date) as max_date
+                         FROM azure_cost_vm_daily
+                         GROUP BY vm_id
+                     ) m ON t.vm_id = m.vm_id AND t.usage_date = m.max_date
+                     GROUP BY t.vm_id, t.usage_date
+                 ) latest ON base.vm_id = latest.vm_id
+                 LEFT JOIN servicegroup_meta meta
+                           ON meta.csp_type = 'AZURE'
+                           AND meta.csp_account COLLATE utf8mb4_unicode_520_ci = base.subscription_id
     </select>
 
 </mapper>

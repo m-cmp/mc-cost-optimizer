@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.ncp.vm.rightsizer.mapper.AssetComputeMetricMapper">
+
+    <!-- ResultMap 정의 -->
+    <resultMap id="unusedResultMap" type="com.mcmp.ncp.vm.rightsizer.dto.UnusedDto">
+        <result property="instanceNo" column="instance_no"/>
+        <result property="memberNo" column="member_no"/>
+        <result property="yesterdayAvgCpu" column="yesterday_avg_cpu"/>
+        <result property="yesterdayDate" column="yesterday_date"/>
+        <result property="projectCd" column="project_cd"/>
+        <result property="workspaceCd" column="workspace_cd"/>
+        <result property="cspType" column="csp_type"/>
+    </resultMap>
+
+    <!-- 어제 날짜의 Instance별 평균 CPU 사용률 조회 -->
+    <select id="selectYesterdayAvgCpuByInstance" resultMap="unusedResultMap">
+        SELECT
+            acm.csp_instanceid as instance_no,
+            acm.csp_account as member_no,
+            AVG(acm.metric_amount) as yesterday_avg_cpu,
+            DATE(acm.collect_dt) as yesterday_date,
+            COALESCE(meta.service_cd, 'default') as project_cd,
+            COALESCE(meta.workspace_cd, 'undefined') as workspace_cd,
+            acm.csp_type
+        FROM asset_compute_metric acm
+        LEFT JOIN servicegroup_meta meta
+            ON meta.csp_type = acm.csp_type
+            AND meta.csp_account COLLATE utf8mb4_unicode_520_ci = acm.csp_account
+        WHERE acm.csp_type = #{cspType}
+          AND acm.metric_type = 'cpu'
+          AND DATE(acm.collect_dt) = DATE(DATE_SUB(NOW(), INTERVAL 1 DAY))
+        GROUP BY acm.csp_instanceid, acm.csp_account, DATE(acm.collect_dt), acm.csp_type,
+                 meta.service_cd, meta.workspace_cd
+    </select>
+
+</mapper>

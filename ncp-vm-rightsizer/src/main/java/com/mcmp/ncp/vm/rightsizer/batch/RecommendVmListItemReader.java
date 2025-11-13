@@ -1,7 +1,7 @@
 package com.mcmp.ncp.vm.rightsizer.batch;
 
-import com.mcmp.ncp.vm.rightsizer.dto.NcpCostVmMonthDto;
-import com.mcmp.ncp.vm.rightsizer.mapper.NcpCostVmMonthMapper;
+import com.mcmp.ncp.vm.rightsizer.dto.RecommendCandidateDto;
+import com.mcmp.ncp.vm.rightsizer.mapper.UnusedProcessMartMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -14,28 +14,28 @@ import java.util.List;
 @StepScope
 @Component
 @RequiredArgsConstructor
-public class RecommendVmListItemReader implements ItemReader<NcpCostVmMonthDto> {
+public class RecommendVmListItemReader implements ItemReader<RecommendCandidateDto> {
 
-    private final NcpCostVmMonthMapper ncpCostVmMonthMapper;
-    private Iterator<NcpCostVmMonthDto> vmDailyDtoIterator;
+    private final UnusedProcessMartMapper unusedProcessMartMapper;
+    private Iterator<RecommendCandidateDto> candidateIterator;
 
     @Override
-    public NcpCostVmMonthDto read() {
-        if (vmDailyDtoIterator == null) {
-            // TODO : for Test 추후 정확한 요건에 따라 조회 방식을 변경해야한다.
-            String memberNo = "3059708";
-            String instanceNo = "16880170";
-            NcpCostVmMonthDto sizeDownTaget = ncpCostVmMonthMapper
-                    .findLatestByMemberNoAndInstanceNo(memberNo, instanceNo);
-            List<NcpCostVmMonthDto> ncpCostVmMonthDtoList = List.of(sizeDownTaget);
-            vmDailyDtoIterator = ncpCostVmMonthDtoList.iterator();
-            log.info("NCP Vm loaded: {} items", ncpCostVmMonthDtoList.size());
+    public RecommendCandidateDto read() {
+        if (candidateIterator == null) {
+            // 4일간 메트릭 데이터 기반 SizeUp/Down 추천 대상 조회
+            List<RecommendCandidateDto> candidates = unusedProcessMartMapper.selectRecommendCandidates();
+            candidateIterator = candidates.iterator();
+            log.info("Recommend VM candidates loaded: {} items", candidates.size());
         }
 
-        if (vmDailyDtoIterator.hasNext()) {
-            NcpCostVmMonthDto ncpCostVmMonthDto = vmDailyDtoIterator.next();
-            log.debug("Reading Vm for memberNo.");
-            return ncpCostVmMonthDto;
+        if (candidateIterator.hasNext()) {
+            RecommendCandidateDto candidate = candidateIterator.next();
+            log.debug("Reading candidate: resourceId={}, type={}, avgCpu={}, maxCpu={}",
+                candidate.getResourceId(),
+                candidate.getRecommendType(),
+                candidate.getAvg4DaysCpu(),
+                candidate.getMax4DaysCpu());
+            return candidate;
         }
 
         return null;
