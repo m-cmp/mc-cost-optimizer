@@ -68,7 +68,7 @@ public class MailConfig {
             this.userPassword = mailInfo.getPassword();
         }
 
-        return new MailConfig();
+        return this;
     }
 
 }
