@@ -80,7 +80,7 @@
                COALESCE(SUM(a.pre_tax_cost), 0) / 1400.0                     AS bill
           FROM azure_cost_vm_daily a
          INNER JOIN servicegroup_meta sm
-            ON a.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
+            ON a.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
            AND sm.csp_type = 'AZURE'
            AND sm.service_cd = #{projectId}
          WHERE a.usage_date >= CONCAT(#{year}, '0101')
