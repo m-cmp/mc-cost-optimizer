@@ -25,7 +25,7 @@
                 MAX(cost.subscription_id) AS account_id
             FROM azure_cost_vm_daily cost
             INNER JOIN servicegroup_meta meta
-                ON cost.subscription_id COLLATE utf8mb4_unicode_520_ci = meta.csp_account
+                ON cost.vm_id COLLATE utf8mb4_unicode_520_ci = meta.vm_uid COLLATE utf8mb4_unicode_520_ci
                 AND meta.csp_type = 'AZURE'
             WHERE cost.usage_date LIKE CONCAT(DATE_FORMAT(CURDATE(), '%Y%m'), '%')
               AND meta.service_cd != 'undefined'
