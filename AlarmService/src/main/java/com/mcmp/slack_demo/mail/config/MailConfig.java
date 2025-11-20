@@ -2,9 +2,9 @@ package com.mcmp.slack_demo.mail.config;
 
 import com.mcmp.slack_demo.mail.dao.MailingDao;
 import com.mcmp.slack_demo.mail.model.MailingInfoModel;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -60,15 +60,13 @@ public class MailConfig {
         this.userPassword = model.getPassword();
     }
 
-    @Bean
-    public MailConfig MailConfig(){
+    @PostConstruct
+    public void init(){
         MailingInfoModel mailInfo = mailingDao.getMailingInfo();
         if(mailInfo != null){
             this.userName = mailInfo.getUsername();
             this.userPassword = mailInfo.getPassword();
         }
-
-        return this;
     }
 
 }
