@@ -1,11 +1,34 @@
 import Table from "@/components/common/table/Table";
 import Card from "@/components/common/card/Card";
+import Tooltip from "@/components/common/tooltip/Tooltip";
 
 const AlarmHistoryTable = ({ data }) => {
   const columns = [
     { key: "date", label: "Date", className: "text-nowrap" },
     { key: "csp", label: "CSP", className: "text-nowrap" },
-    { key: "resourceId", label: "Resource ID", className: "text-nowrap" },
+    {
+      key: "resourceId",
+      label: "Resource ID",
+      className: "text-nowrap",
+      render: (value) =>
+        value ? (
+          <Tooltip title={value} placement="top">
+            <span
+              style={{
+                display: "inline-block",
+                maxWidth: "150px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {value}
+            </span>
+          </Tooltip>
+        ) : (
+          "-"
+        ),
+    },
     { key: "resourceType", label: "Resource Type", className: "text-nowrap" },
     { key: "alarmType", label: "Alarm Type", className: "text-nowrap" },
     { key: "alarmMessage", label: "Alarm Message" },
