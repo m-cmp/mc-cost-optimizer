@@ -28,9 +28,9 @@ public class RecommendVmListItemProcessor implements ItemProcessor<RecommendCand
             candidate.getMax4DaysCpu());
 
         // Unused Job에서 이미 처리된 VM인지 확인 (중복 알림 방지)
-        int unusedCount = unusedBatchRstMapper.checkTodayUnusedExists("AZURE", candidate.getVmId());
+        int unusedCount = unusedBatchRstMapper.checkTodayUnusedExists("AZURE", candidate.getResourceId());
         if (unusedCount > 0) {
-            log.info("Skipping Recommend: VM already processed by Unused Job today. vmId={}", candidate.getVmId());
+            log.info("Skipping Recommend: VM already processed by Unused Job today. resourceId={}", candidate.getResourceId());
             return null;
         }
 
