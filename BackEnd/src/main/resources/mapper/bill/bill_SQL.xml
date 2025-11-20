@@ -39,13 +39,24 @@ SELECT (
                      #{selectedProject}
                      </foreach>
               ) + (
+              -- 현재월 NCP VM 데이터 (VM별 최신 누적 금액만 반영)
               SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0
-                FROM ncp_cost_vm_month nvd_latest
+                FROM (
+                    SELECT n1.instance_no, n1.demand_amount
+                    FROM ncp_cost_vm_month n1
+                    INNER JOIN (
+                        SELECT instance_no, MAX(id) AS latest_id
+                        FROM ncp_cost_vm_month
+                        WHERE demand_month = #{curYearMonth}
+                        GROUP BY instance_no
+                    ) n2
+                    ON n1.instance_no = n2.instance_no
+                    AND n1.id = n2.latest_id
+                ) nvd_latest
           INNER JOIN servicegroup_meta sm
                ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
               AND sm.csp_type = 'NCP'
-            WHERE nvd_latest.demand_month = #{curYearMonth}
-
+            WHERE 1=1
                      <if test="selectedProjects != null and selectedProjects.size() > 0">
                  AND sm.service_cd IN
                      <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
@@ -53,7 +64,7 @@ SELECT (
                      </foreach>
                      </if>
                      <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
-               WHERE 1=0
+                 AND 1=0
                      </if>
               ) + (
               -- 현재월 Azure VM 데이터 (조인 후 계산)
@@ -90,13 +101,24 @@ SELECT (
                      #{selectedProject}
                      </foreach>
               ) + (
-              -- 이전월 NCP VM 데이터 (조인 후 계산)
+              -- 이전월 NCP VM 데이터 (VM별 최신 누적 금액만 반영)
                 SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0
-                  FROM ncp_cost_vm_month nvd_latest
+                  FROM (
+                    SELECT n1.instance_no, n1.demand_amount
+                    FROM ncp_cost_vm_month n1
+                    INNER JOIN (
+                        SELECT instance_no, MAX(id) AS latest_id
+                        FROM ncp_cost_vm_month
+                        WHERE demand_month = #{prevYearMonth}
+                        GROUP BY instance_no
+                    ) n2
+                    ON n1.instance_no = n2.instance_no
+                    AND n1.id = n2.latest_id
+                ) nvd_latest
             INNER JOIN servicegroup_meta sm
                     ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
                    AND sm.csp_type = 'NCP'
-                 WHERE nvd_latest.demand_month = #{prevYearMonth}
+                 WHERE 1=1
                     <if test="selectedProjects != null and selectedProjects.size() > 0">
                    AND sm.service_cd IN
                     <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
@@ -162,10 +184,25 @@ SELECT ym.`year_month`
 
        UNION ALL
 
-       -- NCP VM 데이터 (servicegroup_meta 조인 후 필터링)
+       -- NCP VM 데이터 (VM별 월별 최신 누적 금액만 반영)
         SELECT nvd_latest.demand_month COLLATE utf8mb4_unicode_ci AS `year_month`,
             SUM(nvd_latest.demand_amount) / 1400.0 AS total_cost
-        FROM ncp_cost_vm_month nvd_latest
+        FROM (
+            SELECT n1.demand_month, n1.instance_no, n1.demand_amount
+            FROM ncp_cost_vm_month n1
+            INNER JOIN (
+                SELECT demand_month, instance_no, MAX(id) AS latest_id
+                FROM ncp_cost_vm_month
+                WHERE demand_month IN
+                    <foreach item="prevMonth" collection="prevMonths" open="(" separator="," close=")">
+                    #{prevMonth}
+                    </foreach>
+                GROUP BY demand_month, instance_no
+            ) n2
+            ON n1.demand_month = n2.demand_month
+            AND n1.instance_no = n2.instance_no
+            AND n1.id = n2.latest_id
+        ) nvd_latest
         INNER JOIN servicegroup_meta sm
             ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
         AND sm.csp_type = 'NCP'
@@ -178,10 +215,6 @@ SELECT ym.`year_month`
             <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
         AND 1=0
             </if>
-        WHERE nvd_latest.demand_month IN
-            <foreach item="prevMonth" collection="prevMonths" open="(" separator="," close=")">
-            #{prevMonth}
-            </foreach>
         GROUP BY nvd_latest.demand_month
 
        UNION ALL
@@ -453,20 +486,20 @@ SELECT csp, SUM(cost) AS cost
 
        UNION ALL
 
-       <!-- NCP (VM 기준, 해당 달의 마지막 target_date만 반영) -->
+       <!-- NCP (VM 기준, 해당 달의 최신 누적 금액만 반영) -->
        SELECT 'NCP'                                               AS csp,
               COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0 AS cost
          FROM (
               SELECT n1.instance_no, n1.demand_amount
-                FROM ncp_cost_vm_daily n1
+                FROM ncp_cost_vm_month n1
                INNER JOIN (
-                     SELECT instance_no, MAX(target_date) AS latest_date
-                       FROM ncp_cost_vm_daily
-                      WHERE DATE_FORMAT(target_date, '%Y%m') = #{year_month}
+                     SELECT instance_no, MAX(id) AS latest_id
+                       FROM ncp_cost_vm_month
+                      WHERE demand_month = #{year_month}
                       GROUP BY instance_no
                      ) n2
                   ON n1.instance_no = n2.instance_no
-                 AND n1.target_date = n2.latest_date
+                 AND n1.id = n2.latest_id
               ) nvd_latest
         INNER JOIN servicegroup_meta sm
            ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
