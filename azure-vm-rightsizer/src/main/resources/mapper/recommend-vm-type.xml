@@ -24,8 +24,8 @@
                 WHERE INSTANCE_TYPE = #{instanceType}
                 LIMIT 1
             )
-            AND APP.REGION = #{region}
-            AND APP.OS = #{osType}
+            AND REPLACE(APP.REGION, '-', '') = #{region}
+            AND APP.OS = LOWER(#{osType})
             AND APP.PER_HOUR IS NOT NULL
             AND APP.CORES > (
                 SELECT CORES
@@ -56,8 +56,8 @@
             WHERE INSTANCE_TYPE = #{instanceType}
             LIMIT 1
             )
-        AND APP.REGION = #{region}
-        AND APP.OS = #{osType}
+        AND REPLACE(APP.REGION, '-', '') = #{region}
+        AND APP.OS = LOWER(#{osType})
         AND APP.PER_HOUR IS NOT NULL
         AND APP.CORES >= (
             SELECT CORES
@@ -92,9 +92,9 @@
             SELECT NEW_GENTH
             FROM TASM_AZR_RSRC_OPT_MODN_L
             WHERE PREV_GENTH = #{instanceType}
-              AND RGN_ID = #{region}
+              AND REPLACE(RGN_ID, '-', '') = #{region}
         )
-          AND APP.OS = #{osType}
-          AND APP.REGION = #{region}
+          AND APP.OS = LOWER(#{osType})
+          AND REPLACE(APP.REGION, '-', '') = #{region}
     </select>
 </mapper>

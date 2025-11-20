@@ -105,7 +105,8 @@
                 t.vm_id,
                 t.region,
                 t.instance_type,
-                t.os_type
+                t.os_type,
+                t.resource_id
             FROM azure_cost_vm_daily t
             INNER JOIN (
                 SELECT vm_id, MAX(created) as max_created
@@ -113,7 +114,8 @@
                 GROUP BY vm_id
             ) latest ON t.vm_id = latest.vm_id
                      AND t.created = latest.max_created
-        ) azure ON rc.resource_id COLLATE utf8mb4_unicode_520_ci = azure.vm_id
+            GROUP BY t.vm_id
+        ) azure ON rc.resource_id COLLATE utf8mb4_unicode_520_ci = azure.resource_id COLLATE utf8mb4_unicode_520_ci
         ORDER BY rc.recommend_type, rc.resource_id
     </select>
 
