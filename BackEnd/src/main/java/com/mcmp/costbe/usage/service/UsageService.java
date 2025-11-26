@@ -117,45 +117,38 @@ public class UsageService {
         req.setCurMonthEndDate(curMonthRange.getEndDate());
         req.setYear_month(req.getToday().substring(0, 6));
 
-        List<String> familyCode = MultiCSPResourceMapping.getAllCategories();
-        List<BillingAssetModel> billingAsset = new ArrayList<>();
-
         try{
-            for(String category : familyCode){
+            // 한 번만 조회 (service_type으로 구분되므로)
+            List<BillingAssetChildModel> allChildItems = billDao.getBillAssetChild(req);
+
+            // childProductCode(VM, K8S, Others)로 그룹핑
+            List<String> categories = MultiCSPResourceMapping.getAllCategories();
+            List<BillingAssetModel> billingAsset = new ArrayList<>();
+
+            for(String category : categories){
                 BillingAssetModel familyItem = new BillingAssetModel();
-
-                // 모든 CSP의 해당 카테고리 서비스들을 수집
-                List<String> allChildProducts = new ArrayList<>();
-                if(req.getSelectedCsps() != null && !req.getSelectedCsps().isEmpty()) {
-                    for(String csp : req.getSelectedCsps()) {
-                        List<String> cspServices = MultiCSPResourceMapping.getServicesByCategory(csp, category);
-                        allChildProducts.addAll(cspServices);
-                    }
-                } else {
-                    // CSP 선택이 없으면 모든 CSP 포함
-                    for(String csp : List.of("AWS", "NCP", "AZURE")) {
-                        List<String> cspServices = MultiCSPResourceMapping.getServicesByCategory(csp, category);
-                        allChildProducts.addAll(cspServices);
-                    }
-                }
-
-
-                req.setMultiCSPChildProducts(allChildProducts);
-
-                List<BillingAssetChildModel> childItem = billDao.getBillAssetChild(req);
-                double childsTotalBill = 0.0;
-                Integer childsTotalUnit = 0;
-                for(BillingAssetChildModel child : childItem){
-                    childsTotalUnit += child.getUnit();
-                    childsTotalBill += child.getBill();
-                }
-
-                familyItem.setChildProductCode(childItem);
-                familyItem.setTotalCost(childsTotalBill);
-                familyItem.setTotalUnit(childsTotalUnit);
                 familyItem.setFamilyProductCode(category);
 
-                billingAsset.add(familyItem);
+                // 해당 카테고리의 child들만 필터링
+                List<BillingAssetChildModel> categoryChildren = allChildItems.stream()
+                    .filter(child -> category.equals(child.getChildProductCode()))
+                    .toList();
+
+                // 카테고리에 데이터가 있을 때만 추가
+                if(!categoryChildren.isEmpty()) {
+                    double childsTotalBill = 0.0;
+                    Integer childsTotalUnit = 0;
+                    for(BillingAssetChildModel child : categoryChildren){
+                        childsTotalUnit += child.getUnit();
+                        childsTotalBill += child.getBill();
+                    }
+
+                    familyItem.setChildProductCode(categoryChildren);
+                    familyItem.setTotalCost(childsTotalBill);
+                    familyItem.setTotalUnit(childsTotalUnit);
+
+                    billingAsset.add(familyItem);
+                }
             }
 
             // 데이터 없음 -> null 반환

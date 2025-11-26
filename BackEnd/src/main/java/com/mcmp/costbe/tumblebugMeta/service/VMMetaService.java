@@ -2,6 +2,8 @@ package com.mcmp.costbe.tumblebugMeta.service;
 
 import com.mcmp.costbe.tumblebugMeta.dao.TBBDao;
 import com.mcmp.costbe.tumblebugMeta.model.ResourcegroupMetaModel;
+import com.mcmp.costbe.tumblebugMeta.model.k8s.K8sClusterItemModel;
+import com.mcmp.costbe.tumblebugMeta.model.k8s.K8sClusterListModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TBBMCIItemModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TBBMCIModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TbVmInfoModel;
@@ -286,6 +288,45 @@ public class VMMetaService {
         }
     }
 
+    public List<K8sClusterItemModel> getTBBK8sClusters(TBBNSItemModel item){
+
+        if(item != null){
+            String apiUrl = String.format("%s/ns/%s/k8sCluster", tumblebugUrl, item.getId());
+            RestTemplate restTemplate = new RestTemplate();
+
+            String auth = tumblebugUserNM + ":" + tumblebugPW;
+            byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
+            String authHeader = "Basic " + new String(encodedAuth);
+
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.set("Authorization", authHeader);
+            HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+
+            try{
+                ResponseEntity<K8sClusterListModel> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, httpEntity, K8sClusterListModel.class);
+                K8sClusterListModel response = responseEntity.getBody();
+
+                if(response != null && response.getClusters() != null && !response.getClusters().isEmpty()){
+                    return response.getClusters();
+                }else{
+                    log.warn("TUMBLEBUG META - K8S => CLUSTERS IS EMPTY => ns : {}, response : {}", item.getId(), response);
+                    return new ArrayList<>();
+                }
+            } catch (HttpClientErrorException | HttpServerErrorException clientError) {
+                HttpStatus statusCode = clientError.getStatusCode();
+                log.error("FAIL TO GET TUMBLEBUG META - K8S => NS ID : {}, error code : {}", item.getId(), statusCode);
+                throw new RuntimeException();
+            } catch (Exception e){
+                log.error("FAIL TO GET TUMBLEBUG META - K8S => NS ID : {}, error : {}", item.getId(), e.getMessage());
+                throw new RuntimeException();
+            }
+
+        } else {
+            log.error("[ERROR] : GET TUMBLEBUG META - K8S => NS IS EMPTY");
+            return new ArrayList<>();
+        }
+    }
+
     public TbVmInfoModel getTBBVM(TBBNSItemModel item, TBBMCIItemModel mci, TbVmInfoModel vm){
 
         if(vm != null){
@@ -331,6 +372,8 @@ public class VMMetaService {
         for(TBBNSItemModel ns : nsList){
 
             Thread.sleep(2000);
+
+            // VM 처리
             List<TBBMCIItemModel> mciList = getTBBMCI(ns);
 
             for(TBBMCIItemModel mci : mciList){
@@ -374,6 +417,7 @@ public class VMMetaService {
                                                 .cspInstanceid(vminfo.getCspResourceId())
                                                 .serviceCd(ns.getId())
                                                 .serviceNm(ns.getName())
+                                                .serviceType("VM")
                                                 .workspaceCd("ws1")  // TODO: 추후 동적으로 변경 필요
                                                 .vmId(vminfo.getId())
                                                 .vmUid(vminfo.getUid())
@@ -400,6 +444,72 @@ public class VMMetaService {
                         throw new RuntimeException();
                     }
 
+                }
+            }
+
+            // K8s 클러스터 처리
+            Thread.sleep(2000);
+            List<K8sClusterItemModel> k8sList = getTBBK8sClusters(ns);
+
+            if(k8sList != null && !k8sList.isEmpty()){
+                try{
+                    List<ResourcegroupMetaModel> k8sMetaList = new ArrayList<>();
+
+                    for(K8sClusterItemModel cluster : k8sList){
+                        if(cluster != null && cluster.getCspResourceId() != null){
+
+                            // K8s 클러스터 상태 처리
+                            String k8sStatus;
+                            if(cluster.getStatus() != null && !cluster.getStatus().isEmpty()){
+                                k8sStatus = switch (cluster.getStatus()){
+                                    case "Active" -> "Y";
+                                    case "Failed", "Deactive", "Inactive", "Error" -> "N";
+                                    default -> {
+                                        log.warn("Unknown K8s cluster status: {} for cluster: {}, defaulting to Y",
+                                            cluster.getStatus(), cluster.getId());
+                                        yield "Y";
+                                    }
+                                };
+                            }else {
+                                k8sStatus = "Y";
+                            }
+
+                            // CSP 타입 및 계정 정보
+                            String cspType = cluster.getConnectionConfig() != null ?
+                                cluster.getConnectionConfig().getProviderName().toUpperCase() : "UNKNOWN";
+                            String cspAccount = cluster.getConnectionName() != null ?
+                                cluster.getConnectionName() : "mcmpcostopti";
+
+                            ResourcegroupMetaModel k8sInfo = ResourcegroupMetaModel.builder()
+                                    .cspType(cspType)
+                                    .cspAccount(cspAccount)
+                                    .cspInstanceid(cluster.getCspResourceId())
+                                    .serviceCd(ns.getId())
+                                    .serviceNm(ns.getName())
+                                    .serviceType("K8S")
+                                    .workspaceCd("ws1")  // TODO: 추후 동적으로 변경 필요
+                                    .vmId(cluster.getId())
+                                    .vmUid(cluster.getCspResourceName())
+                                    .vmNm(cluster.getId())
+                                    .mciId(null)
+                                    .mciUid(null)
+                                    .mciNm(null)
+                                    .instanceRunningStatus(k8sStatus)
+                                    .build();
+
+                            k8sMetaList.add(k8sInfo);
+                        }
+                    }
+
+                    if(!k8sMetaList.isEmpty()){
+                        tbbDao.insertTBBServicegroupMeta(k8sMetaList);
+                        log.info("Inserted {} K8s clusters for namespace: {}", k8sMetaList.size(), ns.getId());
+                    }
+
+                } catch (Exception e){
+                    log.error("Failed to process K8s clusters for namespace: {}, error: {}", ns.getId(), e.getMessage());
+                    e.printStackTrace();
+                    throw new RuntimeException();
                 }
             }
         }
