@@ -54,19 +54,31 @@ public class MailService {
         mailFormModel.setOccure_time(ZonedDateTime.now().toLocalDateTime());
         mailFormModel.setAlarm_impl("mail");
 
-        int checkDuplicateMail = commonService.getAlertDuplicate(mailFormModel);
-        if(checkDuplicateMail >= 1){
-            log.info("############Send OptiAlertEmail Duplicate : {} - {} - {}############", mailFormModel.getEvent_type(), mailFormModel.getResource_id()
-                    , (mailFormModel.getAccount_id() != null ? mailFormModel.getAccount_id() : mailFormModel.getProject_cd()));
-            return;
+        try {
+            int checkDuplicateMail = commonService.getAlertDuplicate(mailFormModel);
+            if (checkDuplicateMail >= 1) {
+                log.info("############Send OptiAlertEmail Duplicate : {} - {} - {}############",
+                        mailFormModel.getEvent_type(), mailFormModel.getResource_id(),
+                        (mailFormModel.getAccount_id() != null ? mailFormModel.getAccount_id() : mailFormModel.getProject_cd()));
+                return;
+            }
+        } catch (Exception e) {
+            log.warn("중복 체크 실패 - 중복 아님으로 간주하고 진행 (resource_id: {}, cause: {})",
+                    mailFormModel.getResource_id(), e.getMessage());
         }
 
         try {
+            // find mail receiver
+            List<String> receivers = getAlarmMailReceivers(optiAlarmReqModel);
+            if (receivers == null || receivers.isEmpty()) {
+                log.warn("수신자 없음 - 메일 발송 스킵 (resource_id: {}, project_cd: {})",
+                        optiAlarmReqModel.getResource_id(), optiAlarmReqModel.getProject_cd());
+                return;
+            }
+            mailFormModel.setTo(receivers);
+
             JavaMailSender emailSender = mailConfig.getJavaMailSender();
             MimeMessage mimeMessage = emailSender.createMimeMessage();
-
-            // find mail receiver
-            mailFormModel.setTo(getAlarmMailReceivers(optiAlarmReqModel));
 
             String mailMessage = "[MCMP-Notice] Cost Alarm occurred";
             switch (optiAlarmReqModel.getEvent_type()){
@@ -130,11 +142,16 @@ public class MailService {
             log.info("############Send OptiAlertEmail Success############");
 
         } catch (Exception e) {
-            log.info("############Send AlertEmail Fail############");
-            e.printStackTrace();
+            log.warn("############Send AlertEmail Fail - resource_id: {}, cause: {}############",
+                    optiAlarmReqModel.getResource_id(), e.getMessage());
         }
 
-        commonService.insertAlarmHistory(mailFormModel);
+        try {
+            commonService.insertAlarmHistory(mailFormModel);
+        } catch (Exception e) {
+            log.warn("알람 이력 저장 실패 - resource_id: {}, cause: {}",
+                    optiAlarmReqModel.getResource_id(), e.getMessage());
+        }
 
     }
 

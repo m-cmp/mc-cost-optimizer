@@ -255,7 +255,7 @@ CREATE TABLE `unused_collector` (
                                     PRIMARY KEY (`csp_resourceid`,`create_dt`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
--- cost.unused_process_mart definition
+-- cost.unused_process_mart definition (AWS 미사용 자원 탐지용 - costProcessor, costSelector에서 사용)
 
 CREATE TABLE `unused_process_mart` (
                                        `create_dt` timestamp NOT NULL,
@@ -265,3 +265,33 @@ CREATE TABLE `unused_process_mart` (
                                        `metric_avg_amount` double DEFAULT NULL,
                                        PRIMARY KEY (`resource_id`,`collect_dt`,`metric_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+CREATE TABLE `unused_daily_mart` (
+    `create_dt`         timestamp       NOT NULL        COMMENT '배치 실행 시각',
+    `csp_type`          varchar(100)    NOT NULL        COMMENT 'CSP 종류 (AZURE, NCP, GCP 등)',
+    `resource_id`       varchar(200)    NOT NULL        COMMENT '인스턴스/VM ID',
+    `collect_dt`        date            NOT NULL        COMMENT '메트릭 수집 날짜',
+    `metric_type`       varchar(100)    NOT NULL        COMMENT '메트릭 종류 (cpu 등)',
+    `metric_avg_amount` double          DEFAULT NULL    COMMENT '일별 평균 메트릭 값',
+    PRIMARY KEY (`csp_type`, `resource_id`, `collect_dt`, `metric_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci COMMENT='미사용 자원 탐지용 일별 메트릭 누적 테이블';
+
+-- cost.budget_monthly definition
+-- 프로젝트별 월간 예산 설정 테이블 (AWS, AZURE, NCP, GCP 공통)
+-- project_cd: servicegroup_meta.service_cd 와 동일한 값 사용
+-- UNIQUE KEY: (csp, project_cd, year, month) - CSP+프로젝트+연월 조합으로 유일
+
+create table budget_monthly
+(
+    id         bigint auto_increment primary key,
+    csp        varchar(50)                                              not null comment 'CSP 종류 (AWS, AZURE, NCP, GCP)',
+    year       int                                                      not null comment '연도',
+    month      int                                                      not null comment '월',
+    project_cd varchar(100) collate utf8mb4_unicode_520_ci             not null comment '프로젝트 코드 (servicegroup_meta.service_cd)',
+    budget     decimal(18, 3) default 0.000                            null     comment '예산 금액',
+    currency   varchar(10)    default 'USD'                            not null comment '통화 (USD, KRW)',
+    created_at timestamp      default current_timestamp()              null,
+    updated_at timestamp      default current_timestamp()              null on update current_timestamp(),
+    constraint uq_csp_project_year_month unique (csp, project_cd, year, month)
+) engine = InnoDB default charset = utf8mb4 collate = utf8mb4_unicode_520_ci comment = '프로젝트별 월간 예산 설정';
+
