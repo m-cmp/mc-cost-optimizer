@@ -53,6 +53,12 @@
             <artifactId>google-cloud-bigquery</artifactId>
         </dependency>
 
+        <!-- Google Auth -->
+        <dependency>
+            <groupId>com.google.auth</groupId>
+            <artifactId>google-auth-library-oauth2-http</artifactId>
+        </dependency>
+
         <!-- MyBatis -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
