@@ -23,7 +23,7 @@ public class GcpBillingScheduler {
     /**
      * 매일 전날 빌링 데이터 수집 → monthly 갱신 → 이상비용/미사용/예산 탐지
      */
-    @Scheduled(cron = "${gcp.billing.cron}")
+    @Scheduled(cron = "${gcpBillingCronSchedule}")
     public void collectAndDetect() {
         String date = LocalDate.now().minusDays(1).toString();
         log.info("GCP 빌링 배치 시작 - date: {}", date);

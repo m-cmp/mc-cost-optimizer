@@ -8,13 +8,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 
 @Slf4j
 @Configuration
 @Getter
 public class BigQueryConfig {
+
+    @Value("${gcp.project-id:}")
+    private String gcpProjectId;
+
+    @Value("${gcp.client-email:}")
+    private String clientEmail;
+
+    @Value("${gcp.private-key:}")
+    private String privateKey;
+
+    @Value("${gcp.private-key-id:}")
+    private String privateKeyId;
 
     @Value("${gcp.dataset:}")
     private String dataset;
@@ -27,27 +41,25 @@ public class BigQueryConfig {
     @Bean
     public BigQuery bigQuery() throws Exception {
         String credPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
-        String gcpProjectId = System.getenv("GCP_PROJECT_ID");
-        String clientEmail = System.getenv("GCP_CLIENT_EMAIL");
-        String privateKey = System.getenv("GCP_PRIVATE_KEY");
-        String privateKeyId = System.getenv("GCP_PRIVATE_KEY_ID");
 
         BigQuery bq;
 
         if (clientEmail != null && !clientEmail.isEmpty() && privateKey != null && !privateKey.isEmpty()) {
-            // 환경변수로 직접 인증
-            String credJson = buildCredentialJson(gcpProjectId, clientEmail, privateKey, privateKeyId);
-            ServiceAccountCredentials credentials = ServiceAccountCredentials.fromStream(
-                    new ByteArrayInputStream(credJson.getBytes(StandardCharsets.UTF_8))
-            );
+            PrivateKey pk = parsePemPrivateKey(privateKey);
+            ServiceAccountCredentials.Builder builder = ServiceAccountCredentials.newBuilder()
+                    .setClientEmail(clientEmail)
+                    .setPrivateKey(pk)
+                    .setProjectId(gcpProjectId);
+            if (privateKeyId != null && !privateKeyId.isEmpty()) {
+                builder.setPrivateKeyId(privateKeyId);
+            }
             bq = BigQueryOptions.newBuilder()
-                    .setCredentials(credentials)
+                    .setCredentials(builder.build())
                     .setProjectId(gcpProjectId)
                     .build()
                     .getService();
             log.info("GCP 인증: 환경변수(GCP_PROJECT_ID, GCP_CLIENT_EMAIL, GCP_PRIVATE_KEY) 사용");
         } else if (credPath != null && !credPath.isEmpty()) {
-            // 기존 파일 경로 방식
             bq = BigQueryOptions.getDefaultInstance().getService();
             log.info("GCP 인증: GOOGLE_APPLICATION_CREDENTIALS 파일 사용");
         } else {
@@ -69,21 +81,14 @@ public class BigQueryConfig {
         return bq;
     }
 
-    private String buildCredentialJson(String projectId, String clientEmail, String privateKey, String privateKeyId) {
-        String escapedKey = privateKey.replace("\\n", "\n").replace("\n", "\\n");
-        String keyIdField = (privateKeyId != null && !privateKeyId.isEmpty())
-                ? String.format("\"private_key_id\": \"%s\",", privateKeyId)
-                : "";
-        return String.format("""
-                {
-                  "type": "service_account",
-                  "project_id": "%s",
-                  %s
-                  "client_email": "%s",
-                  "private_key": "%s",
-                  "token_uri": "https://oauth2.googleapis.com/token"
-                }
-                """, projectId, keyIdField, clientEmail, escapedKey);
+    private PrivateKey parsePemPrivateKey(String pem) throws Exception {
+        String cleaned = pem.replace("\\n", "\n")
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s", "");
+        byte[] keyBytes = Base64.getDecoder().decode(cleaned);
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+        return KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
 
     private void autoDiscoverBillingTable(BigQuery bq) {
