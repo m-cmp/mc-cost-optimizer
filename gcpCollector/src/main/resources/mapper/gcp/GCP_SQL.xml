@@ -61,16 +61,20 @@
     <insert id="upsertMonthly" parameterType="String">
         INSERT INTO monthly_summation (`year_month`, project_cd, csp, total_cost, workspace_cd)
         SELECT
-             invoice_month
-            ,project_id
+             raw.invoice_month
+            ,COALESCE(meta.service_cd, raw.project_id)
             ,'GCP'
-            ,CAST(SUM(cost) AS CHAR)
-            ,NULL
-        FROM gcp_billing_raw
-        WHERE invoice_month = #{invoiceMonth}
-        GROUP BY invoice_month, project_id
+            ,CAST(SUM(raw.cost) AS CHAR)
+            ,meta.workspace_cd
+        FROM gcp_billing_raw raw
+        LEFT JOIN servicegroup_meta meta
+            ON  meta.csp_type    = 'GCP'
+            AND meta.csp_account COLLATE utf8mb4_uca1400_ai_ci = raw.project_id
+        WHERE raw.invoice_month = #{invoiceMonth}
+        GROUP BY raw.invoice_month, COALESCE(meta.service_cd, raw.project_id), meta.workspace_cd
         ON DUPLICATE KEY UPDATE
-            total_cost = VALUES(total_cost)
+            total_cost   = VALUES(total_cost)
+           ,workspace_cd = VALUES(workspace_cd)
     </insert>
 
     <!--
@@ -230,6 +234,59 @@
         ON DUPLICATE KEY UPDATE
             plan_type = 'Unused'
     </insert>
+
+    <!-- ===================== VM 사이즈 최적화 ===================== -->
+
+    <!--
+        최근 4일 CPU 기준 사이즈 최적화 후보 조회
+        - Up:   4일 평균 CPU > 80%
+        - Down: 4일 평균 CPU <= 10% AND 최대 CPU <= 50%
+        - servicegroup_meta JOIN: Tumblebug ns/mci/vm 식별자 확보
+    -->
+    <select id="selectRightSizeCandidates" resultType="com.mcmp.gcpcollector.dto.GcpVmRightSizeDto">
+        SELECT *
+        FROM (
+            SELECT
+                 udm.resource_id                                    AS vmId
+                ,AVG(udm.metric_avg_amount)                         AS avg4DaysCpu
+                ,MAX(udm.metric_avg_amount)                         AS max4DaysCpu
+                ,COUNT(DISTINCT udm.collect_dt)                     AS dayCount
+                ,COALESCE(meta.service_cd, udm.resource_id)         AS projectCd
+                ,meta.workspace_cd                                  AS workspaceCd
+                ,meta.csp_account                                   AS billingAccountId
+                ,meta.vm_id                                         AS tbbVmId
+                ,meta.mci_id                                        AS tbbMciId
+                ,meta.service_cd                                    AS tbbNsId
+                ,CASE
+                    WHEN AVG(udm.metric_avg_amount) > 80                                                THEN 'Up'
+                    WHEN AVG(udm.metric_avg_amount) &lt;= 10 AND MAX(udm.metric_avg_amount) &lt;= 50   THEN 'Down'
+                    ELSE NULL
+                 END AS recommendType
+            FROM unused_daily_mart udm
+            LEFT JOIN servicegroup_meta meta
+                ON  meta.csp_type                                          = 'GCP'
+                AND meta.csp_instanceid COLLATE utf8mb4_uca1400_ai_ci     = udm.resource_id
+            WHERE udm.csp_type    = 'GCP'
+              AND udm.metric_type = 'cpu'
+              AND udm.collect_dt >= DATE(DATE_SUB(NOW(), INTERVAL 4 DAY))
+              AND udm.collect_dt  <![CDATA[ < ]]> CURDATE()
+            GROUP BY udm.resource_id, meta.service_cd, meta.workspace_cd,
+                     meta.csp_account, meta.vm_id, meta.mci_id
+        ) candidates
+        WHERE recommendType IS NOT NULL
+          AND dayCount >= 4
+    </select>
+
+    <!-- 오늘 Unused 판정된 VM 여부 확인 (중복 알람 방지) -->
+    <select id="checkTodayUnused" parameterType="String" resultType="int">
+        SELECT COUNT(*)
+        FROM unused_batch_rst
+        WHERE csp_type      = 'GCP'
+          AND csp_instanceid = #{vmId}
+          AND DATE(create_dt) = CURDATE()
+    </select>
+
+    <!-- ===================== VM 사이즈 최적화 끝 ===================== -->
 
     <!-- ===================== 미사용 자원 탐지 끝 ===================== -->
 

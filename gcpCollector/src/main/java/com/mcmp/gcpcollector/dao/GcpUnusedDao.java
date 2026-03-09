@@ -1,6 +1,7 @@
 package com.mcmp.gcpcollector.dao;
 
 import com.mcmp.gcpcollector.dto.GcpUnusedVmDto;
+import com.mcmp.gcpcollector.dto.GcpVmRightSizeDto;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -27,5 +28,13 @@ public class GcpUnusedDao {
 
     public void insertUnusedBatchRst(GcpUnusedVmDto dto) {
         sqlSessionTemplate.insert("gcp.insertUnusedBatchRst", dto);
+    }
+
+    public List<GcpVmRightSizeDto> selectRightSizeCandidates() {
+        return sqlSessionTemplate.selectList("gcp.selectRightSizeCandidates");
+    }
+
+    public int checkTodayUnused(String vmId) {
+        return sqlSessionTemplate.selectOne("gcp.checkTodayUnused", vmId);
     }
 }

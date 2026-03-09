@@ -3,6 +3,7 @@ package com.mcmp.gcpcollector.batch;
 import com.mcmp.gcpcollector.batch.processor.GcpBillingItemProcessor;
 import com.mcmp.gcpcollector.batch.tasklet.AnomalyDetectTasklet;
 import com.mcmp.gcpcollector.batch.tasklet.BudgetCheckTasklet;
+import com.mcmp.gcpcollector.batch.tasklet.RightSizeTasklet;
 import com.mcmp.gcpcollector.batch.tasklet.UnusedDetectTasklet;
 import com.mcmp.gcpcollector.batch.tasklet.UpsertMonthlyTasklet;
 import com.mcmp.gcpcollector.batch.writer.GcpBillingItemWriter;
@@ -11,6 +12,7 @@ import com.mcmp.gcpcollector.dto.GcpBillingRawDto;
 import com.mcmp.gcpcollector.service.BillingQueryService;
 import com.mcmp.gcpcollector.service.GcpAnomalyDetectionService;
 import com.mcmp.gcpcollector.service.GcpBudgetCheckService;
+import com.mcmp.gcpcollector.service.GcpRightSizeService;
 import com.mcmp.gcpcollector.service.GcpUnusedDetectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,7 @@ public class GcpBillingJobConfig {
     private final GcpAnomalyDetectionService gcpAnomalyDetectionService;
     private final GcpUnusedDetectionService gcpUnusedDetectionService;
     private final GcpBudgetCheckService gcpBudgetCheckService;
+    private final GcpRightSizeService gcpRightSizeService;
 
     // ── Reader ────────────────────────────────────────────────────────────
     @Bean
@@ -87,6 +90,11 @@ public class GcpBillingJobConfig {
         return new BudgetCheckTasklet(gcpBudgetCheckService);
     }
 
+    @Bean
+    public RightSizeTasklet rightSizeTasklet() {
+        return new RightSizeTasklet(gcpRightSizeService);
+    }
+
     // ── Steps ─────────────────────────────────────────────────────────────
     @Bean
     public Step billingCollectStep(JobRepository jobRepository, PlatformTransactionManager tm) {
@@ -126,6 +134,13 @@ public class GcpBillingJobConfig {
                 .build();
     }
 
+    @Bean
+    public Step rightSizeStep(JobRepository jobRepository, PlatformTransactionManager tm) {
+        return new StepBuilder("rightSizeStep", jobRepository)
+                .tasklet(rightSizeTasklet(), tm)
+                .build();
+    }
+
     // ── Job ───────────────────────────────────────────────────────────────
     @Bean
     public Job gcpBillingJob(JobRepository jobRepository,
@@ -133,13 +148,15 @@ public class GcpBillingJobConfig {
                              Step upsertMonthlyStep,
                              Step anomalyDetectStep,
                              Step unusedDetectStep,
-                             Step budgetCheckStep) {
+                             Step budgetCheckStep,
+                             Step rightSizeStep) {
         return new JobBuilder("gcpBillingJob", jobRepository)
                 .start(billingCollectStep)
                 .next(upsertMonthlyStep)
                 .next(anomalyDetectStep)
                 .next(unusedDetectStep)
                 .next(budgetCheckStep)
+                .next(rightSizeStep)
                 .build();
     }
 }
