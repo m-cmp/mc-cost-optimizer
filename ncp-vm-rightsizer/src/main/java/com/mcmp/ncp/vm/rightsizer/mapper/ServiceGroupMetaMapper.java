@@ -13,4 +13,11 @@ public interface ServiceGroupMetaMapper {
      * @return projectCd, workspaceCd를 담은 Map
      */
     Map<String, String> selectProjectAndWorkspaceByMemberNo(@Param("memberNo") String memberNo);
+
+    /**
+     * instance_no로 Tumblebug 식별자 조회 (tbbNsId, tbbMciId, tbbVmId)
+     * @param instanceNo NCP 인스턴스 번호
+     * @return tbbNsId, tbbMciId, tbbVmId를 담은 Map
+     */
+    Map<String, String> selectTbbIdentifiersByInstanceNo(@Param("instanceNo") String instanceNo);
 }

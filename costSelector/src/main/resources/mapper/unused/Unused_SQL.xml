@@ -17,10 +17,16 @@
              , uc.instance_family AS inst_family
              , uc.instance_family_type AS inst_family_type
              , uc.product_sku AS product_sku
+             , sgm.service_cd AS tbbNsId
+             , sgm.mci_id AS tbbMciId
+             , sgm.vm_id AS tbbVmId
         FROM asset_compute_metric acm
           LEFT JOIN unused_collector uc
             ON uc.csp_resourceid = acm.csp_instanceid
            AND uc.create_dt = DATE(#{create_dt})
+          LEFT JOIN servicegroup_meta sgm
+            ON sgm.csp_type = acm.csp_type
+           AND sgm.csp_instanceid = acm.csp_instanceid
          WHERE 1=1
            AND acm.csp_instanceid = #{resource_id}
            AND acm.collect_dt >= DATE(DATE_SUB(#{create_dt}, INTERVAL 1 DAY))

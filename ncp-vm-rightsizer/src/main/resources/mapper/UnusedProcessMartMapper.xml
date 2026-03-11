@@ -56,6 +56,9 @@
         <result property="serverSpecCode" column="server_spec_code"/>
         <result property="instanceName" column="instance_name"/>
         <result property="recommendType" column="recommend_type"/>
+        <result property="tbbNsId" column="tbb_ns_id"/>
+        <result property="tbbMciId" column="tbb_mci_id"/>
+        <result property="tbbVmId" column="tbb_vm_id"/>
     </resultMap>
 
     <!-- 4일간 메트릭 데이터 기반 SizeUp/Down 추천 대상 조회 -->
@@ -95,7 +98,10 @@
             ncp.member_no,
             ncp.region_code,
             ncp.server_spec_code,
-            ncp.instance_name
+            ncp.instance_name,
+            meta.service_cd  AS tbb_ns_id,
+            meta.mci_id      AS tbb_mci_id,
+            meta.vm_id       AS tbb_vm_id
         FROM recommend_candidates rc
         INNER JOIN (
             SELECT
@@ -111,7 +117,10 @@
                 GROUP BY instance_no
             ) latest ON t.instance_no = latest.instance_no
                      AND t.created = latest.max_created
-        )  ncp ON rc.resource_id COLLATE utf8mb4_unicode_520_ci = ncp.instance_no
+        ) ncp ON rc.resource_id COLLATE utf8mb4_unicode_520_ci = ncp.instance_no
+        LEFT JOIN servicegroup_meta meta
+            ON  meta.csp_type                                           = 'NCP'
+            AND meta.csp_instanceid COLLATE utf8mb4_unicode_520_ci      = rc.resource_id
         ORDER BY rc.recommend_type, rc.resource_id
     </select>
 

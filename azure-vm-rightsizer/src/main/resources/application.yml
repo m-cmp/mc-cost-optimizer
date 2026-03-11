@@ -31,6 +31,11 @@ logging:
 azure-vm-rightsizer-schedule:
   rightsizer-batch-cron: ${AZURE_RIGHTSIZER_BATCH_CRON_SCHEDULE:0 30 0 * * ?}
 
+tumblebug:
+  url: ${TUMBLEBUG_URL:http://mc-infra-manager:1323/tumblebug}
+  username: ${TUMBLEBUG_USERNAME:default}
+  password: ${TUMBLEBUG_PASSWORD:default}
+
 azure:
   credential:
     tenant-id: ${TENANT_ID:tenantId}

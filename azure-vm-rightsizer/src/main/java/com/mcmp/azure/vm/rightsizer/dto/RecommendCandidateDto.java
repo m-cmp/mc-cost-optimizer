@@ -14,20 +14,32 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecommendCandidateDto {
 
-    private String resourceId;           // vm_id
+    private String resourceId;           // full Azure resource path
     private String subscriptionId;       // Azure subscription_id
     private Double avg4DaysCpu;          // 4일 평균 CPU
     private Double max4DaysCpu;          // 4일 최대 CPU
-    private String region;               // region
-    private String instanceType;         // instance_type (현재 스펙)
-    private String vmId;                 // vm_id
-    private String osType;               // OS 타입 (WINDOWS/LINUX) - Azure only
-    private String recommendType;        // "Up" or "Down"
+    private String region;               // region (Modernize용 유지)
+    private String instanceType;         // instance_type (Modernize용 유지)
+    private String vmId;                 // vm_id (short name)
+    private String osType;               // OS 타입 (WINDOWS/LINUX) - Modernize용 유지
+    private String recommendType;        // "Up" | "Down" | "Modernize"
+
+    // Tumblebug 식별자 (servicegroup_meta에서 조회)
+    private String tbbNsId;             // service_cd
+    private String tbbMciId;            // mci_id
+    private String tbbVmId;             // vm_id (tumblebug)
+
+    // Tumblebug 스펙 조회 결과 (TumblebugClient가 채움)
+    private String  currentSpecName;
+    private Integer currentVcpu;
+    private Double  currentMemGiB;
+    private String  regionName;
 
     @Builder
     public RecommendCandidateDto(String resourceId, String subscriptionId, Double avg4DaysCpu,
                                  Double max4DaysCpu, String region, String instanceType,
-                                 String vmId, String osType, String recommendType) {
+                                 String vmId, String osType, String recommendType,
+                                 String tbbNsId, String tbbMciId, String tbbVmId) {
         this.resourceId = resourceId;
         this.subscriptionId = subscriptionId;
         this.avg4DaysCpu = avg4DaysCpu;
@@ -37,5 +49,8 @@ public class RecommendCandidateDto {
         this.vmId = vmId;
         this.osType = osType;
         this.recommendType = recommendType;
+        this.tbbNsId = tbbNsId;
+        this.tbbMciId = tbbMciId;
+        this.tbbVmId = tbbVmId;
     }
 }

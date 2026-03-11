@@ -1,5 +1,6 @@
 package com.mcmp.costselector.unused.service;
 
+import com.mcmp.costselector.client.TumblebugClient;
 import com.mcmp.costselector.model.util.AlarmReqModel;
 import com.mcmp.costselector.unused.dao.UnusedSelectDao;
 import com.mcmp.costselector.unused.model.*;
@@ -22,6 +23,9 @@ public class OptiSizeService {
 
     @Autowired
     private AlarmService alarmService;
+
+    @Autowired
+    private TumblebugClient tumblebugClient;
 
     public String analyzeTypeForResizing(UnusedResourceStatusModel rscStatus){
         LocalDate curDate = ZonedDateTime.now().toLocalDate();
@@ -81,7 +85,12 @@ public class OptiSizeService {
                 switch (resizingType){
                     case "Up":
                     case "Down":
-                        rcmdType = unusedSelectDao.getRscEc2OptiSize(paramMap);
+                        tumblebugClient.fillCurrentSpec(rscStatus);
+                        String tbbSpecName = tumblebugClient.recommendSpec(rscStatus, resizingType);
+                        if (tbbSpecName != null) {
+                            rcmdType = new OptiEC2SizeRstModel();
+                            rcmdType.setInstType(tbbSpecName);
+                        }
                         break;
                     case "Modernize":
                         rcmdType = unusedSelectDao.getRscEc2ModernizeType(paramMap);

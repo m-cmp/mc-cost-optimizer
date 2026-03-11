@@ -1,7 +1,7 @@
-package com.mcmp.gcpcollector.client;
+package com.mcmp.azure.vm.rightsizer.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.mcmp.gcpcollector.dto.GcpVmRightSizeDto;
+import com.mcmp.azure.vm.rightsizer.dto.RecommendCandidateDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -41,14 +41,14 @@ public class TumblebugClient {
      * Tumblebug VM 상세 조회 → specId, vCPU, memoryGiB, regionName 채움
      * GET /tumblebug/ns/{nsId}/mci/{mciId}/vm/{vmId}
      */
-    public void fillCurrentSpec(GcpVmRightSizeDto vm) {
-        String nsId  = vm.getTbbNsId();
-        String mciId = vm.getTbbMciId();
-        String vmId  = vm.getTbbVmId();
+    public void fillCurrentSpec(RecommendCandidateDto candidate) {
+        String nsId  = candidate.getTbbNsId();
+        String mciId = candidate.getTbbMciId();
+        String vmId  = candidate.getTbbVmId();
 
         if (nsId == null || mciId == null || vmId == null) {
-            log.warn("TBB VM 식별자 누락 - vmId: {}, nsId: {}, mciId: {}, tbbVmId: {}",
-                    vm.getVmId(), nsId, mciId, vmId);
+            log.warn("TBB VM 식별자 누락 - resourceId: {}, nsId: {}, mciId: {}, tbbVmId: {}",
+                    candidate.getResourceId(), nsId, mciId, vmId);
             return;
         }
 
@@ -61,14 +61,11 @@ public class TumblebugClient {
 
             // cspSpecName 직접 사용 (specId의 '+' 인코딩 문제 우회)
             String cspSpecName = body.path("cspSpecName").asText(null);
-            vm.setCurrentSpecId(body.path("specId").asText(null));
-
-            // 리전 추출 (추천 결과 필터용)
-            String regionName = body.path("region").path("Region").asText(null);
-            vm.setRegionName(regionName);
+            String regionName  = body.path("region").path("Region").asText(null);
+            candidate.setRegionName(regionName);
 
             if (cspSpecName != null && !cspSpecName.isEmpty()) {
-                fillSpecDetail(vm, nsId, cspSpecName);
+                fillSpecDetail(candidate, nsId, cspSpecName);
             }
         } catch (Exception e) {
             log.warn("TBB VM 조회 실패 - url: {}, cause: {}", url, e.getMessage());
@@ -76,22 +73,24 @@ public class TumblebugClient {
     }
 
     /**
-     * Tumblebug spec 상세 조회 → vCPU, memoryGiB 채움
+     * Tumblebug spec 상세 조회 → vCPU, memoryGiB, cspSpecName 채움
      * GET /tumblebug/ns/{nsId}/resources/spec/{specId}
      */
-    private void fillSpecDetail(GcpVmRightSizeDto vm, String nsId, String specId) {
-        String url = String.format("%s/ns/%s/resources/spec/%s", tumblebugUrl, nsId, specId);
+    private void fillSpecDetail(RecommendCandidateDto candidate, String nsId, String specId) {
+        String encodedSpecId = specId.replace("+", "%2B");
+        String url = String.format("%s/ns/%s/resources/spec/%s", tumblebugUrl, nsId, encodedSpecId);
         try {
             ResponseEntity<JsonNode> res = restTemplate.exchange(
                     url, HttpMethod.GET, new HttpEntity<>(buildHeaders()), JsonNode.class);
             JsonNode body = res.getBody();
             if (body == null) return;
 
-            vm.setCurrentSpecName(body.path("cspSpecName").asText(null));
-            vm.setCurrentVcpu(body.path("vCPU").asInt(0));
-            vm.setCurrentMemoryGiB(body.path("memoryGiB").asDouble(0));
-            log.debug("현재 스펙 조회 - vmId: {}, spec: {}, vCPU: {}, mem: {}GiB",
-                    vm.getVmId(), vm.getCurrentSpecName(), vm.getCurrentVcpu(), vm.getCurrentMemoryGiB());
+            candidate.setCurrentSpecName(body.path("cspSpecName").asText(null));
+            candidate.setCurrentVcpu(body.path("vCPU").asInt(0));
+            candidate.setCurrentMemGiB(body.path("memoryGiB").asDouble(0));
+            log.debug("현재 스펙 조회 - resourceId: {}, spec: {}, vCPU: {}, mem: {}GiB",
+                    candidate.getResourceId(), candidate.getCurrentSpecName(),
+                    candidate.getCurrentVcpu(), candidate.getCurrentMemGiB());
         } catch (Exception e) {
             log.warn("TBB spec 상세 조회 실패 - specId: {}, cause: {}", specId, e.getMessage());
         }
@@ -101,24 +100,24 @@ public class TumblebugClient {
      * 사이즈 추천 요청
      * POST /tumblebug/recommendSpec
      *
-     * @return 추천 스펙명 (예: "e2-standard-4"), 실패 시 null
+     * @return 추천 스펙명 (예: "Standard_D4s_v3"), 실패 시 null
      */
-    public String recommendSpec(GcpVmRightSizeDto vm) {
+    public String recommendSpec(RecommendCandidateDto candidate) {
         String url = String.format("%s/recommendSpec", tumblebugUrl);
 
-        boolean isUp = "Up".equals(vm.getRecommendType());
-        int    vcpu   = vm.getCurrentVcpu()    != null ? vm.getCurrentVcpu()    : 2;
-        double memGiB = vm.getCurrentMemoryGiB() != null ? vm.getCurrentMemoryGiB() : 1.0;
+        boolean isUp    = "Up".equals(candidate.getRecommendType());
+        int    vcpu     = candidate.getCurrentVcpu()   != null ? candidate.getCurrentVcpu()   : 2;
+        double memGiB   = candidate.getCurrentMemGiB() != null ? candidate.getCurrentMemGiB() : 4.0;
+        String operator = isUp ? ">=" : "<=";
 
-        int targetVcpu   = isUp ? vcpu * 2                             : Math.max(1, vcpu / 2);
-        int targetMemGiB = isUp ? (int) Math.ceil(memGiB * 2)         : (int) Math.max(1.0, Math.floor(memGiB / 2));
-        String operator  = isUp ? ">="                                 : "<=";
+        int targetVcpu   = isUp ? vcpu * 2                        : Math.max(1, vcpu / 2);
+        int targetMemGiB = isUp ? (int) Math.ceil(memGiB * 2)     : (int) Math.max(1.0, Math.floor(memGiB / 2));
 
         Map<String, Object> body = Map.of(
             "filter", Map.of(
                 "policy", List.of(
-                    Map.of("metric", "vCPU",      "condition", List.of(Map.of("operand", String.valueOf(targetVcpu),    "operator", operator))),
-                    Map.of("metric", "memoryGiB", "condition", List.of(Map.of("operand", String.valueOf(targetMemGiB),  "operator", operator)))
+                    Map.of("metric", "vCPU",      "condition", List.of(Map.of("operand", String.valueOf(targetVcpu),   "operator", operator))),
+                    Map.of("metric", "memoryGiB", "condition", List.of(Map.of("operand", String.valueOf(targetMemGiB), "operator", operator)))
                 )
             ),
             "priority", Map.of(
@@ -135,37 +134,32 @@ public class TumblebugClient {
             JsonNode resBody = res.getBody();
             if (resBody == null || !resBody.isArray() || resBody.isEmpty()) return null;
 
-            // providerName=gcp + 같은 리전 우선 필터링
-            String regionName = vm.getRegionName();
+            // providerName=azure + 같은 리전 우선 필터링
+            String regionName = candidate.getRegionName();
             JsonNode matched = null;
 
             for (JsonNode spec : resBody) {
                 String provider = spec.path("providerName").asText("");
                 String region   = spec.path("regionName").asText("");
-                if ("gcp".equalsIgnoreCase(provider)) {
-                    // 같은 리전이면 우선 선택
+                if ("azure".equalsIgnoreCase(provider)) {
                     if (regionName != null && regionName.equalsIgnoreCase(region)) {
                         matched = spec;
                         break;
                     }
-                    // 같은 리전 없으면 첫 번째 gcp 스펙 저장
                     if (matched == null) matched = spec;
                 }
             }
 
-            // gcp 스펙이 없으면 추천 없음
+            // azure 스펙이 없으면 추천 없음
             if (matched == null) return null;
 
-            String specId   = matched.path("id").asText(null);
             String specName = matched.path("cspSpecName").asText(null);
-            vm.setRecommendSpecId(specId);
-            vm.setRecommendSpecName(specName);
-
-            log.info("추천 스펙 - vmId: {}, direction: {}, {} → {}",
-                    vm.getVmId(), vm.getRecommendType(), vm.getCurrentSpecName(), specName);
+            log.info("추천 스펙 - resourceId: {}, direction: {}, {} → {}",
+                    candidate.getResourceId(), candidate.getRecommendType(),
+                    candidate.getCurrentSpecName(), specName);
             return specName;
         } catch (Exception e) {
-            log.warn("TBB 스펙 추천 실패 - vmId: {}, cause: {}", vm.getVmId(), e.getMessage());
+            log.warn("TBB 스펙 추천 실패 - resourceId: {}, cause: {}", candidate.getResourceId(), e.getMessage());
             return null;
         }
     }

@@ -7,17 +7,6 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface NcpRightSizeMapper {
 
-    RecommendVmTypeDto getRecommendSizeUpVmType(
-            @Param("region") String region,
-            @Param("instanceType") String instanceType
-    );
-
-    RecommendVmTypeDto getRecommendSizeDownVmType(
-            @Param("region") String region,
-            @Param("instanceType") String instanceType,
-            @Param("discountRate") double discountRate
-    );
-
     RecommendVmTypeDto getRecommendModernizeVmType(
             @Param("region") String region,
             @Param("instanceType") String instanceType
