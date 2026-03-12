@@ -239,8 +239,9 @@
 
     <!--
         최근 4일 CPU 기준 사이즈 최적화 후보 조회
-        - Up:   4일 평균 CPU > 80%
-        - Down: 4일 평균 CPU <= 10% AND 최대 CPU <= 50%
+        - Up:       4일 평균 CPU > 80%
+        - Down:     4일 평균 CPU <= 10% AND 최대 CPU <= 50%
+        - Modernize: 그 외 범위 (10% < 평균 <= 80%, 또는 평균 <= 10%이나 최대 > 50%)
         - servicegroup_meta JOIN: Tumblebug ns/mci/vm 식별자 확보
     -->
     <select id="selectRightSizeCandidates" resultType="com.mcmp.gcpcollector.dto.GcpVmRightSizeDto">
@@ -260,7 +261,7 @@
                 ,CASE
                     WHEN AVG(udm.metric_avg_amount) > 80                                                THEN 'Up'
                     WHEN AVG(udm.metric_avg_amount) &lt;= 10 AND MAX(udm.metric_avg_amount) &lt;= 50   THEN 'Down'
-                    ELSE NULL
+                    ELSE 'Modernize'
                  END AS recommendType
             FROM unused_daily_mart udm
             LEFT JOIN servicegroup_meta meta

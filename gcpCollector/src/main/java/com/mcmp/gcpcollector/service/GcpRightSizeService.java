@@ -92,14 +92,25 @@ public class GcpRightSizeService {
         }
         vm.setRecommendType(recommendType);
 
-        // Tumblebug에서 현재 스펙 조회
+        // Tumblebug에서 현재 스펙 조회 (Up/Down/Modernize 공통)
         tumblebugClient.fillCurrentSpec(vm);
 
-        // Tumblebug 추천 스펙 요청
-        String recommendSpecName = tumblebugClient.recommendSpec(vm);
-        if (recommendSpecName == null) {
-            log.warn("추천 스펙 없음 - vmId: {}, direction: {}", vm.getVmId(), recommendType);
-            return false;
+        String recommendSpecName;
+        if ("Modernize".equals(recommendType)) {
+            // Modernize: 다음 세대 스펙 존재 여부 확인
+            recommendSpecName = tumblebugClient.findModernizeSpec(vm);
+            if (recommendSpecName == null) {
+                log.info("Modernize 추천 스펙 없음 (다음 세대 미존재) - vmId: {}, spec: {}",
+                        vm.getVmId(), vm.getCurrentSpecName());
+                return false;
+            }
+        } else {
+            // Up/Down: recommendSpec API 사용
+            recommendSpecName = tumblebugClient.recommendSpec(vm);
+            if (recommendSpecName == null) {
+                log.warn("추천 스펙 없음 - vmId: {}, direction: {}", vm.getVmId(), recommendType);
+                return false;
+            }
         }
 
         // 현재 스펙과 동일하면 스킵
@@ -118,7 +129,7 @@ public class GcpRightSizeService {
 
         if (avg > UP_AVG_THRESHOLD) return "Up";
         if (avg <= DOWN_AVG_THRESHOLD && max <= DOWN_MAX_THRESHOLD) return "Down";
-        return null;
+        return "Modernize";
     }
 
     private void sendAlarm(GcpVmRightSizeDto vm) {
@@ -130,8 +141,25 @@ public class GcpRightSizeService {
                 "(평균: %.1f%%, 최대: %.1f%%) 현재 스펙: %s → 추천 스펙: %s",
                 vm.getVmId(), vm.getRecommendType(),
                 vm.getAvg4DaysCpu(), vm.getMax4DaysCpu(),
-                currentSpec, recommendSpec
-        );
+                currentSpec, recommendSpec);
+
+        if ("Down".equals(vm.getRecommendType())) {
+            boolean currentMissing   = vm.getCurrentCostPerHour()   == null;
+            boolean recommendMissing = vm.getRecommendCostPerHour() == null;
+
+            if (currentMissing && recommendMissing) {
+                log.warn("Down 절감액 계산 불가 - 현재/추천 스펙 단가 모두 미제공, vmId: {}", vm.getVmId());
+            } else if (currentMissing) {
+                log.warn("Down 절감액 계산 불가 - 현재 스펙 단가 미제공, vmId: {}", vm.getVmId());
+            } else if (recommendMissing) {
+                log.warn("Down 절감액 계산 불가 - 추천 스펙 단가 미제공, vmId: {}", vm.getVmId());
+            } else {
+                double monthlySavings = (vm.getCurrentCostPerHour() - vm.getRecommendCostPerHour()) * 24 * 30;
+                if (monthlySavings > 0) {
+                    note += String.format(" 예상 월 절감액: $%.2f.", monthlySavings);
+                }
+            }
+        }
 
         gcpAlarmSender.send(AlarmHistoryDto.builder()
                 .eventType("Resize")

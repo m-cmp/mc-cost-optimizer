@@ -25,6 +25,16 @@ public class RecommendVmListItemWriter implements ItemWriter<RecommendVmTypeDto>
     private final AlarmServiceClient alarmServiceClient;
     private final ServiceGroupMetaMapper serviceGroupMetaMapper;
 
+    private String buildNote(String plan, RecommendVmTypeDto dto) {
+        String base = String.format(
+            "Recommend %s sizing for instance (%s) from current type %s to %s.",
+            plan, dto.getVmId(), dto.getCurrentType(), dto.getRecommendType());
+        if ("Down".equals(plan) && dto.getUsd() != null && dto.getUsd() > 0) {
+            base += String.format(" Estimated monthly savings: $%.2f.", dto.getUsd());
+        }
+        return base;
+    }
+
     @Override
     public void write(Chunk<? extends RecommendVmTypeDto> chunk) throws Exception {
         for (RecommendVmTypeDto recommendVmTypeDto : chunk) {
@@ -53,13 +63,7 @@ public class RecommendVmListItemWriter implements ItemWriter<RecommendVmTypeDto>
                     .urgency("Up".equals(plan) ? "Warning" : "Caution")
                     // Up(상향), Down(하향), Unused(미사용), Modernize(최신화)
                     .plan(plan)
-                    .note(String.format(
-                        "Recommend %s sizing for instance (%s) from current type %s to %s.",
-                        plan,
-                        recommendVmTypeDto.getVmId(),
-                        recommendVmTypeDto.getCurrentType(),
-                        recommendVmTypeDto.getRecommendType()
-                    ))
+                    .note(buildNote(plan, recommendVmTypeDto))
                     .occureDate(new Timestamp(System.currentTimeMillis()))
                     .cspType("AZURE")
                     .projectCd(projectCd)  // servicegroup_meta에서 조회한 값 사용

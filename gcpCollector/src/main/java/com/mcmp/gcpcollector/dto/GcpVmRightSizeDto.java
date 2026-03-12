@@ -11,7 +11,7 @@ public class GcpVmRightSizeDto {
     private Double  avg4DaysCpu;
     private Double  max4DaysCpu;
     private Integer dayCount;
-    private String  recommendType;    // "Up" or "Down"
+    private String  recommendType;    // "Up", "Down", or "Modernize"
     private String  projectCd;
     private String  workspaceCd;
 
@@ -25,6 +25,8 @@ public class GcpVmRightSizeDto {
     private String  currentSpecName;
     private Integer currentVcpu;
     private Double  currentMemoryGiB;
+    private Double  currentCostPerHour;
+    private Double  recommendCostPerHour;
     private String  regionName;        // VM 리전 (추천 필터용)
 
     // Tumblebug 추천 결과

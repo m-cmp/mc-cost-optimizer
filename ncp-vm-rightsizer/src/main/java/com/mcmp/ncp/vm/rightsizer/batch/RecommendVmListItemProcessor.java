@@ -56,32 +56,50 @@ public class RecommendVmListItemProcessor implements ItemProcessor<RecommendCand
                 return null;
             }
 
+            Double monthlySavings = null;
+            if ("Down".equals(candidate.getRecommendType())) {
+                boolean currentMissing   = candidate.getCurrentCostPerHour()   == null;
+                boolean recommendMissing = candidate.getRecommendCostPerHour() == null;
+
+                if (currentMissing && recommendMissing) {
+                    log.warn("Down 절감액 계산 불가 - 현재/추천 스펙 단가 모두 미제공, instanceNo: {}", candidate.getResourceId());
+                } else if (currentMissing) {
+                    log.warn("Down 절감액 계산 불가 - 현재 스펙 단가 미제공, instanceNo: {}", candidate.getResourceId());
+                } else if (recommendMissing) {
+                    log.warn("Down 절감액 계산 불가 - 추천 스펙 단가 미제공, instanceNo: {}", candidate.getResourceId());
+                } else {
+                    double savings = (candidate.getCurrentCostPerHour() - candidate.getRecommendCostPerHour()) * 24 * 30;
+                    if (savings > 0) monthlySavings = savings;
+                }
+            }
+
             result = RecommendVmTypeDto.builder()
                 .currentType(candidate.getCurrentSpecName() != null
                     ? candidate.getCurrentSpecName()
                     : candidate.getServerSpecCode())
                 .recommendType(recommendSpecName)
+                .usd(monthlySavings)
                 .build();
 
         } else if ("Modernize".equals(candidate.getRecommendType())) {
-            // Modernize: 기존 DB 방식 유지
-            result = ncpRightSizeMapper.getRecommendModernizeVmType(
-                candidate.getRegionCode(),
-                candidate.getServerSpecCode()
-            );
-
-            if (result == null) {
-                log.warn("No recommendation found for resourceId={}, currentType={}",
+            // Modernize: Tumblebug 다음 세대 스펙 조회
+            String modernizeSpecName = tumblebugClient.findModernizeSpec(candidate);
+            if (modernizeSpecName == null) {
+                log.warn("No modernize recommendation from Tumblebug for instanceNo={}, currentType={}",
                     candidate.getResourceId(), candidate.getServerSpecCode());
                 return null;
             }
 
-            if (result.getRecommendType() != null &&
-                result.getRecommendType().equals(candidate.getServerSpecCode())) {
-                log.info("Modernize skipped: Recommended VM type is same as current type. vmId={}, currentType={}",
-                    candidate.getResourceId(), candidate.getServerSpecCode());
+            if (modernizeSpecName.equals(candidate.getServerSpecCode())) {
+                log.info("Modernize skipped: recommended spec same as current. instanceNo={}, spec={}",
+                    candidate.getResourceId(), modernizeSpecName);
                 return null;
             }
+
+            result = RecommendVmTypeDto.builder()
+                .currentType(candidate.getServerSpecCode())
+                .recommendType(modernizeSpecName)
+                .build();
 
         } else {
             log.warn("Unknown recommend type: {}", candidate.getRecommendType());

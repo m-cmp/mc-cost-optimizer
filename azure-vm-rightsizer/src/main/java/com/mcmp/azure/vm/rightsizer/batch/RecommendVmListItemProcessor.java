@@ -56,33 +56,50 @@ public class RecommendVmListItemProcessor implements ItemProcessor<RecommendCand
                 return null;
             }
 
+            Double monthlySavings = null;
+            if ("Down".equals(candidate.getRecommendType())) {
+                boolean currentMissing   = candidate.getCurrentCostPerHour()   == null;
+                boolean recommendMissing = candidate.getRecommendCostPerHour() == null;
+
+                if (currentMissing && recommendMissing) {
+                    log.warn("Down 절감액 계산 불가 - 현재/추천 스펙 단가 모두 미제공, resourceId: {}", candidate.getResourceId());
+                } else if (currentMissing) {
+                    log.warn("Down 절감액 계산 불가 - 현재 스펙 단가 미제공, resourceId: {}", candidate.getResourceId());
+                } else if (recommendMissing) {
+                    log.warn("Down 절감액 계산 불가 - 추천 스펙 단가 미제공, resourceId: {}", candidate.getResourceId());
+                } else {
+                    double savings = (candidate.getCurrentCostPerHour() - candidate.getRecommendCostPerHour()) * 24 * 30;
+                    if (savings > 0) monthlySavings = savings;
+                }
+            }
+
             result = RecommendVmTypeDto.builder()
                 .currentType(candidate.getCurrentSpecName() != null
                     ? candidate.getCurrentSpecName()
                     : candidate.getInstanceType())
                 .recommendType(recommendSpecName)
+                .usd(monthlySavings)
                 .build();
 
         } else if ("Modernize".equals(candidate.getRecommendType())) {
-            // Modernize: 기존 DB 방식 유지
-            result = azureRightSizeMapper.getRecommendModernizeVmType(
-                candidate.getOsType(),
-                candidate.getRegion(),
-                candidate.getInstanceType()
-            );
-
-            if (result == null) {
-                log.warn("No recommendation found for resourceId={}, currentType={}",
+            // Modernize: Tumblebug 다음 세대 스펙 조회
+            String modernizeSpecName = tumblebugClient.findModernizeSpec(candidate);
+            if (modernizeSpecName == null) {
+                log.warn("No modernize recommendation from Tumblebug for resourceId={}, currentType={}",
                     candidate.getResourceId(), candidate.getInstanceType());
                 return null;
             }
 
-            if (result.getRecommendType() != null &&
-                result.getRecommendType().equals(candidate.getInstanceType())) {
-                log.info("Modernize skipped: Recommended VM type is same as current type. vmId={}, currentType={}",
-                    candidate.getVmId(), candidate.getInstanceType());
+            if (modernizeSpecName.equals(candidate.getInstanceType())) {
+                log.info("Modernize skipped: recommended spec same as current. resourceId={}, spec={}",
+                    candidate.getResourceId(), modernizeSpecName);
                 return null;
             }
+
+            result = RecommendVmTypeDto.builder()
+                .currentType(candidate.getInstanceType())
+                .recommendType(modernizeSpecName)
+                .build();
 
         } else {
             log.warn("Unknown recommend type: {}", candidate.getRecommendType());

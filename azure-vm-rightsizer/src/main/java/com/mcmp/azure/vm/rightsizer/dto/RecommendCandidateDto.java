@@ -33,6 +33,8 @@ public class RecommendCandidateDto {
     private String  currentSpecName;
     private Integer currentVcpu;
     private Double  currentMemGiB;
+    private Double  currentCostPerHour;
+    private Double  recommendCostPerHour;
     private String  regionName;
 
     @Builder
