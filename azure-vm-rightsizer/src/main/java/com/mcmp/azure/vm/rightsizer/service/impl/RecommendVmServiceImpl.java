@@ -5,7 +5,6 @@ import com.mcmp.azure.vm.rightsizer.dto.AzureCostVmDailyDto;
 import com.mcmp.azure.vm.rightsizer.dto.RecommendCandidateDto;
 import com.mcmp.azure.vm.rightsizer.dto.RecommendVmTypeDto;
 import com.mcmp.azure.vm.rightsizer.mapper.AzureCostVmDailyMapper;
-import com.mcmp.azure.vm.rightsizer.mapper.AzureRightSizeMapper;
 import com.mcmp.azure.vm.rightsizer.mapper.ServiceGroupMetaMapper;
 import com.mcmp.azure.vm.rightsizer.properties.AzureCredentialProperties;
 import com.mcmp.azure.vm.rightsizer.service.RecommendVmService;
@@ -23,7 +22,6 @@ public class RecommendVmServiceImpl implements RecommendVmService {
 
     private final AzureCredentialProperties azureCredentialProperties;
     private final AzureCostVmDailyMapper azureCostVmDailyMapper;
-    private final AzureRightSizeMapper azureRightSizeMapper;
     private final ServiceGroupMetaMapper serviceGroupMetaMapper;
     private final TumblebugClient tumblebugClient;
 
@@ -59,16 +57,39 @@ public class RecommendVmServiceImpl implements RecommendVmService {
             return null;
         }
 
-        RecommendVmTypeDto modernizeDto = azureRightSizeMapper.getRecommendModernizeVmType(
-                dto.getOsType(), dto.getRegion(), dto.getInstanceType());
-        if (modernizeDto != null) {
-            modernizeDto.setVmId(dto.getVmId());
-            modernizeDto.setCurrentType(dto.getInstanceType());
-            modernizeDto.setPlan("Modernize");
-            log.info("[modernize] vmId={}, {} → {}", vmId, dto.getInstanceType(), modernizeDto.getRecommendType());
-            return modernizeDto;
+        Map<String, String> tbbIds = serviceGroupMetaMapper.selectTbbIdentifiersByResourceId(dto.getResourceId());
+        if (tbbIds == null) {
+            log.warn("Tumblebug 식별자 없음: resourceId={}", dto.getResourceId());
+            return null;
         }
-        return null;
+
+        RecommendCandidateDto candidate = RecommendCandidateDto.builder()
+                .resourceId(dto.getResourceId())
+                .vmId(vmId)
+                .instanceType(dto.getInstanceType())
+                .region(dto.getRegion())
+                .osType(dto.getOsType())
+                .recommendType("Modernize")
+                .tbbNsId(tbbIds.get("tbbNsId"))
+                .tbbMciId(tbbIds.get("tbbMciId"))
+                .tbbVmId(tbbIds.get("tbbVmId"))
+                .build();
+
+        String modernizeSpecName = tumblebugClient.findModernizeSpec(candidate);
+        if (modernizeSpecName == null) {
+            log.warn("Tumblebug Modernize 추천 없음: vmId={}", vmId);
+            return null;
+        }
+
+        RecommendVmTypeDto result = RecommendVmTypeDto.builder()
+                .currentType(dto.getInstanceType())
+                .recommendType(modernizeSpecName)
+                .vmId(vmId)
+                .plan("Modernize")
+                .build();
+
+        log.info("[Modernize] vmId={}, {} → {}", vmId, dto.getInstanceType(), modernizeSpecName);
+        return result;
     }
 
     private RecommendVmTypeDto recommend(String vmId, String direction) {

@@ -3,7 +3,6 @@ package com.mcmp.azure.vm.rightsizer.batch;
 import com.mcmp.azure.vm.rightsizer.client.TumblebugClient;
 import com.mcmp.azure.vm.rightsizer.dto.RecommendCandidateDto;
 import com.mcmp.azure.vm.rightsizer.dto.RecommendVmTypeDto;
-import com.mcmp.azure.vm.rightsizer.mapper.AzureRightSizeMapper;
 import com.mcmp.azure.vm.rightsizer.mapper.UnusedBatchRstMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RecommendVmListItemProcessor implements ItemProcessor<RecommendCandidateDto, RecommendVmTypeDto> {
 
-    private final AzureRightSizeMapper azureRightSizeMapper;
     private final UnusedBatchRstMapper unusedBatchRstMapper;
     private final TumblebugClient tumblebugClient;
 
