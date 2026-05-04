@@ -377,7 +377,7 @@ public class VMMetaService {
             List<TBBMCIItemModel> mciList = getTBBMCI(ns);
 
             for(TBBMCIItemModel mci : mciList){
-                if("mci".equals(mci.getResourceType())){
+                if("infra".equals(mci.getResourceType())){
                     try{
 
                         List<TbVmInfoModel> vmList = mci.getVm();
