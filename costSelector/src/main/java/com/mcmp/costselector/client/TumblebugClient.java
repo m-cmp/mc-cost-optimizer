@@ -40,8 +40,8 @@ public class TumblebugClient {
     }
 
     /**
-     * Tumblebug VM 상세 조회 → currentSpecName, currentVcpu, currentMemGiB, tbbRegionName 채움
-     * GET /tumblebug/ns/{nsId}/mci/{mciId}/vm/{vmId}
+     * Tumblebug Node(VM) 상세 조회 → currentSpecName, currentVcpu, currentMemGiB, tbbRegionName 채움
+     * GET /tumblebug/ns/{nsId}/infra/{infraId}/node/{nodeId}
      */
     public void fillCurrentSpec(UnusedResourceStatusModel rscStatus) {
         String nsId  = rscStatus.getTbbNsId();
@@ -53,7 +53,7 @@ public class TumblebugClient {
             return;
         }
 
-        String url = String.format("%s/ns/%s/mci/%s/vm/%s", tumblebugUrl, nsId, mciId, vmId);
+        String url = String.format("%s/ns/%s/infra/%s/node/%s", tumblebugUrl, nsId, mciId, vmId);
         try {
             ResponseEntity<JsonNode> res = restTemplate.exchange(
                     url, HttpMethod.GET, new HttpEntity<>(buildHeaders()), JsonNode.class);

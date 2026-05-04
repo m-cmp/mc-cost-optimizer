@@ -42,7 +42,7 @@ public class TumblebugClient {
 
     /**
      * Tumblebug VM 상세 조회 → specId, vCPU, memoryGiB, regionName 채움
-     * GET /tumblebug/ns/{nsId}/mci/{mciId}/vm/{vmId}
+     * GET /tumblebug/ns/{nsId}/infra/{infraId}/node/{nodeId}
      */
     public void fillCurrentSpec(GcpVmRightSizeDto vm) {
         String nsId  = vm.getTbbNsId();
@@ -55,7 +55,7 @@ public class TumblebugClient {
             return;
         }
 
-        String url = String.format("%s/ns/%s/mci/%s/vm/%s", tumblebugUrl, nsId, mciId, vmId);
+        String url = String.format("%s/ns/%s/infra/%s/node/%s", tumblebugUrl, nsId, mciId, vmId);
         try {
             ResponseEntity<JsonNode> res = restTemplate.exchange(
                     url, HttpMethod.GET, new HttpEntity<>(buildHeaders()), JsonNode.class);

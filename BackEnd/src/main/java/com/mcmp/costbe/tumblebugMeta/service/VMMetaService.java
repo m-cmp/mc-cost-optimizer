@@ -252,7 +252,7 @@ public class VMMetaService {
     public List<TBBMCIItemModel> getTBBMCI(TBBNSItemModel item){
 
         if(item != null){
-            String apiUrl = String.format("%s/ns/%s/mci", tumblebugUrl, item.getId());
+            String apiUrl = String.format("%s/ns/%s/infra", tumblebugUrl, item.getId());
             RestTemplate restTemplate = new RestTemplate();
 
             String auth = tumblebugUserNM + ":" + tumblebugPW;
@@ -330,7 +330,7 @@ public class VMMetaService {
     public TbVmInfoModel getTBBVM(TBBNSItemModel item, TBBMCIItemModel mci, TbVmInfoModel vm){
 
         if(vm != null){
-            String apiUrl = String.format("%s/ns/%s/mci/%s/vm/%s", tumblebugUrl, item.getId(), mci.getId(), vm.getId());
+            String apiUrl = String.format("%s/ns/%s/infra/%s/node/%s", tumblebugUrl, item.getId(), mci.getId(), vm.getId());
             RestTemplate restTemplate = new RestTemplate();
 
             String auth = tumblebugUserNM + ":" + tumblebugPW;
