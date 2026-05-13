@@ -27,7 +27,7 @@
         FROM asset_compute_metric acm
         LEFT JOIN servicegroup_meta meta
             ON meta.csp_type = acm.csp_type
-            AND meta.csp_account COLLATE utf8mb4_unicode_520_ci = acm.csp_account
+            AND meta.csp_instanceid COLLATE utf8mb4_unicode_520_ci = acm.csp_instanceid COLLATE utf8mb4_unicode_520_ci
         WHERE acm.csp_type = #{cspType}
           AND acm.metric_type = 'cpu'
           AND DATE(acm.collect_dt) = DATE(DATE_SUB(NOW(), INTERVAL 1 DAY))

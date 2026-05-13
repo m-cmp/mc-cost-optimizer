@@ -1,5 +1,6 @@
 package com.mcmp.costselector.unused.service;
 
+import com.mcmp.costselector.client.TumblebugClient;
 import com.mcmp.costselector.model.util.AlarmReqModel;
 import com.mcmp.costselector.unused.dao.UnusedSelectDao;
 import com.mcmp.costselector.unused.model.*;
@@ -22,6 +23,9 @@ public class OptiSizeService {
 
     @Autowired
     private AlarmService alarmService;
+
+    @Autowired
+    private TumblebugClient tumblebugClient;
 
     public String analyzeTypeForResizing(UnusedResourceStatusModel rscStatus){
         LocalDate curDate = ZonedDateTime.now().toLocalDate();
@@ -81,10 +85,33 @@ public class OptiSizeService {
                 switch (resizingType){
                     case "Up":
                     case "Down":
-                        rcmdType = unusedSelectDao.getRscEc2OptiSize(paramMap);
+                        tumblebugClient.fillCurrentSpec(rscStatus);
+                        String tbbSpecName = tumblebugClient.recommendSpec(rscStatus, resizingType);
+                        if (tbbSpecName != null) {
+                            rcmdType = new OptiEC2SizeRstModel();
+                            rcmdType.setInstType(tbbSpecName);
+                            if ("Down".equals(resizingType)) {
+                                boolean currentMissing   = rscStatus.getCurrentCostPerHour()   == null;
+                                boolean recommendMissing = rscStatus.getRecommendCostPerHour() == null;
+                                if (currentMissing && recommendMissing) {
+                                    log.warn("Down 절감액 계산 불가 - 현재/추천 스펙 단가 모두 미제공, resourceId: {}", rscStatus.getResource_id());
+                                } else if (currentMissing) {
+                                    log.warn("Down 절감액 계산 불가 - 현재 스펙 단가 미제공, resourceId: {}", rscStatus.getResource_id());
+                                } else if (recommendMissing) {
+                                    log.warn("Down 절감액 계산 불가 - 추천 스펙 단가 미제공, resourceId: {}", rscStatus.getResource_id());
+                                } else {
+                                    double savings = (rscStatus.getCurrentCostPerHour() - rscStatus.getRecommendCostPerHour()) * 24 * 30;
+                                    if (savings > 0) rcmdType.setUsd(savings);
+                                }
+                            }
+                        }
                         break;
                     case "Modernize":
-                        rcmdType = unusedSelectDao.getRscEc2ModernizeType(paramMap);
+                        String modernizeSpecName = tumblebugClient.findModernizeSpec(rscStatus);
+                        if (modernizeSpecName != null) {
+                            rcmdType = new OptiEC2SizeRstModel();
+                            rcmdType.setInstType(modernizeSpecName);
+                        }
                         break;
                 }
 

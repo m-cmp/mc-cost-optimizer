@@ -54,21 +54,21 @@
                'NCP' COLLATE utf8mb4_unicode_ci                       AS csp,
                COALESCE(SUM(vm_latest.demand_amount), 0) / 1400.0     AS bill
           FROM (
-               SELECT n1.demand_month, n1.demand_amount, n1.member_no
-                 FROM ncp_cost_service_month n1
+               SELECT n1.demand_month, n1.demand_amount, n1.instance_no
+                 FROM ncp_cost_vm_month n1
                 INNER JOIN (
-                      SELECT product_demand_type, demand_month, MAX(write_date) AS latest_write_date
-                        FROM ncp_cost_service_month
+                      SELECT instance_no, demand_month, MAX(write_date) AS latest_write_date
+                        FROM ncp_cost_vm_month
                        WHERE demand_month >= CONCAT(#{year}, '01')
                          AND demand_month <= CONCAT(#{year}, '12')
-                       GROUP BY product_demand_type, demand_month
+                       GROUP BY instance_no, demand_month
                       ) n2
-                   ON n1.product_demand_type = n2.product_demand_type
+                   ON n1.instance_no = n2.instance_no
                   AND n1.demand_month = n2.demand_month
                   AND n1.write_date = n2.latest_write_date
                ) vm_latest
          INNER JOIN servicegroup_meta sm
-            ON vm_latest.member_no COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
+            ON vm_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
            AND sm.csp_type = 'NCP'
            AND sm.service_cd = #{projectId}
          GROUP BY vm_latest.demand_month
@@ -78,9 +78,9 @@
         SELECT DATE_FORMAT(a.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS yearMonth,
                'Azure' COLLATE utf8mb4_unicode_ci                            AS csp,
                COALESCE(SUM(a.pre_tax_cost), 0) / 1400.0                     AS bill
-          FROM azure_cost_service_daily a
+          FROM azure_cost_vm_daily a
          INNER JOIN servicegroup_meta sm
-            ON a.subscription_id COLLATE utf8mb4_unicode_ci = sm.csp_account COLLATE utf8mb4_unicode_ci
+            ON a.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
            AND sm.csp_type = 'AZURE'
            AND sm.service_cd = #{projectId}
          WHERE a.usage_date >= CONCAT(#{year}, '0101')

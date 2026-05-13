@@ -1,8 +1,8 @@
 package com.mcmp.azure.vm.rightsizer.batch;
 
+import com.mcmp.azure.vm.rightsizer.client.TumblebugClient;
 import com.mcmp.azure.vm.rightsizer.dto.RecommendCandidateDto;
 import com.mcmp.azure.vm.rightsizer.dto.RecommendVmTypeDto;
-import com.mcmp.azure.vm.rightsizer.mapper.AzureRightSizeMapper;
 import com.mcmp.azure.vm.rightsizer.mapper.UnusedBatchRstMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RecommendVmListItemProcessor implements ItemProcessor<RecommendCandidateDto, RecommendVmTypeDto> {
 
-    private final AzureRightSizeMapper azureRightSizeMapper;
     private final UnusedBatchRstMapper unusedBatchRstMapper;
+    private final TumblebugClient tumblebugClient;
 
     @Override
     public RecommendVmTypeDto process(RecommendCandidateDto candidate) throws Exception {
@@ -28,63 +28,88 @@ public class RecommendVmListItemProcessor implements ItemProcessor<RecommendCand
             candidate.getMax4DaysCpu());
 
         // Unused Job에서 이미 처리된 VM인지 확인 (중복 알림 방지)
-        int unusedCount = unusedBatchRstMapper.checkTodayUnusedExists("AZURE", candidate.getVmId());
+        int unusedCount = unusedBatchRstMapper.checkTodayUnusedExists("AZURE", candidate.getResourceId());
         if (unusedCount > 0) {
-            log.info("Skipping Recommend: VM already processed by Unused Job today. vmId={}", candidate.getVmId());
+            log.info("Skipping Recommend: VM already processed by Unused Job today. resourceId={}", candidate.getResourceId());
             return null;
         }
 
         RecommendVmTypeDto result;
 
-        if ("Up".equals(candidate.getRecommendType())) {
-            // SizeUp: Mapper 직접 호출
-            result = azureRightSizeMapper.getRecommendSizeUpVmType(
-                candidate.getOsType(),
-                candidate.getRegion(),
-                candidate.getInstanceType()
-            );
-        } else if ("Down".equals(candidate.getRecommendType())) {
-            // SizeDown: Mapper 직접 호출
-            result = azureRightSizeMapper.getRecommendSizeDownVmType(
-                candidate.getOsType(),
-                candidate.getRegion(),
-                candidate.getInstanceType(),
-                0.5  // discountRate
-            );
+        if ("Up".equals(candidate.getRecommendType()) || "Down".equals(candidate.getRecommendType())) {
+            // Up/Down: Tumblebug recommendSpec API 사용
+            tumblebugClient.fillCurrentSpec(candidate);
+
+            String recommendSpecName = tumblebugClient.recommendSpec(candidate);
+            if (recommendSpecName == null) {
+                log.warn("No recommendation from Tumblebug for resourceId={}, direction={}",
+                    candidate.getResourceId(), candidate.getRecommendType());
+                return null;
+            }
+
+            // 추천 스펙이 현재와 동일하면 스킵
+            if (recommendSpecName.equals(candidate.getCurrentSpecName())) {
+                log.info("Skipping: recommended spec is same as current. resourceId={}, spec={}",
+                    candidate.getResourceId(), recommendSpecName);
+                return null;
+            }
+
+            Double monthlySavings = null;
+            if ("Down".equals(candidate.getRecommendType())) {
+                boolean currentMissing   = candidate.getCurrentCostPerHour()   == null;
+                boolean recommendMissing = candidate.getRecommendCostPerHour() == null;
+
+                if (currentMissing && recommendMissing) {
+                    log.warn("Down 절감액 계산 불가 - 현재/추천 스펙 단가 모두 미제공, resourceId: {}", candidate.getResourceId());
+                } else if (currentMissing) {
+                    log.warn("Down 절감액 계산 불가 - 현재 스펙 단가 미제공, resourceId: {}", candidate.getResourceId());
+                } else if (recommendMissing) {
+                    log.warn("Down 절감액 계산 불가 - 추천 스펙 단가 미제공, resourceId: {}", candidate.getResourceId());
+                } else {
+                    double savings = (candidate.getCurrentCostPerHour() - candidate.getRecommendCostPerHour()) * 24 * 30;
+                    if (savings > 0) monthlySavings = savings;
+                }
+            }
+
+            result = RecommendVmTypeDto.builder()
+                .currentType(candidate.getCurrentSpecName() != null
+                    ? candidate.getCurrentSpecName()
+                    : candidate.getInstanceType())
+                .recommendType(recommendSpecName)
+                .usd(monthlySavings)
+                .build();
+
         } else if ("Modernize".equals(candidate.getRecommendType())) {
-            // Modernize: 매핑 테이블 기반 신규 세대로 업그레이드
-            result = azureRightSizeMapper.getRecommendModernizeVmType(
-                candidate.getOsType(),
-                candidate.getRegion(),
-                candidate.getInstanceType()
-            );
+            // Modernize: Tumblebug 다음 세대 스펙 조회
+            String modernizeSpecName = tumblebugClient.findModernizeSpec(candidate);
+            if (modernizeSpecName == null) {
+                log.warn("No modernize recommendation from Tumblebug for resourceId={}, currentType={}",
+                    candidate.getResourceId(), candidate.getInstanceType());
+                return null;
+            }
+
+            if (modernizeSpecName.equals(candidate.getInstanceType())) {
+                log.info("Modernize skipped: recommended spec same as current. resourceId={}, spec={}",
+                    candidate.getResourceId(), modernizeSpecName);
+                return null;
+            }
+
+            result = RecommendVmTypeDto.builder()
+                .currentType(candidate.getInstanceType())
+                .recommendType(modernizeSpecName)
+                .build();
+
         } else {
             log.warn("Unknown recommend type: {}", candidate.getRecommendType());
             return null;
         }
 
-        if (result == null) {
-            log.warn("No recommendation found for resourceId={}, currentType={}",
-                candidate.getResourceId(),
-                candidate.getInstanceType());
-            return null;
-        }
-
-        // Modernize: 추천 VM이 기존 VM과 동일하면 알림 보내지 않음
-        if ("Modernize".equals(candidate.getRecommendType())) {
-            if (result.getRecommendType() != null &&
-                result.getRecommendType().equals(candidate.getInstanceType())) {
-                log.info("Modernize skipped: Recommended VM type is same as current type. vmId={}, currentType={}",
-                    candidate.getVmId(),
-                    candidate.getInstanceType());
-                return null;
-            }
-        }
-
         // DTO 조립
         result.setVmId(candidate.getVmId());
-        result.setCurrentType(candidate.getInstanceType());
-        result.setPlan(candidate.getRecommendType());  // "Up" or "Down"
+        if (result.getCurrentType() == null) {
+            result.setCurrentType(candidate.getInstanceType());
+        }
+        result.setPlan(candidate.getRecommendType());
 
         log.info("Recommendation generated: vmId={}, currentType={}, recommendType={}, plan={}",
             result.getVmId(),

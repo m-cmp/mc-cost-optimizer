@@ -38,7 +38,7 @@ public class PersistenceBillConfiguration {
     public SqlSessionFactory sqlSessionBill() throws Exception {
         SqlSessionFactoryBean sqlSession = new SqlSessionFactoryBean();
         sqlSession.setDataSource(dataSourceBill());
-        sqlSession.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(ResourcePatternResolver.CLASSPATH_URL_PREFIX + "/mapper/bill/*_SQL.xml"));
+        sqlSession.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(ResourcePatternResolver.CLASSPATH_URL_PREFIX + "/mapper/**/*_SQL.xml"));
         return sqlSession.getObject();
     }
 

@@ -57,6 +57,9 @@
         <result property="vmId" column="vm_id"/>
         <result property="osType" column="os_type"/>
         <result property="recommendType" column="recommend_type"/>
+        <result property="tbbNsId" column="tbb_ns_id"/>
+        <result property="tbbMciId" column="tbb_mci_id"/>
+        <result property="tbbVmId" column="tbb_vm_id"/>
     </resultMap>
 
     <!-- 4일간 메트릭 데이터 기반 SizeUp/Down 추천 대상 조회 -->
@@ -97,7 +100,10 @@
             azure.region,
             azure.instance_type,
             azure.vm_id,
-            azure.os_type
+            azure.os_type,
+            meta.service_cd  AS tbb_ns_id,
+            meta.mci_id      AS tbb_mci_id,
+            meta.vm_id       AS tbb_vm_id
         FROM recommend_candidates rc
         INNER JOIN (
             SELECT
@@ -105,7 +111,8 @@
                 t.vm_id,
                 t.region,
                 t.instance_type,
-                t.os_type
+                t.os_type,
+                t.resource_id
             FROM azure_cost_vm_daily t
             INNER JOIN (
                 SELECT vm_id, MAX(created) as max_created
@@ -113,7 +120,11 @@
                 GROUP BY vm_id
             ) latest ON t.vm_id = latest.vm_id
                      AND t.created = latest.max_created
-        ) azure ON rc.resource_id COLLATE utf8mb4_unicode_520_ci = azure.vm_id
+            GROUP BY t.vm_id
+        ) azure ON rc.resource_id COLLATE utf8mb4_unicode_520_ci = azure.resource_id COLLATE utf8mb4_unicode_520_ci
+        LEFT JOIN servicegroup_meta meta
+            ON  meta.csp_type                                          = 'AZURE'
+            AND meta.csp_instanceid COLLATE utf8mb4_unicode_520_ci     = rc.resource_id
         ORDER BY rc.recommend_type, rc.resource_id
     </select>
 

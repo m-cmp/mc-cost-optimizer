@@ -44,6 +44,11 @@ costopti:
   costselector:
     url: http://localhost:8083
 
+tumblebug:
+  url: ${TUMBLEBUG_URL:http://mc-infra-manager:1323/tumblebug}
+  username: ${TUMBLEBUG_USERNAME:default}
+  password: ${TUMBLEBUG_PASSWORD:default}
+
 ncp:
   credential:
     iam-access-key: ${IAM_ACCESS_KEY:iamAccessKey}

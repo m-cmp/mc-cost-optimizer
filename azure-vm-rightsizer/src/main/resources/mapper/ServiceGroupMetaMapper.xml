@@ -13,4 +13,15 @@
         LIMIT 1
     </select>
 
+    <!-- resource_id로 Tumblebug 식별자 조회 -->
+    <select id="selectTbbIdentifiersByResourceId" resultType="map">
+        SELECT service_cd AS tbbNsId,
+               mci_id     AS tbbMciId,
+               vm_id      AS tbbVmId
+        FROM servicegroup_meta
+        WHERE csp_type = 'AZURE'
+          AND csp_instanceid COLLATE utf8mb4_unicode_520_ci = #{resourceId}
+        LIMIT 1
+    </select>
+
 </mapper>

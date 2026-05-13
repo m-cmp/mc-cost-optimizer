@@ -3,7 +3,7 @@ import {
   IconBusinessplan,
   IconUser,
   IconAlarm,
-  IconServer,
+  IconServer2,
   IconDatabase,
   IconBucket,
   IconTopologyStar3,
@@ -15,6 +15,7 @@ import {
   IconAlertCircle,
   IconDotsCircleHorizontal,
   IconDeviceIpadDollar,
+    IconWheel
 } from "@tabler/icons-react";
 
 const defaultProps = {
@@ -30,11 +31,13 @@ export const Icons = {
   budget: (props) => <IconDeviceIpadDollar {...defaultProps} {...props} />,
 
   // Service icons
-  virtualMachine: (props) => <IconServer {...defaultProps} {...props} />,
+  virtualMachine: (props) => <IconServer2 {...defaultProps} {...props} />,
   storage: (props) => <IconBucket {...defaultProps} {...props} />,
   database: (props) => <IconDatabase {...defaultProps} {...props} />,
   lb: (props) => <IconTopologyStar3 {...defaultProps} {...props} />,
   others: (props) => <IconDotsCircleHorizontal {...defaultProps} {...props} />,
+  k8s: (props) => <IconWheel {...defaultProps} {...props} />,
+
 
   // Export
   exportCsv: (props) => <IconFileTypeCsv {...defaultProps} {...props} />,

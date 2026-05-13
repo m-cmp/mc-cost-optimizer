@@ -38,11 +38,17 @@ public class SlackACService {
         slackFormModel.setOccure_time(ZonedDateTime.now().toLocalDateTime());
         slackFormModel.setAlarm_impl("slack");
 
-        int checkDuplicateMail = commonService.getSlackDuplicate(slackFormModel);
-        if(checkDuplicateMail >= 1){
-            log.info("############Send OptiAlertSlack Duplicate : {} - {} - {}############", slackFormModel.getEvent_type(), slackFormModel.getResource_id()
-                    , (slackFormModel.getAccount_id() != null ? slackFormModel.getAccount_id() : slackFormModel.getProject_cd()));
-            return;
+        try {
+            int checkDuplicateMail = commonService.getSlackDuplicate(slackFormModel);
+            if (checkDuplicateMail >= 1) {
+                log.info("############Send OptiAlertSlack Duplicate : {} - {} - {}############",
+                        slackFormModel.getEvent_type(), slackFormModel.getResource_id(),
+                        (slackFormModel.getAccount_id() != null ? slackFormModel.getAccount_id() : slackFormModel.getProject_cd()));
+                return;
+            }
+        } catch (Exception e) {
+            log.warn("슬랙 중복 체크 실패 - 중복 아님으로 간주하고 진행 (resource_id: {}, cause: {})",
+                    slackFormModel.getResource_id(), e.getMessage());
         }
 
         Slack slack = Slack.getInstance();
@@ -99,6 +105,11 @@ public class SlackACService {
         }
         try {
             Map<String, String> result = tokenService.retrieveToken("mcmp-user");
+            if (result == null || result.get("token") == null || result.get("channel") == null) {
+                log.warn("Slack 토큰 미등록 - 슬랙 발송 스킵 (resource_id: {})", costOptiAlarmReqModel.getResource_id());
+                commonService.insertSlackHistory(slackFormModel);
+                return;
+            }
 
             Attachment attachment = Attachment.builder()
                     .title(slackFormModel.getTitle())
@@ -124,12 +135,21 @@ public class SlackACService {
                 }
             }
         } catch (IOException | SlackApiException e) {
-            e.printStackTrace();
+            log.warn("############Send Slack Fail - resource_id: {}, cause: {}############",
+                    costOptiAlarmReqModel.getResource_id(), e.getMessage());
             throw e;
         } catch (Exception e) {
+            log.warn("############Send Slack Fail - resource_id: {}, cause: {}############",
+                    costOptiAlarmReqModel.getResource_id(), e.getMessage());
             throw new RuntimeException(e);
         }
-        commonService.insertSlackHistory(slackFormModel);
+
+        try {
+            commonService.insertSlackHistory(slackFormModel);
+        } catch (Exception e) {
+            log.warn("슬랙 알람 이력 저장 실패 - resource_id: {}, cause: {}",
+                    costOptiAlarmReqModel.getResource_id(), e.getMessage());
+        }
     }
 
     public void sendMessage(String userId, String message, String linkUrl, String linkText) throws SlackApiException, IOException {

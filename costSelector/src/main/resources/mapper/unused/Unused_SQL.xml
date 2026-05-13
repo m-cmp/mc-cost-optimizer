@@ -17,10 +17,16 @@
              , uc.instance_family AS inst_family
              , uc.instance_family_type AS inst_family_type
              , uc.product_sku AS product_sku
+             , sgm.service_cd AS tbbNsId
+             , sgm.mci_id AS tbbMciId
+             , sgm.vm_id AS tbbVmId
         FROM asset_compute_metric acm
           LEFT JOIN unused_collector uc
             ON uc.csp_resourceid = acm.csp_instanceid
            AND uc.create_dt = DATE(#{create_dt})
+          LEFT JOIN servicegroup_meta sgm
+            ON sgm.csp_type = acm.csp_type
+           AND sgm.csp_instanceid = acm.csp_instanceid
          WHERE 1=1
            AND acm.csp_instanceid = #{resource_id}
            AND acm.collect_dt >= DATE(DATE_SUB(#{create_dt}, INTERVAL 1 DAY))
@@ -179,39 +185,6 @@
           AND NW_PERF_ODR <![CDATA[>=]]> #{targetMeta.nwPerfOdr}
         ORDER BY USD * 1.0
         LIMIT 1
-    </select>
-
-    <select id="getRscEc2ModernizeType" parameterType="map" resultType="com.mcmp.costselector.unused.model.OptiEC2SizeRstModel">
-        SELECT PED.INSTANCE_TYPE         AS instType
-             , PED.NETWORK_PERFORMANCE   AS nwPerfNm
-             , PED.STORAGE               AS storage
-             , TRIM(REPLACE(PED.MEMORY, 'GiB', '')) AS memory
-             , PED.ECU                   AS ecu
-             , APP.USD                   AS usd
-             , NPL.NW_PERF_ODR           AS nwPerfOdr
-          FROM TASM_AWS_PROD_EC2_D PED
-          LEFT OUTER JOIN TASM_AWS_EC2_PRICING_L APP
-            ON PED.SKU = APP.SKU
-           AND APP.OFFER_TERM_CODE = CASE WHEN PED.LOCATION = 'China (Beijing)' THEN '99YE2YK9UR'
-                                        WHEN PED.LOCATION = 'China (Ningxia)' THEN '5Y9WH78GDR'
-                                        ELSE 'JRTCKXETXF' END
-           AND APP.PRICING_TIER = CASE WHEN PED.LOCATION = 'China (Beijing)' THEN 'Q7UJUT2CE6'
-                                        WHEN PED.LOCATION = 'China (Ningxia)' THEN 'Q7UJUT2CE6'
-                                        ELSE '6YS6EN2CT7' END
-          LEFT OUTER JOIN TASM_RIGHT_SIZE_AWS_ECU_L TRSE
-            ON PED.INSTANCE_TYPE = TRSE.INST_TYPE
-          LEFT OUTER JOIN TASM_AWS_PROD_NW_PERF_L NPL
-            ON PED.NETWORK_PERFORMANCE = NPL.NW_PERF_NM
-         WHERE PED.LOCATION = #{rscInfo.region_nm}
-           AND PED.OPERATION = #{rscInfo.operation}
-           AND PED.TENANCY = 'Shared'
-           AND PED.CAPACITYSTATUS = 'Used'
-           AND PED.INSTANCE_TYPE = #{targetMeta.modernType}
-           AND PED.PRODUCT_FAMILY = 'Compute Instance'
-           AND PED.PHYSICAL_PROCESSOR NOT IN ('AWS Graviton Processor', 'AWS Graviton2 Processor')
-           AND APP.USD IS NOT null
-         ORDER BY USD * 1.0
-         LIMIT 1
     </select>
 
     <insert id="insertInstOptiRcmd" parameterType="com.mcmp.costselector.unused.model.InstOptiRcmdRst">

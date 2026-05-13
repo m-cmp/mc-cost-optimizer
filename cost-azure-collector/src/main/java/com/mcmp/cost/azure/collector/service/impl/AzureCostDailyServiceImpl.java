@@ -94,25 +94,30 @@ public class AzureCostDailyServiceImpl implements AzureCostDailyService {
         List<AzureCostVmDaily> azureCostVmDailyList = new ArrayList<>();
         for (List<Object> row : queryResult.rows()) {
             String resourceId = row.get(3).toString();
-            // 7. VM 정보 조회.
-            VirtualMachine vm = azureResourceManager.virtualMachines().getById(resourceId);
 
-            AzureCostVmDaily azureCostVmDaily = AzureCostVmDaily.builder()
-                    .tenantId(azureApiCredentialDto.getTenantId())
-                    .subscriptionId(azureApiCredentialDto.getSubscriptionId())
-                    .preTaxCost((double) row.get(0))
-                    .usageDate(row.get(1).toString())
-                    .resourceGroupName(row.get(2).toString())
-                    .resourceId(resourceId)
-                    .region(vm.regionName())
-                    .instanceType(vm.size().getValue())
-                    .osType(vm.osType().name())
-                    .vmId(vm.name())
-                    .resourceGuid(row.get(4).toString())
-                    .currency(row.get(5).toString())
-                    .build();
-            azureCostVmDailyList.add(azureCostVmDaily);
-            log.debug("azureCostVmDaily data: {}", azureCostVmDaily.toString());
+            try {
+                // 7. VM 정보 조회.
+                VirtualMachine vm = azureResourceManager.virtualMachines().getById(resourceId);
+
+                AzureCostVmDaily azureCostVmDaily = AzureCostVmDaily.builder()
+                        .tenantId(azureApiCredentialDto.getTenantId())
+                        .subscriptionId(azureApiCredentialDto.getSubscriptionId())
+                        .preTaxCost((double) row.get(0))
+                        .usageDate(row.get(1).toString())
+                        .resourceGroupName(row.get(2).toString())
+                        .resourceId(resourceId)
+                        .region(vm.regionName())
+                        .instanceType(vm.size().getValue())
+                        .osType(vm.osType().name())
+                        .vmId(vm.name())
+                        .resourceGuid(row.get(4).toString())
+                        .currency(row.get(5).toString())
+                        .build();
+                azureCostVmDailyList.add(azureCostVmDaily);
+                log.debug("azureCostVmDaily data: {}", azureCostVmDaily.toString());
+            } catch (Exception e) {
+                log.warn("VM not found (possibly deleted): {}, skipping...", resourceId);
+            }
         }
         return azureCostVmDailyList;
     }
