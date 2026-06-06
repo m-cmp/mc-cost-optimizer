@@ -34,7 +34,7 @@ public class GeminiProvider implements LlmProvider {
             throw new IllegalStateException("GEMINI_API_KEY is not configured");
         }
         String m = (model == null || model.isBlank()) ? defaultModel : model;
-        String url = baseUrl + "/models/" + m + ":generateContent?key=" + apiKey;
+        String url = baseUrl + "/models/" + m + ":generateContent";
 
         Map<String, Object> body = Map.of(
             "systemInstruction", Map.of("parts", List.of(Map.of("text", system))),
@@ -46,6 +46,7 @@ public class GeminiProvider implements LlmProvider {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-goog-api-key", apiKey); // auth via header (not ?key=) — required for this key format
 
         String resp = restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
         return extractText(resp);
