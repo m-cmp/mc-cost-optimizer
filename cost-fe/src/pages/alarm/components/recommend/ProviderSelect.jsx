@@ -1,14 +1,34 @@
-export default function ProviderSelect({ value, onChange }) {
+import Dropdown from "@/components/common/dropdown/Dropdown";
+import { PROVIDERS, MODELS } from "./constants";
+
+// Provider + dependent Model selectors (mockup layout).
+// v1 backend only wires Gemini; other providers are visual stubs until added.
+export default function ProviderSelect({ provider, model, onProviderChange, onModelChange }) {
+  const providerLabel = PROVIDERS.find((p) => p.value === provider)?.label || provider;
+  const modelItems = (MODELS[provider] || []).map((m) => ({ value: m, label: m }));
+
   return (
-    <select
-      className="form-select"
-      style={{ width: 220 }}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    >
-      <option value="gemini">Gemini (gemini-flash-latest)</option>
-      <option value="gpt" disabled>GPT (coming soon)</option>
-      <option value="claude" disabled>Claude (coming soon)</option>
-    </select>
+    <div className="d-flex gap-3 flex-wrap mb-3">
+      <div>
+        <label className="form-label">Provider</label>
+        <Dropdown
+          trigger={providerLabel}
+          items={PROVIDERS}
+          selectedValue={provider}
+          onSelect={(value) => onProviderChange(value)}
+          className="btn-outline-secondary"
+        />
+      </div>
+      <div>
+        <label className="form-label">Model</label>
+        <Dropdown
+          trigger={model}
+          items={modelItems}
+          selectedValue={model}
+          onSelect={(value) => onModelChange(value)}
+          className="btn-outline-secondary"
+        />
+      </div>
+    </div>
   );
 }

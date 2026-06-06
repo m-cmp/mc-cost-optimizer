@@ -5,6 +5,7 @@ import SlackGuideModal from "./components/modals/SlackGuideModal";
 import MailTestModal from "./components/modals/MailTestModal";
 import SlackTestButton from "./components/SlackTestButton";
 import RecommendTab from "./components/recommend/RecommendTab";
+import Button from "@/components/common/button/Button";
 import Loading from "@/components/common/loading/Loading";
 import { useAlarmHistory } from "@/hooks/useAlarmHistory";
 
@@ -14,24 +15,20 @@ export default function AlarmPage() {
 
   return (
     <div>
-      <ul className="nav nav-tabs mb-3">
-        <li className="nav-item">
-          <button
-            className={`nav-link ${tab === "recommend" ? "active" : ""}`}
-            onClick={() => setTab("recommend")}
-          >
-            Resource Recommendation
-          </button>
-        </li>
-        <li className="nav-item">
-          <button
-            className={`nav-link ${tab === "history" ? "active" : ""}`}
-            onClick={() => setTab("history")}
-          >
-            Alarm History
-          </button>
-        </li>
-      </ul>
+      <div className="d-flex gap-2 mb-3">
+        <Button
+          variant={tab === "recommend" ? "primary" : "outline-secondary"}
+          onClick={() => setTab("recommend")}
+        >
+          Resource Recommendation
+        </Button>
+        <Button
+          variant={tab === "history" ? "primary" : "outline-secondary"}
+          onClick={() => setTab("history")}
+        >
+          Alarm History
+        </Button>
+      </div>
 
       {tab === "recommend" && <RecommendTab />}
 
