@@ -8,4 +8,5 @@ import lombok.Setter;
 public class RecommendRequest {
     private String instanceId;
     private String model; // optional; null/blank -> provider default
+    private String userQuestion; // optional free-form question (feature #2); null/blank -> no answer
 }

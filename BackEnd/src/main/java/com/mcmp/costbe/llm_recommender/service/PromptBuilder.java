@@ -29,11 +29,25 @@ public class PromptBuilder {
             + "- \"confidence\" is one of: high, medium, low.\n"
             + "- \"detail\" = one English sentence with the concrete suggested action.\n"
             + "- \"reasoning\" = English justification grounded in the metrics/shape provided.\n"
-            + "- All text in English.";
+            + "- All text in English.\n\n"
+            + "Optional user question (feature #2):\n"
+            + "- If (and ONLY if) a user question is included, add an \"answer\" field (English).\n"
+            + "- Grounding: answer ONLY from the provided score data; never invent numbers, prices, or facts about other instances.\n"
+            + "- Scope: only resource right-sizing / cost questions about THIS instance; if off-topic or not answerable from the data, say so briefly in \"answer\".\n"
+            + "- Structure: \"answer\" is additive and must NOT change recommendation/detail/reasoning/confidence.\n"
+            + "- If there is no user question, omit \"answer\".";
     }
 
     public String userPrompt(String scoreJson) {
-        return "Score JSON for one instance:\n" + scoreJson;
+        return userPrompt(scoreJson, null);
+    }
+
+    public String userPrompt(String scoreJson, String userQuestion) {
+        String base = "Score JSON for one instance:\n" + scoreJson;
+        if (userQuestion != null && !userQuestion.isBlank()) {
+            base += "\n\nUser question (address it in the \"answer\" field):\n" + userQuestion.trim();
+        }
+        return base;
     }
 
     private String loadGuide() {

@@ -41,6 +41,7 @@ public class RecommendationParser {
         r.setDetail(text(node, "detail"));
         r.setReasoning(text(node, "reasoning"));
         r.setConfidence(conf);
+        r.setAnswer(text(node, "answer")); // optional (feature #2); null when absent, not validated
         r.setStatus(Recommendation.STATUS_OK);
         return r;
     }

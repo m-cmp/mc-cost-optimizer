@@ -30,4 +30,25 @@ class PromptBuilderTest {
         String user = builder.userPrompt(score);
         assertThat(user).contains(score);
     }
+
+    @Test
+    void systemPrompt_includesAnswerContractAndGuards() {
+        String system = builder.systemPrompt();
+        assertThat(system).contains("\"answer\"");
+        assertThat(system).containsIgnoringCase("Grounding");
+        assertThat(system).containsIgnoringCase("Scope");
+    }
+
+    @Test
+    void userPrompt_withQuestion_includesIt() {
+        String score = "{\"instance\":\"i-x\"}";
+        String user = builder.userPrompt(score, "Will downsizing hurt stability?");
+        assertThat(user).contains(score).contains("Will downsizing hurt stability?");
+    }
+
+    @Test
+    void userPrompt_blankQuestion_sameAsNoQuestion() {
+        String score = "{\"instance\":\"i-x\"}";
+        assertThat(builder.userPrompt(score, "  ")).isEqualTo(builder.userPrompt(score));
+    }
 }

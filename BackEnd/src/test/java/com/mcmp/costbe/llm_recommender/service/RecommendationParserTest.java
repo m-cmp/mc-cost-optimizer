@@ -50,4 +50,20 @@ class RecommendationParserTest {
         assertThatThrownBy(() -> parser.parse(text))
             .isInstanceOf(RecommendationParseException.class);
     }
+
+    @Test
+    void parsesOptionalAnswerWhenPresent() {
+        String text = "{\"instance\":\"i-1\",\"recommendation\":\"keep\",\"detail\":\"d\","
+            + "\"reasoning\":\"r\",\"confidence\":\"high\",\"answer\":\"Cost is already efficient.\"}";
+        var r = parser.parse(text);
+        assertThat(r.getAnswer()).isEqualTo("Cost is already efficient.");
+    }
+
+    @Test
+    void answerIsNullWhenAbsent() {
+        String text = "{\"instance\":\"i-1\",\"recommendation\":\"keep\",\"detail\":\"d\","
+            + "\"reasoning\":\"r\",\"confidence\":\"high\"}";
+        var r = parser.parse(text);
+        assertThat(r.getAnswer()).isNull();
+    }
 }

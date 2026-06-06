@@ -22,6 +22,7 @@ public class Recommendation {
     private String detail;
     private String reasoning;
     private String confidence;     // high|medium|low
+    private String answer;         // optional free-form answer (feature #2), only when a question was asked
 
     private String status;         // ok|insufficient_data|error (internal)
     private String error;          // human-safe message when status=error (never contains keys)

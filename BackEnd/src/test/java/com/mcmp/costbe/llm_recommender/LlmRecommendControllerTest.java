@@ -27,7 +27,7 @@ class LlmRecommendControllerTest {
         r.setRecommendation("downsize");
         r.setConfidence("high");
         r.setStatus("ok");
-        when(service.recommend(eq("i-real"), any())).thenReturn(r);
+        when(service.recommend(eq("i-real"), any(), any())).thenReturn(r);
 
         mvc.perform(post("/api/costopti/be/llm_recommender/recommend")
                 .contentType("application/json")

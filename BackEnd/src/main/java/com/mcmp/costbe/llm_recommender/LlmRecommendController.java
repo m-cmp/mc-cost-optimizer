@@ -26,7 +26,8 @@ public class LlmRecommendController {
     public ResponseEntity recommend(@RequestBody RecommendRequest req) {
         ResultModel result = new ResultModel();
         try {
-            Recommendation data = llmRecommendService.recommend(req.getInstanceId(), req.getModel());
+            Recommendation data = llmRecommendService.recommend(
+                    req.getInstanceId(), req.getModel(), req.getUserQuestion());
             result.setData(data);
         } catch (Exception e) {
             e.printStackTrace();

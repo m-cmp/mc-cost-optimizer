@@ -16,7 +16,7 @@ public class LlmRecommendService {
 
     private final ObjectMapper om = new ObjectMapper();
 
-    public Recommendation recommend(String instanceId, String model) {
+    public Recommendation recommend(String instanceId, String model, String userQuestion) {
         try {
             String scoreJson = scoreProvider.get(instanceId);
 
@@ -25,7 +25,7 @@ public class LlmRecommendService {
             }
 
             String system = promptBuilder.systemPrompt();
-            String user = promptBuilder.userPrompt(scoreJson);
+            String user = promptBuilder.userPrompt(scoreJson, userQuestion);
 
             Recommendation r = generateAndParse(system, user, model);
             r.setInstance(instanceId); // never trust the model's echoed id

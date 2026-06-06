@@ -30,7 +30,7 @@ class LlmRecommendServiceTest {
         ScoreProvider score = id -> "{\"action_signal\":\"insufficient_data\"}";
         LlmProvider llm = (s, u, m) -> { calls.add("called"); return VALID; };
 
-        Recommendation r = service(score, llm).recommend("i-1", null);
+        Recommendation r = service(score, llm).recommend("i-1", null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_INSUFFICIENT);
         assertThat(calls).isEmpty(); // LLM never called
@@ -41,7 +41,7 @@ class LlmRecommendServiceTest {
         ScoreProvider score = id -> "{\"action_signal\":\"downsize\"}";
         LlmProvider llm = (s, u, m) -> VALID;
 
-        Recommendation r = service(score, llm).recommend("i-real", null);
+        Recommendation r = service(score, llm).recommend("i-real", null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_OK);
         assertThat(r.getRecommendation()).isEqualTo("downsize");
@@ -54,7 +54,7 @@ class LlmRecommendServiceTest {
         ScoreProvider score = id -> "{\"action_signal\":\"keep\"}";
         LlmProvider llm = (s, u, m) -> (n[0]++ == 0) ? "garbage" : VALID;
 
-        Recommendation r = service(score, llm).recommend("i-2", null);
+        Recommendation r = service(score, llm).recommend("i-2", null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_OK);
         assertThat(n[0]).isEqualTo(2); // one retry
@@ -65,7 +65,7 @@ class LlmRecommendServiceTest {
         ScoreProvider score = id -> "{\"action_signal\":\"keep\"}";
         LlmProvider llm = (s, u, m) -> "still garbage";
 
-        Recommendation r = service(score, llm).recommend("i-3", null);
+        Recommendation r = service(score, llm).recommend("i-3", null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_ERROR);
         assertThat(r.getInstance()).isEqualTo("i-3");
@@ -76,9 +76,26 @@ class LlmRecommendServiceTest {
         ScoreProvider score = id -> "{\"action_signal\":\"upsize\"}";
         LlmProvider llm = (s, u, m) -> { throw new RuntimeException("key=SECRET timeout"); };
 
-        Recommendation r = service(score, llm).recommend("i-4", null);
+        Recommendation r = service(score, llm).recommend("i-4", null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_ERROR);
         assertThat(r.getError()).doesNotContain("SECRET");
+    }
+
+    @Test
+    void userQuestion_isPassedToPrompt_andAnswerParsed() {
+        String[] capturedUserPrompt = {null};
+        ScoreProvider score = id -> "{\"action_signal\":\"keep\"}";
+        LlmProvider llm = (s, u, m) -> {
+            capturedUserPrompt[0] = u;
+            return "{\"instance\":\"x\",\"recommendation\":\"keep\",\"detail\":\"d\","
+                + "\"reasoning\":\"r\",\"confidence\":\"high\",\"answer\":\"Cost is already efficient.\"}";
+        };
+
+        Recommendation r = service(score, llm).recommend("i-q", null, "Can I save cost?");
+
+        assertThat(capturedUserPrompt[0]).contains("Can I save cost?"); // question reached the prompt
+        assertThat(r.getAnswer()).isEqualTo("Cost is already efficient.");
+        assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_OK);
     }
 }
