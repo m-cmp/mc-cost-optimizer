@@ -32,8 +32,13 @@ public class PromptBuilder {
             + "- All text in English.\n\n"
             + "Optional user question (feature #2):\n"
             + "- If (and ONLY if) a user question is included, add an \"answer\" field (English).\n"
-            + "- Grounding: answer ONLY from the provided score data; never invent numbers, prices, or facts about other instances.\n"
-            + "- Scope: only resource right-sizing / cost questions about THIS instance; if off-topic or not answerable from the data, say so briefly in \"answer\".\n"
+            + "- Grounding: answer ONLY from the provided score data; never invent numbers, prices, or facts about other instances or other CSPs.\n"
+            + "- Scope: handle the question in one of two ways:\n"
+            + "    (a) Off-topic (not about THIS instance's resource/cost optimization): refuse briefly.\n"
+            + "    (b) On-topic but the data is insufficient (e.g. cross-CSP migration, exact pricing or savings): "
+            + "do NOT just refuse. First give what the utilization data DOES support (workload shape, sizing direction, "
+            + "suitable instance characteristics such as smaller / burstable / spot), then state exactly which data is "
+            + "missing to answer fully (e.g. CSP pricing, instance catalog, migration cost). Never fabricate the missing numbers.\n"
             + "- Structure: \"answer\" is additive and must NOT change recommendation/detail/reasoning/confidence.\n"
             + "- If there is no user question, omit \"answer\".";
     }

@@ -37,6 +37,18 @@ class PromptBuilderTest {
         assertThat(system).contains("\"answer\"");
         assertThat(system).containsIgnoringCase("Grounding");
         assertThat(system).containsIgnoringCase("Scope");
+        assertThat(system).containsIgnoringCase("Structure");
+    }
+
+    @Test
+    void systemPrompt_scopeGuard_givesPartialAnswerWhenDataInsufficient() {
+        // On-topic-but-insufficient (e.g. cross-CSP migration) should yield a partial,
+        // grounded answer naming the missing data — not a flat refusal.
+        String system = builder.systemPrompt();
+        assertThat(system).containsIgnoringCase("insufficient");
+        assertThat(system).containsIgnoringCase("missing");
+        assertThat(system).containsIgnoringCase("migration");
+        assertThat(system).containsIgnoringCase("Off-topic"); // truly off-topic still refused
     }
 
     @Test
