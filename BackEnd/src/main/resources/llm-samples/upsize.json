@@ -1,0 +1,66 @@
+{
+  "instance": "i-demo-upsize",
+  "interval_seconds": 1800,
+  "window_days": 13.98,
+  "coverage": 1.0,
+  "efficiency_score": 100,
+  "headroom_risk": 80,
+  "action_signal": "upsize",
+  "confidence": 0.95,
+  "binding_resource": "CPU",
+  "reasons": [
+    "CPU 피크 P99 97% / 지속 P95 95% — 포화 위험(공격적 업사이즈)",
+    "고부하(>80%) 시간 비율 97%"
+  ],
+  "metrics": {
+    "cpu": {
+      "p95": 94.7,
+      "p99": 96.9,
+      "mean": 88.1,
+      "idle_ratio": 0.0
+    },
+    "mem": {
+      "p95": 54.3,
+      "p99": 57.7,
+      "mean": 44.8,
+      "idle_ratio": 0.0
+    },
+    "trend_per_day": 0.05,
+    "bound_type": "cpu-bound"
+  },
+  "daily_shape": {
+    "method": "hour-of-day mean profile (24 buckets, binding=max(cpu,mem))",
+    "archetype": "flat",
+    "peak_hour": 7,
+    "peak_window": "07:00–21:00",
+    "concentration": 0.13,
+    "peak_consistency": 0.14,
+    "spikiness": 1.1,
+    "profile_24h": [
+      88.0,
+      87.6,
+      88.7,
+      87.9,
+      88.8,
+      87.7,
+      86.2,
+      89.6,
+      88.5,
+      87.9,
+      88.9,
+      88.0,
+      87.0,
+      88.2,
+      88.8,
+      88.1,
+      87.8,
+      88.2,
+      88.0,
+      87.7,
+      89.0,
+      88.3,
+      87.6,
+      87.5
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "instance": "i-demo-keep",
+  "interval_seconds": 1800,
+  "window_days": 13.98,
+  "coverage": 1.0,
+  "efficiency_score": 99,
+  "headroom_risk": 0,
+  "action_signal": "keep",
+  "confidence": 0.89,
+  "binding_resource": "CPU",
+  "reasons": [
+    "CPU P95 65% — 적정 구간"
+  ],
+  "metrics": {
+    "cpu": {
+      "p95": 64.5,
+      "p99": 68.5,
+      "mean": 54.8,
+      "idle_ratio": 0.0
+    },
+    "mem": {
+      "p95": 59.9,
+      "p99": 65.0,
+      "mean": 49.9,
+      "idle_ratio": 0.0
+    },
+    "trend_per_day": 0.02,
+    "bound_type": "balanced"
+  },
+  "daily_shape": {
+    "method": "hour-of-day mean profile (24 buckets, binding=max(cpu,mem))",
+    "archetype": "flat",
+    "peak_hour": 14,
+    "peak_window": "03:00–23:00",
+    "concentration": 0.13,
+    "peak_consistency": 0.14,
+    "spikiness": 1.22,
+    "profile_24h": [
+      56.0,
+      54.5,
+      56.4,
+      57.8,
+      56.0,
+      55.4,
+      56.7,
+      55.8,
+      54.0,
+      57.7,
+      55.2,
+      55.7,
+      54.8,
+      57.3,
+      58.8,
+      54.3,
+      58.2,
+      56.0,
+      56.0,
+      56.8,
+      57.5,
+      55.0,
+      57.9,
+      57.3
+    ]
+  }
+}

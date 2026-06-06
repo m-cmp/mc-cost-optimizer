@@ -1,0 +1,26 @@
+{
+  "instance": "i-demo-insufficient",
+  "interval_seconds": 1800,
+  "window_days": 1.2,
+  "coverage": 0.18,
+  "efficiency_score": 0,
+  "headroom_risk": 0,
+  "action_signal": "insufficient_data",
+  "confidence": 0.12,
+  "binding_resource": "CPU",
+  "reasons": ["coverage 0.18 < threshold — not enough data to judge"],
+  "metrics": {
+    "cpu": { "p95": 0.0, "p99": 0.0, "mean": 0.0, "idle_ratio": 1.0 },
+    "mem": { "p95": 0.0, "p99": 0.0, "mean": 0.0, "idle_ratio": 1.0 },
+    "trend_per_day": 0.0,
+    "bound_type": "balanced-idle"
+  },
+  "daily_shape": {
+    "archetype": "irregular",
+    "peak_window": "n/a",
+    "peak_consistency": 0.0,
+    "concentration": 0.0,
+    "spikiness": 0.0,
+    "profile_24h": []
+  }
+}
