@@ -423,3 +423,36 @@ export const mockBudgetComparisonData = {
     },
   ],
 };
+
+// --- LLM recommender mocks ---
+export const mockInstances = [
+  { instanceId: "i-demo-downsize", name: "web-01", csp: "AWS", type: "t3.large", region: "ap-northeast-2" },
+  { instanceId: "i-demo-upsize", name: "api-02", csp: "AWS", type: "t3.small", region: "ap-northeast-2" },
+  { instanceId: "i-demo-keep", name: "batch-03", csp: "AZURE", type: "B2s", region: "koreacentral" },
+  { instanceId: "i-demo-insufficient", name: "new-04", csp: "NCP", type: "Standard-2", region: "KR" },
+];
+
+export function mockRecommendation(instanceId) {
+  const map = {
+    "i-demo-downsize": {
+      instance: instanceId, recommendation: "downsize",
+      detail: "Move to a one-size-smaller type; binding resource is MEM.",
+      reasoning: "Sustained P95 13% and peak P99 14% are both well below thresholds; flat all-day shape.",
+      confidence: "high", status: "ok",
+    },
+    "i-demo-upsize": {
+      instance: instanceId, recommendation: "upsize",
+      detail: "Increase to the next size up to absorb peaks.",
+      reasoning: "P99 saturates during business hours; headroom risk is high.",
+      confidence: "medium", status: "ok",
+    },
+    "i-demo-keep": {
+      instance: instanceId, recommendation: "keep",
+      detail: "No resize recommended.",
+      reasoning: "Utilization is within an efficient band across the window.",
+      confidence: "high", status: "ok",
+    },
+    "i-demo-insufficient": { instance: instanceId, status: "insufficient_data" },
+  };
+  return map[instanceId] || map["i-demo-keep"];
+}

@@ -84,6 +84,12 @@ export const budgetClient = createClient(
   5000
 );
 
+// LLM recommender (port 9090, BE base path) — long timeout: each call hits an LLM
+export const llmClient = createClient(
+  `${API_BE_URL}${BASE_PATH}/llm_recommender`,
+  30000
+);
+
 // Alarm Service API (port 9000)
 const ALERT_PATH="/api/costopti/alert"
 export const alertClient = createClient(`${API_ALARM_URL}${ALERT_PATH}`, 20000);
