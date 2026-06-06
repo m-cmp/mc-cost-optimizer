@@ -42,7 +42,7 @@ export default function RecommendTab() {
 
   const handleRecommend = () => {
     setEcho(ask.trim()); // snapshot the inquiry for the result banner
-    run(selected, model);
+    run(selected, model, ask.trim());
   };
 
   return (
@@ -73,7 +73,7 @@ export default function RecommendTab() {
           <span className="badge bg-secondary-lt">optional</span>
         </div>
         <span className="text-muted" style={{ fontSize: 12 }}>
-          Free-form question sent alongside the score JSON. (Feature #2 — captured in the UI, not yet sent to the backend in v1.)
+          Free-form question sent with the score JSON; the LLM's grounded answer appears on each result card.
         </span>
         <textarea
           className="form-control mt-2"
@@ -111,7 +111,7 @@ export default function RecommendTab() {
       {/* results */}
       {results.length > 0 && echo && (
         <div className="text-muted mt-3" style={{ fontSize: 12, background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 8, padding: "8px 12px", whiteSpace: "pre-line" }}>
-          💬 <b>Inquiry captured</b> (will be sent with the prompt once Feature #2 lands):{"\n"}{echo}
+          💬 <b>Inquiry sent with the prompt:</b>{"\n"}{echo}
         </div>
       )}
 

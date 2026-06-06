@@ -435,7 +435,7 @@ export const mockInstances = [
   { instanceId: "i-demo-insufficient", name: "new-host", csp: "AWS", spec: "t3.small", usd: 12.0, status: "running" },
 ];
 
-export function mockRecommendation(instanceId) {
+export function mockRecommendation(instanceId, userQuestion) {
   const map = {
     "i-demo-upsize": {
       instance: instanceId, recommendation: "upsize",
@@ -463,5 +463,13 @@ export function mockRecommendation(instanceId) {
     },
     "i-demo-insufficient": { instance: instanceId, status: "insufficient_data" },
   };
-  return map[instanceId] || map["i-demo-keep"];
+  const base = map[instanceId] || map["i-demo-keep"];
+  // Feature #2: when a question is asked, attach a grounded mock answer (only for ok results).
+  if (userQuestion && userQuestion.trim() && base.status === "ok") {
+    return {
+      ...base,
+      answer: `(mock) Regarding "${userQuestion.trim()}": based on the sample metrics, ${base.recommendation} remains the best fit for this instance.`,
+    };
+  }
+  return base;
 }

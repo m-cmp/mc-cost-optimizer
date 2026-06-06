@@ -12,7 +12,7 @@ export function useLlmRecommend() {
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [running, setRunning] = useState(false);
 
-  const run = useCallback(async (instanceIds, model) => {
+  const run = useCallback(async (instanceIds, model, userQuestion) => {
     if (running || !instanceIds?.length) return;
     setRunning(true);
     setResults([]);
@@ -22,7 +22,7 @@ export function useLlmRecommend() {
     for (let i = 0; i < instanceIds.length; i++) {
       const instanceId = instanceIds[i];
       try {
-        const res = await recommend({ instanceId, model });
+        const res = await recommend({ instanceId, model, userQuestion });
         acc.push({ instanceId, data: res.data.Data });
       } catch (err) {
         logger.error("LLM recommend error:", err);

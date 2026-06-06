@@ -3,10 +3,10 @@ import { mockRecommendation } from "../../config/mockData";
 
 // Request a recommendation for ONE instance.
 // Returns the axios-shaped { data: { Data: <Recommendation> } } to match ResultModel.
-export const recommend = async ({ instanceId, model }) => {
+export const recommend = async ({ instanceId, model, userQuestion }) => {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 600)); // simulate LLM latency
-    return Promise.resolve({ data: { Data: mockRecommendation(instanceId) } });
+    return Promise.resolve({ data: { Data: mockRecommendation(instanceId, userQuestion) } });
   }
-  return llmClient.post("/recommend", { instanceId, model });
+  return llmClient.post("/recommend", { instanceId, model, userQuestion });
 };

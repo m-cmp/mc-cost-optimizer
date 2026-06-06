@@ -55,6 +55,11 @@ function Card({ item }) {
       </div>
       <div style={{ fontSize: 13, margin: "2px 0" }}>{r.detail}</div>
       <div style={{ fontSize: 12.5, color: "#6b7280" }}>{r.reasoning}</div>
+      {r.answer && (
+        <div style={{ fontSize: 12.5, marginTop: 8, paddingTop: 8, borderTop: "1px dashed #e5e7eb" }}>
+          <strong style={{ color: "#2563eb" }}>Answer:</strong> {r.answer}
+        </div>
+      )}
     </div>
   );
 }
