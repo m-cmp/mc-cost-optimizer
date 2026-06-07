@@ -27,7 +27,7 @@ public class LlmRecommendController {
         ResultModel result = new ResultModel();
         try {
             Recommendation data = llmRecommendService.recommend(
-                    req.getInstanceId(), req.getModel(), req.getUserQuestion());
+                    req.getInstanceId(), req.getProvider(), req.getModel(), req.getUserQuestion());
             result.setData(data);
         } catch (Exception e) {
             e.printStackTrace();

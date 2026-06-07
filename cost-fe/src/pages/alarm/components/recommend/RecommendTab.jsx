@@ -42,7 +42,7 @@ export default function RecommendTab() {
 
   const handleRecommend = () => {
     setEcho(ask.trim()); // snapshot the inquiry for the result banner
-    run(selected, model, ask.trim());
+    run(selected, provider, model, ask.trim());
   };
 
   return (

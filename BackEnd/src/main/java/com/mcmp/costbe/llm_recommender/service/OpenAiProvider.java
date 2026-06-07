@@ -14,14 +14,14 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Map;
 
-@Component("google") // bean name = frontend provider value ("google"); the model is Gemini
-public class GeminiProvider implements LlmProvider {
+@Component("openai")
+public class OpenAiProvider implements LlmProvider {
 
-    @Value("${llm.gemini.base-url}") private String baseUrl;
-    @Value("${llm.gemini.model}") private String defaultModel;
-    @Value("${llm.gemini.api-key:}") private String apiKey;
-    @Value("${llm.gemini.temperature:0.2}") private double temperature;
-    @Value("${llm.gemini.max-output-tokens:2048}") private int maxOutputTokens;
+    @Value("${llm.openai.base-url}") private String baseUrl;
+    @Value("${llm.openai.model}") private String defaultModel;
+    @Value("${llm.openai.api-key:}") private String apiKey;
+    @Value("${llm.openai.temperature:0.2}") private double temperature;
+    @Value("${llm.openai.max-tokens:2048}") private int maxTokens;
 
     @Autowired
     @Qualifier("llmRestTemplate")
@@ -32,37 +32,38 @@ public class GeminiProvider implements LlmProvider {
     @Override
     public String generate(String system, String user, String model) {
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("GEMINI_API_KEY is not configured");
+            throw new IllegalStateException("OPENAI_API_KEY is not configured");
         }
         String m = (model == null || model.isBlank()) ? defaultModel : model;
-        String url = baseUrl + "/models/" + m + ":generateContent";
+        String url = baseUrl + "/chat/completions";
 
         Map<String, Object> body = Map.of(
-            "systemInstruction", Map.of("parts", List.of(Map.of("text", system))),
-            "contents", List.of(Map.of("parts", List.of(Map.of("text", user)))),
-            "generationConfig", Map.of(
-                "temperature", temperature,
-                "maxOutputTokens", maxOutputTokens, // cap output -> bounds per-call cost
-                "responseMimeType", "application/json")
+            "model", m,
+            "messages", List.of(
+                Map.of("role", "system", "content", system),
+                Map.of("role", "user", "content", user)),
+            "temperature", temperature,
+            "max_tokens", maxTokens, // cap output -> bounds per-call cost
+            "response_format", Map.of("type", "json_object") // JSON-only output (mirrors Gemini responseMimeType)
         );
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("x-goog-api-key", apiKey); // auth via header (not ?key=) — required for this key format
+        headers.setBearerAuth(apiKey); // Authorization: Bearer <key>
 
         String resp = restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
         return extractText(resp);
     }
 
-    /** candidates[0].content.parts[0].text */
+    /** choices[0].message.content */
     private String extractText(String resp) {
         try {
             JsonNode root = om.readTree(resp);
-            return root.path("candidates").path(0)
-                       .path("content").path("parts").path(0)
-                       .path("text").asText();
+            return root.path("choices").path(0)
+                       .path("message").path("content")
+                       .asText();
         } catch (Exception e) {
-            throw new IllegalStateException("Unexpected Gemini response shape");
+            throw new IllegalStateException("Unexpected OpenAI response shape");
         }
     }
 }

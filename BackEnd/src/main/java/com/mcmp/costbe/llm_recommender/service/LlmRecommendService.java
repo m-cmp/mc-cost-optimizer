@@ -6,17 +6,36 @@ import com.mcmp.costbe.llm_recommender.model.Recommendation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class LlmRecommendService {
 
+    /** Default provider bean when the request omits one (back-compat with provider-less callers). */
+    static final String DEFAULT_PROVIDER = "google";
+
     @Autowired private ScoreProvider scoreProvider;
-    @Autowired private LlmProvider llmProvider;
+    /** All LlmProvider beans, keyed by bean name: "google", "openai", "anthropic". */
+    @Autowired private Map<String, LlmProvider> providers;
     @Autowired private PromptBuilder promptBuilder;
     @Autowired private RecommendationParser parser;
+    @Autowired private RecommendRateLimiter rateLimiter;
 
     private final ObjectMapper om = new ObjectMapper();
 
-    public Recommendation recommend(String instanceId, String model, String userQuestion) {
+    public Recommendation recommend(String instanceId, String provider, String model, String userQuestion) {
+        LlmProvider llm;
+        try {
+            llm = resolveProvider(provider);
+        } catch (IllegalArgumentException e) {
+            return Recommendation.error(instanceId, "Unknown provider.");
+        }
+
+        // Cost guard (fail closed): never call the score/LLM provider when over the per-minute budget.
+        if (!rateLimiter.tryAcquire()) {
+            return Recommendation.error(instanceId, "Too many requests right now. Please try again shortly.");
+        }
+
         try {
             String scoreJson = scoreProvider.get(instanceId);
 
@@ -27,7 +46,7 @@ public class LlmRecommendService {
             String system = promptBuilder.systemPrompt();
             String user = promptBuilder.userPrompt(scoreJson, userQuestion);
 
-            Recommendation r = generateAndParse(system, user, model);
+            Recommendation r = generateAndParse(llm, system, user, model);
             r.setInstance(instanceId); // never trust the model's echoed id
             return r;
 
@@ -40,12 +59,28 @@ public class LlmRecommendService {
         }
     }
 
-    private Recommendation generateAndParse(String system, String user, String model) {
+    /** @throws IllegalArgumentException if the provider key is not a registered bean. */
+    private LlmProvider resolveProvider(String provider) {
+        String key = (provider == null || provider.isBlank()) ? DEFAULT_PROVIDER : provider;
+        LlmProvider p = providers.get(key);
+        if (p == null) {
+            throw new IllegalArgumentException("Unknown provider: " + key);
+        }
+        return p;
+    }
+
+    private Recommendation generateAndParse(LlmProvider llm, String system, String user, String model) {
+        String first = llm.generate(system, user, model);
         try {
-            return parser.parse(llmProvider.generate(system, user, model));
+            return parser.parse(first);
         } catch (RecommendationParseException firstFail) {
-            // retry once (spec §9)
-            return parser.parse(llmProvider.generate(system, user, model));
+            // Cost guard: a blank response is usually a refusal/quota cutoff and a
+            // retry almost always returns blank again — don't pay for a second call.
+            if (first == null || first.isBlank()) {
+                throw firstFail;
+            }
+            // Non-blank but unparseable -> retry once (spec §9).
+            return parser.parse(llm.generate(system, user, model));
         }
     }
 

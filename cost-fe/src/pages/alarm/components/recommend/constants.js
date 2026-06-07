@@ -9,7 +9,7 @@ export const PROVIDERS = [
 
 export const MODELS = {
   openai: ["gpt-4o", "gpt-4o-mini"],
-  anthropic: ["claude-opus-4", "claude-sonnet-4"],
+  anthropic: ["claude-opus-4-8", "claude-sonnet-4-6"],
   google: ["gemini-flash-latest", "gemini-2.5-flash", "gemini-2.5-pro"],
 };
 
