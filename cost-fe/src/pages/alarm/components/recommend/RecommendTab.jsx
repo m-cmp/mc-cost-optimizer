@@ -10,11 +10,13 @@ import { MODELS } from "./constants";
 
 const MAX = 5;
 
+// Chips only suggest questions we can actually answer from this instance's
+// usage/score data (no cost catalog), so they don't trigger "no data" replies.
 const QUICK_CHIPS = [
-  "Prioritize cost savings",
-  "Weigh stability / headroom more",
-  "Consider migrating to another CSP",
-  "Estimate the monthly savings too",
+  "Why this recommendation?",
+  "Any stability / headroom risk?",
+  "Risks if I downsize?",
+  "What instance characteristics fit?",
 ];
 
 export default function RecommendTab() {
@@ -48,7 +50,7 @@ export default function RecommendTab() {
   return (
     <Card title="Resource Recommendation Request" titleSize={2}>
       <p className="text-muted" style={{ marginTop: 0 }}>
-        Select instances and ask the LLM for resizing recommendations.
+        Select instances to get resizing recommendations.
       </p>
 
       <ProviderSelect
@@ -73,12 +75,12 @@ export default function RecommendTab() {
           <span className="badge bg-secondary-lt">optional</span>
         </div>
         <span className="text-muted" style={{ fontSize: 12 }}>
-          Free-form question sent with the score JSON; the LLM's grounded answer appears on each result card.
+          Optional question — answered from this instance's usage data. The answer appears on each result card.
         </span>
         <textarea
           className="form-control mt-2"
           style={{ minHeight: 64 }}
-          placeholder="e.g. Prioritize cost savings. / It's a nightly batch workload — is stability covered? / Would another CSP be cheaper?"
+          placeholder="e.g. Why this size? / Is headroom enough for spikes? / Risks if I downsize?"
           value={ask}
           onChange={(e) => setAsk(e.target.value)}
         />
