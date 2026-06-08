@@ -20,6 +20,17 @@ CREATE TABLE IF NOT EXISTS `alarm_history` (
                                  PRIMARY KEY (`event_type`,`resource_id`,`resource_type`,`occure_date`,`csp_type`,`alarm_impl`,`project_cd`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
+-- cost.recommendation_history definition
+
+CREATE TABLE IF NOT EXISTS `recommendation_history` (
+                                 `id`             bigint NOT NULL AUTO_INCREMENT,
+                                 `instance_id`    varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
+                                 `recommendation` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+                                 `response_json`  text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci,
+                                 `created_at`     timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                 PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
 -- cost.asset_compute_metric definition
 
 CREATE TABLE IF NOT EXISTS `asset_compute_metric` (

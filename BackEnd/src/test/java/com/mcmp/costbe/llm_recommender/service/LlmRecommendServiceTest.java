@@ -1,6 +1,8 @@
 package com.mcmp.costbe.llm_recommender.service;
 
+import com.mcmp.costbe.llm_recommender.dao.RecommendationHistoryDao;
 import com.mcmp.costbe.llm_recommender.model.Recommendation;
+import com.mcmp.costbe.llm_recommender.model.RecommendationHistory;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -29,6 +31,7 @@ class LlmRecommendServiceTest {
         ReflectionTestUtils.setField(s, "promptBuilder", new PromptBuilder());
         ReflectionTestUtils.setField(s, "parser", new RecommendationParser());
         ReflectionTestUtils.setField(s, "rateLimiter", rateLimiter);
+        ReflectionTestUtils.setField(s, "historyDao", new CapturingHistoryDao());
         return s;
     }
 
@@ -181,5 +184,58 @@ class LlmRecommendServiceTest {
         assertThat(r1.getStatus()).isEqualTo(Recommendation.STATUS_OK);
         assertThat(r2.getStatus()).isEqualTo(Recommendation.STATUS_ERROR);
         assertThat(calls).hasSize(1); // second request never reached the LLM
+    }
+
+    // ---- recommendation_history persistence (spec §8) ----
+
+    @Test
+    void savesHistory_onSuccess() {
+        ScoreProvider score = id -> "{\"action_signal\":\"downsize\"}";
+        LlmProvider llm = (s, u, m) -> VALID;
+        LlmRecommendService s = service(score, llm);
+
+        s.recommend("i-hist", null, null, null);
+
+        CapturingHistoryDao dao = (CapturingHistoryDao) ReflectionTestUtils.getField(s, "historyDao");
+        assertThat(dao.saved).hasSize(1);
+        assertThat(dao.saved.get(0).getInstanceId()).isEqualTo("i-hist");
+        assertThat(dao.saved.get(0).getRecommendation()).isEqualTo("downsize");
+        assertThat(dao.saved.get(0).getResponseJson()).contains("downsize"); // full response persisted
+    }
+
+    @Test
+    void savesHistory_onInsufficient_withNullRecommendation() {
+        ScoreProvider score = id -> "{\"action_signal\":\"insufficient_data\"}";
+        LlmProvider llm = (s, u, m) -> VALID;
+        LlmRecommendService s = service(score, llm);
+
+        s.recommend("i-insf", null, null, null);
+
+        CapturingHistoryDao dao = (CapturingHistoryDao) ReflectionTestUtils.getField(s, "historyDao");
+        assertThat(dao.saved).hasSize(1); // insufficient is still audited
+        assertThat(dao.saved.get(0).getRecommendation()).isNull(); // no recommendation value
+    }
+
+    @Test
+    void historySaveFailure_doesNotBreakRecommendation() {
+        ScoreProvider score = id -> "{\"action_signal\":\"downsize\"}";
+        LlmProvider llm = (s, u, m) -> VALID;
+        LlmRecommendService s = service(score, llm);
+        ReflectionTestUtils.setField(s, "historyDao", new ThrowingHistoryDao());
+
+        Recommendation r = s.recommend("i-fail", null, null, null);
+
+        assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_OK); // history failure is isolated
+    }
+
+    /** Fake DAO that records saved rows instead of hitting the DB. */
+    static class CapturingHistoryDao extends RecommendationHistoryDao {
+        final List<RecommendationHistory> saved = new ArrayList<>();
+        @Override public int insertHistory(RecommendationHistory h) { saved.add(h); return 1; }
+    }
+
+    /** Fake DAO that simulates a DB failure to verify history saving is isolated. */
+    static class ThrowingHistoryDao extends RecommendationHistoryDao {
+        @Override public int insertHistory(RecommendationHistory h) { throw new RuntimeException("db down"); }
     }
 }
