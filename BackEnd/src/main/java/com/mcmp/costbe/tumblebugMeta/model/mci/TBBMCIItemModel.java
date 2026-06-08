@@ -22,8 +22,6 @@ public class TBBMCIItemModel {
     private String resourceType;
     private String status;
     private Object statusCount;
-    private String systemLabel;
-    private String systemMessage;
     private String targetAction;
     private String targetStatus;
     private String uid;
