@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getApiKeyStatus, saveApiKey, deleteApiKey } from "@/api/llm_recommender/apikey";
 import { useAlertStore } from "@/stores/useAlertStore";
+import { useProjectStore } from "@/stores/useProjectStore";
 import { logger } from "@/utils/logger";
 
 const PROVIDERS = ["openai", "anthropic", "google"];
@@ -12,10 +13,12 @@ export function useApiKey() {
   const [inputs, setInputs] = useState(EMPTY_INPUTS);
   const [saving, setSaving] = useState(false);
   const { addAlert } = useAlertStore();
+  const projectId = useProjectStore((s) => s.projectId);
 
   const fetchAllStatus = async () => {
+    if (!projectId) return; // nsId(=projectId) 준비 전엔 호출 보류
     const results = await Promise.allSettled(
-      PROVIDERS.map((p) => getApiKeyStatus(p))
+      PROVIDERS.map((p) => getApiKeyStatus(p, projectId))
     );
     const next = {};
     results.forEach((r, i) => {
@@ -27,19 +30,20 @@ export function useApiKey() {
 
   useEffect(() => {
     fetchAllStatus();
-  }, []);
+  }, [projectId]);
 
   const handleInputChange = (provider, value) => {
     setInputs((prev) => ({ ...prev, [provider]: value }));
   };
 
   const handleSave = async () => {
+    if (!projectId) return;
     const targets = PROVIDERS.filter((p) => inputs[p].trim() !== "");
     if (targets.length === 0) return;
 
     setSaving(true);
     try {
-      await Promise.all(targets.map((p) => saveApiKey(p, inputs[p].trim())));
+      await Promise.all(targets.map((p) => saveApiKey(p, inputs[p].trim(), projectId)));
       setInputs(EMPTY_INPUTS);
       await fetchAllStatus();
       addAlert({
@@ -60,8 +64,9 @@ export function useApiKey() {
   };
 
   const handleDelete = async (provider) => {
+    if (!projectId) return;
     try {
-      await deleteApiKey(provider);
+      await deleteApiKey(provider, projectId);
       await fetchAllStatus();
       addAlert({
         variant: "success",

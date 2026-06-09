@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { recommend } from "@/api/llm_recommender/llmRecommender";
+import { useProjectStore } from "@/stores/useProjectStore";
 import { logger } from "@/utils/logger";
 
 /**
@@ -12,13 +13,11 @@ export function useLlmRecommend() {
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [running, setRunning] = useState(false);
 
-  // TODO
-  // 임시 userId — 추후 실제 인증 연동 시 대체
-  const USER_ID = "mcmpcostopti";
+  const projectId = useProjectStore((s) => s.projectId);
 
   const run = useCallback(
     async (instanceIds, provider, model, userQuestion) => {
-      if (running || !instanceIds?.length) return;
+      if (running || !instanceIds?.length || !projectId) return;
       setRunning(true);
       setResults([]);
       setProgress({ done: 0, total: instanceIds.length });
@@ -32,7 +31,7 @@ export function useLlmRecommend() {
             provider,
             model,
             userQuestion,
-            userId: USER_ID,
+            nsId: projectId,
           });
           acc.push({ instanceId, data: res.data.Data });
         } catch (err) {
@@ -51,7 +50,7 @@ export function useLlmRecommend() {
       }
       setRunning(false);
     },
-    [running],
+    [running, projectId],
   );
 
   return { results, progress, running, run };
