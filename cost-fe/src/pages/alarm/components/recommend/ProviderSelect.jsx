@@ -1,12 +1,13 @@
 import Dropdown from "@/components/common/dropdown/Dropdown";
-import { PROVIDERS, MODELS } from "./constants";
+import { PROVIDERS } from "./constants";
 
 // Provider + dependent Model selectors (mockup layout).
 // All three providers (google/openai/anthropic) are wired to the backend; the
 // selected provider is sent with each recommend request and routes to its bean.
-export default function ProviderSelect({ provider, model, onProviderChange, onModelChange }) {
+// `models` (provider -> [modelId]) is supplied by the parent, loaded from GET /models.
+export default function ProviderSelect({ provider, model, models, onProviderChange, onModelChange }) {
   const providerLabel = PROVIDERS.find((p) => p.value === provider)?.label || provider;
-  const modelItems = (MODELS[provider] || []).map((m) => ({ value: m, label: m }));
+  const modelItems = ((models && models[provider]) || []).map((m) => ({ value: m, label: m }));
 
   return (
     <div className="d-flex gap-3 flex-wrap mb-3">

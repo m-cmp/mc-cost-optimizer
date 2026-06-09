@@ -10,3 +10,10 @@ export const recommend = async ({ instanceId, provider, model, userQuestion }) =
   }
   return llmClient.post("/recommend", { instanceId, provider, model, userQuestion });
 };
+
+// Fetch the selectable model catalog (provider -> [modelId]) from the backend.
+// In mock mode there is no backend, so return Data=null to signal "keep the fallback".
+export const getModels = () => {
+  if (USE_MOCK) return Promise.resolve({ data: { Data: null } });
+  return llmClient.get("/models");
+};

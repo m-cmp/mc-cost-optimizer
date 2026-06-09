@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Card from "@/components/common/card/Card";
 import Button from "@/components/common/button/Button";
 import { mockInstances } from "@/config/mockData";
 import { useLlmRecommend } from "@/hooks/useLlmRecommend";
+import { getModels } from "@/api/llm_recommender/llmRecommender";
 import ProviderSelect from "./ProviderSelect";
 import InstanceTable from "./InstanceTable";
 import ResultCards, { Badge } from "./ResultCards";
@@ -23,13 +24,24 @@ export default function RecommendTab() {
   const [selected, setSelected] = useState([]);
   const [provider, setProvider] = useState("google");
   const [model, setModel] = useState("gemini-flash-latest");
+  const [models, setModels] = useState(MODELS); // fallback until /models loads
   const [ask, setAsk] = useState("");
   const [echo, setEcho] = useState("");
   const { results, progress, running, run } = useLlmRecommend();
 
+  // Load the selectable model catalog from the backend (config-driven; no rebuild to change models).
+  useEffect(() => {
+    getModels()
+      .then((res) => {
+        const data = res?.data?.Data;
+        if (data && Object.keys(data).length) setModels(data);
+      })
+      .catch(() => {}); // keep fallback on failure
+  }, []);
+
   const handleProviderChange = (p) => {
     setProvider(p);
-    setModel((MODELS[p] || [])[0] || "");
+    setModel((models[p] || [])[0] || "");
   };
 
   const toggle = (id) =>
@@ -56,6 +68,7 @@ export default function RecommendTab() {
       <ProviderSelect
         provider={provider}
         model={model}
+        models={models}
         onProviderChange={handleProviderChange}
         onModelChange={setModel}
       />

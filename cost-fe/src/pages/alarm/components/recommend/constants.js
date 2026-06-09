@@ -7,6 +7,9 @@ export const PROVIDERS = [
   { value: "google", label: "Google (Gemini)" },
 ];
 
+// Fallback model catalog — used ONLY if GET /models is unreachable (e.g. backend down).
+// The live list is served by the backend (llm.models.* in application.properties),
+// so models can be added/removed there without a frontend rebuild.
 export const MODELS = {
   openai: ["gpt-4o", "gpt-4o-mini"],
   anthropic: ["claude-opus-4-8", "claude-sonnet-4-6"],
