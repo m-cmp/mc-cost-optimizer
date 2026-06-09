@@ -204,6 +204,19 @@ class LlmRecommendServiceTest {
     }
 
     @Test
+    void savesHistory_withNsId() {
+        ScoreProvider score = id -> "{\"action_signal\":\"downsize\"}";
+        LlmProvider llm = (s, u, m, ns) -> VALID;
+        LlmRecommendService s = service(score, llm);
+
+        s.recommend("i-ns", null, null, null, "ns-A");
+
+        CapturingHistoryDao dao = (CapturingHistoryDao) ReflectionTestUtils.getField(s, "historyDao");
+        assertThat(dao.saved).hasSize(1);
+        assertThat(dao.saved.get(0).getNsId()).isEqualTo("ns-A");
+    }
+
+    @Test
     void savesHistory_onInsufficient_withNullRecommendation() {
         ScoreProvider score = id -> "{\"action_signal\":\"insufficient_data\"}";
         LlmProvider llm = (s, u, m, uid) -> VALID;

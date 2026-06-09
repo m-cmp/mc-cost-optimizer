@@ -13,6 +13,7 @@ import lombok.Setter;
 public class RecommendationHistory {
 
     private Long id;
+    private String nsId;           // namespace ID — 프로젝트 단위 구분 (spec: ns_id)
     private String instanceId;
     private String recommendation; // nullable: insufficient_data / error rows have no recommendation
     private String responseJson;   // full Recommendation serialized as JSON (spec: response_json)

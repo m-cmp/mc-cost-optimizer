@@ -24,11 +24,13 @@ CREATE TABLE IF NOT EXISTS `alarm_history` (
 
 CREATE TABLE IF NOT EXISTS `recommendation_history` (
                                  `id`             bigint NOT NULL AUTO_INCREMENT,
+                                 `ns_id`          varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
                                  `instance_id`    varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
                                  `recommendation` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
                                  `response_json`  text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci,
                                  `created_at`     timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                 PRIMARY KEY (`id`)
+                                 PRIMARY KEY (`id`),
+                                 KEY `idx_ns` (`ns_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- cost.asset_compute_metric definition

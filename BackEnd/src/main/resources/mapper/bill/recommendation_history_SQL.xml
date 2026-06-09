@@ -5,8 +5,8 @@
     <!-- id (AUTO_INCREMENT) and created_at (DEFAULT CURRENT_TIMESTAMP) are DB-generated. -->
     <insert id="insertHistory"
             parameterType="com.mcmp.costbe.llm_recommender.model.RecommendationHistory">
-        INSERT INTO recommendation_history (instance_id, recommendation, response_json)
-        VALUES (#{instanceId}, #{recommendation}, #{responseJson})
+        INSERT INTO recommendation_history (ns_id, instance_id, recommendation, response_json)
+        VALUES (#{nsId}, #{instanceId}, #{recommendation}, #{responseJson})
     </insert>
 
 </mapper>

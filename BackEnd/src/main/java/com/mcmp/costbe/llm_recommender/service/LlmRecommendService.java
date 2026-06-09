@@ -30,7 +30,7 @@ public class LlmRecommendService {
 
     public Recommendation recommend(String instanceId, String provider, String model, String userQuestion, String nsId) {
         Recommendation r = doRecommend(instanceId, provider, model, userQuestion, nsId);
-        saveHistoryQuietly(instanceId, r);
+        saveHistoryQuietly(nsId, instanceId, r);
         return r;
     }
 
@@ -98,9 +98,10 @@ public class LlmRecommendService {
         }
     }
 
-    private void saveHistoryQuietly(String instanceId, Recommendation r) {
+    private void saveHistoryQuietly(String nsId, String instanceId, Recommendation r) {
         try {
             RecommendationHistory h = new RecommendationHistory();
+            h.setNsId(nsId);
             h.setInstanceId(instanceId);
             h.setRecommendation(r.getRecommendation());
             h.setResponseJson(om.writeValueAsString(r));
