@@ -19,7 +19,6 @@ public class OpenAiProvider implements LlmProvider {
 
     @Value("${llm.openai.base-url}") private String baseUrl;
     @Value("${llm.openai.model}") private String defaultModel;
-    @Value("${llm.openai.api-key:}") private String apiKey;
     @Value("${llm.openai.temperature:0.2}") private double temperature;
     @Value("${llm.openai.max-tokens:2048}") private int maxTokens;
 
@@ -27,29 +26,30 @@ public class OpenAiProvider implements LlmProvider {
     @Qualifier("llmRestTemplate")
     private RestTemplate restTemplate;
 
+    @Autowired
+    private ApiKeyService apiKeyService;
+
     private final ObjectMapper om = new ObjectMapper();
 
     @Override
-    public String generate(String system, String user, String model) {
-        if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("OPENAI_API_KEY is not configured");
-        }
+    public String generate(String system, String user, String model, String userId) {
+        String apiKey = apiKeyService.decryptApiKey("openai", userId);
         String m = (model == null || model.isBlank()) ? defaultModel : model;
         String url = baseUrl + "/chat/completions";
 
         Map<String, Object> body = Map.of(
-            "model", m,
-            "messages", List.of(
-                Map.of("role", "system", "content", system),
-                Map.of("role", "user", "content", user)),
-            "temperature", temperature,
-            "max_tokens", maxTokens, // cap output -> bounds per-call cost
-            "response_format", Map.of("type", "json_object") // JSON-only output (mirrors Gemini responseMimeType)
+                "model", m,
+                "messages", List.of(
+                        Map.of("role", "system", "content", system),
+                        Map.of("role", "user", "content", user)),
+                "temperature", temperature,
+                "max_tokens", maxTokens,
+                "response_format", Map.of("type", "json_object")
         );
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(apiKey); // Authorization: Bearer <key>
+        headers.setBearerAuth(apiKey);
 
         String resp = restTemplate.postForObject(url, new HttpEntity<>(body, headers), String.class);
         return extractText(resp);
@@ -60,8 +60,8 @@ public class OpenAiProvider implements LlmProvider {
         try {
             JsonNode root = om.readTree(resp);
             return root.path("choices").path(0)
-                       .path("message").path("content")
-                       .asText();
+                    .path("message").path("content")
+                    .asText();
         } catch (Exception e) {
             throw new IllegalStateException("Unexpected OpenAI response shape");
         }

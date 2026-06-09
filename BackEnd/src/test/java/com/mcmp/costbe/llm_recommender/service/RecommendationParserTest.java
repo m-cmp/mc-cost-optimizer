@@ -12,8 +12,8 @@ class RecommendationParserTest {
     @Test
     void parsesPlainJson() {
         String text = "{\"instance\":\"i-1\",\"recommendation\":\"downsize\","
-            + "\"detail\":\"Move to a smaller type\",\"reasoning\":\"P95 and P99 low\","
-            + "\"confidence\":\"high\"}";
+                + "\"detail\":\"Move to a smaller type\",\"reasoning\":\"P95 and P99 low\","
+                + "\"confidence\":\"high\"}";
         var r = parser.parse(text);
         assertThat(r.getRecommendation()).isEqualTo("downsize");
         assertThat(r.getConfidence()).isEqualTo("high");
@@ -24,7 +24,7 @@ class RecommendationParserTest {
     @Test
     void parsesFencedJson() {
         String text = "```json\n{\"instance\":\"i-1\",\"recommendation\":\"keep\","
-            + "\"detail\":\"d\",\"reasoning\":\"r\",\"confidence\":\"low\"}\n```";
+                + "\"detail\":\"d\",\"reasoning\":\"r\",\"confidence\":\"low\"}\n```";
         var r = parser.parse(text);
         assertThat(r.getRecommendation()).isEqualTo("keep");
     }
@@ -32,29 +32,29 @@ class RecommendationParserTest {
     @Test
     void rejectsBrokenJson() {
         assertThatThrownBy(() -> parser.parse("not json at all"))
-            .isInstanceOf(RecommendationParseException.class);
+                .isInstanceOf(RecommendationParseException.class);
     }
 
     @Test
     void rejectsInvalidEnum() {
         String text = "{\"instance\":\"i-1\",\"recommendation\":\"explode\","
-            + "\"detail\":\"d\",\"reasoning\":\"r\",\"confidence\":\"high\"}";
+                + "\"detail\":\"d\",\"reasoning\":\"r\",\"confidence\":\"high\"}";
         assertThatThrownBy(() -> parser.parse(text))
-            .isInstanceOf(RecommendationParseException.class);
+                .isInstanceOf(RecommendationParseException.class);
     }
 
     @Test
     void rejectsInvalidConfidence() {
         String text = "{\"instance\":\"i-1\",\"recommendation\":\"keep\","
-            + "\"detail\":\"d\",\"reasoning\":\"r\",\"confidence\":\"very-high\"}";
+                + "\"detail\":\"d\",\"reasoning\":\"r\",\"confidence\":\"very-high\"}";
         assertThatThrownBy(() -> parser.parse(text))
-            .isInstanceOf(RecommendationParseException.class);
+                .isInstanceOf(RecommendationParseException.class);
     }
 
     @Test
     void parsesOptionalAnswerWhenPresent() {
         String text = "{\"instance\":\"i-1\",\"recommendation\":\"keep\",\"detail\":\"d\","
-            + "\"reasoning\":\"r\",\"confidence\":\"high\",\"answer\":\"Cost is already efficient.\"}";
+                + "\"reasoning\":\"r\",\"confidence\":\"high\",\"answer\":\"Cost is already efficient.\"}";
         var r = parser.parse(text);
         assertThat(r.getAnswer()).isEqualTo("Cost is already efficient.");
     }
@@ -62,7 +62,7 @@ class RecommendationParserTest {
     @Test
     void answerIsNullWhenAbsent() {
         String text = "{\"instance\":\"i-1\",\"recommendation\":\"keep\",\"detail\":\"d\","
-            + "\"reasoning\":\"r\",\"confidence\":\"high\"}";
+                + "\"reasoning\":\"r\",\"confidence\":\"high\"}";
         var r = parser.parse(text);
         assertThat(r.getAnswer()).isNull();
     }

@@ -464,3 +464,20 @@ CREATE TABLE IF NOT EXISTS `gcp_billing_raw` (
     KEY `idx_service` (`service_description`,`usage_start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci COMMENT='GCP 빌링 원본 데이터';
 
+
+-- ============================================================
+-- provider_keys: LLM 프로바이더 API 키 (AES-256-GCM 암호화 저장)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS `provider_keys` (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `user_id` varchar(100) NOT NULL COMMENT '유저 ID',
+    `provider` varchar(20)  NOT NULL COMMENT 'openai | anthropic | google',
+    `enc_key` text NOT NULL COMMENT 'AES-256-GCM 암호문 (base64)',
+    `iv` varchar(100) NOT NULL COMMENT 'nonce 12바이트 (base64)',
+    `tag` varchar(100) NOT NULL COMMENT 'GCM 인증 태그 16바이트 (base64)',
+    `created_at` timestamp DEFAULT current_timestamp(),
+    `updated_at` timestamp DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_user_provider` (`user_id`, `provider`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci COMMENT='LLM 프로바이더 API 키 (AES-256-GCM 암호화 저장)';

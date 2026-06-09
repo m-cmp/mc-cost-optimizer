@@ -12,30 +12,47 @@ export function useLlmRecommend() {
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [running, setRunning] = useState(false);
 
-  const run = useCallback(async (instanceIds, provider, model, userQuestion) => {
-    if (running || !instanceIds?.length) return;
-    setRunning(true);
-    setResults([]);
-    setProgress({ done: 0, total: instanceIds.length });
+  // TODO
+  // 임시 userId — 추후 실제 인증 연동 시 대체
+  const USER_ID = "mcmpcostopti";
 
-    const acc = [];
-    for (let i = 0; i < instanceIds.length; i++) {
-      const instanceId = instanceIds[i];
-      try {
-        const res = await recommend({ instanceId, provider, model, userQuestion });
-        acc.push({ instanceId, data: res.data.Data });
-      } catch (err) {
-        logger.error("LLM recommend error:", err);
-        acc.push({
-          instanceId,
-          data: { instance: instanceId, status: "error", error: err.userMessage || "Request failed" },
-        });
+  const run = useCallback(
+    async (instanceIds, provider, model, userQuestion) => {
+      if (running || !instanceIds?.length) return;
+      setRunning(true);
+      setResults([]);
+      setProgress({ done: 0, total: instanceIds.length });
+
+      const acc = [];
+      for (let i = 0; i < instanceIds.length; i++) {
+        const instanceId = instanceIds[i];
+        try {
+          const res = await recommend({
+            instanceId,
+            provider,
+            model,
+            userQuestion,
+            userId: USER_ID,
+          });
+          acc.push({ instanceId, data: res.data.Data });
+        } catch (err) {
+          logger.error("LLM recommend error:", err);
+          acc.push({
+            instanceId,
+            data: {
+              instance: instanceId,
+              status: "error",
+              error: err.userMessage || "Request failed",
+            },
+          });
+        }
+        setResults([...acc]);
+        setProgress({ done: i + 1, total: instanceIds.length });
       }
-      setResults([...acc]);
-      setProgress({ done: i + 1, total: instanceIds.length });
-    }
-    setRunning(false);
-  }, [running]);
+      setRunning(false);
+    },
+    [running],
+  );
 
   return { results, progress, running, run };
 }

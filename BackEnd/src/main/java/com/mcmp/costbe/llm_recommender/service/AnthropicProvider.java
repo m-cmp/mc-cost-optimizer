@@ -19,7 +19,6 @@ public class AnthropicProvider implements LlmProvider {
 
     @Value("${llm.anthropic.base-url}") private String baseUrl;
     @Value("${llm.anthropic.model}") private String defaultModel;
-    @Value("${llm.anthropic.api-key:}") private String apiKey;
     @Value("${llm.anthropic.version:2023-06-01}") private String anthropicVersion;
     @Value("${llm.anthropic.max-tokens:4096}") private int maxTokens;
 
@@ -27,23 +26,23 @@ public class AnthropicProvider implements LlmProvider {
     @Qualifier("llmRestTemplate")
     private RestTemplate restTemplate;
 
+    @Autowired
+    private ApiKeyService apiKeyService;
+
     private final ObjectMapper om = new ObjectMapper();
 
     @Override
-    public String generate(String system, String user, String model) {
-        if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("ANTHROPIC_API_KEY is not configured");
-        }
+    public String generate(String system, String user, String model, String userId) {
+        String apiKey = apiKeyService.decryptApiKey("anthropic", userId);
         String m = (model == null || model.isBlank()) ? defaultModel : model;
         String url = baseUrl + "/messages";
 
-        // No temperature: Opus 4.8/4.7 reject sampling params (400); JSON shape is enforced
-        // by the system prompt's output contract (Messages API has no JSON-mode flag).
+        // No temperature: Opus 4.8/4.7 reject sampling params (400)
         Map<String, Object> body = Map.of(
-            "model", m,
-            "max_tokens", maxTokens,
-            "system", system,
-            "messages", List.of(Map.of("role", "user", "content", user))
+                "model", m,
+                "max_tokens", maxTokens,
+                "system", system,
+                "messages", List.of(Map.of("role", "user", "content", user))
         );
 
         HttpHeaders headers = new HttpHeaders();
@@ -60,8 +59,8 @@ public class AnthropicProvider implements LlmProvider {
         try {
             JsonNode root = om.readTree(resp);
             return root.path("content").path(0)
-                       .path("text")
-                       .asText();
+                    .path("text")
+                    .asText();
         } catch (Exception e) {
             throw new IllegalStateException("Unexpected Anthropic response shape");
         }

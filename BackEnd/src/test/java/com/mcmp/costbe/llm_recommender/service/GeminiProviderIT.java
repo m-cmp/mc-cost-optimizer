@@ -20,10 +20,10 @@ class GeminiProviderIT {
     void realCall_returnsParseableRecommendation() {
         String score = scoreProvider.get("i-demo-downsize");
         String text = gemini.generate(
-            promptBuilder.systemPrompt(), promptBuilder.userPrompt(score), null);
+                promptBuilder.systemPrompt(), promptBuilder.userPrompt(score), null, null);
         var r = parser.parse(text);
         assertThat(r.getRecommendation()).isIn(
-            "terminate", "downsize", "upsize", "migrate", "keep");
+                "terminate", "downsize", "upsize", "migrate", "keep");
         assertThat(r.getConfidence()).isIn("high", "medium", "low");
     }
 }

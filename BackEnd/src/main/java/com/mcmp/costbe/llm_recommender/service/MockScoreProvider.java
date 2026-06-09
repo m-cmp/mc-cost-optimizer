@@ -35,7 +35,7 @@ public class MockScoreProvider implements ScoreProvider {
     private String load(String path) {
         try {
             return StreamUtils.copyToString(
-                new ClassPathResource(path).getInputStream(), StandardCharsets.UTF_8);
+                    new ClassPathResource(path).getInputStream(), StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new IllegalStateException("Missing sample resource: " + path, e);
         }

@@ -42,16 +42,16 @@ class LlmRecommendServiceTest {
     }
 
     private static final String VALID =
-        "{\"instance\":\"x\",\"recommendation\":\"downsize\",\"detail\":\"d\","
-        + "\"reasoning\":\"r\",\"confidence\":\"high\"}";
+            "{\"instance\":\"x\",\"recommendation\":\"downsize\",\"detail\":\"d\","
+                    + "\"reasoning\":\"r\",\"confidence\":\"high\"}";
 
     @Test
     void insufficientData_skipsLlm() {
         List<String> calls = new ArrayList<>();
         ScoreProvider score = id -> "{\"action_signal\":\"insufficient_data\"}";
-        LlmProvider llm = (s, u, m) -> { calls.add("called"); return VALID; };
+        LlmProvider llm = (s, u, m, uid) -> { calls.add("called"); return VALID; };
 
-        Recommendation r = service(score, llm).recommend("i-1", null, null, null);
+        Recommendation r = service(score, llm).recommend("i-1", null, null, null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_INSUFFICIENT);
         assertThat(calls).isEmpty(); // LLM never called
@@ -60,9 +60,9 @@ class LlmRecommendServiceTest {
     @Test
     void happyPath_parsesAndForcesInstanceId() {
         ScoreProvider score = id -> "{\"action_signal\":\"downsize\"}";
-        LlmProvider llm = (s, u, m) -> VALID;
+        LlmProvider llm = (s, u, m, uid) -> VALID;
 
-        Recommendation r = service(score, llm).recommend("i-real", null, null, null);
+        Recommendation r = service(score, llm).recommend("i-real", null, null, null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_OK);
         assertThat(r.getRecommendation()).isEqualTo("downsize");
@@ -73,9 +73,9 @@ class LlmRecommendServiceTest {
     void parseFailure_retriesOnce_thenSucceeds() {
         int[] n = {0};
         ScoreProvider score = id -> "{\"action_signal\":\"keep\"}";
-        LlmProvider llm = (s, u, m) -> (n[0]++ == 0) ? "garbage" : VALID;
+        LlmProvider llm = (s, u, m, uid) -> (n[0]++ == 0) ? "garbage" : VALID;
 
-        Recommendation r = service(score, llm).recommend("i-2", null, null, null);
+        Recommendation r = service(score, llm).recommend("i-2", null, null, null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_OK);
         assertThat(n[0]).isEqualTo(2); // one retry
@@ -84,9 +84,9 @@ class LlmRecommendServiceTest {
     @Test
     void parseFailureTwice_returnsError() {
         ScoreProvider score = id -> "{\"action_signal\":\"keep\"}";
-        LlmProvider llm = (s, u, m) -> "still garbage";
+        LlmProvider llm = (s, u, m, uid) -> "still garbage";
 
-        Recommendation r = service(score, llm).recommend("i-3", null, null, null);
+        Recommendation r = service(score, llm).recommend("i-3", null, null, null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_ERROR);
         assertThat(r.getInstance()).isEqualTo("i-3");
@@ -95,9 +95,9 @@ class LlmRecommendServiceTest {
     @Test
     void providerThrows_returnsErrorWithoutLeaking() {
         ScoreProvider score = id -> "{\"action_signal\":\"upsize\"}";
-        LlmProvider llm = (s, u, m) -> { throw new RuntimeException("key=SECRET timeout"); };
+        LlmProvider llm = (s, u, m, uid) -> { throw new RuntimeException("key=SECRET timeout"); };
 
-        Recommendation r = service(score, llm).recommend("i-4", null, null, null);
+        Recommendation r = service(score, llm).recommend("i-4", null, null, null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_ERROR);
         assertThat(r.getError()).doesNotContain("SECRET");
@@ -107,13 +107,13 @@ class LlmRecommendServiceTest {
     void userQuestion_isPassedToPrompt_andAnswerParsed() {
         String[] capturedUserPrompt = {null};
         ScoreProvider score = id -> "{\"action_signal\":\"keep\"}";
-        LlmProvider llm = (s, u, m) -> {
+        LlmProvider llm = (s, u, m, uid) -> {
             capturedUserPrompt[0] = u;
             return "{\"instance\":\"x\",\"recommendation\":\"keep\",\"detail\":\"d\","
-                + "\"reasoning\":\"r\",\"confidence\":\"high\",\"answer\":\"Cost is already efficient.\"}";
+                    + "\"reasoning\":\"r\",\"confidence\":\"high\",\"answer\":\"Cost is already efficient.\"}";
         };
 
-        Recommendation r = service(score, llm).recommend("i-q", null, null, "Can I save cost?");
+        Recommendation r = service(score, llm).recommend("i-q", null, null, "Can I save cost?", null);
 
         assertThat(capturedUserPrompt[0]).contains("Can I save cost?"); // question reached the prompt
         assertThat(r.getAnswer()).isEqualTo("Cost is already efficient.");
@@ -124,11 +124,11 @@ class LlmRecommendServiceTest {
     void selectsProviderByKey() {
         List<String> used = new ArrayList<>();
         ScoreProvider score = id -> "{\"action_signal\":\"keep\"}";
-        LlmProvider google = (s, u, m) -> { used.add("google"); return VALID; };
-        LlmProvider anthropic = (s, u, m) -> { used.add("anthropic"); return VALID; };
+        LlmProvider google = (s, u, m, uid) -> { used.add("google"); return VALID; };
+        LlmProvider anthropic = (s, u, m, uid) -> { used.add("anthropic"); return VALID; };
         Map<String, LlmProvider> providers = Map.of("google", google, "anthropic", anthropic);
 
-        service(score, providers).recommend("i-1", "anthropic", null, null);
+        service(score, providers).recommend("i-1", "anthropic", null, null, null);
 
         assertThat(used).containsExactly("anthropic"); // routed to the requested provider only
     }
@@ -137,11 +137,11 @@ class LlmRecommendServiceTest {
     void nullProvider_fallsBackToDefault() {
         List<String> used = new ArrayList<>();
         ScoreProvider score = id -> "{\"action_signal\":\"keep\"}";
-        LlmProvider google = (s, u, m) -> { used.add("google"); return VALID; };
-        LlmProvider anthropic = (s, u, m) -> { used.add("anthropic"); return VALID; };
+        LlmProvider google = (s, u, m, uid) -> { used.add("google"); return VALID; };
+        LlmProvider anthropic = (s, u, m, uid) -> { used.add("anthropic"); return VALID; };
         Map<String, LlmProvider> providers = Map.of("google", google, "anthropic", anthropic);
 
-        service(score, providers).recommend("i-1", null, null, null);
+        service(score, providers).recommend("i-1", null, null, null, null);
 
         assertThat(used).containsExactly("google"); // DEFAULT_PROVIDER
     }
@@ -150,9 +150,9 @@ class LlmRecommendServiceTest {
     void unknownProvider_returnsErrorWithoutCallingScore() {
         int[] scoreCalls = {0};
         ScoreProvider score = id -> { scoreCalls[0]++; return "{\"action_signal\":\"keep\"}"; };
-        LlmProvider google = (s, u, m) -> VALID;
+        LlmProvider google = (s, u, m, uid) -> VALID;
 
-        Recommendation r = service(score, Map.of("google", google)).recommend("i-x", "nope", null, null);
+        Recommendation r = service(score, Map.of("google", google)).recommend("i-x", "nope", null, null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_ERROR);
         assertThat(scoreCalls[0]).isZero(); // bailed before doing any work
@@ -162,9 +162,9 @@ class LlmRecommendServiceTest {
     void blankResponse_isNotRetried() {
         int[] n = {0};
         ScoreProvider score = id -> "{\"action_signal\":\"keep\"}";
-        LlmProvider llm = (s, u, m) -> { n[0]++; return ""; }; // blank every time
+        LlmProvider llm = (s, u, m, uid) -> { n[0]++; return ""; }; // blank every time
 
-        Recommendation r = service(score, llm).recommend("i-blank", null, null, null);
+        Recommendation r = service(score, llm).recommend("i-blank", null, null, null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_ERROR);
         assertThat(n[0]).isEqualTo(1); // blank -> no second (paid) call (cost guard)
@@ -174,12 +174,12 @@ class LlmRecommendServiceTest {
     void rateLimitExceeded_failsClosedWithoutCallingLlm() {
         List<String> calls = new ArrayList<>();
         ScoreProvider score = id -> "{\"action_signal\":\"keep\"}";
-        LlmProvider llm = (s, u, m) -> { calls.add("call"); return VALID; };
+        LlmProvider llm = (s, u, m, uid) -> { calls.add("call"); return VALID; };
         Map<String, LlmProvider> providers = Map.of(LlmRecommendService.DEFAULT_PROVIDER, llm);
         LlmRecommendService s = service(score, providers, limiterOf(1)); // budget = 1/min
 
-        Recommendation r1 = s.recommend("i-1", null, null, null); // allowed
-        Recommendation r2 = s.recommend("i-2", null, null, null); // over budget
+        Recommendation r1 = s.recommend("i-1", null, null, null, null); // allowed
+        Recommendation r2 = s.recommend("i-2", null, null, null, null); // over budget
 
         assertThat(r1.getStatus()).isEqualTo(Recommendation.STATUS_OK);
         assertThat(r2.getStatus()).isEqualTo(Recommendation.STATUS_ERROR);
@@ -191,10 +191,10 @@ class LlmRecommendServiceTest {
     @Test
     void savesHistory_onSuccess() {
         ScoreProvider score = id -> "{\"action_signal\":\"downsize\"}";
-        LlmProvider llm = (s, u, m) -> VALID;
+        LlmProvider llm = (s, u, m, uid) -> VALID;
         LlmRecommendService s = service(score, llm);
 
-        s.recommend("i-hist", null, null, null);
+        s.recommend("i-hist", null, null, null, null);
 
         CapturingHistoryDao dao = (CapturingHistoryDao) ReflectionTestUtils.getField(s, "historyDao");
         assertThat(dao.saved).hasSize(1);
@@ -206,10 +206,10 @@ class LlmRecommendServiceTest {
     @Test
     void savesHistory_onInsufficient_withNullRecommendation() {
         ScoreProvider score = id -> "{\"action_signal\":\"insufficient_data\"}";
-        LlmProvider llm = (s, u, m) -> VALID;
+        LlmProvider llm = (s, u, m, uid) -> VALID;
         LlmRecommendService s = service(score, llm);
 
-        s.recommend("i-insf", null, null, null);
+        s.recommend("i-insf", null, null, null, null);
 
         CapturingHistoryDao dao = (CapturingHistoryDao) ReflectionTestUtils.getField(s, "historyDao");
         assertThat(dao.saved).hasSize(1); // insufficient is still audited
@@ -219,11 +219,11 @@ class LlmRecommendServiceTest {
     @Test
     void historySaveFailure_doesNotBreakRecommendation() {
         ScoreProvider score = id -> "{\"action_signal\":\"downsize\"}";
-        LlmProvider llm = (s, u, m) -> VALID;
+        LlmProvider llm = (s, u, m, uid) -> VALID;
         LlmRecommendService s = service(score, llm);
         ReflectionTestUtils.setField(s, "historyDao", new ThrowingHistoryDao());
 
-        Recommendation r = s.recommend("i-fail", null, null, null);
+        Recommendation r = s.recommend("i-fail", null, null, null, null);
 
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_OK); // history failure is isolated
     }

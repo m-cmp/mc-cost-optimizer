@@ -6,8 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RecommendRequest {
+    private String userId;       // API 키 조회에 사용. null/blank -> env var 폴백
     private String instanceId;
-    private String provider; // optional; null/blank -> default provider (google). selects the LlmProvider bean.
-    private String model; // optional; null/blank -> provider default
-    private String userQuestion; // optional free-form question (feature #2); null/blank -> no answer
+    private String provider;     // optional; null/blank -> default provider (google)
+    private String model;        // optional; null/blank -> provider default
+    private String userQuestion; // optional free-form question; null/blank -> no answer
 }

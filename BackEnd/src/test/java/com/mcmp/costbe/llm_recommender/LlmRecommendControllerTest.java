@@ -33,16 +33,16 @@ class LlmRecommendControllerTest {
         r.setRecommendation("downsize");
         r.setConfidence("high");
         r.setStatus("ok");
-        when(service.recommend(eq("i-real"), any(), any(), any())).thenReturn(r);
+        when(service.recommend(eq("i-real"), any(), any(), any(), any())).thenReturn(r);
 
         mvc.perform(post("/api/costopti/be/llm_recommender/recommend")
-                .contentType("application/json")
-                .content("{\"instanceId\":\"i-real\"}"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("OK"))      // ResultModel transport status
-            .andExpect(jsonPath("$.Data.instance").value("i-real"))
-            .andExpect(jsonPath("$.Data.recommendation").value("downsize"))
-            .andExpect(jsonPath("$.Data.status").value("ok")); // domain status
+                        .contentType("application/json")
+                        .content("{\"instanceId\":\"i-real\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("OK"))      // ResultModel transport status
+                .andExpect(jsonPath("$.Data.instance").value("i-real"))
+                .andExpect(jsonPath("$.Data.recommendation").value("downsize"))
+                .andExpect(jsonPath("$.Data.status").value("ok")); // domain status
     }
 
     @Test
@@ -50,8 +50,8 @@ class LlmRecommendControllerTest {
         when(modelProperties.getModels()).thenReturn(Map.of("google", List.of("gemini-2.5-pro")));
 
         mvc.perform(get("/api/costopti/be/llm_recommender/models"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("OK"))
-            .andExpect(jsonPath("$.Data.google[0]").value("gemini-2.5-pro"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("OK"))
+                .andExpect(jsonPath("$.Data.google[0]").value("gemini-2.5-pro"));
     }
 }
