@@ -17,4 +17,5 @@ public class RecommendationHistory {
     private String instanceId;
     private String recommendation; // nullable: insufficient_data / error rows have no recommendation
     private String responseJson;   // full Recommendation serialized as JSON (spec: response_json)
+    private String createdAt;      // 조회 전용: DATE_FORMAT 문자열 (insert엔 미사용, DB가 생성)
 }

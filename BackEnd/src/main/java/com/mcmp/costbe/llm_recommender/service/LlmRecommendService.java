@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -18,6 +19,8 @@ public class LlmRecommendService {
     private static final Logger log = LoggerFactory.getLogger(LlmRecommendService.class);
 
     static final String DEFAULT_PROVIDER = "google";
+
+    private static final int HISTORY_MAX = 100;
 
     @Autowired private ScoreProvider scoreProvider;
     @Autowired private Map<String, LlmProvider> providers;
@@ -109,5 +112,9 @@ public class LlmRecommendService {
         } catch (Exception e) {
             log.warn("Failed to save recommendation_history for instance {}: {}", instanceId, e.getMessage());
         }
+    }
+
+    public List<RecommendationHistory> getHistory(String nsId) {
+        return historyDao.selectHistoryByNs(Map.of("nsId", nsId, "limit", HISTORY_MAX));
     }
 }

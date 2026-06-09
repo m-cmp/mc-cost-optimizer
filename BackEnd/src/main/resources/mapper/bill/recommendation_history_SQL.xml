@@ -9,4 +9,18 @@
         VALUES (#{nsId}, #{instanceId}, #{recommendation}, #{responseJson})
     </insert>
 
+    <select id="selectHistoryByNs" parameterType="map"
+            resultType="com.mcmp.costbe.llm_recommender.model.RecommendationHistory">
+        SELECT id,
+               ns_id        AS nsId,
+               instance_id  AS instanceId,
+               recommendation,
+               response_json AS responseJson,
+               DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS createdAt
+          FROM recommendation_history
+         WHERE ns_id = #{nsId}
+         ORDER BY created_at DESC, id DESC
+         LIMIT #{limit}
+    </select>
+
 </mapper>

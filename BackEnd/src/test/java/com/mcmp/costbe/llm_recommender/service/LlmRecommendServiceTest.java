@@ -241,6 +241,31 @@ class LlmRecommendServiceTest {
         assertThat(r.getStatus()).isEqualTo(Recommendation.STATUS_OK); // history failure is isolated
     }
 
+    // ---- history read (조회 경로) ----
+
+    @Test
+    void getHistory_passesNsIdAndCapsLimitTo100() {
+        final java.util.List<java.util.Map<String, Object>> calls = new ArrayList<>();
+        RecommendationHistoryDao dao = new RecommendationHistoryDao() {
+            @Override
+            public java.util.List<RecommendationHistory> selectHistoryByNs(java.util.Map<String, Object> params) {
+                calls.add(params);
+                RecommendationHistory h = new RecommendationHistory();
+                h.setNsId((String) params.get("nsId"));
+                return java.util.List.of(h);
+            }
+        };
+        LlmRecommendService s = new LlmRecommendService();
+        ReflectionTestUtils.setField(s, "historyDao", dao);
+
+        java.util.List<RecommendationHistory> out = s.getHistory("ns-A");
+
+        assertThat(out).hasSize(1);
+        assertThat(out.get(0).getNsId()).isEqualTo("ns-A");
+        assertThat(calls).hasSize(1);
+        assertThat(calls.get(0)).containsEntry("nsId", "ns-A").containsEntry("limit", 100);
+    }
+
     /** Fake DAO that records saved rows instead of hitting the DB. */
     static class CapturingHistoryDao extends RecommendationHistoryDao {
         final List<RecommendationHistory> saved = new ArrayList<>();

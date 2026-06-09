@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -46,6 +47,14 @@ public class LlmRecommendController {
     public ResponseEntity models() {
         ResultModel result = new ResultModel();
         result.setData(modelProperties.getModels());
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(path = "/history")
+    @Operation(summary = "추천 이력 조회", description = "네임스페이스(nsId)별 LLM 추천 이력을 최신순(최대 100건)으로 반환한다.")
+    public ResponseEntity history(@RequestParam String nsId) {
+        ResultModel result = new ResultModel();
+        result.setData(llmRecommendService.getHistory(nsId));
         return ResponseEntity.ok(result);
     }
 }
