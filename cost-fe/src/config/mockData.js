@@ -473,3 +473,48 @@ export function mockRecommendation(instanceId, userQuestion) {
   }
   return base;
 }
+
+export const mockRecommendHistory = [
+  {
+    id: 3,
+    instanceId: "i-0abc123",
+    recommendation: "downsize",
+    responseJson: JSON.stringify({
+      instance: "i-0abc123",
+      recommendation: "downsize",
+      detail: "CPU avg 8%, memory 30% over the last 30 days.",
+      reasoning: "Consistently low utilization indicates a smaller type fits without risk.",
+      confidence: "high",
+      status: "ok",
+    }),
+    createdAt: "2026-06-09 14:21:03",
+  },
+  {
+    id: 2,
+    instanceId: "i-0def456",
+    recommendation: "keep",
+    responseJson: JSON.stringify({
+      instance: "i-0def456",
+      recommendation: "keep",
+      detail: "Utilization within a healthy band.",
+      reasoning: "No measurable benefit from resizing.",
+      confidence: "medium",
+      status: "ok",
+    }),
+    createdAt: "2026-06-09 11:02:55",
+  },
+  {
+    id: 1,
+    instanceId: "i-0ghi789",
+    recommendation: null,
+    responseJson: JSON.stringify({
+      instance: "i-0ghi789",
+      recommendation: null,
+      detail: "",
+      reasoning: "",
+      confidence: "",
+      status: "insufficient_data",
+    }),
+    createdAt: "2026-06-08 19:40:10",
+  },
+];

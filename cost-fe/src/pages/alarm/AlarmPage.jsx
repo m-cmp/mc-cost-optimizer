@@ -5,13 +5,14 @@ import SlackGuideModal from "./components/modals/SlackGuideModal";
 import MailTestModal from "./components/modals/MailTestModal";
 import SlackTestButton from "./components/SlackTestButton";
 import RecommendTab from "./components/recommend/RecommendTab";
+import RecommendHistoryTab from "./components/recommend/RecommendHistoryTab";
 import Button from "@/components/common/button/Button";
 import Loading from "@/components/common/loading/Loading";
 import { useAlarmHistory } from "@/hooks/useAlarmHistory";
 
 export default function AlarmPage() {
   const { alarmData, loading } = useAlarmHistory();
-  const [tab, setTab] = useState("recommend"); // "recommend" | "history"
+  const [tab, setTab] = useState("recommend"); // "recommend" | "history" | "recHistory"
 
   return (
     <div>
@@ -28,9 +29,17 @@ export default function AlarmPage() {
         >
           Alarm History
         </Button>
+        <Button
+          variant={tab === "recHistory" ? "primary" : "outline-secondary"}
+          onClick={() => setTab("recHistory")}
+        >
+          Recommendation History
+        </Button>
       </div>
 
       {tab === "recommend" && <RecommendTab />}
+
+      {tab === "recHistory" && <RecommendHistoryTab />}
 
       {tab === "history" && (
         loading ? (

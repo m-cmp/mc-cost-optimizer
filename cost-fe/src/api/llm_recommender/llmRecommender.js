@@ -1,5 +1,5 @@
 import { llmClient, USE_MOCK } from "../Client";
-import { mockRecommendation } from "../../config/mockData";
+import { mockRecommendation, mockRecommendHistory } from "../../config/mockData";
 
 // Request a recommendation for ONE instance.
 // Returns the axios-shaped { data: { Data: <Recommendation> } } to match ResultModel.
@@ -16,4 +16,10 @@ export const recommend = async ({ instanceId, provider, model, userQuestion, nsI
 export const getModels = () => {
   if (USE_MOCK) return Promise.resolve({ data: { Data: null } });
   return llmClient.get("/models");
+};
+
+// Fetch recommendation history for a namespace (most recent first).
+export const getHistory = (nsId) => {
+  if (USE_MOCK) return Promise.resolve({ data: { Data: mockRecommendHistory } });
+  return llmClient.get("/history", { params: { nsId } });
 };
