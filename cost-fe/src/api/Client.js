@@ -47,10 +47,10 @@ function createClient(baseURL, timeout = 5000) {
         (status >= 300 && status < 400
           ? ERROR_MESSAGES.DEFAULT_3XX
           : status >= 400 && status < 500
-          ? ERROR_MESSAGES.DEFAULT_4XX
-          : status >= 500
-          ? ERROR_MESSAGES.DEFAULT_5XX
-          : ERROR_MESSAGES.UNKNOWN);
+            ? ERROR_MESSAGES.DEFAULT_4XX
+            : status >= 500
+              ? ERROR_MESSAGES.DEFAULT_5XX
+              : ERROR_MESSAGES.UNKNOWN);
 
       const formattedError = {
         status,
@@ -63,7 +63,7 @@ function createClient(baseURL, timeout = 5000) {
       logger.error(`[API Error] ${status} ${mapping.code}`, error);
 
       return Promise.reject(formattedError);
-    }
+    },
   );
 
   return client;
@@ -77,21 +77,28 @@ const BASE_PATH = "/api/costopti/be";
 export const billingClient = createClient(`${API_BE_URL}${BASE_PATH}`, 5000);
 export const invoiceClient = createClient(
   `${API_BE_URL}${BASE_PATH}/invoice`,
-  5000
+  5000,
 );
 export const budgetClient = createClient(
   `${API_BE_URL}${BASE_PATH}/budget`,
-  5000
+  5000,
 );
 
 // LLM recommender (port 9090, BE base path) — long timeout: each call hits an LLM
 export const llmClient = createClient(
   `${API_BE_URL}${BASE_PATH}/llm_recommender`,
-  30000
+  30000,
 );
 
 // Alarm Service API (port 9000)
-const ALERT_PATH="/api/costopti/alert"
+const ALERT_PATH = "/api/costopti/alert";
 export const alertClient = createClient(`${API_ALARM_URL}${ALERT_PATH}`, 20000);
+
+// API Key Management
+export const apikeyClient = createClient(
+  `${API_BE_URL}${BASE_PATH}/llm_recommender/apikey`,
+  5000,
+);
+
 // Export Mock mode (used in API files)
 export { USE_MOCK };
