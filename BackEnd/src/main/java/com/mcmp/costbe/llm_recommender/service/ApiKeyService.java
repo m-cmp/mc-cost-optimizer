@@ -75,7 +75,7 @@ public class ApiKeyService {
             byte[] tag        = Arrays.copyOfRange(encryptedWithTag, encryptedWithTag.length - TAG_LENGTH_BYTE, encryptedWithTag.length);
 
             ProviderKeyModel model = new ProviderKeyModel();
-            model.setUserId(req.getUserId());
+            model.setNsId(req.getNsId());
             model.setProvider(provider);
             model.setEncKey(Base64.getEncoder().encodeToString(ciphertext));
             model.setIv(Base64.getEncoder().encodeToString(iv));
@@ -91,8 +91,8 @@ public class ApiKeyService {
     /**
      * 키 등록 여부만 반환. 원문 키는 절대 응답에 포함하지 않음.
      */
-    public ApiKeyStatusResModel getApiKeyStatus(String provider, String userId) {
-        ProviderKeyModel row = apiKeyDao.selectApiKey(Map.of("provider", provider, "userId", userId));
+    public ApiKeyStatusResModel getApiKeyStatus(String provider, String nsId) {
+        ProviderKeyModel row = apiKeyDao.selectApiKey(Map.of("provider", provider, "nsId", nsId));
         return ApiKeyStatusResModel.builder()
                 .provider(provider)
                 .registered(row != null)
@@ -102,18 +102,18 @@ public class ApiKeyService {
     /**
      * DB에서 키 삭제.
      */
-    public void deleteApiKey(String provider, String userId) {
-        apiKeyDao.deleteApiKey(Map.of("provider", provider, "userId", userId));
+    public void deleteApiKey(String provider, String nsId) {
+        apiKeyDao.deleteApiKey(Map.of("provider", provider, "nsId", nsId));
     }
 
     /**
      * DB에 저장된 키를 복호화 후 프로바이더에 테스트 호출하여 유효성 검증.
      * 복호화된 키는 검증 직후 GC에 위임 (로그·캐시 저장 금지).
      */
-    public ApiKeyValidateResModel validateApiKey(String provider, String userId) {
+    public ApiKeyValidateResModel validateApiKey(String provider, String nsId) {
         String plainKey;
         try {
-            plainKey = decryptApiKey(provider, userId);
+            plainKey = decryptApiKey(provider, nsId);
         } catch (Exception e) {
             return ApiKeyValidateResModel.builder()
                     .provider(provider)
@@ -202,8 +202,8 @@ public class ApiKeyService {
      * LLM 호출 직전에만 사용. 복호화된 키는 호출자가 사용 후 즉시 폐기해야 함.
      * 반환값을 로그·캐시에 저장 금지.
      */
-    public String decryptApiKey(String provider, String userId) {
-        ProviderKeyModel row = apiKeyDao.selectApiKey(Map.of("provider", provider, "userId", userId));
+    public String decryptApiKey(String provider, String nsId) {
+        ProviderKeyModel row = apiKeyDao.selectApiKey(Map.of("provider", provider, "nsId", nsId));
         if (row == null) {
             throw new RuntimeException("등록된 API 키가 없습니다: " + provider);
         }

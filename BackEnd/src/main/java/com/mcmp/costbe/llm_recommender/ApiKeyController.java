@@ -31,24 +31,24 @@ public class ApiKeyController {
     @Operation(summary = "API 키 등록 여부 확인", description = "키 등록 여부(registered)만 반환. 원문·암호문은 응답에 포함되지 않음.")
     public ApiKeyStatusResModel getApiKeyStatus(
             @PathVariable String provider,
-            @RequestParam String userId) {
-        return apiKeyService.getApiKeyStatus(provider, userId);
+            @RequestParam String nsId) {
+        return apiKeyService.getApiKeyStatus(provider, nsId);
     }
 
     @PostMapping("/{provider}/validate")
     @Operation(summary = "API 키 유효성 검증", description = "저장된 키를 복호화하여 프로바이더에 테스트 호출. 복호화된 키는 검증 후 즉시 폐기.")
     public ApiKeyValidateResModel validateApiKey(
             @PathVariable String provider,
-            @RequestParam String userId) {
-        return apiKeyService.validateApiKey(provider, userId);
+            @RequestParam String nsId) {
+        return apiKeyService.validateApiKey(provider, nsId);
     }
 
     @DeleteMapping("/{provider}")
     @Operation(summary = "API 키 삭제")
     public ResponseEntity<Void> deleteApiKey(
             @PathVariable String provider,
-            @RequestParam String userId) {
-        apiKeyService.deleteApiKey(provider, userId);
+            @RequestParam String nsId) {
+        apiKeyService.deleteApiKey(provider, nsId);
         return ResponseEntity.ok().build();
     }
 }

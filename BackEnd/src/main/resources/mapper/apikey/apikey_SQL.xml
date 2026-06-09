@@ -4,10 +4,10 @@
 
 <mapper namespace="apikey">
 
-    <!-- API 키 upsert (동일 user_id + provider 존재 시 갱신) -->
+    <!-- API 키 upsert (동일 ns_id + provider 존재 시 갱신) -->
     <insert id="upsertApiKey" parameterType="com.mcmp.costbe.llm_recommender.model.ProviderKeyModel">
-        INSERT INTO provider_keys (user_id, provider, enc_key, iv, tag)
-        VALUES (#{userId}, #{provider}, #{encKey}, #{iv}, #{tag})
+        INSERT INTO provider_keys (ns_id, provider, enc_key, iv, tag)
+        VALUES (#{nsId}, #{provider}, #{encKey}, #{iv}, #{tag})
             ON DUPLICATE KEY UPDATE
                enc_key    = VALUES(enc_key),
                iv         = VALUES(iv),
@@ -20,20 +20,20 @@
             parameterType="map"
             resultType="com.mcmp.costbe.llm_recommender.model.ProviderKeyModel">
         SELECT id,
-               user_id  AS userId,
+               ns_id    AS nsId,
                provider,
                enc_key  AS encKey,
                iv,
                tag
           FROM provider_keys
-         WHERE user_id  = #{userId}
+         WHERE ns_id    = #{nsId}
            AND provider = #{provider}
     </select>
 
     <!-- API 키 삭제 -->
     <delete id="deleteApiKey" parameterType="map">
         DELETE FROM provider_keys
-         WHERE user_id  = #{userId}
+         WHERE ns_id    = #{nsId}
            AND provider = #{provider}
     </delete>
 

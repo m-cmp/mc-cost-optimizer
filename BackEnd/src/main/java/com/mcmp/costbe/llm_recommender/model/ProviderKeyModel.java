@@ -7,7 +7,7 @@ import lombok.Data;
 @Schema(description = "프로바이더 API 키 DB 모델")
 public class ProviderKeyModel {
     private Long id;
-    private String userId;
+    private String nsId;
     private String provider;
     private String encKey;
     private String iv;
