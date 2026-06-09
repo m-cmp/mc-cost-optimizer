@@ -28,13 +28,13 @@ public class LlmRecommendService {
 
     private final ObjectMapper om = new ObjectMapper();
 
-    public Recommendation recommend(String instanceId, String provider, String model, String userQuestion, String userId) {
-        Recommendation r = doRecommend(instanceId, provider, model, userQuestion, userId);
+    public Recommendation recommend(String instanceId, String provider, String model, String userQuestion, String nsId) {
+        Recommendation r = doRecommend(instanceId, provider, model, userQuestion, nsId);
         saveHistoryQuietly(instanceId, r);
         return r;
     }
 
-    private Recommendation doRecommend(String instanceId, String provider, String model, String userQuestion, String userId) {
+    private Recommendation doRecommend(String instanceId, String provider, String model, String userQuestion, String nsId) {
         LlmProvider llm;
         try {
             llm = resolveProvider(provider);
@@ -56,7 +56,7 @@ public class LlmRecommendService {
             String system = promptBuilder.systemPrompt();
             String user = promptBuilder.userPrompt(scoreJson, userQuestion);
 
-            Recommendation r = generateAndParse(llm, system, user, model, userId);
+            Recommendation r = generateAndParse(llm, system, user, model, nsId);
             r.setInstance(instanceId);
             return r;
 
@@ -76,15 +76,15 @@ public class LlmRecommendService {
         return p;
     }
 
-    private Recommendation generateAndParse(LlmProvider llm, String system, String user, String model, String userId) {
-        String first = llm.generate(system, user, model, userId);
+    private Recommendation generateAndParse(LlmProvider llm, String system, String user, String model, String nsId) {
+        String first = llm.generate(system, user, model, nsId);
         try {
             return parser.parse(first);
         } catch (RecommendationParseException firstFail) {
             if (first == null || first.isBlank()) {
                 throw firstFail;
             }
-            return parser.parse(llm.generate(system, user, model, userId));
+            return parser.parse(llm.generate(system, user, model, nsId));
         }
     }
 

@@ -32,8 +32,8 @@ public class GeminiProvider implements LlmProvider {
     private final ObjectMapper om = new ObjectMapper();
 
     @Override
-    public String generate(String system, String user, String model, String userId) {
-        String apiKey = apiKeyService.decryptApiKey("google", userId);
+    public String generate(String system, String user, String model, String nsId) {
+        String apiKey = apiKeyService.decryptApiKey("google", nsId);
         String m = (model == null || model.isBlank()) ? defaultModel : model;
         String url = baseUrl + "/models/" + m + ":generateContent";
 

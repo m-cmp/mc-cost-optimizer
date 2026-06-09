@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RecommendRequest {
-    private String userId;       // API 키 조회에 사용. null/blank -> env var 폴백
+    private String nsId;         // 네임스페이스 ID — API 키 조회·이력 구분에 사용 (필수)
     private String instanceId;
     private String provider;     // optional; null/blank -> default provider (google)
     private String model;        // optional; null/blank -> provider default
