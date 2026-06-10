@@ -5,41 +5,37 @@ import SlackGuideModal from "./components/modals/SlackGuideModal";
 import MailTestModal from "./components/modals/MailTestModal";
 import SlackTestButton from "./components/SlackTestButton";
 import RecommendTab from "./components/recommend/RecommendTab";
-import RecommendHistoryTab from "./components/recommend/RecommendHistoryTab";
-import Button from "@/components/common/button/Button";
 import Loading from "@/components/common/loading/Loading";
-import { useAlarmHistory } from "@/hooks/useAlarmHistory";
+import { useUnifiedHistory } from "@/hooks/useUnifiedHistory";
 
 export default function AlarmPage() {
-  const { alarmData, loading } = useAlarmHistory();
-  const [tab, setTab] = useState("recommend"); // "recommend" | "history" | "recHistory"
+  const { history, loading } = useUnifiedHistory();
+  const [tab, setTab] = useState("recommend"); // "recommend" | "history"
 
   return (
     <div>
-      <div className="d-flex gap-2 mb-3">
-        <Button
-          variant={tab === "recommend" ? "primary" : "outline-secondary"}
-          onClick={() => setTab("recommend")}
-        >
-          Resource Recommendation
-        </Button>
-        <Button
-          variant={tab === "history" ? "primary" : "outline-secondary"}
-          onClick={() => setTab("history")}
-        >
-          Alarm History
-        </Button>
-        <Button
-          variant={tab === "recHistory" ? "primary" : "outline-secondary"}
-          onClick={() => setTab("recHistory")}
-        >
-          Recommendation History
-        </Button>
-      </div>
+      <ul className="nav nav-tabs mb-3">
+        <li className="nav-item">
+          <a
+            className={`nav-link ${tab === "recommend" ? "active" : ""}`}
+            role="button"
+            onClick={() => setTab("recommend")}
+          >
+            Resource Recommendation
+          </a>
+        </li>
+        <li className="nav-item">
+          <a
+            className={`nav-link ${tab === "history" ? "active" : ""}`}
+            role="button"
+            onClick={() => setTab("history")}
+          >
+            History
+          </a>
+        </li>
+      </ul>
 
       {tab === "recommend" && <RecommendTab />}
-
-      {tab === "recHistory" && <RecommendHistoryTab />}
 
       {tab === "history" && (
         loading ? (
@@ -52,7 +48,7 @@ export default function AlarmPage() {
               <MailTestModal />
               <SlackTestButton />
             </div>
-            <AlarmHistoryTable data={alarmData} />
+            <AlarmHistoryTable data={history} />
           </div>
         )
       )}
