@@ -27,6 +27,9 @@ public class LlmRecommendController {
     @Autowired
     private LlmModelProperties modelProperties;
 
+    @Autowired
+    private com.mcmp.costbe.llm_recommender.service.UnifiedHistoryService unifiedHistoryService;
+
     @PostMapping(path = "/recommend")
     @Operation(summary = "LLM 자원 추천", description = "인스턴스 1개의 분석 점수를 LLM에 질의해 리사이징 추천을 반환한다.")
     public ResponseEntity recommend(@RequestBody RecommendRequest req) {
@@ -55,6 +58,15 @@ public class LlmRecommendController {
     public ResponseEntity history(@RequestParam String nsId) {
         ResultModel result = new ResultModel();
         result.setData(llmRecommendService.getHistory(nsId));
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(path = "/history/unified")
+    @Operation(summary = "통합 추천 이력 조회",
+            description = "alarm_history(ML)와 recommendation_history(LLM)를 합쳐 nsId별로 최신순 반환한다.")
+    public ResponseEntity unifiedHistory(@RequestParam String nsId) {
+        ResultModel result = new ResultModel();
+        result.setData(unifiedHistoryService.getUnifiedHistory(nsId));
         return ResponseEntity.ok(result);
     }
 }

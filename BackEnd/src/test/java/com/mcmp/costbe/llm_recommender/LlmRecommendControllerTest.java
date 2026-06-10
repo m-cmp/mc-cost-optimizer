@@ -3,6 +3,7 @@ package com.mcmp.costbe.llm_recommender;
 import com.mcmp.costbe.llm_recommender.config.LlmModelProperties;
 import com.mcmp.costbe.llm_recommender.model.Recommendation;
 import com.mcmp.costbe.llm_recommender.service.LlmRecommendService;
+import com.mcmp.costbe.llm_recommender.service.UnifiedHistoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,6 +26,7 @@ class LlmRecommendControllerTest {
     @Autowired private MockMvc mvc;
     @MockBean private LlmRecommendService service;
     @MockBean private LlmModelProperties modelProperties;
+    @MockBean private UnifiedHistoryService unifiedHistoryService;
 
     @Test
     void recommend_returnsResultModelDataWithRecommendation() throws Exception {
