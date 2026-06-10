@@ -6,7 +6,7 @@ import { useLlmRecommend } from "@/hooks/useLlmRecommend";
 import { getModels } from "@/api/llm_recommender/llmRecommender";
 import ProviderSelect from "./ProviderSelect";
 import InstanceTable from "./InstanceTable";
-import ResultCards, { Badge } from "./ResultCards";
+import ResultCards from "./ResultCards";
 import { MODELS } from "./constants";
 import ApiKeyModal from "../modals/ApiKeyModal";
 
@@ -176,19 +176,6 @@ export default function RecommendTab() {
       )}
 
       <ResultCards results={results} />
-
-      {/* badge legend */}
-      <div
-        className="d-flex align-items-center gap-2 flex-wrap text-muted mt-3"
-        style={{ fontSize: 11.5 }}
-      >
-        <span>Badge legend —</span>
-        <Badge recommendation="upsize" />
-        <Badge recommendation="downsize" />
-        <Badge recommendation="keep" />
-        <Badge recommendation="terminate" />
-        <Badge recommendation="migrate" />
-      </div>
     </Card>
   );
 }
