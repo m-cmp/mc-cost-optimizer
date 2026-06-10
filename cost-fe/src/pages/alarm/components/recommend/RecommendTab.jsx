@@ -94,7 +94,7 @@ export default function RecommendTab() {
         max={MAX}
       />
 
-      {/* additional inquiry (visual stub — not wired to backend in v1) */}
+      {/* additional inquiry — sent as userQuestion, answered per result card */}
       <div className="mt-3">
         <div
           className="d-flex align-items-center gap-2 mb-1"
