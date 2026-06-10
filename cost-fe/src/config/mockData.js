@@ -518,3 +518,13 @@ export const mockRecommendHistory = [
     createdAt: "2026-06-08 19:40:10",
   },
 ];
+
+// Unified history mock (ML + LLM rows in the 7-column grid shape).
+export const mockUnifiedHistory = [
+  { date: "2026-06-10 14:21:03", csp: "AWS", resourceId: "i-0abc123", resourceType: "AmazonEC2",
+    alarmType: "ML", alarmMessage: "기존 타입 t3.large에서 t3.medium으로 변경 추천", recommendType: "downsize" },
+  { date: "2026-06-10 11:02:55", csp: "AZURE", resourceId: "i-demo-keep", resourceType: "VM",
+    alarmType: "LLM", alarmMessage: "Keep the current size.", recommendType: "keep" },
+  { date: "2026-06-09 19:40:10", csp: "-", resourceId: "i-demo-upsize", resourceType: "VM",
+    alarmType: "LLM", alarmMessage: "Step up one size (t3.xlarge).", recommendType: "upsize" },
+];

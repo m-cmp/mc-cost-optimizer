@@ -1,5 +1,5 @@
 import { llmClient, USE_MOCK } from "../Client";
-import { mockRecommendation, mockRecommendHistory } from "../../config/mockData";
+import { mockRecommendation, mockRecommendHistory, mockUnifiedHistory } from "../../config/mockData";
 
 // Request a recommendation for ONE instance.
 // Returns the axios-shaped { data: { Data: <Recommendation> } } to match ResultModel.
@@ -22,4 +22,10 @@ export const getModels = () => {
 export const getHistory = (nsId) => {
   if (USE_MOCK) return Promise.resolve({ data: { Data: mockRecommendHistory } });
   return llmClient.get("/history", { params: { nsId } });
+};
+
+// Fetch the unified history (ML alarm recs + LLM recs) for a namespace.
+export const getUnifiedHistory = (nsId) => {
+  if (USE_MOCK) return Promise.resolve({ data: { Data: mockUnifiedHistory } });
+  return llmClient.get("/history/unified", { params: { nsId } });
 };
