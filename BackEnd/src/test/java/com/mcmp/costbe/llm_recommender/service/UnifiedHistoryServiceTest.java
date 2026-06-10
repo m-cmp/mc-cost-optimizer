@@ -73,6 +73,13 @@ class UnifiedHistoryServiceTest {
     }
 
     @Test
+    void jsonWithoutDetailKey_yieldsEmptyMessage() {
+        UnifiedHistoryService s = service(List.of(), List.of(llm("2026-06-10 09:00:00", "keep", "{\"recommendation\":\"keep\"}")));
+        List<UnifiedHistoryRow> out = s.getUnifiedHistory("ns-A");
+        assertThat(out.get(0).getAlarmMessage()).isEqualTo("");
+    }
+
+    @Test
     void emptyBothSources_returnsEmpty() {
         UnifiedHistoryService s = service(List.of(), List.of());
         assertThat(s.getUnifiedHistory("ns-A")).isEmpty();
