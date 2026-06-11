@@ -80,6 +80,24 @@ class UnifiedHistoryServiceTest {
     }
 
     @Test
+    void errorRow_showsErrorStatusAndReason() {
+        String json = "{\"status\":\"error\",\"error\":\"Recommendation failed (provider error).\"}";
+        UnifiedHistoryService s = service(List.of(), List.of(llm("2026-06-10 09:00:00", null, json)));
+        List<UnifiedHistoryRow> out = s.getUnifiedHistory("ns-A");
+        assertThat(out.get(0).getRecommendType()).isEqualTo("error");
+        assertThat(out.get(0).getAlarmMessage()).isEqualTo("Recommendation failed (provider error).");
+    }
+
+    @Test
+    void insufficientRow_showsInsufficientStatusAndNote() {
+        String json = "{\"status\":\"insufficient_data\"}";
+        UnifiedHistoryService s = service(List.of(), List.of(llm("2026-06-10 09:00:00", null, json)));
+        List<UnifiedHistoryRow> out = s.getUnifiedHistory("ns-A");
+        assertThat(out.get(0).getRecommendType()).isEqualTo("insufficient");
+        assertThat(out.get(0).getAlarmMessage()).isEqualTo("Insufficient usage data for a recommendation.");
+    }
+
+    @Test
     void emptyBothSources_returnsEmpty() {
         UnifiedHistoryService s = service(List.of(), List.of());
         assertThat(s.getUnifiedHistory("ns-A")).isEmpty();

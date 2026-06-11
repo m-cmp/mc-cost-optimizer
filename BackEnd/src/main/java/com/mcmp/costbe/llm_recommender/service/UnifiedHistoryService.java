@@ -36,7 +36,7 @@ public class UnifiedHistoryService {
 
         List<UnifiedHistoryRow> llm = dao.selectLlmRecommendations(params);
         for (UnifiedHistoryRow r : llm) {
-            r.setAlarmMessage(extractDetail(r.getResponseJson()));
+            applyResponse(r);
             r.setResponseJson(null); // drop raw payload after use
         }
 
@@ -49,13 +49,41 @@ public class UnifiedHistoryService {
         return all.size() > HISTORY_MAX ? new ArrayList<>(all.subList(0, HISTORY_MAX)) : all;
     }
 
-    private String extractDetail(String json) {
-        if (json == null || json.isBlank()) return "";
+    /**
+     * Fills the message (and, for non-ok rows, the recommendType) from the LLM response_json
+     * so failed rows explain themselves instead of showing two blank cells.
+     *   ok               -> alarmMessage = detail (recommendType keeps its enum)
+     *   error            -> recommendType = "error",        alarmMessage = error reason
+     *   insufficient_data -> recommendType = "insufficient", alarmMessage = short note
+     */
+    private void applyResponse(UnifiedHistoryRow r) {
+        String json = r.getResponseJson();
+        if (json == null || json.isBlank()) { r.setAlarmMessage(""); return; }
         try {
-            JsonNode detail = om.readTree(json).get("detail");
-            return (detail == null || detail.isNull()) ? "" : detail.asText();
+            JsonNode root = om.readTree(json);
+            String detail = text(root, "detail");
+            if (!detail.isBlank()) {            // ok row: one-sentence action
+                r.setAlarmMessage(detail);
+                return;
+            }
+            String status = text(root, "status");
+            if ("error".equals(status)) {       // surface WHY instead of a blank row
+                r.setRecommendType("error");
+                String err = text(root, "error");
+                r.setAlarmMessage(err.isBlank() ? "Recommendation failed." : err);
+            } else if ("insufficient_data".equals(status)) {
+                r.setRecommendType("insufficient");
+                r.setAlarmMessage("Insufficient usage data for a recommendation.");
+            } else {
+                r.setAlarmMessage("");
+            }
         } catch (Exception e) {
-            return "";
+            r.setAlarmMessage("");
         }
+    }
+
+    private String text(JsonNode node, String field) {
+        JsonNode v = node.get(field);
+        return (v == null || v.isNull()) ? "" : v.asText();
     }
 }
