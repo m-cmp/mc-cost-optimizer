@@ -474,55 +474,10 @@ export function mockRecommendation(instanceId, userQuestion) {
   return base;
 }
 
-export const mockRecommendHistory = [
-  {
-    id: 3,
-    instanceId: "i-0abc123",
-    recommendation: "downsize",
-    responseJson: JSON.stringify({
-      instance: "i-0abc123",
-      recommendation: "downsize",
-      detail: "CPU avg 8%, memory 30% over the last 30 days.",
-      reasoning: "Consistently low utilization indicates a smaller type fits without risk.",
-      confidence: "high",
-      status: "ok",
-    }),
-    createdAt: "2026-06-09 14:21:03",
-  },
-  {
-    id: 2,
-    instanceId: "i-0def456",
-    recommendation: "keep",
-    responseJson: JSON.stringify({
-      instance: "i-0def456",
-      recommendation: "keep",
-      detail: "Utilization within a healthy band.",
-      reasoning: "No measurable benefit from resizing.",
-      confidence: "medium",
-      status: "ok",
-    }),
-    createdAt: "2026-06-09 11:02:55",
-  },
-  {
-    id: 1,
-    instanceId: "i-0ghi789",
-    recommendation: null,
-    responseJson: JSON.stringify({
-      instance: "i-0ghi789",
-      recommendation: null,
-      detail: "",
-      reasoning: "",
-      confidence: "",
-      status: "insufficient_data",
-    }),
-    createdAt: "2026-06-08 19:40:10",
-  },
-];
-
 // Unified history mock (ML + LLM rows in the 7-column grid shape).
 export const mockUnifiedHistory = [
   { date: "2026-06-10 14:21:03", csp: "AWS", resourceId: "i-0abc123", resourceType: "AmazonEC2",
-    alarmType: "ML", alarmMessage: "기존 타입 t3.large에서 t3.medium으로 변경 추천", recommendType: "downsize" },
+    alarmType: "mail", alarmMessage: "기존 타입 t3.large에서 t3.medium으로 변경 추천", recommendType: "downsize" },
   { date: "2026-06-10 11:02:55", csp: "AZURE", resourceId: "i-demo-keep", resourceType: "VM",
     alarmType: "LLM", alarmMessage: "Keep the current size.", recommendType: "keep" },
   { date: "2026-06-09 19:40:10", csp: "-", resourceId: "i-demo-upsize", resourceType: "VM",

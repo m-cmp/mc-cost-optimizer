@@ -9,7 +9,7 @@
                csp_type      AS csp,
                resource_id   AS resourceId,
                resource_type AS resourceType,
-               'ML'          AS alarmType,
+               alarm_impl    AS alarmType,
                note          AS alarmMessage,
                plan          AS recommendType
           FROM alarm_history
