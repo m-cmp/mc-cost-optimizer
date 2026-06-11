@@ -27,6 +27,7 @@ class LlmRecommendServiceTest {
                                         RecommendRateLimiter rateLimiter) {
         LlmRecommendService s = new LlmRecommendService();
         ReflectionTestUtils.setField(s, "scoreProvider", score);
+        ReflectionTestUtils.setField(s, "scoreRequestBuilder", new ScoreRequestBuilder());
         ReflectionTestUtils.setField(s, "providers", providers);
         ReflectionTestUtils.setField(s, "promptBuilder", new PromptBuilder());
         ReflectionTestUtils.setField(s, "parser", new RecommendationParser());

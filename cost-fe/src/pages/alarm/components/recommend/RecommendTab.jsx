@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import Card from "@/components/common/card/Card";
 import Button from "@/components/common/button/Button";
-import { mockInstances } from "@/config/mockData";
 import { useLlmRecommend } from "@/hooks/useLlmRecommend";
-import { getModels } from "@/api/llm_recommender/llmRecommender";
+import { useApiKey } from "@/hooks/useApiKey";
+import { useProjectStore } from "@/stores/useProjectStore";
+import { getModels, getInstances } from "@/api/llm_recommender/llmRecommender";
 import ProviderSelect from "./ProviderSelect";
 import InstanceTable from "./InstanceTable";
 import ResultCards from "./ResultCards";
-import { MODELS } from "./constants";
+import { MODELS, PROVIDERS } from "./constants";
 import ApiKeyModal from "../modals/ApiKeyModal";
 
 const MAX = 5;
@@ -28,7 +29,10 @@ export default function RecommendTab() {
   const [models, setModels] = useState(MODELS); // fallback until /models loads
   const [ask, setAsk] = useState("");
   const [echo, setEcho] = useState("");
+  const [instances, setInstances] = useState([]);
   const { results, progress, running, run } = useLlmRecommend();
+  const { registered } = useApiKey();
+  const projectId = useProjectStore((s) => s.projectId);
 
   // Load the selectable model catalog from the backend (config-driven; no rebuild to change models).
   useEffect(() => {
@@ -39,6 +43,25 @@ export default function RecommendTab() {
       })
       .catch(() => {}); // keep fallback on failure
   }, []);
+
+  // Load the real resource list for this project (servicegroup_meta-backed).
+  useEffect(() => {
+    if (!projectId) return;
+    getInstances(projectId)
+      .then((res) => setInstances(res?.data?.Data || []))
+      .catch(() => setInstances([]));
+  }, [projectId]);
+
+  // Once API key registration status is known, steer the selection toward a
+  // provider the user has actually registered a key for.
+  useEffect(() => {
+    if (registered[provider]) return;
+    const fallback = PROVIDERS.find((p) => registered[p.value]);
+    if (fallback) {
+      setProvider(fallback.value);
+      setModel((models[fallback.value] || [])[0] || "");
+    }
+  }, [registered]);
 
   const handleProviderChange = (p) => {
     setProvider(p);
@@ -56,7 +79,7 @@ export default function RecommendTab() {
 
   const toggleAll = (checked) =>
     setSelected(
-      checked ? mockInstances.slice(0, MAX).map((i) => i.instanceId) : [],
+      checked ? instances.slice(0, MAX).map((i) => i.instanceId) : [],
     );
 
   const addChip = (text) =>
@@ -78,6 +101,7 @@ export default function RecommendTab() {
           provider={provider}
           model={model}
           models={models}
+          registered={registered}
           onProviderChange={handleProviderChange}
           onModelChange={setModel}
         />
@@ -87,7 +111,7 @@ export default function RecommendTab() {
       </div>
 
       <InstanceTable
-        instances={mockInstances}
+        instances={instances}
         selected={selected}
         onToggle={toggle}
         onToggleAll={toggleAll}
@@ -133,7 +157,7 @@ export default function RecommendTab() {
       <div className="d-flex align-items-center gap-3 mt-3">
         <Button
           variant="primary"
-          disabled={running || selected.length === 0}
+          disabled={running || selected.length === 0 || !registered[provider]}
           onClick={handleRecommend}
         >
           {running

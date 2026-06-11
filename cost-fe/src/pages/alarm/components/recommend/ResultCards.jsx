@@ -33,13 +33,17 @@ function Card({ item }) {
   }
 
   if (r.status === "error") {
+    const message =
+      r.errorCode === "NO_API_KEY"
+        ? "No API key registered for this provider. Add one via \"API Key Management\" and try again."
+        : r.error || "Request failed";
     return (
       <div style={{ ...cardBase, borderLeftColor: "#b91c1c", background: "#fef2f2" }}>
         <div className="d-flex align-items-center gap-2">
           <span style={{ ...badgeBase, background: "#fee2e2", color: "#b91c1c" }}>ERROR</span>
           <span style={{ fontWeight: 600 }}>{item.instanceId}</span>
         </div>
-        <div style={{ fontSize: 12.5, color: "#b91c1c", marginTop: 4 }}>{r.error || "Request failed"}</div>
+        <div style={{ fontSize: 12.5, color: "#b91c1c", marginTop: 4 }}>{message}</div>
       </div>
     );
   }

@@ -105,7 +105,7 @@ export default function Dropdown({
               }}
               style={{
                 minWidth: "5rem",
-                width: "max-content",
+                width: "100%",
               }}
             >
               {item.icon && (

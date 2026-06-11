@@ -21,8 +21,8 @@ function getApiConfig() {
     API_ALARM_URL = `http://${hostname}:9000`;
     USE_MOCK = false; // IP uses real API
   } else {
-    API_BE_URL = `https://${hostname}`;
-    API_ALARM_URL = `https://${hostname}`;
+    API_BE_URL = `https://${hostname}:9090`;
+    API_ALARM_URL = `https://${hostname}:9090`;
     USE_MOCK = false; // Domain uses real API
   }
 

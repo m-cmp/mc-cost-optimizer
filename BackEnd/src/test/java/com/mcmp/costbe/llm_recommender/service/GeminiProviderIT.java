@@ -1,5 +1,6 @@
 package com.mcmp.costbe.llm_recommender.service;
 
+import com.mcmp.costbe.llm_recommender.model.score.ScoreRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +19,9 @@ class GeminiProviderIT {
 
     @Test
     void realCall_returnsParseableRecommendation() {
-        String score = scoreProvider.get("i-demo-downsize");
+        ScoreRequest sr = new ScoreRequest();
+        sr.setInstanceId("i-demo-downsize");
+        String score = scoreProvider.get(sr);
         String text = gemini.generate(
                 promptBuilder.systemPrompt(), promptBuilder.userPrompt(score), null, null);
         var r = parser.parse(text);

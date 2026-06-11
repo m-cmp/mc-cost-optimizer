@@ -23,6 +23,7 @@ public class LlmRecommendService {
     private static final int HISTORY_MAX = 100;
 
     @Autowired private ScoreProvider scoreProvider;
+    @Autowired private ScoreRequestBuilder scoreRequestBuilder;
     @Autowired private Map<String, LlmProvider> providers;
     @Autowired private PromptBuilder promptBuilder;
     @Autowired private RecommendationParser parser;
@@ -38,6 +39,7 @@ public class LlmRecommendService {
     }
 
     private Recommendation doRecommend(String instanceId, String provider, String model, String userQuestion, String nsId) {
+        String resolvedProvider = (provider == null || provider.isBlank()) ? DEFAULT_PROVIDER : provider;
         LlmProvider llm;
         try {
             llm = resolveProvider(provider);
@@ -50,7 +52,7 @@ public class LlmRecommendService {
         }
 
         try {
-            String scoreJson = scoreProvider.get(instanceId);
+            String scoreJson = scoreProvider.get(scoreRequestBuilder.build(instanceId));
 
             if (isInsufficient(scoreJson)) {
                 return Recommendation.insufficient(instanceId);
@@ -63,6 +65,8 @@ public class LlmRecommendService {
             r.setInstance(instanceId);
             return r;
 
+        } catch (ApiKeyNotRegisteredException e) {
+            return Recommendation.error(instanceId, "No API key registered for provider: " + resolvedProvider, Recommendation.ERROR_NO_API_KEY);
         } catch (RecommendationParseException e) {
             return Recommendation.error(instanceId, "Model returned an unparseable response.");
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package com.mcmp.costbe.llm_recommender;
 
 import com.mcmp.costbe.llm_recommender.config.LlmModelProperties;
 import com.mcmp.costbe.llm_recommender.model.Recommendation;
+import com.mcmp.costbe.llm_recommender.service.InstanceService;
 import com.mcmp.costbe.llm_recommender.service.LlmRecommendService;
 import com.mcmp.costbe.llm_recommender.service.UnifiedHistoryService;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ class LlmRecommendControllerTest {
     @MockBean private LlmRecommendService service;
     @MockBean private LlmModelProperties modelProperties;
     @MockBean private UnifiedHistoryService unifiedHistoryService;
+    @MockBean private InstanceService instanceService;
 
     @Test
     void recommend_returnsResultModelDataWithRecommendation() throws Exception {
