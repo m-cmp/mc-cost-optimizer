@@ -17,6 +17,8 @@ on:
       - "cost-ncp-collector/**"
       - "azure-vm-rightsizer/**"
       - "ncp-vm-rightsizer/**"
+      - "costCollector/**"
+      - "gcpCollector/**"
       - "mysql/**"
       - "**.md"
       - "LICENSE.txt"
