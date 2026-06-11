@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Card from "@/components/common/card/Card";
 import Button from "@/components/common/button/Button";
+import Loading from "@/components/common/loading/Loading";
 import { useLlmRecommend } from "@/hooks/useLlmRecommend";
 import { useApiKey } from "@/hooks/useApiKey";
 import { useProjectStore } from "@/stores/useProjectStore";
@@ -30,8 +31,11 @@ export default function RecommendTab() {
   const [ask, setAsk] = useState("");
   const [echo, setEcho] = useState("");
   const [instances, setInstances] = useState([]);
+  // Start as loading: projectId arrives async via PostMessage, so the table
+  // would otherwise render empty (no spinner) during that wait.
+  const [instancesLoading, setInstancesLoading] = useState(true);
   const { results, progress, running, run } = useLlmRecommend();
-  const { registered } = useApiKey();
+  const { registered, loading: apiKeyLoading } = useApiKey();
   const projectId = useProjectStore((s) => s.projectId);
 
   // Load the selectable model catalog from the backend (config-driven; no rebuild to change models).
@@ -47,9 +51,11 @@ export default function RecommendTab() {
   // Load the real resource list for this project (servicegroup_meta-backed).
   useEffect(() => {
     if (!projectId) return;
+    setInstancesLoading(true);
     getInstances(projectId)
       .then((res) => setInstances(res?.data?.Data || []))
-      .catch(() => setInstances([]));
+      .catch(() => setInstances([]))
+      .finally(() => setInstancesLoading(false));
   }, [projectId]);
 
   // Once API key registration status is known, steer the selection toward a
@@ -102,6 +108,7 @@ export default function RecommendTab() {
           model={model}
           models={models}
           registered={registered}
+          loading={apiKeyLoading}
           onProviderChange={handleProviderChange}
           onModelChange={setModel}
         />
@@ -110,13 +117,19 @@ export default function RecommendTab() {
         </div>
       </div>
 
-      <InstanceTable
-        instances={instances}
-        selected={selected}
-        onToggle={toggle}
-        onToggleAll={toggleAll}
-        max={MAX}
-      />
+      {instancesLoading ? (
+        <div className="py-4">
+          <Loading size="sm" withLabel label="Loading instances..." />
+        </div>
+      ) : (
+        <InstanceTable
+          instances={instances}
+          selected={selected}
+          onToggle={toggle}
+          onToggleAll={toggleAll}
+          max={MAX}
+        />
+      )}
 
       {/* additional inquiry — sent as userQuestion, answered per result card */}
       <div className="mt-3">
