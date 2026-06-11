@@ -39,6 +39,7 @@ public class LlmRecommendService {
     }
 
     private Recommendation doRecommend(String instanceId, String provider, String model, String userQuestion, String nsId) {
+        String resolvedProvider = (provider == null || provider.isBlank()) ? DEFAULT_PROVIDER : provider;
         LlmProvider llm;
         try {
             llm = resolveProvider(provider);
@@ -64,6 +65,8 @@ public class LlmRecommendService {
             r.setInstance(instanceId);
             return r;
 
+        } catch (ApiKeyNotRegisteredException e) {
+            return Recommendation.error(instanceId, "No API key registered for provider: " + resolvedProvider, Recommendation.ERROR_NO_API_KEY);
         } catch (RecommendationParseException e) {
             return Recommendation.error(instanceId, "Model returned an unparseable response.");
         } catch (Exception e) {

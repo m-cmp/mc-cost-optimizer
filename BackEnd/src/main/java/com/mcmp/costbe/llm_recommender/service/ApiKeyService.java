@@ -205,7 +205,7 @@ public class ApiKeyService {
     public String decryptApiKey(String provider, String nsId) {
         ProviderKeyModel row = apiKeyDao.selectApiKey(Map.of("provider", provider, "nsId", nsId));
         if (row == null) {
-            throw new RuntimeException("등록된 API 키가 없습니다: " + provider);
+            throw new ApiKeyNotRegisteredException("등록된 API 키가 없습니다: " + provider);
         }
 
         SecretKeySpec secretKey = getMasterKey();
