@@ -17,4 +17,11 @@ public interface ServiceGroupMetaMapper {
             @Param("vmId") String vmId,
             @Param("subscriptionId") String subscriptionId
     );
+
+    /**
+     * resource_id로 Tumblebug 식별자 조회 (tbbNsId, tbbMciId, tbbVmId)
+     * @param resourceId Azure 전체 리소스 경로
+     * @return tbbNsId, tbbMciId, tbbVmId를 담은 Map
+     */
+    Map<String, String> selectTbbIdentifiersByResourceId(@Param("resourceId") String resourceId);
 }

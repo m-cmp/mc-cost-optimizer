@@ -25,7 +25,7 @@ export default function PostMessageListener() {
       });
 
       setWorkspace("ws01", "testWs");
-      setProject("ns01", "mock-uuid", "default-project");
+      setProject("default", "mock-uuid", "default-project");
       setUserToken("Null");
     };
 

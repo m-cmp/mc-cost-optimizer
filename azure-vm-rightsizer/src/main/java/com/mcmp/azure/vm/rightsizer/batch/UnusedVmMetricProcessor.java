@@ -39,11 +39,32 @@ public class UnusedVmMetricProcessor implements ItemProcessor<UnusedVmDto, Unuse
             item.getVmId(), item.getYesterdayDate(), item.getYesterdayAvgCpu());
 
         // 2. 14일간 데이터 분석
-        UnusedVmDto stats = unusedProcessMartMapper.select14DaysMetricStats(item.getVmId());
+        UnusedVmDto stats;
+        try {
+            stats = unusedProcessMartMapper.select14DaysMetricStats(item.getVmId());
+        } catch (Exception e) {
+            log.error("Failed to query 14-day stats for VM: {} - {}", item.getVmId(), e.getMessage());
+            return null;
+        }
 
+        // 데이터 존재 체크
         if (stats == null) {
-            log.debug("Not enough 14-day data for VM: {}", item.getVmId());
-            return null;  // 14일 데이터 부족 시 알림 X
+            log.debug("No metric data found for VM: {}", item.getVmId());
+            return null;
+        }
+
+        // 14일치 데이터 체크
+        if (stats.getDayCount() == null || stats.getDayCount() < 14) {
+            log.debug("Not enough 14-day data for VM: {} (days={})",
+                item.getVmId(), stats.getDayCount() != null ? stats.getDayCount() : 0);
+            return null;
+        }
+
+        // 평균/최대값 null 체크
+        if (stats.getAvgCpu14Days() == null || stats.getMaxCpu14Days() == null) {
+            log.debug("Invalid metric stats for VM: {} (avg={}, max={})",
+                item.getVmId(), stats.getAvgCpu14Days(), stats.getMaxCpu14Days());
+            return null;
         }
 
         // 원본 DTO에 14일 통계 추가
@@ -51,19 +72,18 @@ public class UnusedVmMetricProcessor implements ItemProcessor<UnusedVmDto, Unuse
         item.setMaxCpu14Days(stats.getMaxCpu14Days());
         item.setDayCount(stats.getDayCount());
 
-        // 3. Unused 판정 (14일 평균 < 1 OR 14일 최대 < 3)
-        boolean isUnused = (stats.getAvgCpu14Days() != null && stats.getAvgCpu14Days() < 1.0)
-                        || (stats.getMaxCpu14Days() != null && stats.getMaxCpu14Days() < 3.0);
+        // 3. Unused 판정 (14일 평균 < 1% OR 14일 최대 < 3%)
+        boolean isUnused = stats.getAvgCpu14Days() < 1.0 || stats.getMaxCpu14Days() < 3.0;
 
         if (!isUnused) {
-            log.debug("VM {} is NOT unused (avg={}, max={})",
+            log.debug("VM {} is NOT unused (avg={}%, max={}%)",
                 item.getVmId(), stats.getAvgCpu14Days(), stats.getMaxCpu14Days());
-            return null;  // Unused 아니면 알림 X
+            return null;
         }
 
         // Unused 등급 설정
         item.setUnusedRating("Unused");
-        log.info("VM {} detected as UNUSED (avg={}, max={}, days={})",
+        log.info("VM {} detected as UNUSED (avg={}%, max={}%, days={})",
             item.getVmId(), stats.getAvgCpu14Days(), stats.getMaxCpu14Days(), stats.getDayCount());
 
         return item;

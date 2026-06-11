@@ -3,7 +3,7 @@
 <mapper namespace="tbb">
     <insert id="insertTBBServicegroupMeta" parameterType="java.util.List">
         INSERT INTO servicegroup_meta(csp_type, csp_account, csp_instanceid, service_cd, service_nm, service_uid
-        , vm_id, vm_uid, vm_nm, mci_id, mci_uid, mci_nm, instance_running_status)
+        , service_type, vm_id, vm_uid, vm_nm, mci_id, mci_uid, mci_nm, instance_running_status)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.cspType}
@@ -12,6 +12,7 @@
                , #{item.serviceCd}
                , #{item.serviceNm}
                , #{item.serviceUid}
+               , #{item.serviceType}
                , #{item.vmId}
                , #{item.vmUid}
                , #{item.vmNm}
@@ -21,6 +22,7 @@
                , #{item.instanceRunningStatus})
         </foreach>
             ON DUPLICATE KEY UPDATE service_nm = values(service_nm)
+                                 , service_type = values(service_type)
                                  , vm_nm = values(vm_nm)
                                  , mci_nm = values(mci_nm)
                                  , instance_running_status = values(instance_running_status)

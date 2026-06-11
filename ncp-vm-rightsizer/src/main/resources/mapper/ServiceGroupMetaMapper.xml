@@ -13,4 +13,15 @@
         LIMIT 1
     </select>
 
+    <!-- instance_no로 Tumblebug 식별자 조회 -->
+    <select id="selectTbbIdentifiersByInstanceNo" resultType="map">
+        SELECT service_cd AS tbbNsId,
+               mci_id     AS tbbMciId,
+               vm_id      AS tbbVmId
+        FROM servicegroup_meta
+        WHERE csp_type = 'NCP'
+          AND csp_instanceid COLLATE utf8mb4_unicode_520_ci = #{instanceNo}
+        LIMIT 1
+    </select>
+
 </mapper>

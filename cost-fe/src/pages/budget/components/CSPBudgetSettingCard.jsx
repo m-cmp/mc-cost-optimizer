@@ -54,8 +54,8 @@ const EditableCell = ({
   onKeyDown,
   inputRef,
 }) => {
-  const isNCP = csp === "NCP";
-  const currencySymbol = isNCP ? "₩" : "$";
+  const isKRW = csp === "NCP" || csp === "Azure";
+  const currencySymbol = isKRW ? "₩" : "$";
 
   if (isEditing) {
     return (
@@ -103,10 +103,10 @@ const TotalSummaryRow = ({ cspBudgets }) => {
   const getTotalInUSD = (monthIdx = null) => {
     let total = 0;
     Object.entries(cspBudgets).forEach(([csp, budgets]) => {
-      const isNCP = csp === "NCP";
+      const isKRW = csp === "NCP" || csp === "Azure";
       const values = monthIdx !== null ? [budgets[monthIdx] || 0] : budgets;
       const subtotal = values.reduce((sum, val) => sum + val, 0);
-      total += isNCP ? convertKrwToUsd(subtotal) : subtotal;
+      total += isKRW ? convertKrwToUsd(subtotal) : subtotal;
     });
     return Math.round(total * 100) / 100;
   };
@@ -232,9 +232,9 @@ export default function CSPBudgetSettingCard({
           </thead>
           <tbody>
             {Object.entries(cspBudgets).map(([csp, budgets]) => {
-              const isNCP = csp === "NCP";
+              const isKRW = csp === "NCP" || csp === "Azure";
               const total = calculateCSPTotal(effectiveBudgets, csp);
-              const displayTotal = isNCP
+              const displayTotal = isKRW
                 ? Math.round(convertKrwToUsd(total) * 100) / 100
                 : total;
 

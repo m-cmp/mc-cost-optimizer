@@ -27,7 +27,7 @@
     </resultMap>
 
     <insert id="insertDailyCost">
-        INSERT INTO ncp_cost_vm_daily (
+        INSERT IGNORE INTO ncp_cost_vm_daily (
             created,
             updated,
             member_no,
@@ -78,5 +78,45 @@
         WHERE
             today.instance_no = #{instanceNo}
           AND DATE(today.write_date) = #{targetDate}
+    </insert>
+
+    <insert id="insertVmMonthIgnore">
+        INSERT IGNORE INTO ncp_cost_vm_month (
+            created,
+            updated,
+            member_no,
+            demand_month,
+            region_code,
+            server_spec_code,
+            instance_no,
+            instance_name,
+            usage_unit_code,
+            usage_unit_name,
+            product_price,
+            unit_usage_quantity,
+            total_unit_usage_quantity,
+            use_amount,
+            demand_amount,
+            write_date,
+            pay_currency
+        ) VALUES (
+            NOW(),
+            NOW(),
+            #{vmMonth.memberNo},
+            #{vmMonth.demandMonth},
+            #{vmMonth.regionCode},
+            #{vmMonth.serverSpecCode},
+            #{vmMonth.instanceNo},
+            #{vmMonth.instanceName},
+            #{vmMonth.usageUnitCode},
+            #{vmMonth.usageUnitName},
+            #{vmMonth.productPrice},
+            #{vmMonth.unitUsageQuantity},
+            #{vmMonth.totalUnitUsageQuantity},
+            #{vmMonth.useAmount},
+            #{vmMonth.demandAmount},
+            #{vmMonth.writeDate},
+            #{vmMonth.payCurrency}
+        )
     </insert>
 </mapper>

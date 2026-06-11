@@ -44,7 +44,7 @@
                 MAX(latest.member_no) AS account_id
             FROM ncp_latest_costs latest
             INNER JOIN servicegroup_meta meta
-                ON latest.member_no COLLATE utf8mb4_unicode_520_ci = meta.csp_account COLLATE utf8mb4_unicode_520_ci
+                ON latest.instance_no COLLATE utf8mb4_unicode_520_ci = meta.csp_instanceid COLLATE utf8mb4_unicode_520_ci
                 AND meta.csp_type = 'NCP'
             WHERE meta.service_cd != 'undefined'
             GROUP BY meta.service_cd

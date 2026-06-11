@@ -14,6 +14,7 @@ import com.mcmp.cost.ncp.collector.dto.ServerInstanceDetailWrapper;
 import com.mcmp.cost.ncp.collector.dto.ServerInstanceList;
 import com.mcmp.cost.ncp.collector.entity.NcpCostServiceMonth;
 import com.mcmp.cost.ncp.collector.entity.NcpCostVmMonth;
+import com.mcmp.cost.ncp.collector.mapper.NcpCostVmDailyMapper;
 import com.mcmp.cost.ncp.collector.repository.NcpCostVmMonthRepository;
 import com.mcmp.cost.ncp.collector.service.NcpCostMonthService;
 import com.mcmp.cost.ncp.collector.utils.DateUtils;
@@ -37,6 +38,7 @@ public class NcpCostMonthServiceImpl implements NcpCostMonthService {
 
     private final RestClientConfig restClientConfig;
     private final NcpCostVmMonthRepository ncpCostVmMonthRepository;
+    private final NcpCostVmDailyMapper ncpCostVmDailyMapper;
 
     public List<NcpCostServiceMonth> getCostByService(NcpApiCredentialDto ncpApiCredentialDto) {
         RestClient restClient = restClientConfig.createRestClientWithKey(
@@ -314,8 +316,12 @@ public class NcpCostMonthServiceImpl implements NcpCostMonthService {
             ncpCostVmMonthList.add(ncpCostVmMonth);
         }
 
-        ncpCostVmMonthRepository.saveAll(ncpCostVmMonthList);
-        log.info("NCP VM 비용 데이터 {}건 저장 완료", ncpCostVmMonthList.size());
+        // INSERT IGNORE를 사용하여 중복 데이터 무시
+        int insertedCount = 0;
+        for (NcpCostVmMonth vmMonth : ncpCostVmMonthList) {
+            insertedCount += ncpCostVmDailyMapper.insertVmMonthIgnore(vmMonth);
+        }
+        log.info("NCP VM 비용 데이터 {}건 중 {}건 저장 완료 (중복 제외)", ncpCostVmMonthList.size(), insertedCount);
         return ncpCostVmMonthList;
     }
 

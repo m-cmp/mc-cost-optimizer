@@ -56,10 +56,12 @@ export default function Table({
             <tr key={i} className={variant ? `table-${variant}` : ""}>
               {columns.map((col) => (
                 <td key={col.key} className={col.className || ""}>
-                  {/* ✅ fallback 추가 */}
-                  {row[col.key] !== undefined &&
-                  row[col.key] !== null &&
-                  row[col.key] !== ""
+                  {/* ✅ render 함수 지원 및 fallback 추가 */}
+                  {col.render
+                    ? col.render(row[col.key], row)
+                    : row[col.key] !== undefined &&
+                      row[col.key] !== null &&
+                      row[col.key] !== ""
                     ? row[col.key]
                     : "-"}
                 </td>
