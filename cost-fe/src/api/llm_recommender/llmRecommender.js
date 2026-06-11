@@ -1,5 +1,5 @@
 import { llmClient, USE_MOCK } from "../Client";
-import { mockRecommendation, mockRecommendHistory } from "../../config/mockData";
+import { mockRecommendation, mockRecommendHistory, mockInstances } from "../../config/mockData";
 
 // Request a recommendation for ONE instance.
 // Returns the axios-shaped { data: { Data: <Recommendation> } } to match ResultModel.
@@ -16,6 +16,13 @@ export const recommend = async ({ instanceId, provider, model, userQuestion, nsI
 export const getModels = () => {
   if (USE_MOCK) return Promise.resolve({ data: { Data: null } });
   return llmClient.get("/models");
+};
+
+// Fetch the real resource/instance list for a namespace, sourced from servicegroup_meta.
+// spec/usd are not wired up yet on the backend, so they may come back null.
+export const getInstances = (nsId) => {
+  if (USE_MOCK) return Promise.resolve({ data: { Data: mockInstances } });
+  return llmClient.get("/instances", { params: { nsId } });
 };
 
 // Fetch recommendation history for a namespace (most recent first).

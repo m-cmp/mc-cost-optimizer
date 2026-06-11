@@ -26,6 +26,9 @@ public class Recommendation {
 
     private String status;         // ok|insufficient_data|error (internal)
     private String error;          // human-safe message when status=error (never contains keys)
+    private String errorCode;      // machine-readable code for status=error (e.g. NO_API_KEY), optional
+
+    public static final String ERROR_NO_API_KEY = "NO_API_KEY";
 
     public static Recommendation insufficient(String instance) {
         Recommendation r = new Recommendation();
@@ -39,6 +42,12 @@ public class Recommendation {
         r.instance = instance;
         r.status = STATUS_ERROR;
         r.error = message;
+        return r;
+    }
+
+    public static Recommendation error(String instance, String message, String errorCode) {
+        Recommendation r = error(instance, message);
+        r.errorCode = errorCode;
         return r;
     }
 }

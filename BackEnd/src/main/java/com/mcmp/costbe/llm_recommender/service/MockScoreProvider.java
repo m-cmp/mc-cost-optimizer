@@ -1,5 +1,8 @@
 package com.mcmp.costbe.llm_recommender.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mcmp.costbe.llm_recommender.model.score.ScoreRequest;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -9,14 +12,18 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * v1 score source: returns bundled sample JSON. Replace by swapping in an
- * ML-API-backed ScoreProvider bean later (this stays as a fallback/dev bean).
+ * API-backed ScoreProvider bean (POST /score per LLM_DEV_SPEC.html section 4)
+ * later (this stays as a fallback/dev bean).
  */
 @Component
 @Primary
 public class MockScoreProvider implements ScoreProvider {
 
+    private final ObjectMapper om = new ObjectMapper();
+
     @Override
-    public String get(String instanceId) {
+    public String get(ScoreRequest req) {
+        String instanceId = req.getInstanceId();
         String file;
         if (instanceId == null) {
             file = "keep";
@@ -29,7 +36,16 @@ public class MockScoreProvider implements ScoreProvider {
         } else {
             file = "keep";
         }
-        return load("llm-samples/" + file + ".json");
+        try {
+            ObjectNode node = (ObjectNode) om.readTree(load("llm-samples/" + file + ".json"));
+            node.put("instance", instanceId);
+            if (req.getIntervalSeconds() != null) {
+                node.put("interval_seconds", req.getIntervalSeconds());
+            }
+            return om.writeValueAsString(node);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to build mock score response for: " + instanceId, e);
+        }
     }
 
     private String load(String path) {

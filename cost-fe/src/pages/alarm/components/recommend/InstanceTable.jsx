@@ -12,6 +12,7 @@ export default function InstanceTable({ instances, selected, onToggle, onToggleA
   const columns = [
     {
       key: "select",
+      className: "text-center",
       label: (
         <input
           type="checkbox"
@@ -33,13 +34,25 @@ export default function InstanceTable({ instances, selected, onToggle, onToggleA
         );
       },
     },
-    { key: "instanceId", label: "Instance ID", className: "text-nowrap", render: (v) => <code>{v}</code> },
-    { key: "name", label: "Name", className: "text-nowrap" },
-    { key: "csp", label: "CSP" },
-    { key: "spec", label: "Current Spec", className: "text-nowrap" },
-    { key: "usd", label: "Monthly Cost (USD)", render: (v) => `$${v.toFixed(1)}` },
-    { key: "status", label: "Status", render: (v) => <span style={statusBadge}>{v}</span> },
+    { key: "instanceId", label: "Instance ID", className: "text-nowrap text-center", render: (v) => <code>{v}</code> },
+    { key: "name", label: "Name", className: "text-nowrap text-center" },
+    { key: "csp", label: "CSP", className: "text-center" },
+    { key: "spec", label: "Current Spec", className: "text-nowrap text-center", render: (v) => v ?? "-" },
+    { key: "usd", label: "Monthly Cost (USD)", className: "text-center", render: (v) => (v == null ? "-" : `$${v.toFixed(1)}`) },
+    { key: "status", label: "Status", className: "text-center", render: (v) => <span style={statusBadge}>{v}</span> },
   ];
 
-  return <Table columns={columns} data={instances} hover responsive />;
+  return (
+    <div className="instance-table">
+      <style>{`
+        .instance-table th:nth-child(2),
+        .instance-table td:nth-child(2) { width: 16%; }
+        .instance-table th:nth-child(3),
+        .instance-table td:nth-child(3) { width: 18%; }
+        .instance-table th:nth-child(6),
+        .instance-table td:nth-child(6) { width: 10%; }
+      `}</style>
+      <Table columns={columns} data={instances} hover responsive />
+    </div>
+  );
 }
