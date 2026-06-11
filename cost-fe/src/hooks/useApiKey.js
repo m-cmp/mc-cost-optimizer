@@ -10,6 +10,9 @@ const EMPTY_INPUTS = { openai: "", anthropic: "", google: "" };
 const EMPTY_STATUS = { openai: false, anthropic: false, google: false };
 export function useApiKey() {
   const [registered, setRegistered] = useState(EMPTY_STATUS);
+  // Start as loading: registered defaults to all-false, so until the status
+  // check resolves we can't yet tell "no keys registered" from "still checking".
+  const [loading, setLoading] = useState(true);
   const [inputs, setInputs] = useState(EMPTY_INPUTS);
   const [saving, setSaving] = useState(false);
   const { addAlert } = useAlertStore();
@@ -26,6 +29,7 @@ export function useApiKey() {
         r.status === "fulfilled" ? r.value.data.registered : false;
     });
     setRegistered(next);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -83,5 +87,5 @@ export function useApiKey() {
     }
   };
 
-  return { registered, inputs, saving, handleInputChange, handleSave, handleDelete };
+  return { registered, loading, inputs, saving, handleInputChange, handleSave, handleDelete };
 }
