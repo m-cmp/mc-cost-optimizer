@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import Card from "@/components/common/card/Card";
 import Button from "@/components/common/button/Button";
-import { mockInstances } from "@/config/mockData";
 import { useLlmRecommend } from "@/hooks/useLlmRecommend";
-import { getModels } from "@/api/llm_recommender/llmRecommender";
+import { useProjectStore } from "@/stores/useProjectStore";
+import { getModels, getInstances } from "@/api/llm_recommender/llmRecommender";
 import ProviderSelect from "./ProviderSelect";
 import InstanceTable from "./InstanceTable";
 import ResultCards, { Badge } from "./ResultCards";
@@ -28,7 +28,9 @@ export default function RecommendTab() {
   const [models, setModels] = useState(MODELS); // fallback until /models loads
   const [ask, setAsk] = useState("");
   const [echo, setEcho] = useState("");
+  const [instances, setInstances] = useState([]);
   const { results, progress, running, run } = useLlmRecommend();
+  const projectId = useProjectStore((s) => s.projectId);
 
   // Load the selectable model catalog from the backend (config-driven; no rebuild to change models).
   useEffect(() => {
@@ -39,6 +41,14 @@ export default function RecommendTab() {
       })
       .catch(() => {}); // keep fallback on failure
   }, []);
+
+  // Load the real resource list for this project (servicegroup_meta-backed).
+  useEffect(() => {
+    if (!projectId) return;
+    getInstances(projectId)
+      .then((res) => setInstances(res?.data?.Data || []))
+      .catch(() => setInstances([]));
+  }, [projectId]);
 
   const handleProviderChange = (p) => {
     setProvider(p);
@@ -56,7 +66,7 @@ export default function RecommendTab() {
 
   const toggleAll = (checked) =>
     setSelected(
-      checked ? mockInstances.slice(0, MAX).map((i) => i.instanceId) : [],
+      checked ? instances.slice(0, MAX).map((i) => i.instanceId) : [],
     );
 
   const addChip = (text) =>
@@ -87,7 +97,7 @@ export default function RecommendTab() {
       </div>
 
       <InstanceTable
-        instances={mockInstances}
+        instances={instances}
         selected={selected}
         onToggle={toggle}
         onToggleAll={toggleAll}

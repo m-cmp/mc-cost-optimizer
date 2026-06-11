@@ -4,6 +4,7 @@ import com.mcmp.costbe.common.model.ResultModel;
 import com.mcmp.costbe.llm_recommender.config.LlmModelProperties;
 import com.mcmp.costbe.llm_recommender.model.RecommendRequest;
 import com.mcmp.costbe.llm_recommender.model.Recommendation;
+import com.mcmp.costbe.llm_recommender.service.InstanceService;
 import com.mcmp.costbe.llm_recommender.service.LlmRecommendService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +28,9 @@ public class LlmRecommendController {
     @Autowired
     private LlmModelProperties modelProperties;
 
+    @Autowired
+    private InstanceService instanceService;
+
     @PostMapping(path = "/recommend")
     @Operation(summary = "LLM 자원 추천", description = "인스턴스 1개의 분석 점수를 LLM에 질의해 리사이징 추천을 반환한다.")
     public ResponseEntity recommend(@RequestBody RecommendRequest req) {
@@ -47,6 +51,14 @@ public class LlmRecommendController {
     public ResponseEntity models() {
         ResultModel result = new ResultModel();
         result.setData(modelProperties.getModels());
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(path = "/instances")
+    @Operation(summary = "실 자원 목록 조회", description = "servicegroup_meta 기준 네임스페이스(nsId)별 인스턴스 목록을 반환한다. spec/cost는 아직 미연동으로 비어있다.")
+    public ResponseEntity instances(@RequestParam String nsId) {
+        ResultModel result = new ResultModel();
+        result.setData(instanceService.getInstances(nsId));
         return ResponseEntity.ok(result);
     }
 

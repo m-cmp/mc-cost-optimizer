@@ -23,6 +23,7 @@ public class LlmRecommendService {
     private static final int HISTORY_MAX = 100;
 
     @Autowired private ScoreProvider scoreProvider;
+    @Autowired private ScoreRequestBuilder scoreRequestBuilder;
     @Autowired private Map<String, LlmProvider> providers;
     @Autowired private PromptBuilder promptBuilder;
     @Autowired private RecommendationParser parser;
@@ -50,7 +51,7 @@ public class LlmRecommendService {
         }
 
         try {
-            String scoreJson = scoreProvider.get(instanceId);
+            String scoreJson = scoreProvider.get(scoreRequestBuilder.build(instanceId));
 
             if (isInsufficient(scoreJson)) {
                 return Recommendation.insufficient(instanceId);
