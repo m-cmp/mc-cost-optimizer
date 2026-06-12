@@ -14,7 +14,19 @@ export default function AlarmPage() {
 
   return (
     <div>
-      <ul className="nav nav-tabs mb-3">
+      <style>{`
+        .alarm-tabs .nav-link {
+          background: var(--tblr-card-bg, #fff);
+          border: 1px solid #e5e7eb;
+          margin-right: 4px;
+        }
+        .alarm-tabs .nav-link:hover,
+        .alarm-tabs .nav-link.active {
+          background: #f1f5f9;
+          border-color: #d1d5db;
+        }
+      `}</style>
+      <ul className="nav nav-tabs mb-3 alarm-tabs">
         <li className="nav-item">
           <a
             className={`nav-link ${tab === "recommend" ? "active" : ""}`}
