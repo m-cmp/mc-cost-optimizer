@@ -40,6 +40,10 @@ export function useApiKey() {
     setInputs((prev) => ({ ...prev, [provider]: value }));
   };
 
+  const resetInputs = () => {
+    setInputs(EMPTY_INPUTS);
+  };
+
   const handleSave = async () => {
     if (!projectId) return;
     const targets = PROVIDERS.filter((p) => inputs[p].trim() !== "");
@@ -87,5 +91,5 @@ export function useApiKey() {
     }
   };
 
-  return { registered, loading, inputs, saving, handleInputChange, handleSave, handleDelete };
+  return { registered, loading, inputs, saving, handleInputChange, resetInputs, handleSave, handleDelete };
 }

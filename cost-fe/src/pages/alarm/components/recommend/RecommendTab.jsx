@@ -35,7 +35,8 @@ export default function RecommendTab() {
   // would otherwise render empty (no spinner) during that wait.
   const [instancesLoading, setInstancesLoading] = useState(true);
   const { results, progress, running, run } = useLlmRecommend();
-  const { registered, loading: apiKeyLoading } = useApiKey();
+  const apiKey = useApiKey();
+  const { registered, loading: apiKeyLoading } = apiKey;
   const projectId = useProjectStore((s) => s.projectId);
 
   // Load the selectable model catalog from the backend (config-driven; no rebuild to change models).
@@ -113,7 +114,7 @@ export default function RecommendTab() {
           onModelChange={setModel}
         />
         <div className="d-flex gap-3 mt-4 mb-3">
-          <ApiKeyModal />
+          <ApiKeyModal apiKey={apiKey} />
         </div>
       </div>
 

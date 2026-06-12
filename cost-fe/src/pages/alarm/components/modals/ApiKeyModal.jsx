@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Modal from "@/components/common/modal/Modal";
 import Button from "@/components/common/button/Button";
-import { useApiKey } from "@/hooks/useApiKey";
 
 const PROVIDER_LABELS = {
   openai: "OpenAI (GPT)",
@@ -9,11 +8,16 @@ const PROVIDER_LABELS = {
   google: "Google (Gemini)",
 };
 
-export default function ApiKeyModal() {
+export default function ApiKeyModal({ apiKey }) {
   const [open, setOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null); // 삭제 확인 대상 provider
-  const { registered, inputs, saving, handleInputChange, handleSave, handleDelete } =
-    useApiKey();
+  const { registered, inputs, saving, handleInputChange, resetInputs, handleSave, handleDelete } =
+    apiKey;
+
+  const handleClose = () => {
+    resetInputs();
+    setOpen(false);
+  };
 
   const handleSaveAndClose = async () => {
     await handleSave();
@@ -35,13 +39,13 @@ export default function ApiKeyModal() {
       <Modal
         id="apiKeyModal"
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={handleClose}
         title="API Key Management"
         size="md"
         centered
         footer={
           <div className="d-flex justify-content-between w-100">
-            <Button variant="secondary" onClick={() => setOpen(false)}>
+            <Button variant="secondary" onClick={handleClose}>
               Close
             </Button>
             <Button
