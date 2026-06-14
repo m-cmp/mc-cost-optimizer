@@ -20,6 +20,7 @@ on:
       - "azure-vm-rightsizer/**"
       - "ncp-vm-rightsizer/**"
       - "gcpCollector/**"
+      - "cost-ml-scorer/**"
       - "mysql/**"
       - "**.md"
       - "LICENSE.txt"
