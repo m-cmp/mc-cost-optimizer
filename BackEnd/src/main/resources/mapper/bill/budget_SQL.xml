@@ -43,7 +43,8 @@
                'AWS' COLLATE utf8mb4_unicode_ci          AS csp,
                COALESCE(SUM(ms.total_cost), 0)           AS bill
           FROM monthly_summation ms
-         WHERE ms.year_month >= CONCAT(#{year}, '01')
+         WHERE ms.csp = 'AWS'
+           AND ms.year_month >= CONCAT(#{year}, '01')
            AND ms.year_month <= CONCAT(#{year}, '12')
            AND ms.project_cd = #{projectId}
          GROUP BY ms.year_month
@@ -52,7 +53,7 @@
 
         SELECT vm_latest.demand_month COLLATE utf8mb4_unicode_ci      AS yearMonth,
                'NCP' COLLATE utf8mb4_unicode_ci                       AS csp,
-               COALESCE(SUM(vm_latest.demand_amount), 0) / 1400.0     AS bill
+               COALESCE(SUM(vm_latest.demand_amount), 0) / ${krwPerUsd}     AS bill
           FROM (
                SELECT n1.demand_month, n1.demand_amount, n1.instance_no
                  FROM ncp_cost_vm_month n1
@@ -77,7 +78,7 @@
 
         SELECT DATE_FORMAT(a.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS yearMonth,
                'Azure' COLLATE utf8mb4_unicode_ci                            AS csp,
-               COALESCE(SUM(a.pre_tax_cost), 0) / 1400.0                     AS bill
+               COALESCE(SUM(a.pre_tax_cost), 0) / ${krwPerUsd}                     AS bill
           FROM azure_cost_vm_daily a
          INNER JOIN servicegroup_meta sm
             ON a.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
@@ -86,6 +87,18 @@
          WHERE a.usage_date >= CONCAT(#{year}, '0101')
            AND a.usage_date <= CONCAT(#{year}, '1231')
          GROUP BY DATE_FORMAT(a.usage_date, '%Y%m')
+
+        UNION ALL
+
+        SELECT ms.year_month COLLATE utf8mb4_unicode_ci AS yearMonth,
+               'GCP' COLLATE utf8mb4_unicode_ci          AS csp,
+               COALESCE(SUM(ms.total_cost), 0)           AS bill
+          FROM monthly_summation ms
+         WHERE ms.csp = 'GCP'
+           AND ms.year_month >= CONCAT(#{year}, '01')
+           AND ms.year_month <= CONCAT(#{year}, '12')
+           AND ms.project_cd = #{projectId}
+         GROUP BY ms.year_month
 
          ORDER BY yearMonth ASC, csp ASC
                 ]]>

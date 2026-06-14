@@ -2,11 +2,11 @@ package com.mcmp.ncp.vm.rightsizer.properties;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
+// 자동 바인딩(@ConfigurationProperties) 대신 NcpCredentialConfig 의 @Bean 에서
+// CredentialResolver(openbao.enabled 정책)로 구성한다.
 @Getter
 @RequiredArgsConstructor
-@ConfigurationProperties(prefix = "ncp.credential")
 public class NcpCredentialProperties {
 
     /**

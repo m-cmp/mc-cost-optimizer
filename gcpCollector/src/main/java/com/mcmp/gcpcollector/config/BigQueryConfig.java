@@ -2,6 +2,7 @@ package com.mcmp.gcpcollector.config;
 
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.bigquery.*;
+import com.mcmp.gcpcollector.credential.CredentialResolver;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import java.util.Base64;
 @Getter
 public class BigQueryConfig {
 
+    // env(@Value) 는 "원본 값". 실제 사용 값은 CredentialResolver 를 통해 (openbao.enabled 정책에 따라) 결정한다.
     @Value("${gcp.project-id:}")
     private String gcpProjectId;
 
@@ -38,27 +40,40 @@ public class BigQueryConfig {
 
     private String projectId;
 
+    private final CredentialResolver credentialResolver;
+
+    public BigQueryConfig(CredentialResolver credentialResolver) {
+        this.credentialResolver = credentialResolver;
+    }
+
     @Bean
     public BigQuery bigQuery() throws Exception {
         String credPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
 
+        // 크레덴셜 결정: openbao.enabled=true → OpenBao, false → env 우선 후 OpenBao 폴백
+        String resolvedProjectId  = credentialResolver.resolve("gcp", "project_id", gcpProjectId);
+        String resolvedEmail      = credentialResolver.resolve("gcp", "client_email", clientEmail);
+        String resolvedPrivateKey = credentialResolver.resolve("gcp", "private_key", privateKey);
+        String resolvedKeyId      = credentialResolver.resolveOptional("gcp", "private_key_id", privateKeyId);
+
         BigQuery bq;
 
-        if (clientEmail != null && !clientEmail.isEmpty() && privateKey != null && !privateKey.isEmpty()) {
-            PrivateKey pk = parsePemPrivateKey(privateKey);
+        if (resolvedEmail != null && !resolvedEmail.isEmpty()
+                && resolvedPrivateKey != null && !resolvedPrivateKey.isEmpty()) {
+            PrivateKey pk = parsePemPrivateKey(resolvedPrivateKey);
             ServiceAccountCredentials.Builder builder = ServiceAccountCredentials.newBuilder()
-                    .setClientEmail(clientEmail)
+                    .setClientEmail(resolvedEmail)
                     .setPrivateKey(pk)
-                    .setProjectId(gcpProjectId);
-            if (privateKeyId != null && !privateKeyId.isEmpty()) {
-                builder.setPrivateKeyId(privateKeyId);
+                    .setProjectId(resolvedProjectId);
+            if (resolvedKeyId != null && !resolvedKeyId.isEmpty()) {
+                builder.setPrivateKeyId(resolvedKeyId);
             }
             bq = BigQueryOptions.newBuilder()
                     .setCredentials(builder.build())
-                    .setProjectId(gcpProjectId)
+                    .setProjectId(resolvedProjectId)
                     .build()
                     .getService();
-            log.info("GCP 인증: 환경변수(GCP_PROJECT_ID, GCP_CLIENT_EMAIL, GCP_PRIVATE_KEY) 사용");
+            log.info("GCP 인증: 서비스계정 크레덴셜 사용 (CredentialResolver 경유)");
         } else if (credPath != null && !credPath.isEmpty()) {
             bq = BigQueryOptions.getDefaultInstance().getService();
             log.info("GCP 인증: GOOGLE_APPLICATION_CREDENTIALS 파일 사용");

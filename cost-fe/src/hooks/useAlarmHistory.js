@@ -4,6 +4,7 @@ import { useProjectStore } from "@/stores/useProjectStore";
 import { useAlertStore } from "@/stores/useAlertStore";
 import { transformAlarmData } from "@/utils/historyUtils";
 import { logger } from "@/utils/logger";
+import { BILLING_CSPS } from "@/constants/cspConstants";
 
 /**
  * @hook useAlarmHistory
@@ -28,7 +29,7 @@ export const useAlarmHistory = () => {
 
     const fetchAlarmHistory = async () => {
       const req = {
-        selectedCsps: ["AWS", "AZURE", "NCP"],
+        selectedCsps: BILLING_CSPS,
         selectedWorkspace: workspaceId,
         selectedProjects: [projectId],
       };

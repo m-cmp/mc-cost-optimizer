@@ -95,6 +95,9 @@ services:
       aws.data.export.path.prefix: ${CO_AWS_CUR_EXPORT_PATH_PREFIX}
       AWS_ACCESS_KEY_ID: ${CO_AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CO_AWS_SECRET_ACCESS_KEY}
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
       TZ: Asia/Seoul
 
   mc-cost-optimizer-cost-processor:
@@ -241,6 +244,9 @@ services:
       COSTOPTI_COSTCOLLECTOR_URL: ${CO_COST_COLLECTOR_URL}
       COSTOPTI_COSTPROCESSOR_URL: ${CO_COST_PROCESSOR_URL}
       COSTOPTI_COSTSELECTOR_URL: ${CO_COST_SELECTOR_URL}
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
       TZ: Asia/Seoul
 
   mc-cost-optimizer-gcp-collector:
@@ -278,6 +284,9 @@ services:
       tumblebug.url: ${CO_TBB_URL}
       tumblebug.username: ${CO_TBB_USERNAME}
       tumblebug.password: ${CO_TBB_PW}
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
       TZ: Asia/Seoul
 
   mc-cost-optimizer-cost-ncp-collector:
@@ -314,6 +323,9 @@ services:
       COSTOPTI_COSTPROCESSOR_URL: ${CO_COST_PROCESSOR_URL}
       COSTOPTI_COSTSELECTOR_URL: ${CO_COST_SELECTOR_URL}
 
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
       TZ: Asia/Seoul
 
   mc-cost-optimizer-azure-vm-rightsizer:
@@ -354,6 +366,9 @@ services:
       tumblebug.url: ${CO_TBB_URL}
       tumblebug.username: ${CO_TBB_USERNAME}
       tumblebug.password: ${CO_TBB_PW}
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
       TZ: Asia/Seoul
 
   mc-cost-optimizer-ncp-vm-rightsizer:
@@ -392,6 +407,9 @@ services:
       tumblebug.url: ${CO_TBB_URL}
       tumblebug.username: ${CO_TBB_USERNAME}
       tumblebug.password: ${CO_TBB_PW}
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
       TZ: Asia/Seoul
 
   mc-cost-optimizer-init-volume:
