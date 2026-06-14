@@ -43,8 +43,8 @@ export const useBudgetData = (year) => {
         setAvailableYears(response.data || []);
       } catch (error) {
         logger.error("Failed to fetch available years:", error);
-        // Set default years on error
-        setAvailableYears([2023, 2024, 2025]);
+        // Fall back to the current year so the selector is never empty/stale.
+        setAvailableYears([new Date().getFullYear()]);
       }
     };
 

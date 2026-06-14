@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { budgetData } from "@/config/mockData";
 import Grid from "@/components/layout/Grid";
 import Dropdown from "@/components/common/dropdown/Dropdown";
 import BudgetComparisonCard from "./components/BudgetComparisonCard";
@@ -10,7 +9,8 @@ import { useBudgetData } from "@/hooks/useBudgetData";
 import { useBudgetComparison } from "@/hooks/useBudgetComparison";
 
 export default function BudgetPage() {
-  const [selectedYear, setSelectedYear] = useState(budgetData.Data.year);
+  // Default to the current year; past years appear in the dropdown only when they have data (see useBudgetData/availableYears).
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const {
     availableYears,
     cspBudgets,
