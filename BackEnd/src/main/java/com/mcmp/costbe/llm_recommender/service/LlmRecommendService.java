@@ -68,8 +68,10 @@ public class LlmRecommendService {
         } catch (ApiKeyNotRegisteredException e) {
             return Recommendation.error(instanceId, "No API key registered for provider: " + resolvedProvider, Recommendation.ERROR_NO_API_KEY);
         } catch (RecommendationParseException e) {
+            log.warn("recommend parse failed for instance {} (provider={})", instanceId, resolvedProvider, e);
             return Recommendation.error(instanceId, "Model returned an unparseable response.");
         } catch (Exception e) {
+            log.error("recommend failed for instance {} (provider={})", instanceId, resolvedProvider, e);
             return Recommendation.error(instanceId, "Recommendation failed (provider error).");
         }
     }
