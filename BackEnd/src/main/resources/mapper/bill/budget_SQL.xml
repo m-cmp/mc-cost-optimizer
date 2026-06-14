@@ -4,12 +4,19 @@
 
 <mapper namespace="budget">
 
-    <!-- 데이터 존재 연도 조회 -->
+    <!-- 선택 가능 연도: 올해는 항상 포함 + 예산(budget_monthly)/실비용(monthly_summation) 데이터가 있는 과거 연도 -->
     <select id="selectDistinctYears"
             resultType="int">
-        SELECT DISTINCT year
-          FROM budget_monthly
-         ORDER BY year ASC
+        SELECT DISTINCT y
+          FROM (
+               SELECT `year` AS y FROM budget_monthly
+               UNION
+               SELECT CAST(LEFT(`year_month`, 4) AS UNSIGNED) AS y FROM monthly_summation
+               UNION
+               SELECT YEAR(CURDATE()) AS y
+               ) t
+         WHERE y IS NOT NULL
+         ORDER BY y ASC
     </select>
 
     <!-- 연도별 예산 조회 -->
