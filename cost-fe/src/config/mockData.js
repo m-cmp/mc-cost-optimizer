@@ -423,3 +423,63 @@ export const mockBudgetComparisonData = {
     },
   ],
 };
+
+// --- LLM recommender mocks ---
+// Columns mirror the mockup: Instance ID / Name / CSP / Current Spec / Monthly Cost / Status.
+// Five instances cover every badge type (upsize/keep/downsize/terminate) plus the insufficient_data edge.
+export const mockInstances = [
+  { instanceId: "i-demo-upsize", name: "prod-web-01", csp: "AWS", spec: "t3.large", usd: 60.2, status: "running" },
+  { instanceId: "i-demo-keep", name: "prod-api-01", csp: "AZURE", spec: "D4s_v3", usd: 140.5, status: "running" },
+  { instanceId: "i-demo-downsize", name: "batch-night", csp: "NCP", spec: "s2-g3", usd: 88.0, status: "running" },
+  { instanceId: "i-demo-terminate", name: "legacy-idle", csp: "GCP", spec: "e2-standard-4", usd: 97.3, status: "running" },
+  { instanceId: "i-demo-insufficient", name: "new-host", csp: "AWS", spec: "t3.small", usd: 12.0, status: "running" },
+];
+
+export function mockRecommendation(instanceId, userQuestion) {
+  const map = {
+    "i-demo-upsize": {
+      instance: instanceId, recommendation: "upsize",
+      detail: "Step up one size (t3.xlarge).",
+      reasoning: "CPU P95 ~95% saturated all day, binding=CPU; insufficient headroom risks incidents.",
+      confidence: "high", status: "ok",
+    },
+    "i-demo-keep": {
+      instance: instanceId, recommendation: "keep",
+      detail: "Keep the current size.",
+      reasoning: "P95 ~55% sits in a stable band with a flat trend; little to gain from resizing.",
+      confidence: "medium", status: "ok",
+    },
+    "i-demo-downsize": {
+      instance: instanceId, recommendation: "downsize",
+      detail: "Drop one size (s2-g2); ~$40/mo savings.",
+      reasoning: "Idle 92% outside the nightly batch; even the peak stays at P95 22%.",
+      confidence: "high", status: "ok",
+    },
+    "i-demo-terminate": {
+      instance: instanceId, recommendation: "terminate",
+      detail: "Likely unused — review for deletion.",
+      reasoning: "14-day average CPU 0.8% with almost no traffic (adjacent to insufficient_data).",
+      confidence: "low", status: "ok",
+    },
+    "i-demo-insufficient": { instance: instanceId, status: "insufficient_data" },
+  };
+  const base = map[instanceId] || map["i-demo-keep"];
+  // Feature #2: when a question is asked, attach a grounded mock answer (only for ok results).
+  if (userQuestion && userQuestion.trim() && base.status === "ok") {
+    return {
+      ...base,
+      answer: `(mock) Regarding "${userQuestion.trim()}": based on the sample metrics, ${base.recommendation} remains the best fit for this instance.`,
+    };
+  }
+  return base;
+}
+
+// Unified history mock (ML + LLM rows in the 7-column grid shape).
+export const mockUnifiedHistory = [
+  { date: "2026-06-10 14:21:03", csp: "AWS", resourceId: "i-0abc123", resourceType: "AmazonEC2",
+    alarmType: "mail", alarmMessage: "기존 타입 t3.large에서 t3.medium으로 변경 추천", recommendType: "downsize" },
+  { date: "2026-06-10 11:02:55", csp: "AZURE", resourceId: "i-demo-keep", resourceType: "VM",
+    alarmType: "LLM", alarmMessage: "Keep the current size.", recommendType: "keep" },
+  { date: "2026-06-09 19:40:10", csp: "-", resourceId: "i-demo-upsize", resourceType: "VM",
+    alarmType: "LLM", alarmMessage: "Step up one size (t3.xlarge).", recommendType: "upsize" },
+];

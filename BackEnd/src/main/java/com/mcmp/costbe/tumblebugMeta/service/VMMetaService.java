@@ -6,6 +6,8 @@ import com.mcmp.costbe.tumblebugMeta.model.k8s.K8sClusterItemModel;
 import com.mcmp.costbe.tumblebugMeta.model.k8s.K8sClusterListModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TBBMCIItemModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TBBMCIModel;
+import com.mcmp.costbe.tumblebugMeta.model.mci.TbInfraNodeListModel;
+import com.mcmp.costbe.tumblebugMeta.model.mci.TbInfraNodeSpecModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TbVmInfoModel;
 import com.mcmp.costbe.tumblebugMeta.model.ns.TBBNSItemModel;
 import com.mcmp.costbe.tumblebugMeta.model.ns.TBBNSModel;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -362,6 +365,51 @@ public class VMMetaService {
 
         } else {
             log.error("[ERROR] : GET TUMBLEBUG META - MCI => NS IS EMPTY");
+            return null;
+        }
+    }
+
+    /**
+     * Look up a single node's spec (cspSpecName/vCPU/memoryGiB) via
+     * GET /ns/{nsId}/infra/{mciId}?nodeId={vmId}.
+     * <p>
+     * Used to enrich the recommend-tab instance list, where one HTTP call is
+     * made per instance. A short timeout is used and any failure/timeout
+     * returns null so a single slow/broken instance doesn't block the rest.
+     */
+    public TbInfraNodeSpecModel getTBBNodeSpec(String nsId, String mciId, String vmId) {
+
+        if (nsId == null || mciId == null || vmId == null) {
+            return null;
+        }
+
+        String apiUrl = String.format("%s/ns/%s/infra/%s?nodeId=%s", tumblebugUrl, nsId, mciId, vmId);
+
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3000);
+        requestFactory.setReadTimeout(3000);
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
+
+        String auth = tumblebugUserNM + ":" + tumblebugPW;
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
+        String authHeader = "Basic " + new String(encodedAuth);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Authorization", authHeader);
+        HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+
+        try {
+            ResponseEntity<TbInfraNodeListModel> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, httpEntity, TbInfraNodeListModel.class);
+            TbInfraNodeListModel response = responseEntity.getBody();
+
+            if (response != null && response.getNode() != null && !response.getNode().isEmpty()) {
+                return response.getNode().get(0).getSpec();
+            } else {
+                log.warn("TUMBLEBUG META - NODE SPEC => EMPTY => ns : {}, mci : {}, vm : {}, response : {}", nsId, mciId, vmId, response);
+                return null;
+            }
+        } catch (Exception e) {
+            log.warn("FAIL TO GET TUMBLEBUG META - NODE SPEC => NS ID : {}, MCI ID : {}, VM ID : {}, error : {}", nsId, mciId, vmId, e.getMessage());
             return null;
         }
     }

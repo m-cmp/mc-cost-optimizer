@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="recommendationHistory">
+
+    <!-- id (AUTO_INCREMENT) and created_at (DEFAULT CURRENT_TIMESTAMP) are DB-generated. -->
+    <insert id="insertHistory"
+            parameterType="com.mcmp.costbe.llm_recommender.model.RecommendationHistory">
+        INSERT INTO recommendation_history (ns_id, instance_id, recommendation, response_json)
+        VALUES (#{nsId}, #{instanceId}, #{recommendation}, #{responseJson})
+    </insert>
+
+    <select id="selectHistoryByNs" parameterType="map"
+            resultType="com.mcmp.costbe.llm_recommender.model.RecommendationHistory">
+        SELECT id,
+               ns_id        AS nsId,
+               instance_id  AS instanceId,
+               recommendation,
+               response_json AS responseJson,
+               DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS createdAt
+          FROM recommendation_history
+         WHERE ns_id = #{nsId}
+         ORDER BY created_at DESC, id DESC
+         LIMIT #{limit}
+    </select>
+
+</mapper>

@@ -20,6 +20,19 @@ CREATE TABLE IF NOT EXISTS `alarm_history` (
                                  PRIMARY KEY (`event_type`,`resource_id`,`resource_type`,`occure_date`,`csp_type`,`alarm_impl`,`project_cd`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
+-- cost.recommendation_history definition
+
+CREATE TABLE IF NOT EXISTS `recommendation_history` (
+                                 `id`             bigint NOT NULL AUTO_INCREMENT,
+                                 `ns_id`          varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
+                                 `instance_id`    varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
+                                 `recommendation` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+                                 `response_json`  text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci,
+                                 `created_at`     timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                 PRIMARY KEY (`id`),
+                                 KEY `idx_ns` (`ns_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
 -- cost.asset_compute_metric definition
 
 CREATE TABLE IF NOT EXISTS `asset_compute_metric` (
@@ -453,3 +466,20 @@ CREATE TABLE IF NOT EXISTS `gcp_billing_raw` (
     KEY `idx_service` (`service_description`,`usage_start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci COMMENT='GCP 빌링 원본 데이터';
 
+
+-- ============================================================
+-- provider_keys: LLM 프로바이더 API 키 (AES-256-GCM 암호화 저장)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS `provider_keys` (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `ns_id` varchar(100) NOT NULL COMMENT 'namespace ID',
+    `provider` varchar(20)  NOT NULL COMMENT 'openai | anthropic | google',
+    `enc_key` text NOT NULL COMMENT 'AES-256-GCM 암호문 (base64)',
+    `iv` varchar(100) NOT NULL COMMENT 'nonce 12바이트 (base64)',
+    `tag` varchar(100) NOT NULL COMMENT 'GCM 인증 태그 16바이트 (base64)',
+    `created_at` timestamp DEFAULT current_timestamp(),
+    `updated_at` timestamp DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_ns_provider` (`ns_id`, `provider`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci COMMENT='LLM 프로바이더 API 키 (AES-256-GCM 암호화 저장)';
