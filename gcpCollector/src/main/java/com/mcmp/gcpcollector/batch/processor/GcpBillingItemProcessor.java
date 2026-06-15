@@ -10,6 +10,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class GcpBillingItemProcessor implements ItemProcessor<Map<String, Object>, GcpBillingRawDto> {
@@ -22,6 +24,7 @@ public class GcpBillingItemProcessor implements ItemProcessor<Map<String, Object
 
     @Override
     public GcpBillingRawDto process(Map<String, Object> row) {
+        String labels = str(row, "labels");
         return GcpBillingRawDto.builder()
                 .billingAccountId(str(row, "billing_account_id"))
                 .cost(dbl(row, "cost"))
@@ -52,10 +55,26 @@ public class GcpBillingItemProcessor implements ItemProcessor<Map<String, Object
                 .adjustmentInfoDescription(str(row, "adjustment_info_description"))
                 .adjustmentInfoMode(str(row, "adjustment_info_mode"))
                 .adjustmentInfoType(str(row, "adjustment_info_type"))
-                .labels(str(row, "labels"))
+                .labels(labels)
                 .systemLabels(str(row, "system_labels"))
                 .tags(str(row, "tags"))
+                // labels(sys.* JSON)에서 servicegroup_meta 매핑용 식별자 추출
+                .cspInstanceid(labelValue(labels, "sys_cspresourceid"))
+                .vmId(labelValue(labels, "sys_id"))
+                .mciId(labelValue(labels, "sys_infraid"))
+                .serviceCd(labelValue(labels, "sys_namespace"))
                 .build();
+    }
+
+    // labels 형식: [{"key":"sys_cspresourceid","value":"tb53..."}, ...]
+    // GCP 빌링은 sys.cspResourceId → sys_cspresourceid 로 평탄화되므로 키 변형(. _ 대소문자)에 tolerant 하게 매칭
+    private static String labelValue(String labelsJson, String key) {
+        if (labelsJson == null || labelsJson.isEmpty()) return null;
+        String flexKey = key.replace("_", "[._]?");
+        Matcher m = Pattern
+                .compile("\"key\"\\s*:\\s*\"(?i:" + flexKey + ")\"\\s*,\\s*\"value\"\\s*:\\s*\"([^\"]*)\"")
+                .matcher(labelsJson);
+        return m.find() ? m.group(1) : null;
     }
 
     private String str(Map<String, Object> row, String key) {

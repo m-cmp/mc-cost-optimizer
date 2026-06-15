@@ -1,0 +1,57 @@
+import { useState, useCallback } from "react";
+import { recommend } from "@/api/llm_recommender/llmRecommender";
+import { useProjectStore } from "@/stores/useProjectStore";
+import { logger } from "@/utils/logger";
+
+/**
+ * @hook useLlmRecommend
+ * @description Runs LLM recommendation sequentially for the selected instances,
+ *   one request at a time, tracking progress. One instance's failure is isolated.
+ */
+export function useLlmRecommend() {
+  const [results, setResults] = useState([]); // [{ instanceId, data?, error? }]
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [running, setRunning] = useState(false);
+
+  const projectId = useProjectStore((s) => s.projectId);
+
+  const run = useCallback(
+    async (instanceIds, provider, model, userQuestion) => {
+      if (running || !instanceIds?.length || !projectId) return;
+      setRunning(true);
+      setResults([]);
+      setProgress({ done: 0, total: instanceIds.length });
+
+      const acc = [];
+      for (let i = 0; i < instanceIds.length; i++) {
+        const instanceId = instanceIds[i];
+        try {
+          const res = await recommend({
+            instanceId,
+            provider,
+            model,
+            userQuestion,
+            nsId: projectId,
+          });
+          acc.push({ instanceId, data: res.data.Data });
+        } catch (err) {
+          logger.error("LLM recommend error:", err);
+          acc.push({
+            instanceId,
+            data: {
+              instance: instanceId,
+              status: "error",
+              error: err.userMessage || "Request failed",
+            },
+          });
+        }
+        setResults([...acc]);
+        setProgress({ done: i + 1, total: instanceIds.length });
+      }
+      setRunning(false);
+    },
+    [running, projectId],
+  );
+
+  return { results, progress, running, run };
+}

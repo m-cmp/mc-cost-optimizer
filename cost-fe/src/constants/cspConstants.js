@@ -14,6 +14,16 @@ export const CSP_NAMES = {
 };
 
 /**
+ * CSP codes sent in billing/invoice/alarm API requests (`selectedCsps`).
+ *
+ * IMPORTANT: These must exactly match the CSP codes stored in the backend DB
+ * (e.g. monthly_summation.csp), which are UPPERCASE — and therefore differ from
+ * the display names in CSP_NAMES (e.g. 'AZURE' here vs 'Azure' for display).
+ * Add a new CSP here once and every request hook picks it up automatically.
+ */
+export const BILLING_CSPS = ['AWS', 'AZURE', 'NCP', 'GCP'];
+
+/**
  * Unified configuration per CSP
  * @property {string} name - CSP display name
  * @property {string} color - Hex color code (used in charts, etc.)

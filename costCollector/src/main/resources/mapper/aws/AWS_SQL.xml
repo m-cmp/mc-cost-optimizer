@@ -215,17 +215,19 @@
     </insert>
 
     <insert id="insertMonthlySum" parameterType="String">
-        INSERT INTO monthly_summation(`year_month` , project_cd, csp, total_cost)
+        <!-- project_cd / workspace_cd 모두 ns_id(= servicegroup_meta.service_cd) 로 적재. 미매칭은 'undefined' 버킷 -->
+        INSERT INTO monthly_summation(`year_month` , project_cd, csp, total_cost, workspace_cd)
         SELECT ${value}
-             , sm.service_cd
-             , sm.csp_type
+             , COALESCE(sm.service_cd, 'undefined')
+             , 'AWS'
              , COALESCE(SUM(ttbd.lineitem_unblendedcost), 0)
+             , COALESCE(sm.service_cd, 'undefined')
           FROM tbl_table_billing_detail_${value} ttbd
           LEFT JOIN servicegroup_meta sm
             ON sm.csp_instanceid = ttbd.lineitem_resourceid
-         GROUP BY sm.csp_type
-               , sm.service_cd
+         GROUP BY COALESCE(sm.service_cd, 'undefined')
             ON DUPLICATE KEY update total_cost = values(total_cost)
+               , workspace_cd = values(workspace_cd)
     </insert>
 
     <insert id="insertDailySumByProduct" parameterType="String">

@@ -121,12 +121,12 @@ export const validateBudgetInput = (value) => {
  */
 export const getCspCurrency = (csp) => {
   const upperCsp = csp?.toUpperCase();
-  // Azure/NCP는 원화(KRW)로 입력
+  // Azure/NCP/GCP는 원화(KRW)로 입력 (GCP raw/예산은 KRW 기준)
   // Backend에서 KRW를 USD로 변환하여 화면에 출력
-  if (upperCsp === "AZURE" || upperCsp === "NCP") {
+  if (upperCsp === "AZURE" || upperCsp === "NCP" || upperCsp === "GCP") {
     return "KRW";
   }
-  // AWS, GCP, etc. use USD
+  // AWS 등은 USD
   return "USD";
 };
 
@@ -162,6 +162,7 @@ export const transformApiToUiFormat = (apiData) => {
     AWS: Array(12).fill(0),
     Azure: Array(12).fill(0),
     NCP: Array(12).fill(0),
+    GCP: Array(12).fill(0),
   };
 
   if (!apiData || !Array.isArray(apiData) || apiData.length === 0) {

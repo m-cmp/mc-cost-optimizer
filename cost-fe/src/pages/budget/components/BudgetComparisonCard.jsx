@@ -4,6 +4,18 @@ import Chart from "react-apexcharts";
 import { CSP_CONFIG } from "@/constants/cspConstants";
 import { MONTH_NAMES } from "@/constants/dateConstants";
 
+/**
+ * 상세 보기(CSP별) 차트에 그릴 CSP 정의.
+ * key 는 백엔드 CspAmountModel 의 JSON 키(AWS/NCP/Azure/GCP)와 정확히 일치해야 한다.
+ * 새 CSP 추가 시 이 배열에만 항목을 넣으면 series/colors/legend/tooltip 에 자동 반영된다.
+ */
+const COMPARISON_CSPS = [
+  { key: "AWS", budgetColor: "#9fb8d9", usageColor: "#1a5a9e" },
+  { key: "NCP", budgetColor: "#8fc9a8", usageColor: "#0d8f63" },
+  { key: "Azure", budgetColor: "#e6b98a", usageColor: "#c77d08" },
+  { key: "GCP", budgetColor: "#f1a7a0", usageColor: "#db4437" },
+];
+
 export default function BudgetComparisonCard({ data, loading }) {
   const [showDetailedView, setShowDetailedView] = useState(true);
 
@@ -32,81 +44,38 @@ export default function BudgetComparisonCard({ data, loading }) {
   let series, colors, legendItems;
 
   if (showDetailedView) {
-    const awsBudgetData = data.months.flatMap((m) => [m.budget.AWS || 0, 0]);
-    const awsUsageData = data.months.flatMap((m) => [0, m.actual.AWS || 0]);
-    const ncpBudgetData = data.months.flatMap((m) => [m.budget.NCP || 0, 0]);
-    const ncpUsageData = data.months.flatMap((m) => [0, m.actual.NCP || 0]);
-    const azureBudgetData = data.months.flatMap((m) => [
-      m.budget.Azure || 0,
-      0,
+    series = COMPARISON_CSPS.flatMap((c) => [
+      {
+        name: `${c.key}-Budget`,
+        data: data.months.flatMap((m) => [m.budget[c.key] || 0, 0]),
+      },
+      {
+        name: `${c.key}-Usage`,
+        data: data.months.flatMap((m) => [0, m.actual[c.key] || 0]),
+      },
     ]);
-    const azureUsageData = data.months.flatMap((m) => [0, m.actual.Azure || 0]);
 
-    series = [
-      { name: "AWS-Budget", data: awsBudgetData },
-      { name: "AWS-Usage", data: awsUsageData },
-      { name: "NCP-Budget", data: ncpBudgetData },
-      { name: "NCP-Usage", data: ncpUsageData },
-      { name: "Azure-Budget", data: azureBudgetData },
-      { name: "Azure-Usage", data: azureUsageData },
-    ];
-
-    colors = [
-      "#9fb8d9",
-      "#1a5a9e", // AWS
-      "#8fc9a8",
-      "#0d8f63", // NCP
-      "#e6b98a",
-      "#c77d08", // Azure
-    ];
+    colors = COMPARISON_CSPS.flatMap((c) => [c.budgetColor, c.usageColor]);
 
     legendItems = (
       <div className="d-flex justify-content-center align-items-center gap-4 mt-3">
-        <div className="d-flex align-items-center">
-          <span
-            style={{
-              width: "12px",
-              height: "12px",
-              backgroundColor: "#1a5a9e",
-              borderRadius: "2px",
-              display: "inline-block",
-              marginRight: "6px",
-            }}
-          ></span>
-          <span style={{ fontSize: "12px" }}>
-            {CSP_CONFIG.AWS?.name || "AWS"}
-          </span>
-        </div>
-        <div className="d-flex align-items-center">
-          <span
-            style={{
-              width: "12px",
-              height: "12px",
-              backgroundColor: "#0d8f63",
-              borderRadius: "2px",
-              display: "inline-block",
-              marginRight: "6px",
-            }}
-          ></span>
-          <span style={{ fontSize: "12px" }}>
-            {CSP_CONFIG.NCP?.name || "NCP"}
-          </span>
-        </div>
-        <div className="d-flex align-items-center">
-          <span
-            style={{
-              width: "12px",
-              height: "12px",
-              backgroundColor: "#c77d08",
-              borderRadius: "2px",
-              display: "inline-block",
-              marginRight: "6px",
-            }}
-          ></span>
-          <span style={{ fontSize: "12px" }}>
-            {CSP_CONFIG.AZURE?.name || "Azure"}
-          </span>
-        </div>
+        {COMPARISON_CSPS.map((c) => (
+          <div className="d-flex align-items-center" key={c.key}>
+            <span
+              style={{
+                width: "12px",
+                height: "12px",
+                backgroundColor: c.usageColor,
+                borderRadius: "2px",
+                display: "inline-block",
+                marginRight: "6px",
+              }}
+            ></span>
+            <span style={{ fontSize: "12px" }}>
+              {CSP_CONFIG[c.key.toUpperCase()]?.name || c.key}
+            </span>
+          </div>
+        ))}
       </div>
     );
   } else {
@@ -235,22 +204,17 @@ export default function BudgetComparisonCard({ data, loading }) {
         `;
 
         if (showDetailedView) {
-          const cspNames = ["AWS", "NCP", "Azure"];
-          const cspColors = isBudget
-            ? ["#9fb8d9", "#8fc9a8", "#e6b98a"]
-            : ["#1a5a9e", "#0d8f63", "#c77d08"];
-
-          cspNames.forEach((csp, idx) => {
+          COMPARISON_CSPS.forEach((c, idx) => {
             const seriesIdx = idx * 2 + (isBudget ? 0 : 1);
             const value = series[seriesIdx][dataPointIndex];
 
             if (value && value > 0) {
-              const cspDisplayName = CSP_CONFIG[csp.toUpperCase()]?.name || csp;
+              const cspDisplayName =
+                CSP_CONFIG[c.key.toUpperCase()]?.name || c.key;
+              const markerColor = isBudget ? c.budgetColor : c.usageColor;
               tooltipContent += `
                 <div class="apexcharts-tooltip-series-group" style="display: flex; align-items: center; padding: 3px 10px;">
-                  <span class="apexcharts-tooltip-marker" style="background-color: ${
-                    cspColors[idx]
-                  }; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px;"></span>
+                  <span class="apexcharts-tooltip-marker" style="background-color: ${markerColor}; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px;"></span>
                   <div style="display: flex; justify-content: space-between; width: 100%;">
                     <span style="margin-right: 10px;">${cspDisplayName}:</span>
                     <span style="font-weight: 600;">$${value.toFixed(2)}</span>

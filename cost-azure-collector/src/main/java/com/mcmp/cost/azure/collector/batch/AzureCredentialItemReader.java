@@ -2,6 +2,7 @@ package com.mcmp.cost.azure.collector.batch;
 
 import com.mcmp.cost.azure.collector.dto.AzureApiCredentialDto;
 import com.mcmp.cost.azure.collector.properties.AzureCredentialProperties;
+import com.mcmp.cost.azure.collector.credential.CredentialResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -18,6 +19,7 @@ import java.util.List;
 public class AzureCredentialItemReader implements ItemReader<AzureApiCredentialDto> {
 
     private final AzureCredentialProperties azureCredentialProperties;
+    private final CredentialResolver credentialResolver;
     private Iterator<AzureApiCredentialDto> credentialIterator;
 
     @Override
@@ -41,10 +43,11 @@ public class AzureCredentialItemReader implements ItemReader<AzureApiCredentialD
         List<AzureApiCredentialDto> credentials = new ArrayList<>();
         AzureApiCredentialDto azureApiCredentialDto = new AzureApiCredentialDto();
 
-        azureApiCredentialDto.setTenantId(azureCredentialProperties.getTenantId());
-        azureApiCredentialDto.setClientId(azureCredentialProperties.getClientId());
-        azureApiCredentialDto.setClientSecret(azureCredentialProperties.getClientSecret());
-        azureApiCredentialDto.setSubscriptionId(azureCredentialProperties.getSubscriptionId());
+        // openbao.enabled 정책에 따라 env / OpenBao 에서 크레덴셜 결정 (OpenBao 키: ARM_*)
+        azureApiCredentialDto.setTenantId(credentialResolver.resolve("azure", "ARM_TENANT_ID", azureCredentialProperties.getTenantId()));
+        azureApiCredentialDto.setClientId(credentialResolver.resolve("azure", "ARM_CLIENT_ID", azureCredentialProperties.getClientId()));
+        azureApiCredentialDto.setClientSecret(credentialResolver.resolve("azure", "ARM_CLIENT_SECRET", azureCredentialProperties.getClientSecret()));
+        azureApiCredentialDto.setSubscriptionId(credentialResolver.resolve("azure", "ARM_SUBSCRIPTION_ID", azureCredentialProperties.getSubscriptionId()));
 
         credentials.add(azureApiCredentialDto);
         return credentials;

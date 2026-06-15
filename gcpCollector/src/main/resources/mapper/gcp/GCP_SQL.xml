@@ -51,27 +51,41 @@
             ,system_labels                   TEXT            NULL COMMENT '시스템 라벨 (JSON)'
             ,tags                            TEXT            NULL COMMENT '태그 (JSON)'
 
+            -- labels(sys.*) 추출 → servicegroup_meta 매핑용 식별자 (컬럼명 servicegroup_meta와 정렬)
+            ,csp_instanceid                  VARCHAR(200)    NULL COMMENT 'labels.sys_cspresourceid (servicegroup_meta.csp_instanceid 조인키)'
+            ,vm_id                           VARCHAR(100)    NULL COMMENT 'labels.sys_id'
+            ,mci_id                          VARCHAR(100)    NULL COMMENT 'labels.sys_infraid'
+            ,service_cd                      VARCHAR(100)    NULL COMMENT 'labels.sys_namespace (ns_id)'
+
             ,INDEX idx_billing_date (billing_account_id, invoice_month)
             ,INDEX idx_project_date (project_id, usage_start_time)
             ,INDEX idx_service (service_description, usage_start_time)
+            ,INDEX idx_csp_instanceid (csp_instanceid)
 
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='GCP 빌링 원본 데이터'
     </update>
 
     <insert id="upsertMonthly" parameterType="String">
+        <!--
+          매핑 키: labels.sys_cspresourceid(= raw.csp_instanceid) ↔ servicegroup_meta.csp_instanceid
+          - project_cd / workspace_cd 모두 ns_id(= meta.service_cd) 로 적재
+          - meta 미매칭 시 labels.sys_namespace(raw.service_cd) → 그래도 없으면 'undefined'
+          - 통화: raw.cost 는 KRW 이므로 USD 로 환산하여 저장 (monthly_summation 은 USD 기준, AWS 와 동일)
+          - (기존 csp_account = project_id 방식은 실제 GCP project_id 와 안 맞아 폐기)
+        -->
         INSERT INTO monthly_summation (`year_month`, project_cd, csp, total_cost, workspace_cd)
         SELECT
              raw.invoice_month
-            ,COALESCE(meta.service_cd, raw.project_id)
+            ,COALESCE(meta.service_cd, raw.service_cd, 'undefined')
             ,'GCP'
-            ,CAST(SUM(raw.cost) AS CHAR)
-            ,meta.workspace_cd
+            ,CAST(SUM(raw.cost) / ${krwPerUsd} AS CHAR)
+            ,COALESCE(meta.service_cd, raw.service_cd, 'undefined')
         FROM gcp_billing_raw raw
         LEFT JOIN servicegroup_meta meta
             ON  meta.csp_type    = 'GCP'
-            AND meta.csp_account COLLATE utf8mb4_uca1400_ai_ci = raw.project_id
+            AND meta.csp_instanceid COLLATE utf8mb4_uca1400_ai_ci = raw.csp_instanceid
         WHERE raw.invoice_month = #{invoiceMonth}
-        GROUP BY raw.invoice_month, COALESCE(meta.service_cd, raw.project_id), meta.workspace_cd
+        GROUP BY raw.invoice_month, COALESCE(meta.service_cd, raw.service_cd, 'undefined')
         ON DUPLICATE KEY UPDATE
             total_cost   = VALUES(total_cost)
            ,workspace_cd = VALUES(workspace_cd)
@@ -370,6 +384,10 @@
             ,labels
             ,system_labels
             ,tags
+            ,csp_instanceid
+            ,vm_id
+            ,mci_id
+            ,service_cd
         ) VALUES
         <foreach collection="list" item="item" separator=",">
         (
@@ -406,6 +424,10 @@
             ,#{item.labels}
             ,#{item.systemLabels}
             ,#{item.tags}
+            ,#{item.cspInstanceid}
+            ,#{item.vmId}
+            ,#{item.mciId}
+            ,#{item.serviceCd}
         )
         </foreach>
     </insert>
