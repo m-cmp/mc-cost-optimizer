@@ -53,10 +53,17 @@ CREATE TABLE IF NOT EXISTS gcp_billing_raw
     system_labels                   TEXT            NULL COMMENT '시스템 라벨 (JSON)',
     tags                            TEXT            NULL COMMENT '태그 (JSON)',
 
+    -- labels(sys.*) 추출 → servicegroup_meta 매핑용 식별자 (컬럼명 servicegroup_meta와 정렬)
+    csp_instanceid                  VARCHAR(200)    NULL COMMENT 'labels.sys_cspresourceid (servicegroup_meta.csp_instanceid 조인키)',
+    vm_id                           VARCHAR(100)    NULL COMMENT 'labels.sys_id',
+    mci_id                          VARCHAR(100)    NULL COMMENT 'labels.sys_infraid',
+    service_cd                      VARCHAR(100)    NULL COMMENT 'labels.sys_namespace (ns_id)',
+
     -- 인덱스
     INDEX idx_billing_date (billing_account_id, invoice_month),
     INDEX idx_project_date (project_id, usage_start_time),
-    INDEX idx_service (service_description, usage_start_time)
+    INDEX idx_service (service_description, usage_start_time),
+    INDEX idx_csp_instanceid (csp_instanceid)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='GCP 빌링 원본 데이터';
 

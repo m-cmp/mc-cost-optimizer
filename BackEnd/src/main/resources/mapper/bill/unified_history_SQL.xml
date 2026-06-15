@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="unifiedHistory">
+
+    <!-- ML side: alarm_history, resize-recommendation rows only (cost-warning rows excluded). -->
+    <select id="selectAlarmRecommendations" parameterType="map"
+            resultType="com.mcmp.costbe.llm_recommender.model.UnifiedHistoryRow">
+        SELECT DATE_FORMAT(occure_dt, '%Y-%m-%d %H:%i:%s') AS `date`,
+               csp_type      AS csp,
+               resource_id   AS resourceId,
+               resource_type AS resourceType,
+               alarm_impl    AS alarmType,
+               note          AS alarmMessage,
+               plan          AS recommendType
+          FROM alarm_history
+         WHERE project_cd = #{nsId}
+           AND event_type = '사이즈 변경'
+         ORDER BY occure_dt DESC
+         LIMIT #{limit}
+    </select>
+
+    <!-- LLM side: recommendation_history JOIN servicegroup_meta for csp. -->
+    <select id="selectLlmRecommendations" parameterType="map"
+            resultType="com.mcmp.costbe.llm_recommender.model.UnifiedHistoryRow">
+        SELECT DATE_FORMAT(rh.created_at, '%Y-%m-%d %H:%i:%s') AS `date`,
+               COALESCE(sgm.csp_type, '-') AS csp,
+               rh.instance_id   AS resourceId,
+               'VM'             AS resourceType,
+               'LLM'            AS alarmType,
+               rh.recommendation AS recommendType,
+               rh.response_json  AS responseJson
+          FROM recommendation_history rh
+          LEFT JOIN servicegroup_meta sgm ON rh.instance_id = sgm.csp_instanceid
+         WHERE rh.ns_id = #{nsId}
+         ORDER BY rh.created_at DESC
+         LIMIT #{limit}
+    </select>
+
+</mapper>

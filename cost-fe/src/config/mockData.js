@@ -352,74 +352,134 @@ export const mockBudgetComparisonData = {
     {
       month: 1,
       yearMonth: "202501",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 720, AWS: 350, NCP: 220, AZURE: 150 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 820, AWS: 350, NCP: 220, Azure: 150, GCP: 100 },
     },
     {
       month: 2,
       yearMonth: "202502",
-      budget: { total: 850, AWS: 450, NCP: 250, AZURE: 150 },
-      actual: { total: 780, AWS: 380, NCP: 240, AZURE: 160 },
+      budget: { total: 970, AWS: 450, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 890, AWS: 380, NCP: 240, Azure: 160, GCP: 110 },
     },
     {
       month: 3,
       yearMonth: "202503",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 850, AWS: 420, NCP: 260, AZURE: 170 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 970, AWS: 420, NCP: 260, Azure: 170, GCP: 120 },
     },
     {
       month: 4,
       yearMonth: "202504",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 690, AWS: 330, NCP: 210, AZURE: 150 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 780, AWS: 330, NCP: 210, Azure: 150, GCP: 90 },
     },
     {
       month: 5,
       yearMonth: "202505",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 750, AWS: 370, NCP: 230, AZURE: 150 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 860, AWS: 370, NCP: 230, Azure: 150, GCP: 110 },
     },
     {
       month: 6,
       yearMonth: "202506",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 810, AWS: 400, NCP: 250, AZURE: 160 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 930, AWS: 400, NCP: 250, Azure: 160, GCP: 120 },
     },
     {
       month: 7,
       yearMonth: "202507",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 770, AWS: 380, NCP: 240, AZURE: 150 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 870, AWS: 380, NCP: 240, Azure: 150, GCP: 100 },
     },
     {
       month: 8,
       yearMonth: "202508",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 790, AWS: 390, NCP: 250, AZURE: 150 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 900, AWS: 390, NCP: 250, Azure: 150, GCP: 110 },
     },
     {
       month: 9,
       yearMonth: "202509",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 730, AWS: 360, NCP: 220, AZURE: 150 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 830, AWS: 360, NCP: 220, Azure: 150, GCP: 100 },
     },
     {
       month: 10,
       yearMonth: "202510",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 680, AWS: 340, NCP: 200, AZURE: 140 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 770, AWS: 340, NCP: 200, Azure: 140, GCP: 90 },
     },
     {
       month: 11,
       yearMonth: "202511",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 0, AWS: 0, NCP: 0, AZURE: 0 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 0, AWS: 0, NCP: 0, Azure: 0, GCP: 0 },
     },
     {
       month: 12,
       yearMonth: "202512",
-      budget: { total: 800, AWS: 400, NCP: 250, AZURE: 150 },
-      actual: { total: 0, AWS: 0, NCP: 0, AZURE: 0 },
+      budget: { total: 920, AWS: 400, NCP: 250, Azure: 150, GCP: 120 },
+      actual: { total: 0, AWS: 0, NCP: 0, Azure: 0, GCP: 0 },
     },
   ],
 };
+
+// --- LLM recommender mocks ---
+// Columns mirror the mockup: Instance ID / Name / CSP / Current Spec / Monthly Cost / Status.
+// Five instances cover every badge type (upsize/keep/downsize/terminate) plus the insufficient_data edge.
+export const mockInstances = [
+  { instanceId: "i-demo-upsize", name: "prod-web-01", csp: "AWS", spec: "t3.large", usd: 60.2, status: "running" },
+  { instanceId: "i-demo-keep", name: "prod-api-01", csp: "AZURE", spec: "D4s_v3", usd: 140.5, status: "running" },
+  { instanceId: "i-demo-downsize", name: "batch-night", csp: "NCP", spec: "s2-g3", usd: 88.0, status: "running" },
+  { instanceId: "i-demo-terminate", name: "legacy-idle", csp: "GCP", spec: "e2-standard-4", usd: 97.3, status: "running" },
+  { instanceId: "i-demo-insufficient", name: "new-host", csp: "AWS", spec: "t3.small", usd: 12.0, status: "running" },
+];
+
+export function mockRecommendation(instanceId, userQuestion) {
+  const map = {
+    "i-demo-upsize": {
+      instance: instanceId, recommendation: "upsize",
+      detail: "Step up one size (t3.xlarge).",
+      reasoning: "CPU P95 ~95% saturated all day, binding=CPU; insufficient headroom risks incidents.",
+      confidence: "high", status: "ok",
+    },
+    "i-demo-keep": {
+      instance: instanceId, recommendation: "keep",
+      detail: "Keep the current size.",
+      reasoning: "P95 ~55% sits in a stable band with a flat trend; little to gain from resizing.",
+      confidence: "medium", status: "ok",
+    },
+    "i-demo-downsize": {
+      instance: instanceId, recommendation: "downsize",
+      detail: "Drop one size (s2-g2); ~$40/mo savings.",
+      reasoning: "Idle 92% outside the nightly batch; even the peak stays at P95 22%.",
+      confidence: "high", status: "ok",
+    },
+    "i-demo-terminate": {
+      instance: instanceId, recommendation: "terminate",
+      detail: "Likely unused — review for deletion.",
+      reasoning: "14-day average CPU 0.8% with almost no traffic (adjacent to insufficient_data).",
+      confidence: "low", status: "ok",
+    },
+    "i-demo-insufficient": { instance: instanceId, status: "insufficient_data" },
+  };
+  const base = map[instanceId] || map["i-demo-keep"];
+  // Feature #2: when a question is asked, attach a grounded mock answer (only for ok results).
+  if (userQuestion && userQuestion.trim() && base.status === "ok") {
+    return {
+      ...base,
+      answer: `(mock) Regarding "${userQuestion.trim()}": based on the sample metrics, ${base.recommendation} remains the best fit for this instance.`,
+    };
+  }
+  return base;
+}
+
+// Unified history mock (ML + LLM rows in the 7-column grid shape).
+export const mockUnifiedHistory = [
+  { date: "2026-06-10 14:21:03", csp: "AWS", resourceId: "i-0abc123", resourceType: "AmazonEC2",
+    alarmType: "mail", alarmMessage: "기존 타입 t3.large에서 t3.medium으로 변경 추천", recommendType: "downsize" },
+  { date: "2026-06-10 11:02:55", csp: "AZURE", resourceId: "i-demo-keep", resourceType: "VM",
+    alarmType: "LLM", alarmMessage: "Keep the current size.", recommendType: "keep" },
+  { date: "2026-06-09 19:40:10", csp: "-", resourceId: "i-demo-upsize", resourceType: "VM",
+    alarmType: "LLM", alarmMessage: "Step up one size (t3.xlarge).", recommendType: "upsize" },
+];

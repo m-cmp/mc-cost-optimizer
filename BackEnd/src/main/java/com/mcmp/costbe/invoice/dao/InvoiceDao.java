@@ -33,4 +33,8 @@ public class InvoiceDao {
         return sqlSession.selectList("invoice.getAzureInvoice", req);
     }
 
+    public List<InvoiceItemModel> getGCPInvoice(InvoiceReqModel req){
+        return sqlSession.selectList("invoice.getGCPInvoice", req);
+    }
+
 }

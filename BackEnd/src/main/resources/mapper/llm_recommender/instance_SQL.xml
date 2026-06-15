@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="instance">
+
+    <!-- usd is not in servicegroup_meta yet, so it is left null.
+         spec is filled in afterwards via a live Tumblebug call (vmId/mciId/nsId below). -->
+    <select id="selectInstancesByNs" parameterType="map"
+            resultType="com.mcmp.costbe.llm_recommender.model.ResourceInstance">
+        SELECT csp_instanceid AS instanceId,
+               COALESCE(NULLIF(vm_nm, ''), mci_nm) AS name,
+               csp_type AS csp,
+               CASE WHEN instance_running_status = 'Y' THEN 'running' ELSE 'stopped' END AS status,
+               vm_id AS vmId,
+               mci_id AS mciId,
+               service_cd AS nsId
+          FROM servicegroup_meta
+         WHERE service_cd = #{nsId}
+         ORDER BY csp_instanceid
+    </select>
+
+</mapper>

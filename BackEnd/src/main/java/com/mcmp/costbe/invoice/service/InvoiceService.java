@@ -87,6 +87,21 @@ public class InvoiceService {
             log.error("[Invoice Widget Log] Azure Error : {}", ex.getMessage(), ex);
         }
 
+        try {
+            List<InvoiceItemModel> gcpData = invoiceDao.getGCPInvoice(req);
+            if(gcpData != null) {
+                result.addAll(gcpData);
+            }
+        } catch (BadSqlGrammarException ex){
+            if(exceptionService.isTableNotFound(ex)){
+                log.warn("[Invoice Widget Log] GCP NotFoundTable : {}", ex.getMessage());
+            } else {
+                log.warn("[Invoice Widget Log] GCP Error : {}", ex.getMessage());
+            }
+        } catch (Exception ex){
+            log.error("[Invoice Widget Log] GCP Error : {}", ex.getMessage(), ex);
+        }
+
         // 테이블 없음 또는 데이터 없음 -> null 반환
         if(hasTableNotFoundError || result.isEmpty()) {
             return null;

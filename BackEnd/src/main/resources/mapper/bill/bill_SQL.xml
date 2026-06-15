@@ -40,7 +40,7 @@ SELECT (
                      </foreach>
               ) + (
               -- 현재월 NCP VM 데이터 (VM별 최신 누적 금액만 반영)
-              SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0
+              SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / ${krwPerUsd}
                 FROM (
                     SELECT n1.instance_no, n1.demand_amount
                     FROM ncp_cost_vm_month n1
@@ -68,7 +68,7 @@ SELECT (
                      </if>
               ) + (
               -- 현재월 Azure VM 데이터 (조인 후 계산)
-              SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0
+              SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / ${krwPerUsd}
                 FROM azure_cost_vm_daily acvd
                INNER JOIN servicegroup_meta sm
                   ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
@@ -102,7 +102,7 @@ SELECT (
                      </foreach>
               ) + (
               -- 이전월 NCP VM 데이터 (VM별 최신 누적 금액만 반영)
-                SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0
+                SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / ${krwPerUsd}
                   FROM (
                     SELECT n1.instance_no, n1.demand_amount
                     FROM ncp_cost_vm_month n1
@@ -130,7 +130,7 @@ SELECT (
                     </if>
               ) + (
               -- 이전월 Azure VM 데이터 (조인 후 계산)
-              SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0
+              SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / ${krwPerUsd}
                 FROM azure_cost_vm_daily acvd
                INNER JOIN servicegroup_meta sm
                   ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
@@ -186,7 +186,7 @@ SELECT ym.`year_month`
 
        -- NCP VM 데이터 (VM별 월별 최신 누적 금액만 반영)
         SELECT nvd_latest.demand_month COLLATE utf8mb4_unicode_ci AS `year_month`,
-            SUM(nvd_latest.demand_amount) / 1400.0 AS total_cost
+            SUM(nvd_latest.demand_amount) / ${krwPerUsd} AS total_cost
         FROM (
             SELECT n1.demand_month, n1.instance_no, n1.demand_amount
             FROM ncp_cost_vm_month n1
@@ -221,7 +221,7 @@ SELECT ym.`year_month`
 
        -- Azure VM 데이터 (servicegroup_meta 조인 후 필터링)
        SELECT DATE_FORMAT(acvd.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS `year_month`
-              , SUM(acvd.pre_tax_cost) / 1400.0 AS total_cost
+              , SUM(acvd.pre_tax_cost) / ${krwPerUsd} AS total_cost
          FROM azure_cost_vm_daily acvd
         INNER JOIN servicegroup_meta sm
            ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
@@ -276,7 +276,7 @@ SELECT service_name AS resourceNm
                 WHEN sm.service_type = 'VM' THEN 'Virtual Machine'
                 ELSE sm.service_type
               END COLLATE utf8mb4_unicode_ci AS service_name
-              , COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0  AS total_cost
+              , COALESCE(SUM(acvd.pre_tax_cost), 0) / ${krwPerUsd}  AS total_cost
               , 'AZURE' COLLATE utf8mb4_unicode_ci AS csp
          FROM azure_cost_vm_daily acvd
         INNER JOIN servicegroup_meta sm
@@ -301,7 +301,7 @@ SELECT service_name AS resourceNm
                 WHEN sm.service_type = 'VM' THEN 'Server'
                 ELSE sm.service_type
               END COLLATE utf8mb4_unicode_ci AS service_name
-              , COALESCE(SUM(vm_latest.demand_amount), 0) / 1400.0 AS total_cost
+              , COALESCE(SUM(vm_latest.demand_amount), 0) / ${krwPerUsd} AS total_cost
               , 'NCP' COLLATE utf8mb4_unicode_ci AS csp
          FROM (
               SELECT n1.instance_no, n1.demand_amount
@@ -329,6 +329,24 @@ SELECT service_name AS resourceNm
                    WHEN sm.service_type = 'VM' THEN 'Server'
                    ELSE sm.service_type
                  END
+       UNION ALL
+
+       <!-- GCP (service_description 단위, invoice_month 기준, KRW→USD 환산) -->
+       SELECT raw.service_description COLLATE utf8mb4_unicode_ci AS service_name
+              , COALESCE(SUM(raw.cost), 0) / ${krwPerUsd} AS total_cost
+              , 'GCP' COLLATE utf8mb4_unicode_ci AS csp
+         FROM gcp_billing_raw raw
+         LEFT JOIN servicegroup_meta sm
+           ON sm.csp_type = 'GCP'
+          AND sm.csp_instanceid COLLATE utf8mb4_uca1400_ai_ci = raw.csp_instanceid
+        WHERE raw.invoice_month = #{year_month}
+              <if test="selectedProjects != null and selectedProjects.size() > 0">
+          AND COALESCE(sm.service_cd COLLATE utf8mb4_uca1400_ai_ci, raw.service_cd, 'undefined') IN
+              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+              #{selectedProject}
+              </foreach>
+              </if>
+        GROUP BY raw.service_description
        ) AS all_services
  WHERE total_cost > 0
  ORDER BY total_cost DESC
@@ -423,7 +441,7 @@ SELECT service_name AS resourceNm
        UNION ALL
 
        -- Azure VM 데이터 (service_type = 'VM')
-       SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0 AS bill
+       SELECT COALESCE(SUM(acvd.pre_tax_cost), 0) / ${krwPerUsd} AS bill
               , 'VM' COLLATE utf8mb4_unicode_ci AS childProductCode
               , COUNT(DISTINCT acvd.resource_id) AS unit
               , 'AZURE' COLLATE utf8mb4_unicode_ci AS csp
@@ -449,7 +467,7 @@ SELECT service_name AS resourceNm
        UNION ALL
 
        -- NCP VM 데이터 (service_type = 'VM')
-       SELECT COALESCE(SUM(ncvd.daily_charge_amount), 0) / 1400.0 AS bill
+       SELECT COALESCE(SUM(ncvd.daily_charge_amount), 0) / ${krwPerUsd} AS bill
               , 'VM' COLLATE utf8mb4_unicode_ci AS childProductCode
               , COUNT(DISTINCT ncvd.instance_no) AS unit
               , 'NCP' COLLATE utf8mb4_unicode_ci AS csp
@@ -471,6 +489,53 @@ SELECT service_name AS resourceNm
 
        -- TODO: NCP K8S 데이터 추가 필요
        -- TODO: NCP Others 데이터 추가 필요
+
+       UNION ALL
+
+       -- GCP VM (servicegroup_meta.service_type = 'VM', invoice_month 기준, KRW→USD)
+       SELECT COALESCE(SUM(raw.cost), 0) / ${krwPerUsd} AS bill
+              , 'VM' COLLATE utf8mb4_unicode_ci AS childProductCode
+              , COUNT(DISTINCT raw.csp_instanceid) AS unit
+              , 'GCP' COLLATE utf8mb4_unicode_ci AS csp
+         FROM gcp_billing_raw raw
+        INNER JOIN servicegroup_meta sm
+           ON sm.csp_type = 'GCP'
+          AND sm.service_type = 'VM'
+          AND sm.csp_instanceid COLLATE utf8mb4_uca1400_ai_ci = raw.csp_instanceid
+        WHERE raw.invoice_month = #{year_month}
+              <if test="selectedProjects != null and selectedProjects.size() > 0">
+          AND sm.service_cd COLLATE utf8mb4_uca1400_ai_ci IN
+              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+              #{selectedProject}
+              </foreach>
+              </if>
+              <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('GCP')">
+          AND 1=0
+              </if>
+
+       UNION ALL
+
+       -- GCP Others (VM 으로 매칭되지 않는 나머지 — 공통/네트워크/라벨없음 포함)
+       SELECT COALESCE(SUM(raw.cost), 0) / ${krwPerUsd} AS bill
+              , 'Others' COLLATE utf8mb4_unicode_ci AS childProductCode
+              , COUNT(DISTINCT raw.csp_instanceid) AS unit
+              , 'GCP' COLLATE utf8mb4_unicode_ci AS csp
+         FROM gcp_billing_raw raw
+         LEFT JOIN servicegroup_meta sm
+           ON sm.csp_type = 'GCP'
+          AND sm.service_type = 'VM'
+          AND sm.csp_instanceid COLLATE utf8mb4_uca1400_ai_ci = raw.csp_instanceid
+        WHERE raw.invoice_month = #{year_month}
+          AND sm.csp_instanceid IS NULL
+              <if test="selectedProjects != null and selectedProjects.size() > 0">
+          AND COALESCE(sm.service_cd COLLATE utf8mb4_uca1400_ai_ci, raw.service_cd, 'undefined') IN
+              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+              #{selectedProject}
+              </foreach>
+              </if>
+              <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('GCP')">
+          AND 1=0
+              </if>
            ) subquery
      WHERE bill > 0 OR childProductCode = 'Others'
      GROUP BY childProductCode, csp
@@ -505,7 +570,7 @@ SELECT csp, SUM(cost) AS cost
 
        <!-- NCP (VM 기준, 해당 달의 최신 누적 금액만 반영) -->
        SELECT 'NCP'                                               AS csp,
-              COALESCE(SUM(nvd_latest.demand_amount), 0) / 1400.0 AS cost
+              COALESCE(SUM(nvd_latest.demand_amount), 0) / ${krwPerUsd} AS cost
          FROM (
               SELECT n1.instance_no, n1.demand_amount
                 FROM ncp_cost_vm_month n1
@@ -532,7 +597,7 @@ SELECT csp, SUM(cost) AS cost
 
        <!-- AZURE (VM 기준으로 Meta 조인 후 필터링) -->
        SELECT 'AZURE'                                       AS csp,
-              COALESCE(SUM(acvd.pre_tax_cost), 0) / 1400.0  AS cost
+              COALESCE(SUM(acvd.pre_tax_cost), 0) / ${krwPerUsd}  AS cost
          FROM azure_cost_vm_daily acvd
         INNER JOIN servicegroup_meta sm
         ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
@@ -544,6 +609,37 @@ SELECT csp, SUM(cost) AS cost
               </foreach>
               </if>
         WHERE DATE_FORMAT(acvd.usage_date, '%Y%m') = #{year_month}
+
+       UNION ALL
+
+       <!-- GCP (monthly_summation 기준, USD 적재값 사용) -->
+       SELECT 'GCP'                                AS csp,
+              COALESCE(SUM(ms.total_cost), 0)      AS cost
+         FROM monthly_summation ms
+        WHERE ms.csp = 'GCP'
+          AND ms.`year_month` = #{year_month}
+              <if test="selectedProjects != null and selectedProjects.size() > 0">
+          AND ms.project_cd IN
+              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+              #{selectedProject}
+              </foreach>
+              </if>
+       UNION ALL
+
+       <!-- GCP (invoice_month 기준, KRW→USD 환산) -->
+       SELECT 'GCP'                                  AS csp,
+              COALESCE(SUM(raw.cost), 0) / ${krwPerUsd} AS cost
+         FROM gcp_billing_raw raw
+         LEFT JOIN servicegroup_meta sm
+           ON sm.csp_type = 'GCP'
+          AND sm.csp_instanceid COLLATE utf8mb4_uca1400_ai_ci = raw.csp_instanceid
+        WHERE raw.invoice_month = #{year_month}
+              <if test="selectedProjects != null and selectedProjects.size() > 0">
+          AND COALESCE(sm.service_cd COLLATE utf8mb4_uca1400_ai_ci, raw.service_cd, 'undefined') IN
+              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+              #{selectedProject}
+              </foreach>
+              </if>
        ) AS combined_costs
  GROUP BY csp
     </select>

@@ -52,4 +52,10 @@ public class GcpBillingRawDto {
     private String labels;
     private String systemLabels;
     private String tags;
+
+    // labels(sys.* JSON)에서 추출한 servicegroup_meta 매핑용 식별자 (수집 시 파싱하여 채움)
+    private String cspInstanceid; // labels.sys_cspresourceid → servicegroup_meta.csp_instanceid (조인키)
+    private String vmId;          // labels.sys_id
+    private String mciId;         // labels.sys_infraid
+    private String serviceCd;     // labels.sys_namespace (ns_id)
 }

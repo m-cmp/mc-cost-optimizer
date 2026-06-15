@@ -45,8 +45,15 @@ ncp-schedule:
 
 ncp:
   credential:
-    iam-access-key: ${IAM_ACCESS_KEY:iamAccessKey}
-    iam-secret-key: ${IAM_SECRET_KEY:iamSecretKey}
+    # 기본값을 빈 값으로 둬야 미설정 시 OpenBao 폴백이 동작 (placeholder 문자열이면 폴백 안 됨)
+    iam-access-key: ${IAM_ACCESS_KEY:}
+    iam-secret-key: ${IAM_SECRET_KEY:}
+
+# OpenBao 크레덴셜 연동 (true: OpenBao 단일소스 / false: env 우선 후 OpenBao 폴백, 기본)
+openbao:
+  enabled: ${OPENBAO_ENABLED:false}
+  address: ${OPENBAO_ADDRESS:}
+  token: ${OPENBAO_TOKEN:}
 
 costopti:
   alarmservice:

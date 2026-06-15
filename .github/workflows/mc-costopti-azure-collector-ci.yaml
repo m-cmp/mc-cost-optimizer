@@ -19,6 +19,7 @@ on:
       - "ncp-vm-rightsizer/**"
       - "costCollector/**"
       - "gcpCollector/**"
+      - "cost-ml-scorer/**"
       - "mysql/**"
       - "**.md"
       - "LICENSE.txt"

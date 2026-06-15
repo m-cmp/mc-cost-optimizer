@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Local secrets / overrides (never commit) ###
+src/main/resources/application-local.properties

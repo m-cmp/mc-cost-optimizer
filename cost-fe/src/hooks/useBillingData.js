@@ -7,6 +7,7 @@ import {
 import { useProjectStore } from "@/stores/useProjectStore";
 import { useAlertStore } from "@/stores/useAlertStore";
 import { logger } from "@/utils/logger";
+import { BILLING_CSPS } from "@/constants/cspConstants";
 
 /**
  * @hook useBillingData
@@ -37,7 +38,7 @@ export const useBillingData = () => {
       const req = {
         today: new Date().toISOString().slice(0, 10).replace(/-/g, ""),
         selectedProjects: [projectId],
-        selectedCsps: ["AWS", "AZURE", "NCP"],
+        selectedCsps: BILLING_CSPS,
         selectedWorkspace: workspaceId,
       };
 

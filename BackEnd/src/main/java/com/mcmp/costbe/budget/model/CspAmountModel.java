@@ -28,4 +28,8 @@ public class CspAmountModel {
     @JsonProperty("Azure")
     @Schema(description = "Azure 금액 (USD 환산)", example = "200.00")
     private Double Azure;
+
+    @JsonProperty("GCP")
+    @Schema(description = "GCP 금액 (USD 환산)", example = "150.00")
+    private Double GCP;
 }

@@ -3,6 +3,7 @@ package com.mcmp.costbe.budget.service;
 import com.mcmp.costbe.budget.dao.BudgetDao;
 import com.mcmp.costbe.budget.model.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,11 +16,16 @@ public class BudgetService {
 
     private final BudgetDao budgetDao;
 
+    // KRW→USD 환율 (env: EXCHANGE_KRW_PER_USD, 기본 1400.0)
+    @Value("${exchange.krw-per-usd:1400.0}")
+    private double krwPerUsd;
+
     // CSP별 자동 통화 매핑 (DB 저장용)
     private static final Map<String, String> CSP_CURRENCY_MAP = Map.of(
             "AWS", "USD",
             "Azure", "KRW",  // Azure는 KRW로 수집/저장됨
-            "NCP", "KRW"
+            "NCP", "KRW",
+            "GCP", "KRW"     // GCP 원본(raw)은 KRW이며 예산도 KRW로 저장 (gcpCollector 예산 체크가 raw KRW와 직접 비교)
     );
 
     public List<Integer> getAvailableYears() {
@@ -38,8 +44,8 @@ public class BudgetService {
             double budgetValue = item.getBudget();
 
             // Azure와 NCP는 KRW로 저장되어 있으므로 USD로 변환하여 반환
-            if ("Azure".equals(item.getCsp()) || "NCP".equals(item.getCsp())) {
-                budgetValue = budgetValue / 1400.0;
+            if ("Azure".equals(item.getCsp()) || "NCP".equals(item.getCsp()) || "GCP".equals(item.getCsp())) {
+                budgetValue = budgetValue / krwPerUsd;
             }
 
             result.add(BudgetResModel.builder()
@@ -66,8 +72,8 @@ public class BudgetService {
 
             double responseBudget = item.getBudget();
             // 응답은 USD로 변환 (조회 API와 일관성 유지)
-            if ("Azure".equals(item.getCsp()) || "NCP".equals(item.getCsp())) {
-                responseBudget = responseBudget / 1400.0;
+            if ("Azure".equals(item.getCsp()) || "NCP".equals(item.getCsp()) || "GCP".equals(item.getCsp())) {
+                responseBudget = responseBudget / krwPerUsd;
             }
 
             result.add(BudgetResModel.builder()
@@ -120,14 +126,16 @@ public class BudgetService {
             // 예산 CSP별 매핑 (Azure와 NCP는 KRW이므로 USD로 변환)
             Map<String, Double> budgetForMonth = budgetMap.getOrDefault(yearMonth, new HashMap<>());
             double budgetAWS = budgetForMonth.getOrDefault("AWS", 0.0);
-            double budgetNCP = budgetForMonth.getOrDefault("NCP", 0.0) / 1400.0;   // KRW -> USD
-            double budgetAzure = budgetForMonth.getOrDefault("Azure", 0.0) / 1400.0; // KRW -> USD
+            double budgetNCP = budgetForMonth.getOrDefault("NCP", 0.0) / krwPerUsd;   // KRW -> USD
+            double budgetAzure = budgetForMonth.getOrDefault("Azure", 0.0) / krwPerUsd; // KRW -> USD
+            double budgetGCP = budgetForMonth.getOrDefault("GCP", 0.0) / krwPerUsd;   // KRW -> USD (예산은 KRW 저장)
 
             CspAmountModel budgetAmount = CspAmountModel.builder()
-                    .total(budgetAWS + budgetNCP + budgetAzure)
+                    .total(budgetAWS + budgetNCP + budgetAzure + budgetGCP)
                     .AWS(budgetAWS)
                     .NCP(budgetNCP)
                     .Azure(budgetAzure)
+                    .GCP(budgetGCP)
                     .build();
 
             // 실제 사용 CSP별 매핑
@@ -135,12 +143,14 @@ public class BudgetService {
             double actualAWS = actualForMonth.getOrDefault("AWS", 0.0);
             double actualNCP = actualForMonth.getOrDefault("NCP", 0.0);
             double actualAzure = actualForMonth.getOrDefault("Azure", 0.0);
+            double actualGCP = actualForMonth.getOrDefault("GCP", 0.0); // monthly_summation 에 USD 적재이므로 환산 불필요 (AWS 와 동일)
 
             CspAmountModel actualAmount = CspAmountModel.builder()
-                    .total(actualAWS + actualNCP + actualAzure)
+                    .total(actualAWS + actualNCP + actualAzure + actualGCP)
                     .AWS(actualAWS)
                     .NCP(actualNCP)
                     .Azure(actualAzure)
+                    .GCP(actualGCP)
                     .build();
 
             // 월별 비교 모델 생성

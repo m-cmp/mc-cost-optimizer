@@ -13,6 +13,7 @@ export default function Table({
   pagination = false,
   pageSize = 10,
   paginationVariant = "default",
+  onRowClick,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -53,7 +54,12 @@ export default function Table({
         </thead>
         <tbody>
           {paginatedData.map((row, i) => (
-            <tr key={i} className={variant ? `table-${variant}` : ""}>
+            <tr
+              key={i}
+              className={variant ? `table-${variant}` : ""}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+              style={onRowClick ? { cursor: "pointer" } : undefined}
+            >
               {columns.map((col) => (
                 <td key={col.key} className={col.className || ""}>
                   {/* ✅ render 함수 지원 및 fallback 추가 */}
