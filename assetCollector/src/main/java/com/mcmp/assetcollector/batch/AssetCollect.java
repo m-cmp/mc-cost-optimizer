@@ -106,12 +106,10 @@ public class AssetCollect {
                 List<InfluxMetricRstItem> tempData = assetCollectService.getRSRCCpuUsageHistory(item.getNsID(), item.getMciID(), item.getVmID());
 
                 if(!tempData.isEmpty()){
-
-                    // total 객체
                     InfluxMetricRstItem totalAssetData = null;
 
                     for(InfluxMetricRstItem aitem : tempData){
-                        if("cpu-total".equals(aitem.getTags().get("cpu"))){
+                        if("cpu".equals(aitem.getName())){
                             totalAssetData = aitem;
                             break;
                         }

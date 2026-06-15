@@ -1,0 +1,72 @@
+server:
+  port: 8093
+
+spring:
+  application:
+    name: cost-azure-collector
+  # 데이터베이스 설정
+  datasource:
+    url: jdbc:mariadb://localhost:3307/cost?autoReconnect=true&allowMultiQueries=true&useSSL=false
+    username: mcmpcostopti
+    password: "0000"
+    driver-class-name: org.mariadb.jdbc.Driver
+  # JPA 설정
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  # Spring Batch 설정
+  batch:
+    job:
+      enabled: false # 애플리케이션 시작 시 자동 실행 방지
+    jdbc:
+      initialize-schema: NEVER  # 배치 메타데이터 테이블 자동 생성, 근데, 테이블 안생긴다.
+  sql:
+    init:
+      mode: NEVER # ALWAYS 와 설정 와따가따하면서...
+      schema-locations: classpath:org/springframework/batch/core/schema-mariadb.sql
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+logging:
+  level:
+    com.mcmp.cost.azure.collector.service: debug
+
+azure:
+  credential:
+    # 기본값을 빈 값으로 둬야 미설정 시 OpenBao 폴백이 동작 (placeholder 문자열이면 폴백 안 됨)
+    tenant-id: ${TENANT_ID:}
+    client-id: ${CLIENT_ID:}
+    client-secret: ${CLIENT_SECRET:}
+    subscription-id: ${SUBSCRIPTION_ID:}
+
+# OpenBao 크레덴셜 연동
+# true  : env 무시하고 OpenBao 에서 바로 조회
+# false : env 우선 → 없으면 OpenBao 폴백 → 둘 다 없으면 ERROR 로그 (기본)
+openbao:
+  enabled: ${OPENBAO_ENABLED:false}
+  address: ${OPENBAO_ADDRESS:}
+  token: ${OPENBAO_TOKEN:}
+
+azure-schedule:
+  #  service-batch-cron: ${AZURE_SERVICE_BATCH_CRON_SCHEDULE:0 0 0 * * ?}
+  #  vm-batch-cron: ${AZURE_VM_BATCH_CRON_SCHEDULE:0 30 0 * * ?}
+  service-batch-cron: ${AZURE_SERVICE_BATCH_CRON_SCHEDULE:0 0 0 * * ?}
+  vm-batch-cron: ${AZURE_VM_BATCH_CRON_SCHEDULE:0 30 0 * * ?}
+
+costopti:
+  alarmservice:
+    url: ${ALARM_SERVICE:alarm_service}
+  assetcollector:
+    url: http://localhost:8091
+  costcollector:
+    url: http://localhost:8081
+  costprocessor:
+    url: http://localhost:8082
+  costselector:
+    url: http://localhost:8083

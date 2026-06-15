@@ -1,0 +1,453 @@
+x-default-health-check: &default-health-check
+  interval: ${HEALTH_CHECK_INTERVAL}
+  timeout: ${HEALTH_CHECK_TIMEOUT}
+  retries: ${HEALTH_CHECK_RETRIES}
+  start_period: ${HEALTH_CHECK_START_PERIOD}
+
+networks:
+  mc-cost-optimizer-network:
+  mc-observability-network:
+  mc-infra-manager-network:
+  mc-web-console-network:
+
+services:
+  mc-cost-optimizer-fe:
+    restart: on-failure
+    container_name: mc-cost-optimizer-fe
+    image: cloudbaristaorg/mc-costopti-ui:0.5.2
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 80
+        published: 7780
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-be
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      TZ: Asia/Seoul
+    healthcheck:
+      test: ["CMD", "/app/tool/mcc", "rest", "get", "http://localhost:80"]
+      <<: *default-health-check
+
+  mc-cost-optimizer-be:
+    restart: on-failure
+    container_name: mc-cost-optimizer-be
+    image: suihnyoon/mc-costopti-api:260504-002
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 9090
+        published: 9090
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      spring.datasource.hikari.cost.optimize.jdbc-url: ${CO_COST_DB_URL_NEW}
+      spring.datasource.hikari.cost.optimize.username: ${CO_MYSQL_USER}
+      spring.datasource.hikari.cost.optimize.password: ${CO_MYSQL_PASSWORD}
+      tumblebug.url: ${CO_TBB_URL}
+      tumblebug.username: ${CO_TBB_USERNAME}
+      tumblebug.password: ${CO_TBB_PW}
+      costopti.alarmservice.url: ${CO_ALARM_URL}
+      costopti.assetcollector.url: ${CO_COST_ASSET_COLLECTOR_URL}
+      costopti.costcollector.url: ${CO_COST_COLLECTOR_URL}
+      costopti.costprocessor.url: ${CO_COST_PROCESSOR_URL}
+      costopti.costselector.url: ${CO_COST_SELECTOR_URL}
+      TZ: Asia/Seoul
+    healthcheck:
+      test: ["CMD", "/app/tool/mcc", "rest", "get", "http://localhost:9090/api/costopti/be/readyz"]
+      <<: *default-health-check
+
+  mc-cost-optimizer-cost-collector:
+    restart: on-failure
+    container_name: mc-cost-optimizer-cost-collector
+    image: cloudbaristaorg/mc-costopti-costcollector:0.5.2
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 8081
+        published: 8881
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      spring.datasource.hikari.batch.jdbc-url: ${CO_COST_DB_URL}
+      spring.datasource.hikari.batch.username: ${CO_MYSQL_USER}
+      spring.datasource.hikari.batch.password: ${CO_MYSQL_PASSWORD}
+      unusedBatchCronSchedule: ${CO_COST_COLLECT_UNUSED_CRON_SCHEDULE}
+      curBatchCronSchedule: ${CO_COST_COLLECT_CUR_CRON_SCHEDULE}
+      aws.data.export.name: ${CO_AWS_CUR_EXPORT_NAME}
+      aws.data.export.path.prefix: ${CO_AWS_CUR_EXPORT_PATH_PREFIX}
+      AWS_ACCESS_KEY_ID: ${CO_AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${CO_AWS_SECRET_ACCESS_KEY}
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
+      TZ: Asia/Seoul
+
+  mc-cost-optimizer-cost-processor:
+    restart: on-failure
+    container_name: mc-cost-optimizer-cost-processor
+    image: cloudbaristaorg/mc-costopti-costprocessor:0.5.2
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 8082
+        published: 18082
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      spring.datasource.hikari.batch.jdbc-url: ${CO_COST_DB_URL}
+      spring.datasource.hikari.batch.username: ${CO_MYSQL_USER}
+      spring.datasource.hikari.batch.password: ${CO_MYSQL_PASSWORD}
+      unusedProcessCronSchedule: ${CO_COST_PROCESS_UNUSED_CRON_SCHEDULE}
+      abnormalProcessCronSchedule: ${CO_COST_PROCESS_ABNORMAL_CRON_SCHEDULE}
+      cost.selector.url: ${CO_COST_SELECTOR_URL}
+      opti.alarm.url: ${CO_ALARM_URL}
+      TZ: Asia/Seoul
+
+  mc-cost-optimizer-cost-selector:
+    restart: on-failure
+    container_name: mc-cost-optimizer-cost-selector
+    image: suihnyoon/mc-costopti-costselector:260504-001
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 8083
+        published: 8083
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      spring.datasource.hikari.cost.optimize.jdbc-url: ${CO_COST_DB_URL}
+      spring.datasource.hikari.cost.optimize.username: ${CO_MYSQL_USER}
+      spring.datasource.hikari.cost.optimize.password: ${CO_MYSQL_PASSWORD}
+      opti.alarm.url: ${CO_ALARM_URL}
+      tumblebug.url: ${CO_TBB_URL}
+      tumblebug.username: ${CO_TBB_USERNAME}
+      tumblebug.password: ${CO_TBB_PW}
+      TZ: Asia/Seoul
+
+  mc-cost-optimizer-alarm-service:
+    restart: on-failure
+    container_name: mc-cost-optimizer-alarm-service
+    image: cloudbaristaorg/mc-costopti-alarm:0.5.2
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 9000
+        published: 9000
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      spring.datasource.hikari.slack.jdbc-url: ${CO_SLACK_DB_URL}
+      spring.datasource.hikari.slack.username: ${CO_MYSQL_USER}
+      spring.datasource.hikari.slack.password: ${CO_MYSQL_PASSWORD}
+      spring.datasource.hikari.mailing.jdbc-url: ${CO_MAIL_DB_URL}
+      spring.datasource.hikari.mailing.username: ${CO_MYSQL_USER}
+      spring.datasource.hikari.mailing.password: ${CO_MYSQL_PASSWORD}
+      spring.datasource.hikari.history.jdbc-url: ${CO_COST_DB_URL}
+      spring.datasource.hikari.history.username: ${CO_MYSQL_USER}
+      spring.datasource.hikari.history.password: ${CO_MYSQL_PASSWORD}
+      TZ: Asia/Seoul
+
+  mc-cost-optimizer-asset-collector:
+    restart: on-failure
+    container_name: mc-cost-optimizer-asset-collector
+    image: cloudbaristaorg/mc-costopti-assetcollector:0.5.2
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 8091
+        published: 8091
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      spring.datasource.hikari.batch.jdbc-url: ${CO_COST_DB_URL}
+      spring.datasource.hikari.batch.username: ${CO_MYSQL_USER}
+      spring.datasource.hikari.batch.password: ${CO_MYSQL_PASSWORD}
+      costopti.be.url: ${CO_API_URL}
+      asset.collect.url: ${CO_ASSET_MONITORING_SERVER}
+      assetCollectBatchCronSchedule: ${CO_ASSET_COLLECT_BATCH_CRON_SCHEDULE}
+      TZ: Asia/Seoul
+
+  mc-cost-optimizer-cost-azure-collector:
+    restart: on-failure
+    container_name: mc-cost-optimizer-cost-azure-collector
+    image: cloudbaristaorg/mc-costopti-azure-collector:0.5.2
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 8093
+        published: 18093
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      SPRING_DATASOURCE_URL: ${CO_COST_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${CO_MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${CO_MYSQL_PASSWORD}
+
+      AZURE_CREDENTIAL_TENANT_ID: ${CO_AZURE_TENANT_ID}
+      AZURE_CREDENTIAL_CLIENT_ID: ${CO_AZURE_CLIENT_ID}
+      AZURE_CREDENTIAL_CLIENT_SECRET: ${CO_AZURE_CLIENT_SECRET}
+      AZURE_CREDENTIAL_SUBSCRIPTION_ID: ${CO_AZURE_SUBSCRIPTION_ID}
+
+      AZURE_SERVICE_BATCH_CRON_SCHEDULE: ${CO_AZURE_SERVICE_BATCH_CRON_SCHEDULE}
+      AZURE_VM_BATCH_CRON_SCHEDULE: ${CO_AZURE_VM_BATCH_CRON_SCHEDULE}
+
+      COSTOPTI_ALARMSERVICE_URL: ${CO_ALARM_URL}
+      COSTOPTI_ASSETCOLLECTOR_URL: ${CO_COST_ASSET_COLLECTOR_URL}
+      COSTOPTI_COSTCOLLECTOR_URL: ${CO_COST_COLLECTOR_URL}
+      COSTOPTI_COSTPROCESSOR_URL: ${CO_COST_PROCESSOR_URL}
+      COSTOPTI_COSTSELECTOR_URL: ${CO_COST_SELECTOR_URL}
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
+      TZ: Asia/Seoul
+
+  mc-cost-optimizer-gcp-collector:
+    restart: on-failure
+    container_name: mc-cost-optimizer-gcp-collector
+    image: suihnyoon/mc-costopti-gcpcollector:260504-001
+    # image: cloudbaristaorg/mc-costopti-ncp-collector:0.5.2
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 8095
+        published: 28095
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      spring.datasource.url: ${CO_COST_DB_URL}
+      spring.datasource.username: ${CO_MYSQL_USER}
+      spring.datasource.password: ${CO_MYSQL_PASSWORD}
+
+      gcp.project-id: ${CO_GCP_PROJECT_ID}
+      gcp.client-email: ${CO_GCP_CLIENT_EMAIL}
+      gcp.private-key: ${CO_GCP_PRIVATE_KEY}
+      gcp.private-key-id: ${CO_GCP_PRIVATE_KEY_ID}
+      gcp.dataset: ${CO_GCP_BQ_DATASET}
+      gcp.table: ${CO_GCP_BQ_TABLE}
+      gcpBillingCronSchedule: ${CO_GCP_BATCH_CRON_SCHEDULE}
+      costopti.alarmservice.url: ${CO_ALARM_URL}
+
+      tumblebug.url: ${CO_TBB_URL}
+      tumblebug.username: ${CO_TBB_USERNAME}
+      tumblebug.password: ${CO_TBB_PW}
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
+      TZ: Asia/Seoul
+
+  mc-cost-optimizer-cost-ncp-collector:
+    restart: on-failure
+    container_name: mc-cost-optimizer-cost-ncp-collector
+    image: cloudbaristaorg/mc-costopti-ncp-collector:0.5.2
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 8094
+        published: 18094
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      SPRING_DATASOURCE_URL: ${CO_COST_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${CO_MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${CO_MYSQL_PASSWORD}
+
+      NCP_CREDENTIAL_IAM_ACCESS_KEY: ${CO_NCP_IAM_ACCESS_KEY}
+      NCP_CREDENTIAL_IAM_SECRET_KEY: ${CO_NCP_IAM_SECRET_KEY}
+
+      NCP_SERVICE_BATCH_CRON_SCHEDULE: ${CO_NCP_SERVICE_BATCH_CRON_SCHEDULE}
+      NCP_VM_BATCH_CRON_SCHEDULE: ${CO_NCP_VM_BATCH_CRON_SCHEDULE}
+
+      COSTOPTI_ALARMSERVICE_URL: ${CO_ALARM_URL}
+      COSTOPTI_ASSETCOLLECTOR_URL: ${CO_COST_ASSET_COLLECTOR_URL}
+      COSTOPTI_COSTCOLLECTOR_URL: ${CO_COST_COLLECTOR_URL}
+      COSTOPTI_COSTPROCESSOR_URL: ${CO_COST_PROCESSOR_URL}
+      COSTOPTI_COSTSELECTOR_URL: ${CO_COST_SELECTOR_URL}
+
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
+      TZ: Asia/Seoul
+
+  mc-cost-optimizer-azure-vm-rightsizer:
+    restart: on-failure
+    container_name: mc-cost-optimizer-azure-vm-rightsizer
+    image: suihnyoon/mc-costopti-azure-vm-rightsizer:260504-001
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 8092
+        published: 18092
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      SPRING_DATASOURCE_URL: ${CO_COST_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${CO_MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${CO_MYSQL_PASSWORD}
+
+      AZURE_CREDENTIAL_TENANT_ID: ${CO_AZURE_TENANT_ID}
+      AZURE_CREDENTIAL_CLIENT_ID: ${CO_AZURE_CLIENT_ID}
+      AZURE_CREDENTIAL_CLIENT_SECRET: ${CO_AZURE_CLIENT_SECRET}
+      AZURE_CREDENTIAL_SUBSCRIPTION_ID: ${CO_AZURE_SUBSCRIPTION_ID}
+
+      AZURE_RIGHTSIZER_BATCH_CRON_SCHEDULE: ${CO_AZURE_VM_RIGHTSIZER_SCHEDULE}
+
+      COSTOPTI_ALARMSERVICE_URL: ${CO_ALARM_URL}
+      COSTOPTI_ASSETCOLLECTOR_URL: ${CO_COST_ASSET_COLLECTOR_URL}
+      COSTOPTI_COSTCOLLECTOR_URL: ${CO_COST_COLLECTOR_URL}
+      COSTOPTI_COSTPROCESSOR_URL: ${CO_COST_PROCESSOR_URL}
+      COSTOPTI_COSTSELECTOR_URL: ${CO_COST_SELECTOR_URL}
+
+      tumblebug.url: ${CO_TBB_URL}
+      tumblebug.username: ${CO_TBB_USERNAME}
+      tumblebug.password: ${CO_TBB_PW}
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
+      TZ: Asia/Seoul
+
+  mc-cost-optimizer-ncp-vm-rightsizer:
+    restart: on-failure
+    container_name: mc-cost-optimizer-ncp-vm-rightsizer
+    image: suihnyoon/mc-costopti-ncp-vm-rightsizer:260504-001
+    networks:
+      - mc-cost-optimizer-network
+      - mc-observability-network
+      - mc-infra-manager-network
+      - mc-web-console-network
+    ports:
+      - target: 8095
+        published: 18095
+        protocol: tcp
+    depends_on:
+      - mc-cost-optimizer-db
+    volumes:
+      - ./tool/mcc:/app/tool/mcc
+    environment:
+      SPRING_DATASOURCE_URL: ${CO_COST_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${CO_MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${CO_MYSQL_PASSWORD}
+
+      NCP_CREDENTIAL_IAM_ACCESS_KEY: ${CO_NCP_IAM_ACCESS_KEY}
+      NCP_CREDENTIAL_IAM_SECRET_KEY: ${CO_NCP_IAM_SECRET_KEY}
+
+      NCP_RIGHTSIZER_BATCH_CRON_SCHEDULE: ${CO_NCP_VM_RIGHTSIZER_SCHEDULE}
+
+      COSTOPTI_ALARMSERVICE_URL: ${CO_ALARM_URL}
+      COSTOPTI_ASSETCOLLECTOR_URL: ${CO_COST_ASSET_COLLECTOR_URL}
+      COSTOPTI_COSTCOLLECTOR_URL: ${CO_COST_COLLECTOR_URL}
+      COSTOPTI_COSTPROCESSOR_URL: ${CO_COST_PROCESSOR_URL}
+      COSTOPTI_COSTSELECTOR_URL: ${CO_COST_SELECTOR_URL}
+
+      tumblebug.url: ${CO_TBB_URL}
+      tumblebug.username: ${CO_TBB_USERNAME}
+      tumblebug.password: ${CO_TBB_PW}
+      OPENBAO_ENABLED: ${OPENBAO_ENABLED:false}
+      OPENBAO_ADDRESS: ${CO_OPENBAO_ADDRESS:}
+      OPENBAO_TOKEN: ${CO_OPENBAO_TOKEN:}
+      TZ: Asia/Seoul
+
+  mc-cost-optimizer-init-volume:
+    image: busybox:stable
+    container_name: mc-cost-optimizer-init-volume
+    command: ["sh", "-c", "chown -R 999:999 /var/lib/mysql"]
+    volumes:
+      - ./container-volume/mc-cost-optimizer/mysql/:/var/lib/mysql
+    user: root
+    networks:
+      - mc-cost-optimizer-network
+    init: true
+    restart: "no"
+
+  mc-cost-optimizer-db:
+    image: mariadb:latest
+    container_name: mc-cost-optimizer-db
+    depends_on:
+      mc-cost-optimizer-init-volume:
+        condition: service_completed_successfully
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - MYSQL_ROOT_PASSWORD=${CO_MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${CO_MYSQL_USER}
+      - MYSQL_PASSWORD=${CO_MYSQL_PASSWORD}
+      - TZ=Asia/Seoul
+    command:
+      - --skip-character-set-client-handshake
+    ports:
+      - target: 3306
+        published: 3307
+        protocol: tcp
+    volumes:
+      - ./conf/mc-cost-optimizer/init/:/docker-entrypoint-initdb.d
+      - ./container-volume/mc-cost-optimizer/mysql/:/var/lib/mysql/
+    networks:
+      - mc-cost-optimizer-network
+      - mc-web-console-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      <<: *default-health-check

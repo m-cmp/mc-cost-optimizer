@@ -1,0 +1,30 @@
+openapi: "3.1.0"
+info:
+  title: "NCP VM RightSize API"
+  description: "NCP VM RightSize API"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8095"
+paths:
+  /api/batch/ncp/recommend:
+    get:
+      summary: "비용 수집된 VM의 타입추천을 배치를 수행하는 API, 메일 발송까지 기능까지 연동. 현재는 특정 VM에 대해서 Down사이즈 Alarm을 발송한다."
+      operationId: "recommendNcpVm"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/ncp/recommend/test:
+    get:
+      summary: "수집된 비용의 VM 리스트를 대상으로 비용 추천을 조회하는 테스트용 API."
+      operationId: "test"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"

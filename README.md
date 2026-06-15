@@ -55,6 +55,9 @@ This repository provides a Multi-Cloud Cost Management and Optimizing Framework.
 - node version : v20.13.1
 - npm version : v10.5.2
 - run command : npm run serve
+#### dev mode
+- run command : npm run dev(front-end independent build)
+
 
 ### BackEnd
 - java version : 17

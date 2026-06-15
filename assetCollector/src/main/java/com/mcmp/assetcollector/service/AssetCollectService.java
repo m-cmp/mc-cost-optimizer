@@ -53,7 +53,7 @@ public class AssetCollectService {
 //    }
 
     public List<InfluxMetricRstItem> getRSRCCpuUsageHistory(String nsID, String mciID, String vmID){
-        String apiUrl = String.format("%s/api/o11y/monitoring/influxdb/metric", assetCollectUrl);
+        String apiUrl = String.format("%s/api/o11y/monitoring/influxdb/metric/%s/%s/%s", assetCollectUrl, nsID, mciID, vmID);
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -63,12 +63,10 @@ public class AssetCollectService {
 
         InfluxMetricField mtr_mean = InfluxMetricField.builder().function("mean").field("usage_idle").build();
 
-        InfluxMetricCondition cdt_ns = InfluxMetricCondition.builder().key("ns_id").value(nsID).build();
-        InfluxMetricCondition cdt_mci = InfluxMetricCondition.builder().key("mci_id").value(mciID).build();
-        InfluxMetricCondition cdt_vm = InfluxMetricCondition.builder().key("target_id").value(vmID).build();
+        InfluxMetricCondition cdt_cpu = InfluxMetricCondition.builder().key("cpu").value("cpu-total").build();
 
         body.setFields(Arrays.asList(mtr_mean));
-        body.setConditions(Arrays.asList(cdt_ns, cdt_mci, cdt_vm));
+        body.setConditions(Arrays.asList(cdt_cpu));
 
         HttpEntity<?> httpEntity = new HttpEntity<>(body, httpHeaders);
 

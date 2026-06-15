@@ -21,8 +21,8 @@ public class FilterDao {
         return sqlSession.selectList("bill.getWorkspaces");
     }
 
-    public List<ProjectsModel> getProjects(String workspaceCD) {
-        return sqlSession.selectList("bill.getProjects", workspaceCD);
+    public List<ProjectsModel> getProjects() {
+        return sqlSession.selectList("bill.getProjects");
     }
 
 }

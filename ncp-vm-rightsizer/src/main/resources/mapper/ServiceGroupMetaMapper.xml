@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.ncp.vm.rightsizer.mapper.ServiceGroupMetaMapper">
+
+    <!-- member_no로 project_cd, workspace_cd 조회 -->
+    <select id="selectProjectAndWorkspaceByMemberNo" resultType="map">
+        SELECT service_cd    as projectCd,
+               workspace_cd  as workspaceCd
+        FROM servicegroup_meta
+        WHERE csp_type = 'NCP'
+          AND csp_account = #{memberNo}
+        LIMIT 1
+    </select>
+
+    <!-- instance_no로 Tumblebug 식별자 조회 -->
+    <select id="selectTbbIdentifiersByInstanceNo" resultType="map">
+        SELECT service_cd AS tbbNsId,
+               mci_id     AS tbbMciId,
+               vm_id      AS tbbVmId
+        FROM servicegroup_meta
+        WHERE csp_type = 'NCP'
+          AND csp_instanceid COLLATE utf8mb4_unicode_520_ci = #{instanceNo}
+        LIMIT 1
+    </select>
+
+</mapper>

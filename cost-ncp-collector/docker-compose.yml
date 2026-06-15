@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: local-mariadb-cost
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: cost
+      MARIADB_USER: mcmpcostopti  # 사용자 생성
+      MARIADB_PASSWORD: "0000"  # 비밀번호 설정
+    volumes:
+      - mariadb_data_cost:/var/lib/mysql
+
+volumes:
+  mariadb_data_cost:

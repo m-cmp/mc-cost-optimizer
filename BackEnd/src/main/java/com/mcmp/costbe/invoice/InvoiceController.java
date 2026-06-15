@@ -78,7 +78,7 @@ public class InvoiceController {
             result.setData(resultData);
         } catch (Exception e){
             e.printStackTrace();
-            result.setError(500, "Fail to getSummary");
+            result.setError(500, "Fail to getInvoice");
         }
         return ResponseEntity.ok(result);
     }

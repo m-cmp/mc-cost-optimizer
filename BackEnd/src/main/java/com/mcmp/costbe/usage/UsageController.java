@@ -48,17 +48,15 @@ public class UsageController {
     @Deprecated
     @GetMapping(path = "/getProjects")
     @Tag(name = "User", description = "User API")
-    @Operation(summary = "프로젝트 목록 조회", description = "워크스페이스에 속한 프로젝트 목록을 조회합니다.", deprecated = true)
+    @Operation(summary = "프로젝트 목록 조회", description = "모든 프로젝트 목록을 조회합니다.", deprecated = true)
     @ApiResponses(value={
             @ApiResponse(responseCode = "200", description = "성공"),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = {@Content(examples = {})})
     })
-    public ResponseEntity<ResultModel> getProjects(
-            @Parameter(name = "workspaceCD", description = "워크스페이스 코드", example = "workspace1", required = true) @RequestParam String workspaceCD
-    ){
+    public ResponseEntity<ResultModel> getProjects(){
         ResultModel result = new ResultModel();
         try{
-            List<ProjectsModel> data = usageService.getProjects(workspaceCD);
+            List<ProjectsModel> data = usageService.getProjects();
             result.setData(data);
         } catch (Exception e){
             e.printStackTrace();

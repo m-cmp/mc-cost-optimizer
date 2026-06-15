@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.azure.vm.rightsizer.mapper.ServiceGroupMetaMapper">
+
+    <!-- subscription ID로 project_cd, workspace_cd 조회 -->
+    <select id="selectProjectAndWorkspaceByVmId" resultType="map">
+        SELECT service_cd    as projectCd,
+               workspace_cd  as workspaceCd
+        FROM servicegroup_meta
+        WHERE csp_type = 'AZURE'
+          AND csp_account = #{subscriptionId}
+        LIMIT 1
+    </select>
+
+    <!-- resource_id로 Tumblebug 식별자 조회 -->
+    <select id="selectTbbIdentifiersByResourceId" resultType="map">
+        SELECT service_cd AS tbbNsId,
+               mci_id     AS tbbMciId,
+               vm_id      AS tbbVmId
+        FROM servicegroup_meta
+        WHERE csp_type = 'AZURE'
+          AND csp_instanceid COLLATE utf8mb4_unicode_520_ci = #{resourceId}
+        LIMIT 1
+    </select>
+
+</mapper>

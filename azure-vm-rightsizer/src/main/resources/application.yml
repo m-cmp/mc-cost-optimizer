@@ -1,0 +1,63 @@
+server:
+  port: 8092
+
+spring:
+  application:
+    name: azure-vm-rightsizer
+  datasource:
+    url: jdbc:mariadb://localhost:3307/cost?autoReconnect=true&allowMultiQueries=true&useSSL=false
+    username: mcmpcostopti
+    password: "0000"
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+logging:
+  level:
+    com.mcmp.azure.vm.rightsizer.service: debug
+    org.quartz: info
+
+# Azure VM Rightsizer Batch Schedule (한국시간 기준)
+# 09:30 KST = 00:30 UTC (Azure VM Rightsizer)
+# Cron format: second minute hour day month dayOfWeek
+azure-vm-rightsizer-schedule:
+  rightsizer-batch-cron: ${AZURE_RIGHTSIZER_BATCH_CRON_SCHEDULE:0 30 0 * * ?}
+
+tumblebug:
+  url: ${TUMBLEBUG_URL:http://mc-infra-manager:1323/tumblebug}
+  username: ${TUMBLEBUG_USERNAME:default}
+  password: ${TUMBLEBUG_PASSWORD:default}
+
+azure:
+  credential:
+    # 기본값을 빈 값으로 둬야 미설정 시 OpenBao 폴백이 동작 (placeholder 문자열이면 폴백 안 됨)
+    tenant-id: ${TENANT_ID:}
+    client-id: ${CLIENT_ID:}
+    client-secret: ${CLIENT_SECRET:}
+    subscription-id: ${SUBSCRIPTION_ID:}
+
+# OpenBao 크레덴셜 연동 (true: OpenBao 단일소스 / false: env 우선 후 OpenBao 폴백, 기본)
+openbao:
+  enabled: ${OPENBAO_ENABLED:false}
+  address: ${OPENBAO_ADDRESS:}
+  token: ${OPENBAO_TOKEN:}
+
+costopti:
+  alarmservice:
+    url: ${ALARM_SERVICE:alarm_service}
+  assetcollector:
+    url: http://localhost:8091
+  costcollector:
+    url: http://localhost:8081
+  costprocessor:
+    url: http://localhost:8082
+  costselector:
+    url: http://localhost:8083

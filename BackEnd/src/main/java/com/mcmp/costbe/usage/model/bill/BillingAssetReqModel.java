@@ -24,4 +24,7 @@ public class BillingAssetReqModel extends YearMonthModel {
 
     @Schema(required = false)
     private List<String> AWSChildProducts;
+
+    @Schema(required = false)
+    private List<String> multiCSPChildProducts;
 }

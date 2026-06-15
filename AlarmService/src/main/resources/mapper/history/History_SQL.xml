@@ -14,6 +14,9 @@
         <if test="account_id == null">
            AND ah.project_cd = #{project_cd}
         </if>
+        <if test="plan != null">
+           AND ah.plan = #{plan}
+        </if>
     </select>
 
     <insert id="insertAlertHistory" parameterType="com.mcmp.slack_demo.mail.model.SendMailFormModel">
@@ -68,6 +71,9 @@
         AND ah.alarm_impl = #{alarm_impl}
         <if test="account_id == null">
             AND ah.project_cd = #{project_cd}
+        </if>
+        <if test="plan != null">
+            AND ah.plan = #{plan}
         </if>
     </select>
 

@@ -24,4 +24,17 @@ public class UnusedResourceStatusModel {
 
     private Boolean isDownsizeTarget;
     private Boolean isUpsizeTarget;
+
+    // Tumblebug 식별자 (servicegroup_meta JOIN으로 채워짐)
+    private String tbbNsId;
+    private String tbbMciId;
+    private String tbbVmId;
+
+    // Tumblebug API로 채워지는 현재 스펙 정보
+    private String currentSpecName;
+    private Integer currentVcpu;
+    private Double currentMemGiB;
+    private Double currentCostPerHour;
+    private Double recommendCostPerHour;
+    private String tbbRegionName;
 }

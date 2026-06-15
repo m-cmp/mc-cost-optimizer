@@ -3,7 +3,7 @@ package com.mcmp.costbe.usage.service;
 import com.mcmp.costbe.common.model.DateRangeModel;
 import com.mcmp.costbe.common.service.DateCalculator;
 import com.mcmp.costbe.common.service.ExceptionService;
-import com.mcmp.costbe.resourceMapping.aws.AWSResourceMapping;
+import com.mcmp.costbe.resourceMapping.MultiCSPResourceMapping;
 import com.mcmp.costbe.usage.dao.BillDao;
 import com.mcmp.costbe.usage.dao.FilterDao;
 import com.mcmp.costbe.usage.model.bill.*;
@@ -38,8 +38,8 @@ public class UsageService {
         return filterDao.getWorkspaces();
     }
 
-    public List<ProjectsModel> getProjects(String workspaceCD){
-        return filterDao.getProjects(workspaceCD);
+    public List<ProjectsModel> getProjects(){
+        return filterDao.getProjects();
     }
 
     public BillingWidgetModel getBillingMonthlyWidget(BillingWidgetReqModel req){
@@ -85,19 +85,16 @@ public class UsageService {
             }
 
             if(top5bill.isEmpty()){
-                Top5BillModel temp = new Top5BillModel();
-                temp.setBill(0.0);
-                temp.setCsp("Null");
-                temp.setIsOthers(false);
-                temp.setResourceNm("Null");
-
-                top5bill.add(temp);
+                // 데이터 없음 -> null 반환
+                result.setTop5bill(null);
+            } else {
+                result.setTop5bill(top5bill);
             }
-
-            result.setTop5bill(top5bill);
         } catch (BadSqlGrammarException ex){
             if(exceptionService.isTableNotFound(ex)){
                 log.warn("[Top5 Widget Log]NotFoundTable : {}", ex.getMessage());
+                // 테이블 없음 -> null 반환
+                result.setTop5bill(null);
             }else {
                 ex.printStackTrace();
                 throw new RuntimeException();
@@ -120,33 +117,51 @@ public class UsageService {
         req.setCurMonthEndDate(curMonthRange.getEndDate());
         req.setYear_month(req.getToday().substring(0, 6));
 
-        List<String> familyCode = List.of("Virtual Machine", "Storage", "Database", "LB");
-        List<BillingAssetModel> billingAsset = new ArrayList<>();
-
         try{
-            for(String item : familyCode){
+            // 한 번만 조회 (service_type으로 구분되므로)
+            List<BillingAssetChildModel> allChildItems = billDao.getBillAssetChild(req);
+
+            // childProductCode(VM, K8S, Others)로 그룹핑
+            List<String> categories = MultiCSPResourceMapping.getAllCategories();
+            List<BillingAssetModel> billingAsset = new ArrayList<>();
+
+            for(String category : categories){
                 BillingAssetModel familyItem = new BillingAssetModel();
-                List<String> childProducts = AWSResourceMapping.getData(item);
-                req.setAWSChildProducts(childProducts);
+                familyItem.setFamilyProductCode(category);
 
-                List<BillingAssetChildModel> childItem = billDao.getBillAssetChild(req);
-                double childsTotalBill = 0.0;
-                Integer childsTotalUnit = 0;
-                for(BillingAssetChildModel child : childItem){
-                    childsTotalUnit += child.getUnit();
-                    childsTotalBill += child.getBill();
+                // 해당 카테고리의 child들만 필터링
+                List<BillingAssetChildModel> categoryChildren = allChildItems.stream()
+                    .filter(child -> category.equals(child.getChildProductCode()))
+                    .toList();
+
+                // 카테고리에 데이터가 있을 때만 추가
+                if(!categoryChildren.isEmpty()) {
+                    double childsTotalBill = 0.0;
+                    Integer childsTotalUnit = 0;
+                    for(BillingAssetChildModel child : categoryChildren){
+                        childsTotalUnit += child.getUnit();
+                        childsTotalBill += child.getBill();
+                    }
+
+                    familyItem.setChildProductCode(categoryChildren);
+                    familyItem.setTotalCost(childsTotalBill);
+                    familyItem.setTotalUnit(childsTotalUnit);
+
+                    billingAsset.add(familyItem);
                 }
+            }
 
-                familyItem.setChildProductCode(childItem);
-                familyItem.setTotalCost(childsTotalBill);
-                familyItem.setTotalUnit(childsTotalUnit);
-                familyItem.setFamilyProductCode(item);
-
-                billingAsset.add(familyItem);
+            // 데이터 없음 -> null 반환
+            if(billingAsset.isEmpty()){
+                result.setBillingAsset(null);
+            } else {
+                result.setBillingAsset(billingAsset);
             }
         } catch (BadSqlGrammarException ex){
             if(exceptionService.isTableNotFound(ex)){
                 log.warn("[BillAsset Widget Log]NotFoundTable : {}", ex.getMessage());
+                // 테이블 없음 -> null 반환
+                result.setBillingAsset(null);
             } else {
                 ex.printStackTrace();
                 throw new RuntimeException();
@@ -157,14 +172,13 @@ public class UsageService {
         result.setSelectedCsps(req.getSelectedCsps());
         result.setCurYear(req.getToday().substring(0, 4));
         result.setCurMonth(req.getToday().substring(4,6));
-        result.setBillingAsset(billingAsset);
 
         return result;
     }
 
     public double calculatePercentageChange(double prevMonthBill, double curMonthBill) {
         if (prevMonthBill == 0) {
-            return curMonthBill == 0 ? 0 : (curMonthBill > 0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY);
+            return curMonthBill == 0 ? 0 : (curMonthBill > 0 ? 100 : -100);
         }
         return ((curMonthBill - prevMonthBill) / Math.abs(prevMonthBill)) * 100;
     }

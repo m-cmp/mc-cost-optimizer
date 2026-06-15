@@ -12,6 +12,8 @@ public class ResourcegroupMetaModel {
     private String serviceCd;
     private String serviceNm;
     private String serviceUid;
+    private String serviceType;
+    private String workspaceCd;
     private String vmId;
     private String vmUid;
     private String vmNm;

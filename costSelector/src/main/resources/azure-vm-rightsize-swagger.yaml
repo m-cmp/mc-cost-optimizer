@@ -1,0 +1,114 @@
+openapi: "3.1.0"
+info:
+  title: "mc_cost_optimizer API"
+  description: "mc_cost_optimizer API"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8092"
+paths:
+  /api/batch/azure/recommend:
+    get:
+      summary: "Alarm history 테이블 적재를 수행하는 테스트 용 배치 테스트 API. 현재는 특정 VM에 대해서 Up사이즈 Alarm History를 적재한다."
+      operationId: "recommendAzureVm"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json;charset=UTF-8':
+              schema:
+                type: "string"
+  /api/azure/recommend/test:
+    get:
+      summary: "요금이 적재된 가장 최신날짜의 vm 리스트에 대하여 추천 알고리즘을 호출하는 테스트용 API"
+      operationId: "test"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json;charset=UTF-8':
+              schema:
+                type: "string"
+  /api/azure/recommend/test/up/{vmId}:
+    get:
+      summary: "vmId로 사이즈 업 가능한 타입을 추천한다."
+      operationId: "testUpVmId"
+      parameters:
+        - name: "vmId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json;charset=UTF-8':
+              schema:
+                $ref: "#/components/schemas/RecommendVmTypeDto"
+  /api/azure/recommend/test/down/{vmId}:
+    get:
+      summary: "vmId로 사이즈 다운 가능한 타입을 추천한다."
+      operationId: "testDownVmId"
+      parameters:
+        - name: "vmId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json;charset=UTF-8':
+              schema:
+                $ref: "#/components/schemas/RecommendVmTypeDto"
+  /api/azure/recommend/test/modern/{vmId}:
+    get:
+      summary: "vmId로 modernize 가능한 타입을 추천한다."
+      operationId: "testModernizeVmId"
+      parameters:
+        - name: "vmId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json;charset=UTF-8':
+              schema:
+                $ref: "#/components/schemas/RecommendVmTypeDto"
+
+components:
+  schemas:
+    RecommendVmTypeDto:
+      type: "object"
+      properties:
+        currentType:
+          type: "string"
+          nullable: true
+          description: "vm의 현재 사용중인 타입"
+        recommendType:
+          type: "string"
+          nullable: true
+          description: "vm의 추천 타입"
+        vmId:
+          type: "string"
+          nullable: true
+          description: "vm 아이디"
+        core:
+          type: "number"
+          format: "double"
+          nullable: true
+          description: "추천 vm 타입의 코어수"
+        memory:
+          type: "number"
+          format: "double"
+          nullable: true
+          description: "추천 vm 타입의 메모리"
+        usd:
+          type: "number"
+          format: "double"
+          nullable: true
+          description: "추천 vm 타입의 시간당 비용"

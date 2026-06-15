@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="budget">
+
+    <!-- 선택 가능 연도: 올해는 항상 포함 + 예산(budget_monthly)/실비용(monthly_summation) 데이터가 있는 과거 연도 -->
+    <select id="selectDistinctYears"
+            resultType="int">
+        SELECT DISTINCT y
+          FROM (
+               SELECT `year` AS y FROM budget_monthly
+               UNION
+               SELECT CAST(LEFT(`year_month`, 4) AS UNSIGNED) AS y FROM monthly_summation
+               UNION
+               SELECT YEAR(CURDATE()) AS y
+               ) t
+         WHERE y IS NOT NULL
+         ORDER BY y ASC
+    </select>
+
+    <!-- 연도별 예산 조회 -->
+    <select id="selectBudgetByYear"
+            parameterType="map"
+            resultType="com.mcmp.costbe.budget.model.BudgetItemModel">
+        SELECT csp, year, month, project_cd AS projectId, budget, currency
+          FROM budget_monthly
+         WHERE year = #{year}
+           AND project_cd = #{projectId}
+         ORDER BY csp, month
+    </select>
+
+    <!-- 예산 upsert -->
+    <insert id="upsertBudget"
+            parameterType="com.mcmp.costbe.budget.model.BudgetItemModel">
+        INSERT INTO budget_monthly (csp, year, month, project_cd, budget, currency)
+        VALUES (#{csp}, #{year}, #{month}, #{projectId}, #{budget}, #{currency})
+            ON DUPLICATE KEY UPDATE
+               budget = VALUES(budget),
+               currency = VALUES(currency),
+               updated_at = CURRENT_TIMESTAMP
+    </insert>
+
+    <!-- 실제 사용량 (연도별) -->
+    <select id="selectActualUsageByYear"
+            parameterType="map"
+            resultType="com.mcmp.costbe.budget.model.ActualUsageItemModel">
+        <![CDATA[
+        SELECT ms.year_month COLLATE utf8mb4_unicode_ci AS yearMonth,
+               'AWS' COLLATE utf8mb4_unicode_ci          AS csp,
+               COALESCE(SUM(ms.total_cost), 0)           AS bill
+          FROM monthly_summation ms
+         WHERE ms.csp = 'AWS'
+           AND ms.year_month >= CONCAT(#{year}, '01')
+           AND ms.year_month <= CONCAT(#{year}, '12')
+           AND ms.project_cd = #{projectId}
+         GROUP BY ms.year_month
+
+        UNION ALL
+
+        SELECT vm_latest.demand_month COLLATE utf8mb4_unicode_ci      AS yearMonth,
+               'NCP' COLLATE utf8mb4_unicode_ci                       AS csp,
+               COALESCE(SUM(vm_latest.demand_amount), 0) / ${krwPerUsd}     AS bill
+          FROM (
+               SELECT n1.demand_month, n1.demand_amount, n1.instance_no
+                 FROM ncp_cost_vm_month n1
+                INNER JOIN (
+                      SELECT instance_no, demand_month, MAX(write_date) AS latest_write_date
+                        FROM ncp_cost_vm_month
+                       WHERE demand_month >= CONCAT(#{year}, '01')
+                         AND demand_month <= CONCAT(#{year}, '12')
+                       GROUP BY instance_no, demand_month
+                      ) n2
+                   ON n1.instance_no = n2.instance_no
+                  AND n1.demand_month = n2.demand_month
+                  AND n1.write_date = n2.latest_write_date
+               ) vm_latest
+         INNER JOIN servicegroup_meta sm
+            ON vm_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+           AND sm.csp_type = 'NCP'
+           AND sm.service_cd = #{projectId}
+         GROUP BY vm_latest.demand_month
+
+        UNION ALL
+
+        SELECT DATE_FORMAT(a.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS yearMonth,
+               'Azure' COLLATE utf8mb4_unicode_ci                            AS csp,
+               COALESCE(SUM(a.pre_tax_cost), 0) / ${krwPerUsd}                     AS bill
+          FROM azure_cost_vm_daily a
+         INNER JOIN servicegroup_meta sm
+            ON a.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
+           AND sm.csp_type = 'AZURE'
+           AND sm.service_cd = #{projectId}
+         WHERE a.usage_date >= CONCAT(#{year}, '0101')
+           AND a.usage_date <= CONCAT(#{year}, '1231')
+         GROUP BY DATE_FORMAT(a.usage_date, '%Y%m')
+
+        UNION ALL
+
+        SELECT ms.year_month COLLATE utf8mb4_unicode_ci AS yearMonth,
+               'GCP' COLLATE utf8mb4_unicode_ci          AS csp,
+               COALESCE(SUM(ms.total_cost), 0)           AS bill
+          FROM monthly_summation ms
+         WHERE ms.csp = 'GCP'
+           AND ms.year_month >= CONCAT(#{year}, '01')
+           AND ms.year_month <= CONCAT(#{year}, '12')
+           AND ms.project_cd = #{projectId}
+         GROUP BY ms.year_month
+
+         ORDER BY yearMonth ASC, csp ASC
+                ]]>
+    </select>
+
+</mapper>
