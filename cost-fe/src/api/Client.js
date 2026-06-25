@@ -5,26 +5,16 @@ import { logger } from "../utils/logger";
 // Dynamically generate API URL and Mock mode (based on domain)
 function getApiConfig() {
   const hostname = window.location.hostname;
-  console.log("Domain check: " + hostname);
-  const isNumericAndDotsOnly = /^[0-9.]+$/.test(hostname);
+  const protocol = window.location.protocol; // "http:" | "https:" — follow the page's scheme
+  console.log("Domain check:", hostname, protocol);
 
-  let API_BE_URL = "";
-  let API_ALARM_URL = "";
-  let USE_MOCK = false;
+  // localhost defaults to mock (local dev); IP/domain hit the real API
+  const USE_MOCK = hostname.includes("localhost");
 
-  if (hostname.includes("localhost")) {
-    API_BE_URL = `http://${hostname}:9090`;
-    API_ALARM_URL = `http://${hostname}:9000`;
-    USE_MOCK = true; // localhost uses mock, change to false for API testing
-  } else if (isNumericAndDotsOnly) {
-    API_BE_URL = `http://${hostname}:9090`;
-    API_ALARM_URL = `http://${hostname}:9000`;
-    USE_MOCK = false; // IP uses real API
-  } else {
-    API_BE_URL = `https://${hostname}:9090`;
-    API_ALARM_URL = `https://${hostname}:9090`;
-    USE_MOCK = false; // Domain uses real API
-  }
+  // Always match the page's scheme so there is no mixed-content,
+  // whether served over http (IP) or https (self-signed IP / real domain).
+  const API_BE_URL = `${protocol}//${hostname}:9090`;
+  const API_ALARM_URL = `${protocol}//${hostname}:9000`;
 
   console.log("API_BE_URL:", API_BE_URL);
   console.log("API_ALARM_URL:", API_ALARM_URL);
