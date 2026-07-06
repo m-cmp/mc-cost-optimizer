@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="unifiedHistory">
 
-    <!-- ML side: alarm_history, resize-recommendation rows only (cost-warning rows excluded). -->
+    <!-- ML side: alarm_history — all alert types (event_type 필터 없음, 프로젝트 전체). -->
     <select id="selectAlarmRecommendations" parameterType="map"
             resultType="com.mcmp.costbe.llm_recommender.model.UnifiedHistoryRow">
         SELECT DATE_FORMAT(occure_dt, '%Y-%m-%d %H:%i:%s') AS `date`,
@@ -14,7 +14,6 @@
                plan          AS recommendType
           FROM alarm_history
          WHERE project_cd = #{nsId}
-           AND event_type = '사이즈 변경'
          ORDER BY occure_dt DESC
          LIMIT #{limit}
     </select>

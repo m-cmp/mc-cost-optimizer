@@ -27,7 +27,7 @@
                COALESCE(latest.latest_cost, 0) as latest_cost,
                base.total_cost,
                base.from_date,
-               base.to_date,
+               base.`to_date`,
                base.data_range,
                COALESCE(meta.service_cd, 'default') as project_cd,
                COALESCE(meta.workspace_cd, 'undefined') as workspace_cd
@@ -37,7 +37,7 @@
                      COUNT(*)                                                                         as day_count,
                      SUM(pre_tax_cost)                                                                as total_cost,
                      MIN(usage_date)                                                                  as from_date,
-                     MAX(usage_date)                                                                  as to_date,
+                     MAX(usage_date)                                                                  as `to_date`,
                      IF(MIN(usage_date) <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y%m01'), 'LAST_MONTH', 'ALL_DATA') as data_range
               FROM azure_cost_vm_daily
               WHERE vm_id = #{vmId}
@@ -74,7 +74,7 @@
                  ) latest ON base.vm_id = latest.vm_id
                  LEFT JOIN servicegroup_meta meta
                            ON meta.csp_type = 'AZURE'
-                           AND meta.csp_account COLLATE utf8mb4_unicode_520_ci = base.subscription_id
+                           AND meta.vm_uid COLLATE utf8mb4_unicode_520_ci = base.vm_id
     </select>
 
     <!-- 전체 VM의 월별 평균 비용 조회 (servicegroup_meta 조인 추가) -->
@@ -86,7 +86,7 @@
                COALESCE(latest.latest_cost, 0) as latest_cost,
                base.total_cost,
                base.from_date,
-               base.to_date,
+               base.`to_date`,
                base.data_range,
                COALESCE(meta.service_cd, 'default') as project_cd,
                COALESCE(meta.workspace_cd, 'undefined') as workspace_cd
@@ -96,7 +96,7 @@
                      COUNT(*)                                                                         as day_count,
                      SUM(pre_tax_cost)                                                                as total_cost,
                      MIN(usage_date)                                                                  as from_date,
-                     MAX(usage_date)                                                                  as to_date,
+                     MAX(usage_date)                                                                  as `to_date`,
                      IF(MIN(usage_date) <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y%m01'), 'LAST_MONTH', 'ALL_DATA') as data_range
               FROM azure_cost_vm_daily
               WHERE (
@@ -131,7 +131,7 @@
                  ) latest ON base.vm_id = latest.vm_id
                  LEFT JOIN servicegroup_meta meta
                            ON meta.csp_type = 'AZURE'
-                           AND meta.csp_account COLLATE utf8mb4_unicode_520_ci = base.subscription_id
+                           AND meta.vm_uid COLLATE utf8mb4_unicode_520_ci = base.vm_id
     </select>
 
 </mapper>

@@ -103,24 +103,31 @@
             ,tbl1.billing_account_id                    AS billingAccountId
             ,tbl1.standard_cost                         AS latestCost
             ,COALESCE(tbl2.avg_cost, 0)                 AS avgCost
-            ,COALESCE(meta.service_cd, tbl1.project_id) AS projectCd
-            ,meta.workspace_cd                          AS workspaceCd
+            ,COALESCE(tbl1.service_cd, tbl1.project_id) AS projectCd
+            ,(SELECT sm.workspace_cd
+                FROM servicegroup_meta sm
+               WHERE sm.csp_type = 'GCP'
+                 AND sm.service_cd COLLATE utf8mb4_uca1400_ai_ci = tbl1.service_cd
+               LIMIT 1)                                 AS workspaceCd
         FROM (
             SELECT
                  project_id
                 ,billing_account_id
+                ,service_cd
                 ,SUM(cost) AS standard_cost
             FROM gcp_billing_raw
             WHERE DATE(usage_start_time) = #{standardDT}
-            GROUP BY project_id, billing_account_id
+            GROUP BY project_id, billing_account_id, service_cd
         ) tbl1
         LEFT JOIN (
             SELECT
                  project_id
+                ,service_cd
                 ,AVG(daily_cost) AS avg_cost
             FROM (
                 SELECT
                      project_id
+                    ,service_cd
                     ,DATE(usage_start_time) AS usage_date
                     ,SUM(cost)              AS daily_cost
                 FROM gcp_billing_raw
@@ -129,13 +136,11 @@
                         #{item}
                     </foreach>
                 )
-                GROUP BY project_id, DATE(usage_start_time)
+                GROUP BY project_id, service_cd, DATE(usage_start_time)
             ) daily
-            GROUP BY project_id
+            GROUP BY project_id, service_cd
         ) tbl2 ON tbl2.project_id = tbl1.project_id
-        LEFT JOIN servicegroup_meta meta
-            ON meta.csp_type = 'GCP'
-            AND meta.csp_account COLLATE utf8mb4_uca1400_ai_ci = tbl1.project_id
+              AND tbl2.service_cd <![CDATA[ <=> ]]> tbl1.service_cd
     </select>
 
     <!-- 이상비용 탐지 결과 저장 -->
@@ -316,16 +321,16 @@
     <select id="selectGcpBudgetExceededProjects" resultType="com.mcmp.gcpcollector.dto.GcpBudgetUsageDto">
         WITH gcp_costs AS (
             SELECT
-                 COALESCE(meta.service_cd, raw.project_id) AS project_cd
+                 COALESCE(meta.service_cd, raw.service_cd, raw.project_id) AS project_cd
                 ,'GCP'                                     AS csp_type
                 ,SUM(raw.cost)                             AS total_cost
                 ,MAX(raw.billing_account_id)               AS account_id
             FROM gcp_billing_raw raw
             LEFT JOIN servicegroup_meta meta
                 ON  meta.csp_type    = 'GCP'
-                AND meta.csp_account COLLATE utf8mb4_uca1400_ai_ci = raw.project_id
+                AND meta.csp_instanceid COLLATE utf8mb4_uca1400_ai_ci = raw.csp_instanceid
             WHERE raw.invoice_month = DATE_FORMAT(CURDATE(), '%Y%m')
-            GROUP BY COALESCE(meta.service_cd, raw.project_id)
+            GROUP BY COALESCE(meta.service_cd, raw.service_cd, raw.project_id)
         )
         SELECT
              costs.project_cd                                        AS projectCd
