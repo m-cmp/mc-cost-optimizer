@@ -147,7 +147,7 @@ export default function InstanceTable({ instances, selected, onToggle, onToggleA
           transition-delay: 0.3s;
         }
       `}</style>
-      <Table columns={columns} data={instances} hover responsive />
+      <Table columns={columns} data={instances} hover responsive pagination pageSize={10} />
     </div>
   );
 }
