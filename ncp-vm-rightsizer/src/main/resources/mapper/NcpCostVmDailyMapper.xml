@@ -26,7 +26,7 @@
                COALESCE(latest.latest_cost, 0) as latest_cost,
                base.total_cost,
                base.from_date,
-               base.to_date,
+               base.`to_date`,
                base.data_range,
                COALESCE(meta.service_cd, 'default') as project_cd,
                COALESCE(meta.workspace_cd, 'undefined') as workspace_cd
@@ -37,7 +37,7 @@
                      COUNT(*)                                                                            as day_count,
                      SUM(daily_charge_amount)                                                            as total_cost,
                      MIN(target_date)                                                                    as from_date,
-                     MAX(target_date)                                                                    as to_date,
+                     MAX(target_date)                                                                    as `to_date`,
                      IF(MIN(target_date) <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01'), 'LAST_MONTH', 'ALL_DATA') as data_range
               FROM ncp_cost_vm_daily
               WHERE region_code = #{region}
@@ -73,7 +73,7 @@
                            ON base.instance_no = latest.instance_no
                  LEFT JOIN servicegroup_meta meta
                            ON meta.csp_type = 'NCP'
-                           AND meta.csp_account COLLATE utf8mb4_unicode_520_ci = base.member_no
+                           AND meta.csp_instanceid COLLATE utf8mb4_unicode_520_ci = base.instance_no
         ORDER BY base.instance_no
     </select>
 
@@ -87,7 +87,7 @@
                COALESCE(latest.latest_cost, 0) as latest_cost,
                base.total_cost,
                base.from_date,
-               base.to_date,
+               base.`to_date`,
                base.data_range,
                COALESCE(meta.service_cd, 'default') as project_cd,
                COALESCE(meta.workspace_cd, 'undefined') as workspace_cd
@@ -98,7 +98,7 @@
                      COUNT(*)                                                                            as day_count,
                      SUM(daily_charge_amount)                                                            as total_cost,
                      MIN(target_date)                                                                    as from_date,
-                     MAX(target_date)                                                                    as to_date,
+                     MAX(target_date)                                                                    as `to_date`,
                      IF(MIN(target_date) <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01'), 'LAST_MONTH', 'ALL_DATA') as data_range
               FROM ncp_cost_vm_daily
               WHERE instance_no = #{instanceNo}
@@ -139,6 +139,6 @@
                            ON base.instance_no = latest.instance_no
                  LEFT JOIN servicegroup_meta meta
                            ON meta.csp_type = 'NCP'
-                           AND meta.csp_account COLLATE utf8mb4_unicode_520_ci = base.member_no;
+                           AND meta.csp_instanceid COLLATE utf8mb4_unicode_520_ci = base.instance_no;
     </select>
 </mapper>

@@ -133,7 +133,7 @@ public class GcpAnomalyDetectionService {
 
     private void sendAlarm(GcpAnomalyDto anomalyDto, GcpProjectCostAnalysisDto item) {
         String note = String.format(
-                "GCP 프로젝트(%s)의 비용이 지난달 같은 요일 평균(%.2f) 대비 %.2f%% 증가했습니다. (현재: %.2f)",
+                "GCP project (%s) cost has increased compared to last month's same-weekday average (%.2f) by %.2f%%. (current: %.2f)",
                 item.getProjectId(),
                 anomalyDto.getSubjectCost(),
                 anomalyDto.getPercentagePoint(),

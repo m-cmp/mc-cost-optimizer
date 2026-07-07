@@ -143,7 +143,7 @@ public class AbnormalProcess {
                     .csp_type(item.getCsp_type())
                     .urgency("Warning")
                     .plan(item.getAbnormal_rating())
-                    .note("지난달 비용(" + numericCalculator.parseExponentialFormat(item.getSubject_cost()) + " USD) 대비 이번달 비용(" + numericCalculator.parseExponentialFormat(item.getStandard_cost()) + " USD)이 " + pctFormatter + " % 발생했습니다.")
+                    .note("This month's cost (" + numericCalculator.parseExponentialFormat(item.getStandard_cost()) + " USD) increased by " + pctFormatter + "% compared to last month's cost (" + numericCalculator.parseExponentialFormat(item.getSubject_cost()) + " USD).")
                     .project_cd(item.getProject_cd())
                     .build();
 

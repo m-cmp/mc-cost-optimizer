@@ -107,6 +107,7 @@ public class RecommendVmListItemProcessor implements ItemProcessor<RecommendCand
         // DTO 조립
         result.setMemberNo(candidate.getMemberNo());
         result.setVmId(candidate.getResourceId());
+        result.setProjectCd(candidate.getTbbNsId());  // 후보 쿼리가 csp_instanceid 조인으로 구한 service_cd (=system)
         if (result.getCurrentType() == null) {
             result.setCurrentType(candidate.getServerSpecCode());
         }

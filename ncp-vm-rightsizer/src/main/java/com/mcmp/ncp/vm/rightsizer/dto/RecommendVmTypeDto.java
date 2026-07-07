@@ -22,6 +22,7 @@ public class RecommendVmTypeDto {
     private Double memory;
     private Double usd;
     private String plan;  // "UP" or "DOWN"
+    private String projectCd;  // servicegroup_meta.service_cd (후보 쿼리가 csp_instanceid 조인으로 이미 구함)
 
     @Builder
     public RecommendVmTypeDto(String currentType, String recommendType, String memberNo, String vmId, Double core, Double memory, Double usd, String plan) {

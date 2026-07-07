@@ -113,8 +113,8 @@ public class GcpUnusedDetectionService {
 
     private void sendAlarm(GcpUnusedVmDto vm) {
         String note = String.format(
-                "GCP VM(%s)의 지난 14일간 CPU 사용률이 매우 낮습니다. (평균: %.2f%%, 최대: %.2f%%) " +
-                "미사용 자원일 수 있으니 확인이 필요합니다.",
+                "GCP VM (%s) has very low CPU utilization over the past 14 days (average: %.2f%%, maximum: %.2f%%). " +
+                "This resource may be unused and requires verification.",
                 vm.getVmId(), vm.getAvgCpu14Days(), vm.getMaxCpu14Days()
         );
         gcpAlarmSender.send(AlarmHistoryDto.builder()

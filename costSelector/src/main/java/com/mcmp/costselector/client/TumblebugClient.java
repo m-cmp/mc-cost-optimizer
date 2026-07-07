@@ -145,9 +145,9 @@ public class TumblebugClient {
         Map<String, Object> body = Map.of(
             "filter", Map.of("policy", filterPolicy),
             "priority", Map.of(
-                "policy", List.of(Map.of("metric", "cost", "weight", "0.5"))
+                "policy", List.of(Map.of("metric", "cost", "weight", 0.5))
             ),
-            "limit", "5"
+            "limit", 5
         );
 
         try {
