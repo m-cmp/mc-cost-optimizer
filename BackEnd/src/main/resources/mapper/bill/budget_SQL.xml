@@ -84,7 +84,7 @@
         UNION ALL
 
         SELECT DATE_FORMAT(a.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS yearMonth,
-               'Azure' COLLATE utf8mb4_unicode_ci                            AS csp,
+               'AZURE' COLLATE utf8mb4_unicode_ci                            AS csp,
                COALESCE(SUM(a.pre_tax_cost), 0) / ${krwPerUsd}                     AS bill
           FROM azure_cost_vm_daily a
          INNER JOIN servicegroup_meta sm

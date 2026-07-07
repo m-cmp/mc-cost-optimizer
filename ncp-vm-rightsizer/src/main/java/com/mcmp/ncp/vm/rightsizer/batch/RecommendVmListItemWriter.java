@@ -3,7 +3,6 @@ package com.mcmp.ncp.vm.rightsizer.batch;
 import com.mcmp.ncp.vm.rightsizer.client.AlarmServiceClient;
 import com.mcmp.ncp.vm.rightsizer.dto.AlarmHistoryDto;
 import com.mcmp.ncp.vm.rightsizer.dto.RecommendVmTypeDto;
-import com.mcmp.ncp.vm.rightsizer.mapper.ServiceGroupMetaMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -12,7 +11,6 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @StepScope
@@ -21,7 +19,6 @@ import java.util.Map;
 public class RecommendVmListItemWriter implements ItemWriter<RecommendVmTypeDto> {
 
     private final AlarmServiceClient alarmServiceClient;
-    private final ServiceGroupMetaMapper serviceGroupMetaMapper;
 
     private String buildNote(String plan, RecommendVmTypeDto dto) {
         String base = String.format(
@@ -36,13 +33,10 @@ public class RecommendVmListItemWriter implements ItemWriter<RecommendVmTypeDto>
     @Override
     public void write(Chunk<? extends RecommendVmTypeDto> chunk) throws Exception {
         for (RecommendVmTypeDto recommendVmTypeDto : chunk) {
-            // servicegroup_meta에서 projectCd, workspaceCd 조회
-            Map<String, String> meta = serviceGroupMetaMapper.selectProjectAndWorkspaceByMemberNo(
-                    recommendVmTypeDto.getMemberNo()
-            );
-
-            String projectCd = (meta != null && meta.get("projectCd") != null)
-                    ? meta.get("projectCd")
+            // 후보 쿼리(selectRecommendCandidates)가 csp_instanceid 조인으로 이미 구한 projectCd 사용
+            // (member_no 계정 조회는 실데이터에서 ncp_cost.member_no != meta.csp_account 라 깨짐)
+            String projectCd = recommendVmTypeDto.getProjectCd() != null
+                    ? recommendVmTypeDto.getProjectCd()
                     : "default";
 
             String plan = recommendVmTypeDto.getPlan(); // "UP" or "DOWN"

@@ -265,7 +265,7 @@ SELECT service_name AS resourceNm
               </foreach>
               <![CDATA[
           AND co.lineitem_usagestartdate >= #{curMonthStartDate}
-          AND co.lineitem_usageenddate <= #{curMonthEndDate}
+          AND co.lineitem_usageenddate < #{curMonthEndDate}
               ]]>
         GROUP BY co.lineitem_productcode
 
@@ -612,21 +612,9 @@ SELECT csp, SUM(cost) AS cost
 
        UNION ALL
 
-       <!-- GCP (monthly_summation 기준, USD 적재값 사용) -->
-       SELECT 'GCP'                                AS csp,
-              COALESCE(SUM(ms.total_cost), 0)      AS cost
-         FROM monthly_summation ms
-        WHERE ms.csp = 'GCP'
-          AND ms.`year_month` = #{year_month}
-              <if test="selectedProjects != null and selectedProjects.size() > 0">
-          AND ms.project_cd IN
-              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
-              #{selectedProject}
-              </foreach>
-              </if>
-       UNION ALL
-
-       <!-- GCP (invoice_month 기준, KRW→USD 환산) -->
+       <!-- GCP (invoice_month 기준, KRW→USD 환산) — gcp_billing_raw 단일 소스.
+            (기존에는 monthly_summation GCP 와 gcp_billing_raw GCP 를 둘 다 UNION 하여 이중 집계되었음.
+             Top5/자산 위젯과 소스를 통일하기 위해 gcp_billing_raw 만 사용) -->
        SELECT 'GCP'                                  AS csp,
               COALESCE(SUM(raw.cost), 0) / ${krwPerUsd} AS cost
          FROM gcp_billing_raw raw
