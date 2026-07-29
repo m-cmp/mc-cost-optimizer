@@ -1,4 +1,4 @@
-import { alertClient, USE_MOCK, billingClient } from "../Client";
+import { alertClient, curSetupClient, USE_MOCK, billingClient } from "../Client";
 import { alarmHistoryData } from "../../config/mockData";
 
 // Fetch alarm history
@@ -36,6 +36,11 @@ export const sendSlackMessage = ({ userId, message, linkUrl, linkText }) => {
 // Save Slack Token
 export const insertSlackToken = (payload) => {
   return alertClient.post("/insertSlackToken", payload);
+};
+
+// Save mail receiver to DB
+export const saveMailReceiver = (email) => {
+  return curSetupClient.post("/mail-receiver", { email });
 };
 
 // Fetch Slack Token/Channel

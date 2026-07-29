@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class AwsDao {
@@ -34,6 +36,15 @@ public class AwsDao {
 
     public List<CurProcessModel> getTodoCURCollectMonth(String account){
         return sqlSessionTemplate.selectList("aws.getTodoCURCollectMonth", account);
+    }
+
+    /** 해당 payer의 당월 todo 행이 이미 있는지 개수 조회(0이면 생성 필요). */
+    public int countCurProcessMonth(String payer, String collectDate){
+        Map<String, Object> param = new HashMap<>();
+        param.put("payer", payer);
+        param.put("collectDate", collectDate);
+        Integer cnt = sqlSessionTemplate.selectOne("aws.countCurProcessMonth", param);
+        return cnt == null ? 0 : cnt;
     }
 
     public List<String> getPayerID(){

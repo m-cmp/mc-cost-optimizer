@@ -74,8 +74,10 @@ public class NcpCostMonthServiceImpl implements NcpCostMonthService {
 
         log.info("getCostByService - today: {}, givenDate: {}", today, givenDate);
 
-        if (!givenDate.equals(today)) {
-            log.info("{} 비용 데이터가 NCP에서 제공되지 않아 수집을 종료합니다.", givenDate);
+        // NCP 발행 지연 허용: writeDate가 오늘 또는 어제면 수집(정확 일치 시 발행 늦은 날 통째 스킵됨).
+        // 이틀 이상 오래된 경우에만 종료. 월 누적 upsert라 재수집돼도 멱등.
+        if (givenDate.isBefore(today.minusDays(1))) {
+            log.info("{} 비용 데이터가 2일 이상 오래되어 수집을 종료합니다. (today={})", givenDate, today);
             return ncpCostServiceMonthList;
         }
 
@@ -234,8 +236,9 @@ public class NcpCostMonthServiceImpl implements NcpCostMonthService {
         }
 
         List<NcpCostVmMonth> ncpCostVmMonthList = new ArrayList<>();
-        if (!givenDate.equals(today)) {
-            log.info("{} VM 비용 데이터가 아직 제공되지 않았습니다. 수집 종료.", givenDate);
+        // NCP 발행 지연 허용: writeDate가 오늘 또는 어제면 수집. 이틀 이상 오래된 경우에만 종료.
+        if (givenDate.isBefore(today.minusDays(1))) {
+            log.info("{} VM 비용 데이터가 2일 이상 오래되어 수집을 종료합니다. (today={})", givenDate, today);
             return ncpCostVmMonthList;
         }
 

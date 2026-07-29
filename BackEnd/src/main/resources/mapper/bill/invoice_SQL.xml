@@ -134,9 +134,12 @@
              , SUM(co.lineitem_unblendedcost)    AS bill
              , co.lineitem_resourceid            AS resourceID
           FROM tbl_table_billing_detail_${year_month} co
-         INNER JOIN servicegroup_meta sm
+         INNER JOIN (
+               SELECT DISTINCT csp_instanceid, csp_type, service_cd
+                 FROM servicegroup_meta
+                WHERE csp_type = 'AWS'
+               ) sm
             ON co.lineitem_resourceid = sm.csp_instanceid
-           AND sm.csp_type = 'AWS'
                <if test="selectedProjects != null and selectedProjects.size() > 0">
            AND sm.service_cd IN
                <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">

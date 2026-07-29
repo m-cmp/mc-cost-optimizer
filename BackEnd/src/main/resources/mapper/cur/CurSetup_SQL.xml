@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cur">
+
+    <update id="deleteCurSetup">
+        DELETE FROM temp_cmp_user_role_arn
+         WHERE mcmp_user_id = 'mcmpcostopti'
+           AND csp = 'AWS'
+    </update>
+
+    <insert id="upsertCurSetup" parameterType="String">
+        INSERT INTO temp_cmp_user_role_arn (mcmp_user_id, csp, bucket_nm)
+        VALUES ('mcmpcostopti', 'AWS', #{value})
+    </insert>
+
+    <select id="countCurSetup" resultType="int">
+        SELECT COUNT(*)
+          FROM temp_cmp_user_role_arn
+         WHERE mcmp_user_id = 'mcmpcostopti'
+           AND csp = 'AWS'
+    </select>
+
+    <insert id="upsertUserInfo" parameterType="String">
+        INSERT INTO temp_cmp_user_info (mcmp_user_id, csp_account_id)
+        VALUES ('mcmpcostopti', #{value})
+        ON DUPLICATE KEY UPDATE csp_account_id = #{value}
+    </insert>
+
+    <insert id="upsertMailReceiver" parameterType="String">
+        INSERT INTO temp_cmp_user_mail_receiver (mcmp_user_id, mcmp_mail_receiver)
+        VALUES ('mcmpcostopti', #{value})
+        ON DUPLICATE KEY UPDATE mcmp_mail_receiver = #{value}
+    </insert>
+
+    <select id="getMailReceiver" resultType="String">
+        SELECT mcmp_mail_receiver
+          FROM temp_cmp_user_mail_receiver
+         WHERE mcmp_user_id = 'mcmpcostopti'
+         LIMIT 1
+    </select>
+
+</mapper>

@@ -45,6 +45,11 @@ public class VMMetaService {
     @Autowired
     private TBBDao tbbDao;
 
+    // Retry tuning for the 2 req/sec rate limit on Tumblebug's node-spec endpoint.
+    private static final int TBB_SPEC_MAX_RETRIES = 4;
+    private static final long TBB_SPEC_BACKOFF_BASE_MS = 300L;
+    private static final long TBB_SPEC_BACKOFF_JITTER_MS = 200L;
+
     /**
      * CSP별 계정 ID 추출
      * AWS: NetworkInterfaces의 OwnerId (12자리 숫자)
@@ -398,20 +403,38 @@ public class VMMetaService {
         httpHeaders.set("Authorization", authHeader);
         HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
 
-        try {
-            ResponseEntity<TbInfraNodeListModel> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, httpEntity, TbInfraNodeListModel.class);
-            TbInfraNodeListModel response = responseEntity.getBody();
+        // Tumblebug throttles GET /ns/{ns}/infra/{mci} at 2 req/sec, so a burst of
+        // per-VM lookups otherwise returns 429. Retry the 429s with exponential
+        // backoff (+jitter) to let the token bucket refill before giving up.
+        for (int attempt = 0; attempt <= TBB_SPEC_MAX_RETRIES; attempt++) {
+            try {
+                ResponseEntity<TbInfraNodeListModel> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, httpEntity, TbInfraNodeListModel.class);
+                TbInfraNodeListModel response = responseEntity.getBody();
 
-            if (response != null && response.getNode() != null && !response.getNode().isEmpty()) {
-                return response.getNode().get(0).getSpec();
-            } else {
-                log.warn("TUMBLEBUG META - NODE SPEC => EMPTY => ns : {}, mci : {}, vm : {}, response : {}", nsId, mciId, vmId, response);
+                if (response != null && response.getNode() != null && !response.getNode().isEmpty()) {
+                    return response.getNode().get(0).getSpec();
+                } else {
+                    log.warn("TUMBLEBUG META - NODE SPEC => EMPTY => ns : {}, mci : {}, vm : {}, response : {}", nsId, mciId, vmId, response);
+                    return null;
+                }
+            } catch (HttpClientErrorException.TooManyRequests e) {
+                if (attempt == TBB_SPEC_MAX_RETRIES) {
+                    log.warn("TUMBLEBUG META - NODE SPEC => RATE LIMITED after {} retries => ns : {}, mci : {}, vm : {}", TBB_SPEC_MAX_RETRIES, nsId, mciId, vmId);
+                    return null;
+                }
+                long backoffMs = TBB_SPEC_BACKOFF_BASE_MS * (1L << attempt) + (long) (Math.random() * TBB_SPEC_BACKOFF_JITTER_MS);
+                try {
+                    Thread.sleep(backoffMs);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return null;
+                }
+            } catch (Exception e) {
+                log.warn("FAIL TO GET TUMBLEBUG META - NODE SPEC => NS ID : {}, MCI ID : {}, VM ID : {}, error : {}", nsId, mciId, vmId, e.getMessage());
                 return null;
             }
-        } catch (Exception e) {
-            log.warn("FAIL TO GET TUMBLEBUG META - NODE SPEC => NS ID : {}, MCI ID : {}, VM ID : {}, error : {}", nsId, mciId, vmId, e.getMessage());
-            return null;
         }
+        return null;
     }
 
     public void getTBBResourceMetaInfo() throws InterruptedException {

@@ -62,6 +62,15 @@
            AND cpi.certifed_fixed_yn='N'
     </select>
 
+    <!-- 당월 todo 행 존재 여부(중복 insert 방지 + 스케줄 시각 독립). 0이면 아직 없음 → 생성 대상 -->
+    <select id="countCurProcessMonth" resultType="int">
+        SELECT COUNT(*)
+          FROM cur_process_info
+         WHERE csp='AWS'
+           AND payer_account=#{payer}
+           AND collect_date=#{collectDate}
+    </select>
+
     <select id="getPayerID" resultType="String">
         SELECT tcura.mcmp_user_id AS payerID
           FROM temp_cmp_user_role_arn tcura

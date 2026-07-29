@@ -74,6 +74,12 @@ export const budgetClient = createClient(
   5000,
 );
 
+// 비용 인보이스 아카이빙 — S3 업로드/삭제라 타임아웃 여유
+export const archiveClient = createClient(
+  `${API_BE_URL}${BASE_PATH}/archive`,
+  30000,
+);
+
 // LLM recommender (port 9090, BE base path) — long timeout: each call hits an LLM
 export const llmClient = createClient(
   `${API_BE_URL}${BASE_PATH}/llm_recommender`,
@@ -91,6 +97,12 @@ export const apikeyClient = createClient(
   `${API_BE_URL}${BASE_PATH}/llm_recommender/apikey`,
   5000,
 );
+
+// CUR 자동 설정 — IAM/S3/CUR 생성 포함하므로 타임아웃 여유
+export const curSetupClient = createClient(`${API_BE_URL}/api/aws/cur`, 90000);
+
+// GCP 자동 설정 — BigQuery 탐색 포함하므로 타임아웃 여유
+export const gcpSetupClient = createClient(`${API_BE_URL}/api/gcp/setup`, 120000);
 
 // Export Mock mode (used in API files)
 export { USE_MOCK };

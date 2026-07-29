@@ -60,8 +60,8 @@ public class Cur {
                     return;
                 }
             } catch (Exception e){
-                e.printStackTrace();
-                log.warn("No data for that month - Payer : " + payerId + ", Month : " + todoCollectMonth);
+                // CUR Setup 후 최대 24시간 동안 S3에 데이터 없음 — 이 기간 내 수집 실패는 정상
+                log.warn("CUR 데이터 없음 (CUR Setup 후 24시간 내 정상) — payer={}, month={}", payerId, todoCollectMonth);
                 return;
             }
 

@@ -1,20 +1,25 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator.min.css"; // Tabulator 기본 CSS
 import * as XLSX from "xlsx";
 import Card from "@/components/common/card/Card";
 import Button from "@/components/common/button/Button";
 import { Icons } from "@/icons/Icons";
+import ArchiveModal from "./ArchiveModal";
 import "@/index.css";
 
 window.XLSX = XLSX;
 
-export default function InvoiceTable({ invoice }) {
+export default function InvoiceTable({ invoice, months = [], archiving, onArchive }) {
   const tableRef = useRef(null);
   const tabulatorInstance = useRef(null);
   const today = new Date().toISOString().split("T")[0];
 
   const hasData = invoice && invoice.length > 0;
+
+  // Cost archiving — the button lives on the export toolbar; the status table is a separate
+  // card below the invoice (rendered by the page). Here we only trigger the archive modal.
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
   useEffect(() => {
     if (!tableRef.current || !hasData) return;
@@ -97,6 +102,9 @@ export default function InvoiceTable({ invoice }) {
             size="sm"
             onClick={handleExportExcel}
           />
+          <Button variant="primary" size="sm" onClick={() => setArchiveOpen(true)}>
+            🗄 Archive
+          </Button>
         </div>
       }
     >
@@ -107,6 +115,14 @@ export default function InvoiceTable({ invoice }) {
       ) : (
         <div ref={tableRef} style={{ width: "100%", height: "450px" }} />
       )}
+
+      <ArchiveModal
+        open={archiveOpen}
+        onClose={() => setArchiveOpen(false)}
+        months={months}
+        archiving={archiving}
+        onArchive={onArchive}
+      />
     </Card>
   );
 }

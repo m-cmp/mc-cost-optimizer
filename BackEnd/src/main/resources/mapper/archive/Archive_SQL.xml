@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="archive">
+
+    <!-- ★ 부팅 시 자동 실행. 없으면 생성, 있으면 스킵(오류 X). (GcpCollectorInitializer 패턴) -->
+    <update id="initManifestTable">
+        CREATE TABLE IF NOT EXISTS cost_archive_manifest (
+            `year_month`   VARCHAR(6)   NOT NULL,
+            csp            VARCHAR(10)  NOT NULL,
+            s3_key         VARCHAR(512),
+            row_count      BIGINT,
+            byte_size      BIGINT,
+            sha256         CHAR(64),
+            status         VARCHAR(20),
+            raw_purged     TINYINT(1)   DEFAULT 0,
+            raw_purged_at  DATETIME,
+            archived_at    DATETIME,
+            updated_at     DATETIME,
+            PRIMARY KEY (`year_month`, csp),
+            INDEX idx_archive_status (status),
+            INDEX idx_archive_dt (archived_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    </update>
+
+    <!--
+      아카이브 쓰기 접근 정보 재사용: CUR과 동일한 버킷/역할.
+      bucket_nm(목적지) + role_arn(AssumeRole)을 temp 테이블에서 그대로 읽음. (AWS 행 1개)
+    -->
+    <select id="getAwsUserArn" resultType="com.mcmp.costbe.archive.model.UserArnModel">
+        SELECT bucket_nm AS bucketNm
+             , role_arn  AS roleArn
+          FROM temp_cmp_user_role_arn
+         WHERE csp = 'AWS'
+         LIMIT 1
+    </select>
+
+    <!-- ===================== manifest CRUD ===================== -->
+
+    <!-- 아카이브 기록 upsert. 재아카이브 시 status/키/해시 갱신, raw_purged 는 유지(건드리지 않음). -->
+    <insert id="upsertManifest" parameterType="com.mcmp.costbe.archive.model.ArchiveManifest">
+        INSERT INTO cost_archive_manifest
+            (`year_month`, csp, s3_key, row_count, byte_size, sha256, status, archived_at, updated_at)
+        VALUES
+            (#{yearMonth}, #{csp}, #{s3Key}, #{rowCount}, #{byteSize}, #{sha256}, #{status}, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+            s3_key      = #{s3Key},
+            row_count   = #{rowCount},
+            byte_size   = #{byteSize},
+            sha256      = #{sha256},
+            status      = #{status},
+            archived_at = NOW(),
+            updated_at  = NOW()
+    </insert>
+
+    <resultMap id="manifestMap" type="com.mcmp.costbe.archive.model.ArchiveManifest">
+        <id     property="yearMonth"   column="year_month"/>
+        <id     property="csp"         column="csp"/>
+        <result property="s3Key"       column="s3_key"/>
+        <result property="rowCount"    column="row_count"/>
+        <result property="byteSize"    column="byte_size"/>
+        <result property="sha256"      column="sha256"/>
+        <result property="status"      column="status"/>
+        <result property="rawPurged"   column="raw_purged"/>
+        <result property="rawPurgedAt" column="raw_purged_at"/>
+        <result property="archivedAt"  column="archived_at"/>
+        <result property="updatedAt"   column="updated_at"/>
+    </resultMap>
+
+    <select id="findManifest" resultMap="manifestMap">
+        SELECT * FROM cost_archive_manifest
+         WHERE `year_month` = #{yearMonth} AND csp = #{csp}
+    </select>
+
+    <select id="findAllManifest" resultMap="manifestMap">
+        SELECT * FROM cost_archive_manifest
+         ORDER BY `year_month` DESC, csp
+    </select>
+
+    <update id="markPurged">
+        UPDATE cost_archive_manifest
+           SET raw_purged = 1, raw_purged_at = NOW(), updated_at = NOW()
+         WHERE `year_month` = #{yearMonth} AND csp = #{csp}
+    </update>
+
+    <!-- ===================== 조회 (현황/게이트) ===================== -->
+
+    <!-- 아카이브 가능한 연·월 = 각 CSP 데이터 소스의 월 합집합 (COLLATE 로 collation 혼재 방지) -->
+    <select id="getArchivableMonths" resultType="string">
+        SELECT DISTINCT ym FROM (
+            SELECT `year_month`                COLLATE utf8mb4_general_ci AS ym FROM monthly_summation
+            UNION SELECT demand_month          COLLATE utf8mb4_general_ci      FROM ncp_cost_vm_month
+            UNION SELECT SUBSTRING(usage_date,1,6) COLLATE utf8mb4_general_ci  FROM azure_cost_vm_daily
+            UNION SELECT invoice_month         COLLATE utf8mb4_general_ci      FROM gcp_billing_raw
+        ) t
+        WHERE ym REGEXP '^[0-9]{6}$'
+        ORDER BY ym DESC
+    </select>
+
+    <!-- AWS 월 확정 여부: 해당 월 CUR process 가 모두 certifed_fixed_yn='Y'(InvoiceId 발행) 이면 true -->
+    <select id="isAwsMonthFinalized" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 AND SUM(certifed_fixed_yn = 'Y') = COUNT(*) THEN 1 ELSE 0 END
+          FROM cur_process_info
+         WHERE csp = 'AWS' AND collect_date = #{yearMonth}
+    </select>
+
+    <!-- ===================== raw 삭제 (게이트 통과 후에만 호출) ===================== -->
+    <!-- ★ yearMonth 는 호출 전 \d{6} 검증됨(게이트/Abstract/DAO 삼중). DROP 은 동적 테이블명이라 ${} 사용. -->
+
+    <update id="dropAwsDetailTable">
+        DROP TABLE IF EXISTS tbl_table_billing_detail_${yearMonth}
+    </update>
+
+    <delete id="purgeAwsCurOrigin">
+        DELETE FROM cur_origin
+         WHERE lineitem_usagestartdate &gt;= STR_TO_DATE(CONCAT(#{yearMonth},'01'),'%Y%m%d')
+           AND lineitem_usagestartdate &lt;  STR_TO_DATE(CONCAT(#{yearMonth},'01'),'%Y%m%d') + INTERVAL 1 MONTH
+    </delete>
+
+    <delete id="purgeGcp">
+        DELETE FROM gcp_billing_raw WHERE invoice_month = #{yearMonth}
+    </delete>
+
+    <delete id="purgeNcpVmMonth">
+        DELETE FROM ncp_cost_vm_month WHERE demand_month = #{yearMonth}
+    </delete>
+    <delete id="purgeNcpVmDaily">
+        DELETE FROM ncp_cost_vm_daily WHERE demand_month = #{yearMonth}
+    </delete>
+    <delete id="purgeNcpServiceMonth">
+        DELETE FROM ncp_cost_service_month WHERE demand_month = #{yearMonth}
+    </delete>
+
+    <delete id="purgeAzureVmDaily">
+        DELETE FROM azure_cost_vm_daily WHERE usage_date LIKE CONCAT(#{yearMonth},'%')
+    </delete>
+    <delete id="purgeAzureServiceDaily">
+        DELETE FROM azure_cost_service_daily WHERE usage_date LIKE CONCAT(#{yearMonth},'%')
+    </delete>
+
+</mapper>
