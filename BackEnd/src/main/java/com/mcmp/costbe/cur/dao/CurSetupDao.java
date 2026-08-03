@@ -28,6 +28,10 @@ public class CurSetupDao {
         return sqlSession.selectOne("cur.getMailReceiver");
     }
 
+    public String getBucketName() {
+        return sqlSession.selectOne("cur.getBucketName");
+    }
+
     public boolean isDbRegistered() {
         Integer count = sqlSession.selectOne("cur.countCurSetup");
         return count != null && count > 0;

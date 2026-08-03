@@ -14,6 +14,10 @@ public class StepResult {
         return new StepResult(name, "OK", null);
     }
 
+    public static StepResult ok(String name, String message) {
+        return new StepResult(name, "OK", message);
+    }
+
     public static StepResult skip(String name, String reason) {
         return new StepResult(name, "SKIP", reason);
     }

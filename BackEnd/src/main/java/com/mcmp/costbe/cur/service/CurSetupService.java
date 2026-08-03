@@ -72,7 +72,8 @@ public class CurSetupService {
                 && !creds.get("AWS_ACCESS_KEY_ID").isBlank();
         boolean dbRegistered = curSetupDao.isDbRegistered();
         String mailReceiver = curSetupDao.getMailReceiver();
-        return new CurSetupStatus(costCredsStored, dbRegistered, mailReceiver);
+        String bucketName   = curSetupDao.getBucketName();
+        return new CurSetupStatus(costCredsStored, dbRegistered, mailReceiver, bucketName, REPORT_NAME);
     }
 
     public void saveMailReceiver(String email) {

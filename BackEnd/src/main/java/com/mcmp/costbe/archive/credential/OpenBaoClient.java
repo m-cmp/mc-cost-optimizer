@@ -69,6 +69,12 @@ public class OpenBaoClient {
         }
     }
 
+    /** readCsp 캐시와 path 캐시를 함께 무효화. writePath 후 csp 재조회 시 사용. */
+    public void invalidateCspCache(String provider) {
+        cache.remove(provider);
+        cache.remove("csp/" + provider);
+    }
+
     /** secret/data/{path} 삭제. probe 정리 용도. */
     public void deletePath(String path) {
         if (!isConfigured()) return;

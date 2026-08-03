@@ -41,6 +41,12 @@ public class NcpBatchController {
         return ResponseEntity.ok("NCP Anomaly VM Type Batch Job started successfully");
     }
 
+    @GetMapping(value = "/batch/ncp/unused")
+    public ResponseEntity<String> unusedNcpVm() {
+        batchExecutorService.asyncExecuteBatch(RightSizeType.NCP_UNUSED_VM);
+        return ResponseEntity.ok("NCP Unused Resource Batch Job started successfully");
+    }
+
     /**
      * Tumblebug 추천 직접 테스트 (배치 없이 단건 확인)
      *

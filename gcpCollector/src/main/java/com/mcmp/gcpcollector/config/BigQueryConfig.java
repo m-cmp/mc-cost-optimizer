@@ -50,42 +50,45 @@ public class BigQueryConfig {
 
     @Bean
     public BigQuery bigQuery() throws Exception {
-        // 크레덴셜 결정: openbao.enabled=true → OpenBao, false → env 우선 후 OpenBao 폴백
-        String resolvedProjectId  = credentialResolver.resolve("gcp", "project_id", gcpProjectId);
-        String resolvedEmail      = credentialResolver.resolve("gcp", "client_email", clientEmail);
-        String resolvedPrivateKey = credentialResolver.resolve("gcp", "private_key", privateKey);
+        // 크레덴셜: cost/gcp(운영 SA) 우선 → 없으면 csp/gcp(어드민 SA) 폴백
+        Map<String, String> costCreds = openBaoClient.readPath("cost/gcp");
+        String opProjectId  = costCreds.get("project_id");
+        String opEmail      = costCreds.get("client_email");
+        String opPrivateKey = costCreds.get("private_key");
+
+        String resolvedProjectId  = nonEmpty(opProjectId)  ? opProjectId  : credentialResolver.resolve("gcp", "project_id", gcpProjectId);
+        String resolvedEmail      = nonEmpty(opEmail)       ? opEmail      : credentialResolver.resolve("gcp", "client_email", clientEmail);
+        String resolvedPrivateKey = nonEmpty(opPrivateKey)  ? opPrivateKey : credentialResolver.resolve("gcp", "private_key", privateKey);
         String resolvedKeyId      = credentialResolver.resolveOptional("gcp", "private_key_id", privateKeyId);
 
-        if (resolvedEmail == null || resolvedEmail.isEmpty()
-                || resolvedPrivateKey == null || resolvedPrivateKey.isEmpty()) {
-            log.error("GCP 인증 정보가 없습니다. OpenBao csp/gcp 에 project_id, client_email, private_key 를 등록하세요.");
+        if (!nonEmpty(resolvedEmail) || !nonEmpty(resolvedPrivateKey)) {
+            log.error("GCP 인증 정보 없음. cost/gcp 또는 csp/gcp 에 project_id/client_email/private_key 등록 필요.");
             throw new IllegalStateException("GCP 인증 정보가 없습니다.");
         }
+
+        String credSource = nonEmpty(opEmail) ? "cost/gcp (운영 SA)" : "csp/gcp (어드민 SA)";
+        log.info("GCP 크레덴셜 출처: {}", credSource);
 
         PrivateKey pk = parsePemPrivateKey(resolvedPrivateKey);
         ServiceAccountCredentials.Builder builder = ServiceAccountCredentials.newBuilder()
                 .setClientEmail(resolvedEmail)
                 .setPrivateKey(pk)
                 .setProjectId(resolvedProjectId);
-        if (resolvedKeyId != null && !resolvedKeyId.isEmpty()) {
-            builder.setPrivateKeyId(resolvedKeyId);
-        }
+        if (nonEmpty(resolvedKeyId)) builder.setPrivateKeyId(resolvedKeyId);
+
         BigQuery bq = BigQueryOptions.newBuilder()
                 .setCredentials(builder.build())
                 .setProjectId(resolvedProjectId)
                 .build()
                 .getService();
-        log.info("GCP 인증: 서비스계정 크레덴셜 사용 (CredentialResolver 경유)");
 
         this.projectId = bq.getOptions().getProjectId();
         log.info("BigQuery 연결 완료 - project: {}", projectId);
 
-        // dataset/table: cost/gcp(OpenBao) 우선, 없으면 자동 탐색
-        Map<String, String> costCreds = openBaoClient.readPath("cost/gcp");
+        // dataset/table: cost/gcp 우선, 없으면 자동 탐색
         String costDataset = costCreds.get("dataset");
         String costTable   = costCreds.get("table");
-        if (costDataset != null && !costDataset.isEmpty()
-                && costTable != null && !costTable.isEmpty()) {
+        if (nonEmpty(costDataset) && nonEmpty(costTable)) {
             this.dataset = costDataset;
             this.table   = costTable;
             log.info("빌링 테이블 (OpenBao cost/gcp): {}.{}", this.dataset, this.table);
@@ -96,6 +99,8 @@ public class BigQueryConfig {
         log.info("빌링 테이블: {}.{}.{}", projectId, dataset, table);
         return bq;
     }
+
+    private boolean nonEmpty(String s) { return s != null && !s.isEmpty(); }
 
     private PrivateKey parsePemPrivateKey(String pem) throws Exception {
         String cleaned = pem.replace("\\n", "\n")
@@ -111,7 +116,7 @@ public class BigQueryConfig {
         log.info("빌링 내보내기 테이블 자동 탐색 중...");
 
         try {
-            for (Dataset ds : bq.listDatasets(projectId).iterateAll()) {
+            for (Dataset ds : bq.listDatasets().iterateAll()) {
                 String dsName = ds.getDatasetId().getDataset();
 
                 for (Table tbl : bq.listTables(dsName).iterateAll()) {

@@ -34,7 +34,7 @@ public class AnomalyCostVmServiceImpl implements AnomalyCostVmService {
 
     @Override
     public AnomalyDto getAnomalyCostByVmId(AzureCostVmDailyDto azureCostVmDailyDto) {
-        VmMonthlyAvgCostDto vmMonthlyAvgCostDto = vmCostAnalysisMapper.selectMonthlyAvgCostByVmId(azureCostVmDailyDto.getVmId());
+        VmMonthlyAvgCostDto vmMonthlyAvgCostDto = vmCostAnalysisMapper.selectMonthlyAvgCostByVmId(azureCostVmDailyDto.getVmId(), azureCostVmDailyDto.getSubscriptionId());
 
         // 과거 비용 데이터가 없는 경우 이상비용 검사 skip
         if (vmMonthlyAvgCostDto == null) {

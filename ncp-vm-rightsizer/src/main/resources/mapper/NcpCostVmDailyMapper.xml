@@ -71,7 +71,7 @@
                                  GROUP BY instance_no) m
                                 ON t.instance_no = m.instance_no AND t.target_date = m.max_date) latest
                            ON base.instance_no = latest.instance_no
-                 LEFT JOIN servicegroup_meta meta
+                 INNER JOIN servicegroup_meta meta
                            ON meta.csp_type = 'NCP'
                            AND meta.csp_instanceid COLLATE utf8mb4_unicode_520_ci = base.instance_no
         ORDER BY base.instance_no
@@ -91,9 +91,9 @@
                base.data_range,
                COALESCE(meta.service_cd, 'default') as project_cd,
                COALESCE(meta.workspace_cd, 'undefined') as workspace_cd
-        FROM (SELECT member_no,
+        FROM (SELECT MIN(member_no)                                                                     AS member_no,
                      instance_no,
-                     instance_name,
+                     MIN(instance_name)                                                                  AS instance_name,
                      AVG(daily_charge_amount)                                                            as avg_cost,
                      COUNT(*)                                                                            as day_count,
                      SUM(daily_charge_amount)                                                            as total_cost,
@@ -123,7 +123,7 @@
                                                    DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
                                                AND target_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y-%m-01'))
                   )
-              GROUP BY member_no, instance_no, instance_name) base
+              GROUP BY instance_no) base
                  LEFT JOIN (
             -- 전체 데이터 중 가장 최신 날짜의 비용
             SELECT instance_no,
@@ -137,8 +137,8 @@
                                    AND region_code = #{region})
             LIMIT 1) latest
                            ON base.instance_no = latest.instance_no
-                 LEFT JOIN servicegroup_meta meta
+                 INNER JOIN servicegroup_meta meta
                            ON meta.csp_type = 'NCP'
-                           AND meta.csp_instanceid COLLATE utf8mb4_unicode_520_ci = base.instance_no;
+                           AND meta.csp_instanceid COLLATE utf8mb4_unicode_520_ci = base.instance_no
     </select>
 </mapper>

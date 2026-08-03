@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gcp">
-    <!-- GCP Setup 상태는 OpenBao cost/gcp 에서 직접 확인하므로 별도 DB 테이블 없음 -->
+
+    <delete id="deleteGcpSetup">
+        DELETE FROM temp_cmp_user_role_arn
+         WHERE mcmp_user_id = 'mcmpcostopti'
+           AND csp = 'GCP'
+    </delete>
+
+    <insert id="upsertGcpSetup" parameterType="map">
+        INSERT INTO temp_cmp_user_role_arn (mcmp_user_id, csp, bucket_nm, role_arn)
+        VALUES ('mcmpcostopti', 'GCP', #{datasetNm}, #{tableNm})
+    </insert>
+
+    <select id="countGcpSetup" resultType="int">
+        SELECT COUNT(*)
+          FROM temp_cmp_user_role_arn
+         WHERE mcmp_user_id = 'mcmpcostopti'
+           AND csp = 'GCP'
+    </select>
+
 </mapper>

@@ -22,6 +22,10 @@ public class AwsDao {
     @Qualifier("sqlSessionTemplateSimple")
     private SqlSessionTemplate sqlSessionTemplate;
 
+    public void initTable(String suffix) {
+        sqlSessionTemplate.update("aws.initTable", suffix);
+    }
+
     public void createTable(String suffix){
         sqlSessionTemplate.update("aws.createTable", suffix);
     }

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Slf4j
@@ -87,10 +88,12 @@ public class BillingQueryService {
 
     private TableResult executeQuery(String query, String startDate, String endDate) {
         try {
+            long startMicros = LocalDate.parse(startDate).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli() * 1000L;
+            long endMicros   = LocalDate.parse(endDate).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli() * 1000L;
             QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(query)
                     .setUseLegacySql(false)
-                    .addNamedParameter("startDate", QueryParameterValue.timestamp(startDate + " 00:00:00.000000"))
-                    .addNamedParameter("endDate",   QueryParameterValue.timestamp(endDate   + " 00:00:00.000000"))
+                    .addNamedParameter("startDate", QueryParameterValue.timestamp(startMicros))
+                    .addNamedParameter("endDate",   QueryParameterValue.timestamp(endMicros))
                     .build();
             return bigQuery.query(queryConfig);
         } catch (BigQueryException e) {

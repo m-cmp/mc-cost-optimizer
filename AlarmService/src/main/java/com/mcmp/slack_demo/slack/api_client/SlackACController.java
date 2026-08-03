@@ -5,6 +5,7 @@ import com.mcmp.slack_demo.slack.encryto.TokenService;
 import com.mcmp.slack_demo.slack.model.SaveTokenModel;
 import com.slack.api.methods.SlackApiException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,23 +27,26 @@ public class SlackACController {
     }
 
     @PostMapping("/sendSlackAC")
-    public String sendMessageToSlack(
+    public ResponseEntity<String> sendMessageToSlack(
             @RequestParam String userId,
             @RequestParam String message,
             @RequestParam(required = false) String linkUrl,
             @RequestParam(required = false) String linkText) {
         try {
             slackACService.sendMessage(userId, message, linkUrl, linkText);
-            return "메세지 전송 성공.";
+            return ResponseEntity.ok("메세지 전송 성공.");
         } catch (RuntimeException | SlackApiException | IOException e) {
-            if (e.getMessage().contains("Invalid authentication credentials for Slack.")) {
-                return "Slack Api 토큰 인증에 실패했습니다.";
-            } else if (e.getMessage().contains("The specified channel was not found.")) {
-                return "해당하는 채널을 찾을 수 없습니다.";
-            } else if (e.getMessage().contains("not_in_channel")) {
-                return "해당하는 채널에 Chat Bot App 이 존재하지 않습니다.";
+            String cause = e.getMessage() != null ? e.getMessage() : "";
+            if (cause.contains("Slack 토큰이 등록되지 않았습니다.")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Slack 토큰이 등록되지 않았습니다.");
+            } else if (cause.contains("Invalid authentication credentials for Slack.")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Slack Api 토큰 인증에 실패했습니다.");
+            } else if (cause.contains("The specified channel was not found.")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당하는 채널을 찾을 수 없습니다.");
+            } else if (cause.contains("not_in_channel")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당하는 채널에 Chat Bot App 이 존재하지 않습니다.");
             } else {
-                return "Message 전송 실패.";
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Message 전송 실패.");
             }
         }
     }

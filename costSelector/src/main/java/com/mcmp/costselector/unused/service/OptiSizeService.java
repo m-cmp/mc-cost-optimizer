@@ -127,24 +127,10 @@ public class OptiSizeService {
                             .build();
                     alarmNote = "Recommend resizing instance (" + rscStatus.getResource_id() + ") from current type "
                             + rscStatus.getInstance_type() + " to recommended type " + rcmdType.getInstType() + ".";
-                } else if(rcmdType == null && !"Modernize".equals(resizingType)) {
-                    rcmdRst = InstOptiRcmdRst.builder()
-                            .createDT(ZonedDateTime.now().toLocalDate())
-                            .resourceID(rscStatus.getResource_id())
-                            .cspType(rscStatus.getCsp_type())
-                            .cspAccount(rscStatus.getCsp_account())
-                            .originType(rscStatus.getInstance_type())
-                            .rcmdType("None")
-                            .planType(resizingType)
-                            .originUSD(originUSD)
-                            .rcmdUSD(null)
-                            .build();
-                    alarmNote = "Recommend " + resizingType + " sizing for instance (" + rscStatus.getResource_id() + ") from current type "
-                            + rscStatus.getInstance_type() + ".";
-                } else { // resizingType이 Modernize 이면서 추천 타입이 없을 때
+                } else { // 추천 타입이 없을 때 (Up/Down/Modernize 공통) - 알람 발송하지 않음
                     rcmdRst = null;
                     alarmNote = "";
-                    log.info("Instance size recommendation results : Modernize - Recommend type is None => Resource id : " + rscStatus.getResource_id());
+                    log.info("Instance size recommendation results : " + resizingType + " - Recommend type is None => Resource id : " + rscStatus.getResource_id());
                 }
 
                 if(rcmdRst != null){

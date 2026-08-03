@@ -4,7 +4,7 @@ import com.mcmp.gcpcollector.alarm.GcpAlarmSender;
 import com.mcmp.gcpcollector.dao.GcpAnomalyDao;
 import com.mcmp.gcpcollector.dto.AlarmHistoryDto;
 import com.mcmp.gcpcollector.dto.GcpAnomalyDto;
-import com.mcmp.gcpcollector.dto.GcpProjectCostAnalysisDto;
+import com.mcmp.gcpcollector.dto.GcpVmCostAnalysisDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,15 +17,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class GcpAnomalyDetectionService {
 
-    private static final String CSP_TYPE   = "GCP";
-    private static final String PRODUCT_CD = "GCP Project";
+    private static final String CSP_TYPE = "GCP";
 
     private final GcpAnomalyDao gcpAnomalyDao;
     private final GcpAlarmSender gcpAlarmSender;
@@ -45,45 +43,44 @@ public class GcpAnomalyDetectionService {
         param.put("standardDT", yesterday.toString());
         param.put("subjectDTs", subjectDTs);
 
-        List<GcpProjectCostAnalysisDto> results = gcpAnomalyDao.getGcpAbnormalCosts(param);
+        List<GcpVmCostAnalysisDto> vmResults = gcpAnomalyDao.getGcpVmAbnormalCosts(param);
 
-        if (results.isEmpty()) {
-            log.info("어제 수집된 GCP 빌링 데이터가 없습니다.");
-            return;
-        }
+        if (vmResults.isEmpty()) {
+            log.info("VM 단위로 매핑된 GCP 빌링 데이터가 없습니다.");
+        } else {
+            log.info("GCP 이상비용 탐지 대상 VM 수: {}", vmResults.size());
 
-        log.info("GCP 이상비용 탐지 대상 프로젝트 수: {}", results.size());
-
-        for (GcpProjectCostAnalysisDto item : results) {
-            try {
-                processProject(item);
-            } catch (Exception e) {
-                log.error("프로젝트 이상비용 탐지 실패 - projectId: {}", item.getProjectId(), e);
+            for (GcpVmCostAnalysisDto item : vmResults) {
+                try {
+                    processVm(item);
+                } catch (Exception e) {
+                    log.error("VM 이상비용 탐지 실패 - vmId: {}", item.getVmId(), e);
+                }
             }
         }
 
         log.info("GCP 이상비용 탐지 완료");
     }
 
-    private void processProject(GcpProjectCostAnalysisDto item) {
+    private void processVm(GcpVmCostAnalysisDto item) {
         if (item.getAvgCost() == null || item.getAvgCost() == 0) {
-            log.info("지난달 같은 요일 기준 데이터 없음 - 탐지 스킵 - projectId: {}", item.getProjectId());
+            log.info("지난달 같은 요일 기준 데이터 없음 - 탐지 스킵 - vmId: {}", item.getVmId());
             return;
         }
 
         double percentagePoint = calcPercentagePoint(item.getLatestCost(), item.getAvgCost());
         String rating = getAnomalyRating(percentagePoint);
 
-        log.debug("projectId: {}, latestCost: {}, avgCost: {}, 변화율: {}%, 등급: {}",
-                item.getProjectId(), item.getLatestCost(), item.getAvgCost(),
+        log.debug("vmId: {}, latestCost: {}, avgCost: {}, 변화율: {}%, 등급: {}",
+                item.getVmId(), item.getLatestCost(), item.getAvgCost(),
                 String.format("%.2f", percentagePoint), rating);
 
         if (rating == null) return;
 
         GcpAnomalyDto anomalyDto = GcpAnomalyDto.builder()
                 .collectDt(LocalDateTime.now())
-                .projectId(item.getProjectId())
-                .productCd(PRODUCT_CD)
+                .vmId(item.getVmId())
+                .productCd(item.getVmId())
                 .abnormalRating(rating)
                 .percentagePoint(percentagePoint)
                 .standardCost(item.getLatestCost())
@@ -93,11 +90,30 @@ public class GcpAnomalyDetectionService {
                 .cspType(CSP_TYPE)
                 .build();
 
-        sendAlarm(anomalyDto, item);
+        sendVmAlarm(anomalyDto, item);
         gcpAnomalyDao.insertDailyAbnormal(anomalyDto);
 
-        log.info("이상비용 탐지 - projectId: {}, 등급: {}, 변화율: {}%",
-                item.getProjectId(), rating, String.format("%.2f", percentagePoint));
+        log.info("VM 이상비용 탐지 - vmId: {}, 등급: {}, 변화율: {}%",
+                item.getVmId(), rating, String.format("%.2f", percentagePoint));
+    }
+
+    private void sendVmAlarm(GcpAnomalyDto anomalyDto, GcpVmCostAnalysisDto item) {
+        String note = String.format(
+                "GCP VM (%s) cost has increased compared to last month's same-weekday average (%.2f) by %.2f%%. (current: %.2f)",
+                item.getVmId(),
+                anomalyDto.getSubjectCost(),
+                anomalyDto.getPercentagePoint(),
+                anomalyDto.getStandardCost()
+        );
+        gcpAlarmSender.send(AlarmHistoryDto.builder()
+                .eventType("Abnormal")
+                .resourceId(item.getVmId())
+                .resourceType("GCP VM")
+                .accountId(item.getBillingAccountId())
+                .urgency(anomalyDto.getAbnormalRating())
+                .plan(anomalyDto.getAbnormalRating())
+                .note(note)
+                .projectCd(anomalyDto.getProjectCd()));
     }
 
     /**
@@ -129,24 +145,5 @@ public class GcpAnomalyDetectionService {
         if (percentagePoint >= 20) return "Caution";
         if (percentagePoint >= 10) return "Warning";
         return null;
-    }
-
-    private void sendAlarm(GcpAnomalyDto anomalyDto, GcpProjectCostAnalysisDto item) {
-        String note = String.format(
-                "GCP project (%s) cost has increased compared to last month's same-weekday average (%.2f) by %.2f%%. (current: %.2f)",
-                item.getProjectId(),
-                anomalyDto.getSubjectCost(),
-                anomalyDto.getPercentagePoint(),
-                anomalyDto.getStandardCost()
-        );
-        gcpAlarmSender.send(AlarmHistoryDto.builder()
-                .eventType("Abnormal")
-                .resourceId(item.getProjectId())
-                .resourceType("GCP Project")
-                .accountId(item.getBillingAccountId())
-                .urgency(anomalyDto.getAbnormalRating())
-                .plan(anomalyDto.getAbnormalRating())
-                .note(note)
-                .projectCd(anomalyDto.getProjectCd()));
     }
 }

@@ -92,42 +92,36 @@
     </insert>
 
     <!--
-        이상비용 탐지용 쿼리
-        - tbl1: 어제(standardDT) project별 비용
-        - tbl2: 지난달 같은 요일(subjectDTs)들의 project별 평균 비용
+        이상비용 탐지용 쿼리 (VM 단위 - csp_instanceid 로 매핑된 행만 대상)
+        - tbl1: 어제(standardDT) VM별 비용
+        - tbl2: 지난달 같은 요일(subjectDTs)들의 VM별 평균 비용
         - COLLATE: servicegroup_meta(utf8mb4_unicode_520_ci) vs gcp_billing_raw(utf8mb4_uca1400_ai_ci) 충돌 해결
     -->
-    <select id="getGcpAbnormalCosts" parameterType="map" resultType="com.mcmp.gcpcollector.dto.GcpProjectCostAnalysisDto">
+    <select id="getGcpVmAbnormalCosts" parameterType="map" resultType="com.mcmp.gcpcollector.dto.GcpVmCostAnalysisDto">
         SELECT
-             tbl1.project_id                            AS projectId
-            ,tbl1.billing_account_id                    AS billingAccountId
-            ,tbl1.standard_cost                         AS latestCost
-            ,COALESCE(tbl2.avg_cost, 0)                 AS avgCost
-            ,COALESCE(tbl1.service_cd, tbl1.project_id) AS projectCd
-            ,(SELECT sm.workspace_cd
-                FROM servicegroup_meta sm
-               WHERE sm.csp_type = 'GCP'
-                 AND sm.service_cd COLLATE utf8mb4_uca1400_ai_ci = tbl1.service_cd
-               LIMIT 1)                                 AS workspaceCd
+             tbl1.csp_instanceid                             AS vmId
+            ,tbl1.billing_account_id                         AS billingAccountId
+            ,tbl1.standard_cost                              AS latestCost
+            ,COALESCE(tbl2.avg_cost, 0)                      AS avgCost
+            ,COALESCE(meta.service_cd, tbl1.csp_instanceid) AS projectCd
+            ,meta.workspace_cd                                AS workspaceCd
         FROM (
             SELECT
-                 project_id
+                 csp_instanceid
                 ,billing_account_id
-                ,service_cd
                 ,SUM(cost) AS standard_cost
             FROM gcp_billing_raw
             WHERE DATE(usage_start_time) = #{standardDT}
-            GROUP BY project_id, billing_account_id, service_cd
+              AND csp_instanceid IS NOT NULL AND csp_instanceid != ''
+            GROUP BY csp_instanceid, billing_account_id
         ) tbl1
         LEFT JOIN (
             SELECT
-                 project_id
-                ,service_cd
+                 csp_instanceid
                 ,AVG(daily_cost) AS avg_cost
             FROM (
                 SELECT
-                     project_id
-                    ,service_cd
+                     csp_instanceid
                     ,DATE(usage_start_time) AS usage_date
                     ,SUM(cost)              AS daily_cost
                 FROM gcp_billing_raw
@@ -136,11 +130,14 @@
                         #{item}
                     </foreach>
                 )
-                GROUP BY project_id, service_cd, DATE(usage_start_time)
+                  AND csp_instanceid IS NOT NULL AND csp_instanceid != ''
+                GROUP BY csp_instanceid, DATE(usage_start_time)
             ) daily
-            GROUP BY project_id, service_cd
-        ) tbl2 ON tbl2.project_id = tbl1.project_id
-              AND tbl2.service_cd <![CDATA[ <=> ]]> tbl1.service_cd
+            GROUP BY csp_instanceid
+        ) tbl2 ON tbl2.csp_instanceid = tbl1.csp_instanceid
+        LEFT JOIN servicegroup_meta meta
+            ON  meta.csp_type                                          = 'GCP'
+            AND meta.csp_instanceid COLLATE utf8mb4_uca1400_ai_ci     = tbl1.csp_instanceid
     </select>
 
     <!-- 이상비용 탐지 결과 저장 -->

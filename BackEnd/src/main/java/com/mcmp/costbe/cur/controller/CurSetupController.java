@@ -50,7 +50,7 @@ public class CurSetupController {
             CurSetupStatus status = curSetupService.getStatus();
             return ResponseEntity.ok(status);
         } catch (CurCredentialNotFoundException e) {
-            return ResponseEntity.ok(new CurSetupStatus(false, false, null));
+            return ResponseEntity.ok(new CurSetupStatus(false, false, null, null, null));
         } catch (Exception e) {
             log.error("CUR 상태 조회 오류: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));

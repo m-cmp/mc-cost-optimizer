@@ -56,47 +56,47 @@ public class SlackACService {
         switch (costOptiAlarmReqModel.getEvent_type()){
             case "Unused":
                 slackFormModel.setTitle("[MCMP-Notice] Cost Alarm occurred : Caution Unused Resources");
-                message = "MCMP Cost에서 미사용 자원 주의 알람이 발생했습니다." +
+                message = "MCMP Cost has detected a caution-level unused resource alarm." +
                         "\n\n" +
                         "CSP : " + slackFormModel.getCsp_type() + "\n" +
-                        "리소스 ID : " + slackFormModel.getResource_id() + "\n" +
-                        "리소스 Type : " + slackFormModel.getResource_type() + "\n" +
-                        "해당 자원이 미사용 자원으로 의심됩니다.";
+                        "Resource ID : " + slackFormModel.getResource_id() + "\n" +
+                        "Resource Type : " + slackFormModel.getResource_type() + "\n" +
+                        "This resource is suspected to be unused.";
                 break;
             case "Abnormal":
                 slackFormModel.setTitle("[MCMP-Notice] Cost Alarm occurred : Warning Abnormal Cost");
-                message = "MCMP Cost에서 이상 비용 경고 알람이 발생했습니다." +
+                message = "MCMP Cost has detected an abnormal cost warning alarm." +
                         "\n\n" +
                         "CSP : " + slackFormModel.getCsp_type() + "\n" +
-                        "제품군 : " + slackFormModel.getResource_type() + "\n" +
-                        "이상비용 등급 : " + slackFormModel.getPlan() + "\n" +
-                        "이상비용이 발생했습니다. " + slackFormModel.getNote();
+                        "Product : " + slackFormModel.getResource_type() + "\n" +
+                        "Abnormal Cost Rating : " + slackFormModel.getPlan() + "\n" +
+                        "An abnormal cost has occurred. " + slackFormModel.getNote();
                 break;
             case "Resize":
                 slackFormModel.setTitle("[MCMP-Notice] Cost Alarm occurred : Advise Right Size Resources");
-                message = "MCMP Cost에서 자원 최적화 권고 알람이 발생했습니다." +
+                message = "MCMP Cost has detected a resource rightsizing recommendation alarm." +
                         "\n\n" +
                         "CSP : " + slackFormModel.getCsp_type() + "\n" +
-                        "리소스 ID : " + slackFormModel.getResource_id() + "\n" +
-                        "리소스 Type : " + slackFormModel.getResource_type() + "\n" +
-                        "추천 Plan : " + slackFormModel.getPlan() + "\n" +
+                        "Resource ID : " + slackFormModel.getResource_id() + "\n" +
+                        "Resource Type : " + slackFormModel.getResource_type() + "\n" +
+                        "Recommended Plan : " + slackFormModel.getPlan() + "\n" +
                         slackFormModel.getNote();
                 break;
             case "Budget":
-                String urgencyLevel = "Caution".equals(slackFormModel.getUrgency()) ? "주의" : "위험";
+                String urgencyLevel = "Caution".equals(slackFormModel.getUrgency()) ? "Caution" : "Critical";
                 slackFormModel.setTitle("[MCMP-Notice] Cost Alarm occurred : " +
-                        (urgencyLevel.equals("위험") ? "Critical" : "Caution") + " Budget Usage");
-                message = "MCMP Cost에서 예산 초과 " + urgencyLevel + " 알람이 발생했습니다." +
+                        (urgencyLevel.equals("Critical") ? "Critical" : "Caution") + " Budget Usage");
+                message = "MCMP Cost has detected a " + urgencyLevel + "-level budget exceeded alarm." +
                         "\n\n" +
                         "CSP : " + slackFormModel.getCsp_type() + "\n" +
-                        "프로젝트 : " + slackFormModel.getProject_cd() + "\n" +
-                        "예산 사용률 등급 : " + slackFormModel.getUrgency() + "\n" +
+                        "Project : " + slackFormModel.getProject_cd() + "\n" +
+                        "Budget Usage Rating : " + slackFormModel.getUrgency() + "\n" +
                         slackFormModel.getNote();
                 break;
             default:
                 log.warn("Unknown event_type: {}", costOptiAlarmReqModel.getEvent_type());
                 slackFormModel.setTitle("[MCMP-Notice] Cost Alarm occurred : Unknown Event");
-                message = "MCMP Cost에서 알람이 발생했습니다." +
+                message = "MCMP Cost has detected an alarm." +
                         "\n\n" +
                         "Event Type : " + costOptiAlarmReqModel.getEvent_type() + "\n" +
                         "CSP : " + slackFormModel.getCsp_type() + "\n" +
@@ -105,7 +105,7 @@ public class SlackACService {
         }
         try {
             Map<String, String> result = tokenService.retrieveToken("mcmp-user");
-            if (result == null || result.get("token") == null || result.get("channel") == null) {
+            if (result == null || isBlank(result.get("token")) || isBlank(result.get("channel"))) {
                 log.warn("Slack 토큰 미등록 - 슬랙 발송 스킵 (resource_id: {})", costOptiAlarmReqModel.getResource_id());
                 commonService.insertSlackHistory(slackFormModel);
                 return;
@@ -165,6 +165,9 @@ public class SlackACService {
 
         try {
             Map<String, String> result = tokenService.retrieveToken(userId);
+            if (result == null || isBlank(result.get("token")) || isBlank(result.get("channel"))) {
+                throw new IllegalStateException("Slack token is not registered.");
+            }
 
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
                     .channel(result.get("channel"))
@@ -191,5 +194,9 @@ public class SlackACService {
 
     public Map<String, String> getSlackToken(String userId) throws Exception {
         return tokenService.retrieveToken(userId);
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

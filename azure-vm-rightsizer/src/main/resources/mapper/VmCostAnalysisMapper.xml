@@ -41,6 +41,7 @@
                      IF(MIN(usage_date) <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y%m01'), 'LAST_MONTH', 'ALL_DATA') as data_range
               FROM azure_cost_vm_daily
               WHERE vm_id = #{vmId}
+                AND subscription_id = #{subscriptionId}
                 AND (
                   -- 지난달 데이터가 있으면 지난달만
                   (usage_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y%m01')
@@ -48,12 +49,14 @@
                       AND vm_id IN (SELECT DISTINCT vm_id
                                     FROM azure_cost_vm_daily
                                     WHERE vm_id = #{vmId}
+                                      AND subscription_id = #{subscriptionId}
                                       AND usage_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y%m01')
                                       AND usage_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y%m01')))
                       -- 지난달 데이터가 없으면 전체
                       OR vm_id NOT IN (SELECT DISTINCT vm_id
                                        FROM azure_cost_vm_daily
                                        WHERE vm_id = #{vmId}
+                                         AND subscription_id = #{subscriptionId}
                                          AND usage_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y%m01')
                                          AND usage_date <![CDATA[ < ]]> DATE_FORMAT(CURDATE(), '%Y%m01'))
                   )
@@ -68,11 +71,13 @@
                          SELECT vm_id, MAX(usage_date) as max_date
                          FROM azure_cost_vm_daily
                          WHERE vm_id = #{vmId}
+                           AND subscription_id = #{subscriptionId}
                          GROUP BY vm_id
                      ) m ON t.vm_id = m.vm_id AND t.usage_date = m.max_date
+                     WHERE t.subscription_id = #{subscriptionId}
                      LIMIT 1
                  ) latest ON base.vm_id = latest.vm_id
-                 LEFT JOIN servicegroup_meta meta
+                 INNER JOIN servicegroup_meta meta
                            ON meta.csp_type = 'AZURE'
                            AND meta.vm_uid COLLATE utf8mb4_unicode_520_ci = base.vm_id
     </select>
@@ -129,7 +134,7 @@
                      ) m ON t.vm_id = m.vm_id AND t.usage_date = m.max_date
                      GROUP BY t.vm_id, t.usage_date
                  ) latest ON base.vm_id = latest.vm_id
-                 LEFT JOIN servicegroup_meta meta
+                 INNER JOIN servicegroup_meta meta
                            ON meta.csp_type = 'AZURE'
                            AND meta.vm_uid COLLATE utf8mb4_unicode_520_ci = base.vm_id
     </select>

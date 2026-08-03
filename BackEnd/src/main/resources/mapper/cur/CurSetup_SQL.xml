@@ -13,6 +13,14 @@
         VALUES ('mcmpcostopti', 'AWS', #{value})
     </insert>
 
+    <select id="getBucketName" resultType="String">
+        SELECT bucket_nm
+          FROM temp_cmp_user_role_arn
+         WHERE mcmp_user_id = 'mcmpcostopti'
+           AND csp = 'AWS'
+         LIMIT 1
+    </select>
+
     <select id="countCurSetup" resultType="int">
         SELECT COUNT(*)
           FROM temp_cmp_user_role_arn

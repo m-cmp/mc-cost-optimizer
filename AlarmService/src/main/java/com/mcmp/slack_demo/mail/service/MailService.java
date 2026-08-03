@@ -84,47 +84,47 @@ public class MailService {
             switch (optiAlarmReqModel.getEvent_type()){
                 case "Unused":
                     mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Caution Unused Resources");
-                    mailMessage = "MCMP Cost에서 미사용 자원 주의 알람이 발생했습니다." +
+                    mailMessage = "MCMP Cost has detected a caution-level unused resource alarm." +
                             "<br><br>" +
                             "CSP : " + mailFormModel.getCsp_type() + "<br>" +
-                            "리소스 ID : " + mailFormModel.getResource_id() + "<br>" +
-                            "리소스 Type : " + mailFormModel.getResource_type() + "<br>" +
-                            "해당 자원이 미사용 자원으로 의심됩니다.";
+                            "Resource ID : " + mailFormModel.getResource_id() + "<br>" +
+                            "Resource Type : " + mailFormModel.getResource_type() + "<br>" +
+                            "This resource is suspected to be unused.";
                     break;
                 case "Abnormal":
                     mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Warning Abnormal Cost");
-                    mailMessage = "MCMP Cost에서 이상 비용 경고 알람이 발생했습니다." +
+                    mailMessage = "MCMP Cost has detected an abnormal cost warning alarm." +
                             "<br><br>" +
                             "CSP : " + mailFormModel.getCsp_type() + "<br>" +
-                            "제품군 : " + mailFormModel.getResource_type() + "<br>" +
-                            "이상비용 등급 : " + mailFormModel.getPlan() + "<br>" +
-                            "이상비용이 발생했습니다. " + mailFormModel.getNote();
+                            "Product : " + mailFormModel.getResource_type() + "<br>" +
+                            "Abnormal Cost Rating : " + mailFormModel.getPlan() + "<br>" +
+                            "An abnormal cost has occurred. " + mailFormModel.getNote();
                     break;
                 case "Resize":
                     mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Advise Right Size Resources");
-                    mailMessage = "MCMP Cost에서 자원 최적화 권고 알람이 발생했습니다." +
+                    mailMessage = "MCMP Cost has detected a resource rightsizing recommendation alarm." +
                             "<br><br>" +
                             "CSP : " + mailFormModel.getCsp_type() + "<br>" +
-                            "리소스 ID : " + mailFormModel.getResource_id() + "<br>" +
-                            "리소스 Type : " + mailFormModel.getResource_type() + "<br>" +
-                            "추천 Plan : " + mailFormModel.getPlan() + "<br>" +
+                            "Resource ID : " + mailFormModel.getResource_id() + "<br>" +
+                            "Resource Type : " + mailFormModel.getResource_type() + "<br>" +
+                            "Recommended Plan : " + mailFormModel.getPlan() + "<br>" +
                             mailFormModel.getNote();
                     break;
                 case "Budget":
-                    String urgencyLevel = "Caution".equals(mailFormModel.getUrgency()) ? "주의" : "위험";
+                    String urgencyLevel = "Caution".equals(mailFormModel.getUrgency()) ? "Caution" : "Critical";
                     mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : " +
-                            (urgencyLevel.equals("위험") ? "Critical" : "Caution") + " Budget Usage");
-                    mailMessage = "MCMP Cost에서 예산 초과 " + urgencyLevel + " 알람이 발생했습니다." +
+                            (urgencyLevel.equals("Critical") ? "Critical" : "Caution") + " Budget Usage");
+                    mailMessage = "MCMP Cost has detected a " + urgencyLevel + "-level budget exceeded alarm." +
                             "<br><br>" +
                             "CSP : " + mailFormModel.getCsp_type() + "<br>" +
-                            "프로젝트 : " + mailFormModel.getProject_cd() + "<br>" +
-                            "예산 사용률 등급 : " + mailFormModel.getUrgency() + "<br>" +
+                            "Project : " + mailFormModel.getProject_cd() + "<br>" +
+                            "Budget Usage Rating : " + mailFormModel.getUrgency() + "<br>" +
                             mailFormModel.getNote();
                     break;
                 default:
                     log.warn("Unknown event_type: {}", optiAlarmReqModel.getEvent_type());
                     mailFormModel.setSubject("[MCMP-Notice] Cost Alarm occurred : Unknown Event");
-                    mailMessage = "MCMP Cost에서 알람이 발생했습니다." +
+                    mailMessage = "MCMP Cost has detected an alarm." +
                             "<br><br>" +
                             "Event Type : " + optiAlarmReqModel.getEvent_type() + "<br>" +
                             "CSP : " + mailFormModel.getCsp_type() + "<br>" +
@@ -161,7 +161,7 @@ public class MailService {
             MimeMessage mimeMessage = emailSender.createMimeMessage();
 
             Context context = new Context();
-            context.setVariable("username", "테스트유저");
+            context.setVariable("username", "Test User");
             String html = templateEngine.process("WelcomeT.html", context);
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
