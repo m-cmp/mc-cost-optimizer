@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
- * spec block of a node returned by GET /ns/{ns}/infra/{mci}?nodeId={vm}.
+ * spec block of a node returned by GET /ns/{ns}/infra/{mci}/node/{vm}.
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
