@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
- * One entry of the "node" array returned by GET /ns/{ns}/infra/{mci}?nodeId={vm}.
+ * Node(VM) object returned by GET /ns/{ns}/infra/{mci}/node/{vm}. Only the nested spec is mapped.
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
