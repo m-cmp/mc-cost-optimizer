@@ -73,7 +73,9 @@ public class TumblebugClient {
             vm.setCurrentSpecId(specId);
 
             // 리전 추출 (추천 결과 필터용)
-            String regionName = body.path("region").path("Region").asText(null);
+            // Tumblebug node 응답의 region은 {"region": "...", "zone": "..."} (v0.12.25+). 구버전 키(Region)도 허용
+            String regionName = body.path("region").path("region").asText(
+                    body.path("region").path("Region").asText(null));
             vm.setRegionName(regionName);
 
             boolean filled = specId != null && !specId.isEmpty()

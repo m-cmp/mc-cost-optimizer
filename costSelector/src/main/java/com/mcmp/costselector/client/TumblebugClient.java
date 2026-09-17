@@ -68,7 +68,9 @@ public class TumblebugClient {
             // 없거나 조회 실패 시 cspSpecName(예: Standard_B1s)으로 재시도
             String specId      = body.path("specId").asText(null);
             String cspSpecName = body.path("cspSpecName").asText(null);
-            String regionName  = body.path("region").path("Region").asText(null);
+            // Tumblebug node 응답의 region은 {"region": "...", "zone": "..."} (v0.12.25+). 구버전 키(Region)도 허용
+            String regionName  = body.path("region").path("region").asText(
+                    body.path("region").path("Region").asText(null));
             rscStatus.setTbbRegionName(regionName);
 
             boolean filled = specId != null && !specId.isEmpty()
