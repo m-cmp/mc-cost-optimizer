@@ -10,10 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tabler/core": "^1.4.0",
+    "@tabler/core": "1.4.0",
     "@tabler/icons-react": "^3.34.1",
     "apexcharts": "^5.3.4",
     "axios": "^1.11.0",
+    "bootstrap": "^5.3.7",
     "clsx": "^2.1.1",
     "file-saver": "^2.0.5",
     "react": "^19.1.1",
