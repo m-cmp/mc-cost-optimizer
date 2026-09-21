@@ -8,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -29,6 +30,9 @@ public class TumblebugClient {
     private String password;
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    /** Tumblebug 공용 자원(spec/image) 네임스페이스 */
+    private static final String SYSTEM_NS = "system";
 
     private HttpHeaders buildHeaders() {
         String auth = username + ":" + password;
@@ -61,12 +65,18 @@ public class TumblebugClient {
             JsonNode body = res.getBody();
             if (body == null) return;
 
-            // cspSpecName 직접 사용 (specId의 '+' 인코딩 문제 우회)
+            // specId(예: azure+koreacentral+standard_b1s)는 리전까지 특정되므로 우선 사용,
+            // 없거나 조회 실패 시 cspSpecName(예: Standard_B1s)으로 재시도
+            String specId      = body.path("specId").asText(null);
             String cspSpecName = body.path("cspSpecName").asText(null);
-            String regionName  = body.path("region").path("Region").asText(null);
+            // Tumblebug node 응답의 region은 {"region": "...", "zone": "..."} (v0.12.25+). 구버전 키(Region)도 허용
+            String regionName  = body.path("region").path("region").asText(
+                    body.path("region").path("Region").asText(null));
             candidate.setRegionName(regionName);
 
-            if (cspSpecName != null && !cspSpecName.isEmpty()) {
+            boolean filled = specId != null && !specId.isEmpty()
+                    && fillSpecDetail(candidate, nsId, specId);
+            if (!filled && cspSpecName != null && !cspSpecName.isEmpty() && !cspSpecName.equals(specId)) {
                 fillSpecDetail(candidate, nsId, cspSpecName);
             }
         } catch (Exception e) {
@@ -78,27 +88,57 @@ public class TumblebugClient {
      * Tumblebug spec 상세 조회 → vCPU, memoryGiB, cspSpecName 채움
      * GET /tumblebug/ns/{nsId}/resources/spec/{specId}
      */
-    private void fillSpecDetail(RecommendCandidateDto candidate, String nsId, String specId) {
-        String encodedSpecId = specId.replace("+", "%2B");
-        String url = String.format("%s/ns/%s/resources/spec/%s", tumblebugUrl, nsId, encodedSpecId);
-        try {
-            ResponseEntity<JsonNode> res = restTemplate.exchange(
-                    url, HttpMethod.GET, new HttpEntity<>(buildHeaders()), JsonNode.class);
-            JsonNode body = res.getBody();
-            if (body == null) return;
-
-            candidate.setCurrentSpecName(body.path("cspSpecName").asText(null));
-            candidate.setCurrentVcpu(body.path("vCPU").asInt(0));
-            candidate.setCurrentMemGiB(body.path("memoryGiB").asDouble(0));
-            double rawCost = body.path("costPerHour").asDouble(0);
-            candidate.setCurrentCostPerHour(rawCost > 0 ? rawCost : null);
-            log.info("현재 스펙 조회 - instanceNo: {}, spec: {}, vCPU: {}, mem: {}GiB, cost: ${}/h",
-                    candidate.getResourceId(), candidate.getCurrentSpecName(),
-                    candidate.getCurrentVcpu(), candidate.getCurrentMemGiB(),
-                    candidate.getCurrentCostPerHour());
-        } catch (Exception e) {
-            log.warn("TBB spec 상세 조회 실패 - specId: {}, cause: {}", specId, e.getMessage());
+    private boolean fillSpecDetail(RecommendCandidateDto candidate, String nsId, String specKey) {
+        JsonNode body = getSpec(nsId, specKey);
+        if (body == null) {
+            log.warn("TBB spec 상세 조회 실패 - specKey: {}, ns: system/{}", specKey, nsId);
+            return false;
         }
+
+        candidate.setCurrentSpecName(body.path("cspSpecName").asText(null));
+        candidate.setCurrentVcpu(body.path("vCPU").asInt(0));
+        candidate.setCurrentMemGiB(body.path("memoryGiB").asDouble(0));
+        double rawCost = body.path("costPerHour").asDouble(0);
+        candidate.setCurrentCostPerHour(rawCost > 0 ? rawCost : null);
+        log.info("현재 스펙 조회 - instanceNo: {}, spec: {}, vCPU: {}, mem: {}GiB, cost: ${}/h",
+                candidate.getResourceId(), candidate.getCurrentSpecName(),
+                candidate.getCurrentVcpu(), candidate.getCurrentMemGiB(),
+                candidate.getCurrentCostPerHour());
+        return true;
+    }
+
+    /**
+     * Tumblebug spec 조회 (system 네임스페이스 우선, 실패 시 VM 네임스페이스 재시도)
+     * GET /tumblebug/ns/{nsId}/resources/spec/{specKey}
+     *
+     * Tumblebug은 CSP에서 자동 수집한 spec을 공용 네임스페이스(system)에 저장하고
+     * node의 specId도 system의 spec을 가리키므로 system을 먼저 조회한다.
+     * 사용자가 자기 네임스페이스에 직접 등록한 spec을 위해 VM 네임스페이스로 한 번 더 조회한다.
+     *
+     * @param vmNsId  VM(node)이 속한 네임스페이스
+     * @param specKey specId(예: azure+koreacentral+standard_b1s) 또는 cspSpecName(예: Standard_B1s)
+     * @return spec JSON, 두 네임스페이스 모두에 없으면 null
+     */
+    private JsonNode getSpec(String vmNsId, String specKey) {
+        List<String> namespaces = (vmNsId == null || vmNsId.isEmpty() || SYSTEM_NS.equalsIgnoreCase(vmNsId))
+                ? List.of(SYSTEM_NS)
+                : List.of(SYSTEM_NS, vmNsId);
+
+        for (String ns : namespaces) {
+            // specId의 '+'는 경로에서 그대로 유효하므로 인코딩하지 않고 URI로 전달 (RestTemplate 재인코딩 방지)
+            String url = String.format("%s/ns/%s/resources/spec/%s", tumblebugUrl, ns, specKey);
+            try {
+                ResponseEntity<JsonNode> res = restTemplate.exchange(
+                        URI.create(url), HttpMethod.GET, new HttpEntity<>(buildHeaders()), JsonNode.class);
+                JsonNode body = res.getBody();
+                if (body != null && !body.isMissingNode() && !body.isNull()) {
+                    return body;
+                }
+            } catch (Exception e) {
+                log.debug("TBB spec 조회 실패 - ns: {}, specKey: {}, cause: {}", ns, specKey, e.getMessage());
+            }
+        }
+        return null;
     }
 
     /**
@@ -229,17 +269,7 @@ public class TumblebugClient {
     }
 
     private String tryGetSpec(String nsId, String specName) {
-        String url = String.format("%s/ns/%s/resources/spec/%s",
-                tumblebugUrl, nsId, specName.replace("+", "%2B"));
-        try {
-            ResponseEntity<JsonNode> res = restTemplate.exchange(
-                    url, HttpMethod.GET, new HttpEntity<>(buildHeaders()), JsonNode.class);
-            JsonNode body = res.getBody();
-            if (body == null) return null;
-            return body.path("cspSpecName").asText(null);
-        } catch (Exception e) {
-            log.debug("스펙 존재 확인 실패 - specName: {}, cause: {}", specName, e.getMessage());
-            return null;
-        }
+        JsonNode body = getSpec(nsId, specName);
+        return body == null ? null : body.path("cspSpecName").asText(null);
     }
 }

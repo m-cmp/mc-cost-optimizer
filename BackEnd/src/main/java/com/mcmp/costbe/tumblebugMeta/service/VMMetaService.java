@@ -6,7 +6,7 @@ import com.mcmp.costbe.tumblebugMeta.model.k8s.K8sClusterItemModel;
 import com.mcmp.costbe.tumblebugMeta.model.k8s.K8sClusterListModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TBBMCIItemModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TBBMCIModel;
-import com.mcmp.costbe.tumblebugMeta.model.mci.TbInfraNodeListModel;
+import com.mcmp.costbe.tumblebugMeta.model.mci.TbInfraNodeModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TbInfraNodeSpecModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TbVmInfoModel;
 import com.mcmp.costbe.tumblebugMeta.model.ns.TBBNSItemModel;
@@ -388,7 +388,9 @@ public class VMMetaService {
             return null;
         }
 
-        String apiUrl = String.format("%s/ns/%s/infra/%s?nodeId=%s", tumblebugUrl, nsId, mciId, vmId);
+        // Tumblebug의 GET /ns/{ns}/infra/{mci}는 nodeId 쿼리 파라미터를 지원하지 않아(무시됨) MCI 전체 node가
+        // 반환되고 node[0]의 spec을 잡는 문제가 있었음. node 단건 조회 엔드포인트로 정확한 VM의 spec을 가져온다.
+        String apiUrl = String.format("%s/ns/%s/infra/%s/node/%s", tumblebugUrl, nsId, mciId, vmId);
 
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(3000);
@@ -403,16 +405,16 @@ public class VMMetaService {
         httpHeaders.set("Authorization", authHeader);
         HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
 
-        // Tumblebug throttles GET /ns/{ns}/infra/{mci} at 2 req/sec, so a burst of
+        // Tumblebug throttles GET /ns/{ns}/infra/{mci}/node/{node} at 2 req/sec, so a burst of
         // per-VM lookups otherwise returns 429. Retry the 429s with exponential
         // backoff (+jitter) to let the token bucket refill before giving up.
         for (int attempt = 0; attempt <= TBB_SPEC_MAX_RETRIES; attempt++) {
             try {
-                ResponseEntity<TbInfraNodeListModel> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, httpEntity, TbInfraNodeListModel.class);
-                TbInfraNodeListModel response = responseEntity.getBody();
+                ResponseEntity<TbInfraNodeModel> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, httpEntity, TbInfraNodeModel.class);
+                TbInfraNodeModel response = responseEntity.getBody();
 
-                if (response != null && response.getNode() != null && !response.getNode().isEmpty()) {
-                    return response.getNode().get(0).getSpec();
+                if (response != null && response.getSpec() != null && response.getSpec().getCspSpecName() != null) {
+                    return response.getSpec();
                 } else {
                     log.warn("TUMBLEBUG META - NODE SPEC => EMPTY => ns : {}, mci : {}, vm : {}, response : {}", nsId, mciId, vmId, response);
                     return null;
