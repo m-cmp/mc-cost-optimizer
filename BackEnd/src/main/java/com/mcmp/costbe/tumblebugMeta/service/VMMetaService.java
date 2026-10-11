@@ -4,6 +4,8 @@ import com.mcmp.costbe.tumblebugMeta.dao.TBBDao;
 import com.mcmp.costbe.tumblebugMeta.model.ResourcegroupMetaModel;
 import com.mcmp.costbe.tumblebugMeta.model.k8s.K8sClusterItemModel;
 import com.mcmp.costbe.tumblebugMeta.model.k8s.K8sClusterListModel;
+import com.mcmp.costbe.tumblebugMeta.model.k8s.K8sNodeGroupModel;
+import com.mcmp.costbe.tumblebugMeta.model.k8s.K8sNodeModel;
 import com.mcmp.costbe.tumblebugMeta.model.mci.TBBMCIItemModel;
 import com.mcmp.costbe.tumblebugMeta.model.objectStorage.ObjectStorageItemModel;
 import com.mcmp.costbe.tumblebugMeta.model.objectStorage.ObjectStorageListModel;
@@ -664,6 +666,7 @@ public class VMMetaService {
                                 .build();
 
                         k8sMetaList.add(k8sInfo);
+                        k8sMetaList.addAll(buildK8sNodeMeta(ns, cluster, cspType, cspAccount));
                     } catch (Exception e){
                         log.error("Failed to build K8s meta for cluster: {} in namespace: {}, skipped", cluster.getId(), ns.getId(), e);
                     }
@@ -731,6 +734,51 @@ public class VMMetaService {
     }
 
     /**
+     * 워커 노드 메타 행. 노드 비용을 K8s 비용에 포함하기 위해 노드의 CSP 자원 ID를 service_type = 'K8S' 로 적재한다.
+     * vm_id 에는 소속 클러스터 id를 넣어 같은 클러스터의 행끼리 묶는다(클러스터 행과 같은 값).
+     * 매칭 기준이 확인된 CSP(지금은 AWS: EC2 인스턴스 ID)만 적재하고, 그 외 CSP는 건너뛴다.
+     */
+    private List<ResourcegroupMetaModel> buildK8sNodeMeta(TBBNSItemModel ns, K8sClusterItemModel cluster,
+                                                          String cspType, String cspAccount){
+        List<ResourcegroupMetaModel> rows = new ArrayList<>();
+        if(cluster.getK8sNodeGroupList() == null) return rows;
+
+        for(K8sNodeGroupModel nodeGroup : cluster.getK8sNodeGroupList()){
+            if(nodeGroup == null || nodeGroup.getK8sNodes() == null) continue;
+            String nodeStatus = switch (nodeGroup.getStatus() == null ? "" : nodeGroup.getStatus()) {
+                case "Failed", "Deleting", "Inactive", "Deactive", "Error" -> "N";
+                default -> "Y";
+            };
+            for(K8sNodeModel node : nodeGroup.getK8sNodes()){
+                if(node == null) continue;
+                String nodeInstanceId = TbbResourceIdResolver.k8sNodeInstanceId(cspType, node.getCspResourceId());
+                if(nodeInstanceId == null){
+                    log.debug("K8s node {} of cluster {} ({}) skipped: node cost matching not supported for this CSP/ID",
+                            node.getCspResourceId(), cluster.getId(), cspType);
+                    continue;
+                }
+                rows.add(ResourcegroupMetaModel.builder()
+                        .cspType(cspType)
+                        .cspAccount(cspAccount)
+                        .cspInstanceid(nodeInstanceId)
+                        .serviceCd(ns.getId())
+                        .serviceNm(ns.getName())
+                        .serviceType("K8S")
+                        .workspaceCd("ws1")  // TODO: 추후 동적으로 변경 필요
+                        .vmId(cluster.getId() != null ? cluster.getId() : META_UNDEFINED)
+                        .vmUid(nodeGroup.getId())
+                        .vmNm(node.getCspResourceName() != null ? node.getCspResourceName() : nodeInstanceId)
+                        .mciId(META_UNDEFINED)
+                        .mciUid(null)
+                        .mciNm(null)
+                        .instanceRunningStatus(nodeStatus)
+                        .build());
+            }
+        }
+        return rows;
+    }
+
+    /**
      * ns 단위 K8s 메타 적재. 일괄 insert가 실패하면(예: 한 행이 컬럼 길이 초과) 행 단위로 다시 넣어
      * 문제가 된 클러스터만 건너뛴다. 어떤 경우에도 예외를 던지지 않아 이후 Object Storage·다음 ns 처리를 막지 않는다.
      */
@@ -767,7 +815,7 @@ public class VMMetaService {
 
         try{
             tbbDao.insertTBBServicegroupMeta(k8sMetaList);
-            log.info("Inserted {} K8s clusters for namespace: {}", k8sMetaList.size(), ns.getId());
+            log.info("Inserted {} K8s meta rows (clusters + nodes) for namespace: {}", k8sMetaList.size(), ns.getId());
             k8sMetaList.forEach(this::cleanupStaleAwsK8sMeta);
             return;
         } catch (Exception e){
@@ -785,7 +833,7 @@ public class VMMetaService {
                         row.getVmId(), row.getCspInstanceid(), ns.getId(), e.getMessage());
             }
         }
-        log.info("Inserted {}/{} K8s clusters for namespace: {} (row by row)", inserted, k8sMetaList.size(), ns.getId());
+        log.info("Inserted {}/{} K8s meta rows (clusters + nodes) for namespace: {} (row by row)", inserted, k8sMetaList.size(), ns.getId());
     }
 
     /**

@@ -26,4 +26,6 @@ public class K8sClusterItemModel {
      * AWS EKS: {key:"Arn", value:"arn:aws:eks:..."} 등. 과금 데이터 매칭 키 정규화에 사용.
      */
     private List<Map<String, String>> keyValueList;
+    /** 노드 그룹과 워커 노드 목록. 노드 비용을 K8s 비용에 포함할 때 노드 ID(cspResourceId)를 메타에 적재한다. */
+    private List<K8sNodeGroupModel> k8sNodeGroupList;
 }

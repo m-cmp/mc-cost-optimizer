@@ -56,7 +56,8 @@
            AND lineitem_resourceid LIKE #{pattern}
     </select>
 
-    <!-- 같은 클러스터(ns, Tumblebug 클러스터 id)가 ARN이 아닌 값으로 남아 있는 예전 K8S 행 정리. AWS EKS에만 사용 -->
+    <!-- 같은 클러스터(ns, Tumblebug 클러스터 id)가 ARN이 아닌 값으로 남아 있는 예전 K8S 행 정리. AWS EKS에만 사용.
+         같은 vm_id 를 쓰는 워커 노드 행(EC2 인스턴스 ID i-…)은 지우지 않는다 -->
     <delete id="deleteStaleAwsK8sMeta" parameterType="com.mcmp.costbe.tumblebugMeta.model.ResourcegroupMetaModel">
         DELETE FROM servicegroup_meta
          WHERE csp_type = 'AWS'
@@ -65,5 +66,6 @@
            AND vm_id = #{vmId}
            AND csp_instanceid != #{cspInstanceid}
            AND csp_instanceid NOT LIKE 'arn:aws:eks:%'
+           AND csp_instanceid NOT LIKE 'i-%'
     </delete>
 </mapper>

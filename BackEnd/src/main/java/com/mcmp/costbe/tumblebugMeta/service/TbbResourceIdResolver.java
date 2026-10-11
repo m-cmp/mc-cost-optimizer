@@ -35,6 +35,20 @@ public final class TbbResourceIdResolver {
         return cspResourceId;
     }
 
+    private static final Pattern AWS_EC2_INSTANCE_ID = Pattern.compile("^i-[0-9a-f]{8,17}$");
+
+    /**
+     * K8s 워커 노드의 과금 매칭 키. 지금은 AWS만 지원: EKS 노드는 CUR에 AmazonEC2 인스턴스 ID(i-…)로 청구된다.
+     * 다른 CSP는 노드 청구 단위가 달라(Azure = VM 스케일셋, NCP = 서버 VM 비용 테이블) 매칭 기준이 정해지기 전까지 null.
+     */
+    public static String k8sNodeInstanceId(String cspType, String nodeCspResourceId) {
+        if ("AWS".equalsIgnoreCase(cspType) && nodeCspResourceId != null
+                && AWS_EC2_INSTANCE_ID.matcher(nodeCspResourceId).matches()) {
+            return nodeCspResourceId;
+        }
+        return null;
+    }
+
     /** AWS EKS 클러스터 ARN 형식인지 (CUR lineitem_resourceid와 매칭 가능한 형태). */
     public static boolean isEksArn(String id) {
         return id != null && id.startsWith("arn:aws:eks:");
