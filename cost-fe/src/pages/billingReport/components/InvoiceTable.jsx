@@ -58,11 +58,11 @@ export default function InvoiceTable({ invoice, months = [], archiving, onArchiv
       groupStartOpen: [true, false],
       groupHeader: [
         (value, count, data) => {
-          const total = data.reduce((sum, row) => sum + row.bill, 0).toFixed(2);
+          const total = data.reduce((sum, row) => sum + row.bill, 0).toFixed(3);
           return `${value} — ${count} items / Total: ${total} USD`;
         },
         (value, count, data) => {
-          const total = data.reduce((sum, row) => sum + row.bill, 0).toFixed(2);
+          const total = data.reduce((sum, row) => sum + row.bill, 0).toFixed(3);
           return `Service: ${value} — ${count} items / Total: ${total} USD`;
         },
       ],
@@ -94,7 +94,7 @@ export default function InvoiceTable({ invoice, months = [], archiving, onArchiv
           hozAlign: "right",
           sorter: "number",
           formatter: "money",
-          formatterParams: { symbol: "$", precision: 2 },
+          formatterParams: { symbol: "$", precision: 3 },
         },
       ],
     });
