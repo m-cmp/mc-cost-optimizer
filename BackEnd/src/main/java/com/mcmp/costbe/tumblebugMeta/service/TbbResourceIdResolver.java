@@ -69,11 +69,17 @@ public final class TbbResourceIdResolver {
     }
 
     /**
-     * K8s 클러스터의 CSP 계정 식별자.
-     * AWS = ARN의 account id, AZURE = subscription id, GCP = SelfLink의 project id, 그 외/실패 = connectionName.
+     * servicegroup_meta.csp_account 의 기본값 (DB 컬럼 기본값과 같음). CSP 계정 ID 를 알 수 없을 때 쓴다.
+     * Tumblebug connectionName(예: aws-ap-northeast-2)은 리전별 접속 설정 이름이지 계정 ID 가 아니므로 넣지 않는다.
      */
-    public static String k8sAccount(String cspType, String instanceId, List<Map<String, String>> keyValueList, String connectionName) {
-        String fallback = isBlank(connectionName) ? "mcmpcostopti" : connectionName;
+    public static final String DEFAULT_CSP_ACCOUNT = "mcmpcostopti";
+
+    /**
+     * K8s 클러스터의 CSP 계정 식별자.
+     * AWS = ARN의 account id, AZURE = subscription id, GCP = SelfLink의 project id, 그 외/실패 = DEFAULT_CSP_ACCOUNT.
+     */
+    public static String k8sAccount(String cspType, String instanceId, List<Map<String, String>> keyValueList) {
+        String fallback = DEFAULT_CSP_ACCOUNT;
         if (cspType == null) {
             return fallback;
         }

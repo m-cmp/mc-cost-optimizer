@@ -637,9 +637,9 @@ public class VMMetaService {
                                         + "Stored as '{}', which will not match CUR until the ARN is available", cluster.getId(), region, instanceId);
                             }
                         }
-                        // 계정: AWS=ARN의 account, AZURE=subscription, GCP=SelfLink의 project, 그 외=connectionName
+                        // 계정: AWS=ARN의 account, AZURE=subscription, GCP=SelfLink의 project, 그 외=기본값(mcmpcostopti)
                         String cspAccount = TbbResourceIdResolver.k8sAccount(
-                                cspType, instanceId, cluster.getKeyValueList(), cluster.getConnectionName());
+                                cspType, instanceId, cluster.getKeyValueList());
 
                         if(!instanceId.equals(cluster.getCspResourceId())) {
                             log.info("K8s cluster {} ({}): csp_instanceid normalized {} -> {}",
@@ -702,7 +702,8 @@ public class VMMetaService {
                         log.warn("Object storage {} in ns {} has no resolvable CSP (connection {}), skipped", os.getId(), ns.getId(), os.getConnectionName());
                         continue;
                     }
-                    String cspAccount = os.getConnectionName() != null ? os.getConnectionName() : "mcmpcostopti";
+                    // Tumblebug 버킷 응답에는 CSP 계정 ID 가 없다 → VM 추출 실패 시와 같은 기본값. (connectionName 은 계정 ID 가 아니라 넣지 않음)
+                    String cspAccount = TbbResourceIdResolver.DEFAULT_CSP_ACCOUNT;
 
                     String osStatus = switch (os.getStatus() == null ? "" : os.getStatus()) {
                         case "Deleting", "Failed", "Error", "Inactive", "Deactive" -> "N";
