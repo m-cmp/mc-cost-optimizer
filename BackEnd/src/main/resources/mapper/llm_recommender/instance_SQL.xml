@@ -15,6 +15,7 @@
                service_cd AS nsId
           FROM servicegroup_meta
          WHERE service_cd = #{nsId}
+           AND service_type = 'VM'   -- servicegroup_meta 에 K8S/OBJECT_STORAGE 행도 들어오므로 추천 대상(VM)만
          ORDER BY csp_instanceid
     </select>
 

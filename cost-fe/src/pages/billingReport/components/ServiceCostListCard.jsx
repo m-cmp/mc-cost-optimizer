@@ -6,11 +6,11 @@ import {
 } from "@/utils/styles/cardStyles";
 
 export default function ServiceCostListCard({ services }) {
+  // familyProductCode from BE (MultiCSPResourceMapping.getAllCategories): VM / K8S / Object Storage / Others
   const iconMap = {
-    "Virtual Machine": Icons.virtualMachine,
-    Storage: Icons.storage,
-    Database: Icons.database,
-    LB: Icons.lb,
+    VM: Icons.virtualMachine,
+    K8S: Icons.k8s,
+    "Object Storage": Icons.storage,
     Others: Icons.others,
   };
 

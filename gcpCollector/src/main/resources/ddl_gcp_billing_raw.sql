@@ -54,10 +54,14 @@ CREATE TABLE IF NOT EXISTS gcp_billing_raw
     tags                            TEXT            NULL COMMENT '태그 (JSON)',
 
     -- labels(sys.*) 추출 → servicegroup_meta 매핑용 식별자 (컬럼명 servicegroup_meta와 정렬)
-    csp_instanceid                  VARCHAR(200)    NULL COMMENT 'labels.sys_cspresourceid (servicegroup_meta.csp_instanceid 조인키)',
+    csp_instanceid                  VARCHAR(200)    NULL COMMENT 'Tumblebug 매칭 키 = servicegroup_meta.csp_instanceid (labels.sys_cspresourceid | GKE 클러스터명 | GCS 버킷명)',
     vm_id                           VARCHAR(100)    NULL COMMENT 'labels.sys_id',
     mci_id                          VARCHAR(100)    NULL COMMENT 'labels.sys_infraid',
     service_cd                      VARCHAR(100)    NULL COMMENT 'labels.sys_namespace (ns_id)',
+
+    -- GKE / GCS 매칭 보조 컬럼 (csp_instanceid 는 sys_cspresourceid → GKE 클러스터명 → GCS 버킷명 순으로 채움)
+    k8s_cluster_name                VARCHAR(255)    NULL COMMENT 'labels/system_labels.goog-k8s-cluster-name',
+    resource_name                   VARCHAR(512)    NULL COMMENT 'detailed export resource.name (표준 export 는 NULL)',
 
     -- 인덱스
     INDEX idx_billing_date (billing_account_id, invoice_month),

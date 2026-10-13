@@ -26,4 +26,10 @@ public class AzureBatchJobController {
         batchExecutorService.asyncExecuteBatch(AzureBatchType.AZURE_COST_VM);
         return ResponseEntity.ok("Azure Cost VM Batch Job started successfully");
     }
+
+    @GetMapping(value = "/batch/azure/resource")
+    public ResponseEntity<String> batchAzureResource() {
+        batchExecutorService.asyncExecuteBatch(AzureBatchType.AZURE_COST_RESOURCE);
+        return ResponseEntity.ok("Azure Cost Resource(K8S/Object Storage) Batch Job started successfully");
+    }
 }

@@ -52,10 +52,14 @@
             ,tags                            TEXT            NULL COMMENT '태그 (JSON)'
 
             -- labels(sys.*) 추출 → servicegroup_meta 매핑용 식별자 (컬럼명 servicegroup_meta와 정렬)
-            ,csp_instanceid                  VARCHAR(200)    NULL COMMENT 'labels.sys_cspresourceid (servicegroup_meta.csp_instanceid 조인키)'
+            ,csp_instanceid                  VARCHAR(200)    NULL COMMENT 'Tumblebug 매칭 키 = servicegroup_meta.csp_instanceid (labels.sys_cspresourceid | GKE 클러스터명 | GCS 버킷명)'
             ,vm_id                           VARCHAR(100)    NULL COMMENT 'labels.sys_id'
             ,mci_id                          VARCHAR(100)    NULL COMMENT 'labels.sys_infraid'
             ,service_cd                      VARCHAR(100)    NULL COMMENT 'labels.sys_namespace (ns_id)'
+
+            -- GKE / GCS 매칭 보조 컬럼 (원본 보존용; 공유 DDL mysql/init_cost_db_ddl.sql, 모듈 ddl_gcp_billing_raw.sql 과 동일)
+            ,k8s_cluster_name                VARCHAR(255)    NULL COMMENT 'labels/system_labels.goog-k8s-cluster-name'
+            ,resource_name                   VARCHAR(512)    NULL COMMENT 'detailed export resource.name (표준 export 는 NULL)'
 
             ,INDEX idx_billing_date (billing_account_id, invoice_month)
             ,INDEX idx_project_date (project_id, usage_start_time)
@@ -138,6 +142,8 @@
         LEFT JOIN servicegroup_meta meta
             ON  meta.csp_type                                          = 'GCP'
             AND meta.csp_instanceid COLLATE utf8mb4_uca1400_ai_ci     = tbl1.csp_instanceid
+        -- csp_instanceid 에 GKE 클러스터명/GCS 버킷명도 들어오므로(Task D) VM 이상비용 탐지는 메타가 VM 이거나 미매칭(기존 동작)인 행만 대상
+        WHERE (meta.service_type IS NULL OR meta.service_type = 'VM')
     </select>
 
     <!-- 이상비용 탐지 결과 저장 -->
@@ -390,6 +396,8 @@
             ,vm_id
             ,mci_id
             ,service_cd
+            ,k8s_cluster_name
+            ,resource_name
         ) VALUES
         <foreach collection="list" item="item" separator=",">
         (
@@ -430,6 +438,8 @@
             ,#{item.vmId}
             ,#{item.mciId}
             ,#{item.serviceCd}
+            ,#{item.k8sClusterName}
+            ,#{item.resourceName}
         )
         </foreach>
     </insert>

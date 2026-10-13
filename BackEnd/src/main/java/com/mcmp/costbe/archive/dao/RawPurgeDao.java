@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 
 /**
  * raw 삭제 SQL 실행 (게이트 통과 후에만 호출됨).
- * - NCP(3테이블)/Azure(2테이블)는 @Transactional 로 원자적 삭제 (프록시 경유이므로 트랜잭션 적용됨)
+ * - NCP(5테이블)/Azure(3테이블)는 @Transactional 로 원자적 삭제 (프록시 경유이므로 트랜잭션 적용됨)
  * - AWS DROP TABLE 은 DDL(auto-commit) 이라 트랜잭션 불가 → DROP 후 cur_origin DELETE 별도
  */
 @Repository
@@ -34,22 +34,25 @@ public class RawPurgeDao {
         return sqlSession.delete("archive.purgeGcp", param(yearMonth));
     }
 
-    // --- NCP (3테이블 원자적) ---
+    // --- NCP (5테이블 원자적: vm_month + vm_daily + service_month + resource_month + resource_daily) ---
     @Transactional
     public int purgeNcpAll(String yearMonth) {
         assertYm(yearMonth);
         int n = sqlSession.delete("archive.purgeNcpVmMonth", param(yearMonth));
         n += sqlSession.delete("archive.purgeNcpVmDaily", param(yearMonth));
         n += sqlSession.delete("archive.purgeNcpServiceMonth", param(yearMonth));
+        n += sqlSession.delete("archive.purgeNcpResourceMonth", param(yearMonth));
+        n += sqlSession.delete("archive.purgeNcpResourceDaily", param(yearMonth));
         return n;
     }
 
-    // --- Azure (2테이블 원자적) ---
+    // --- Azure (3테이블 원자적: vm_daily + service_daily + resource_daily) ---
     @Transactional
     public int purgeAzureAll(String yearMonth) {
         assertYm(yearMonth);
         int n = sqlSession.delete("archive.purgeAzureVmDaily", param(yearMonth));
         n += sqlSession.delete("archive.purgeAzureServiceDaily", param(yearMonth));
+        n += sqlSession.delete("archive.purgeAzureResourceDaily", param(yearMonth));
         return n;
     }
 

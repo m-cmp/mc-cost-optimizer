@@ -17,6 +17,7 @@ public class ScheduleConfig {
 
     private String serviceBatchCron;
     private String vmBatchCron;
+    private String resourceBatchCron;
 
     @PostConstruct
     public void init() {
@@ -24,6 +25,7 @@ public class ScheduleConfig {
         log.info("AZURE Schedule Config Initialized");
         log.info("serviceBatchCron: {}", serviceBatchCron);
         log.info("vmBatchCron: {}", vmBatchCron);
+        log.info("resourceBatchCron: {}", resourceBatchCron);
         log.info("====================================");
     }
 
@@ -58,6 +60,23 @@ public class ScheduleConfig {
                 .forJob(azureVmJobDetail)
                 .withIdentity("AzureVmJobTrigger", "AzureCost")
                 .withSchedule(CronScheduleBuilder.cronSchedule(vmBatchCron))
+                .build();
+    }
+
+    @Bean
+    public JobDetail azureResourceJobDetail() {
+        return JobBuilder.newJob(AzureResourceScheduleJob.class)
+                .withIdentity("AzureResourceJob", "AzureCost")
+                .storeDurably()
+                .build();
+    }
+
+    @Bean
+    public Trigger azureResourceJobTrigger(JobDetail azureResourceJobDetail) {
+        return TriggerBuilder.newTrigger()
+                .forJob(azureResourceJobDetail)
+                .withIdentity("AzureResourceJobTrigger", "AzureCost")
+                .withSchedule(CronScheduleBuilder.cronSchedule(resourceBatchCron))
                 .build();
     }
 }

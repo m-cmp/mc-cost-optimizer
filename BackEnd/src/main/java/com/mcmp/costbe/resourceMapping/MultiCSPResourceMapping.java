@@ -8,11 +8,12 @@ import java.util.List;
 public class MultiCSPResourceMapping {
 
     /**
-     * 새로운 카테고리 구조: VM, K8S, Others
+     * 카테고리 구조: VM, K8S, Object Storage, Others (servicegroup_meta.service_type 기준: VM / K8S / OBJECT_STORAGE / 그 외)
+     * 순서가 홈·Billing Report 카드의 표시 순서이며, 코드 문자열이 그대로 화면 라벨로 쓰인다.
      * service_type 기반으로 구분하므로 더 이상 서비스명 매핑 불필요
      */
     public static List<String> getAllCategories() {
-        return List.of("VM", "K8S", "Others");
+        return List.of("VM", "K8S", "Object Storage", "Others");
     }
 
     /**

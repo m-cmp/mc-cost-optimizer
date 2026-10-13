@@ -121,7 +121,7 @@ public class UsageService {
             // 한 번만 조회 (service_type으로 구분되므로)
             List<BillingAssetChildModel> allChildItems = billDao.getBillAssetChild(req);
 
-            // childProductCode(VM, K8S, Others)로 그룹핑
+            // childProductCode(VM, K8S, Object Storage, Others)로 그룹핑
             List<String> categories = MultiCSPResourceMapping.getAllCategories();
             List<BillingAssetModel> billingAsset = new ArrayList<>();
 

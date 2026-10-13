@@ -58,42 +58,144 @@
 
         UNION ALL
 
-        SELECT vm_latest.demand_month COLLATE utf8mb4_unicode_ci      AS yearMonth,
-               'NCP' COLLATE utf8mb4_unicode_ci                       AS csp,
-               COALESCE(SUM(vm_latest.demand_amount), 0) / ${krwPerUsd}     AS bill
+        -- NCP: VM + K8S/Object Storage 를 (yearMonth, csp)당 1행으로 합산 (BudgetService 가 toMap(csp) 이라 중복 행 금지)
+        SELECT ncp_data.yearMonth COLLATE utf8mb4_unicode_ci             AS yearMonth,
+               'NCP' COLLATE utf8mb4_unicode_ci                           AS csp,
+               COALESCE(SUM(ncp_data.bill), 0)                            AS bill
           FROM (
-               SELECT n1.demand_month, n1.demand_amount, n1.instance_no
-                 FROM ncp_cost_vm_month n1
-                INNER JOIN (
-                      SELECT instance_no, demand_month, MAX(write_date) AS latest_write_date
-                        FROM ncp_cost_vm_month
-                       WHERE demand_month >= CONCAT(#{year}, '01')
-                         AND demand_month <= CONCAT(#{year}, '12')
-                       GROUP BY instance_no, demand_month
-                      ) n2
-                   ON n1.instance_no = n2.instance_no
-                  AND n1.demand_month = n2.demand_month
-                  AND n1.write_date = n2.latest_write_date
-               ) vm_latest
-         INNER JOIN servicegroup_meta sm
-            ON vm_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
-           AND sm.csp_type = 'NCP'
-           AND sm.service_cd = #{projectId}
-         GROUP BY vm_latest.demand_month
+               -- VM (ncp_cost_vm_month)
+               SELECT vm_latest.demand_month COLLATE utf8mb4_unicode_ci   AS yearMonth,
+                      SUM(vm_latest.demand_amount) / ${krwPerUsd}          AS bill
+                 FROM (
+                      SELECT n1.demand_month, n1.demand_amount, n1.instance_no
+                        FROM ncp_cost_vm_month n1
+                       INNER JOIN (
+                             SELECT instance_no, demand_month, MAX(write_date) AS latest_write_date
+                               FROM ncp_cost_vm_month
+                              WHERE demand_month >= CONCAT(#{year}, '01')
+                                AND demand_month <= CONCAT(#{year}, '12')
+                              GROUP BY instance_no, demand_month
+                             ) n2
+                          ON n1.instance_no = n2.instance_no
+                         AND n1.demand_month = n2.demand_month
+                         AND n1.write_date = n2.latest_write_date
+                      ) vm_latest
+                INNER JOIN servicegroup_meta sm
+                   ON vm_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+                  AND sm.csp_type = 'NCP'
+                  AND sm.service_cd = #{projectId}
+                GROUP BY vm_latest.demand_month
+
+               UNION ALL
+
+               -- K8S/Object Storage (ncp_cost_resource_month, 자원·상세코드·계약별 최신 스냅샷)
+               SELECT rs_latest.demand_month COLLATE utf8mb4_unicode_ci   AS yearMonth,
+                      SUM(rs_latest.demand_amount) / ${krwPerUsd}          AS bill
+                 FROM (
+                      SELECT n1.demand_month, n1.demand_amount, n1.resource_id
+                        FROM ncp_cost_resource_month n1
+                       INNER JOIN (
+                             SELECT resource_id, demand_type_detail_code, contract_no, demand_month, MAX(write_date) AS latest_write_date
+                               FROM ncp_cost_resource_month
+                              WHERE demand_month >= CONCAT(#{year}, '01')
+                                AND demand_month <= CONCAT(#{year}, '12')
+                              GROUP BY resource_id, demand_type_detail_code, contract_no, demand_month
+                             ) n2
+                          ON n1.resource_id = n2.resource_id
+                         AND n1.demand_type_detail_code = n2.demand_type_detail_code
+                         AND n1.contract_no = n2.contract_no
+                         AND n1.demand_month = n2.demand_month
+                         AND n1.write_date = n2.latest_write_date
+                         AND n1.resource_type != 'OBJECT_STORAGE'  -- Object Storage 는 계정 단위 블록(D-4)에서 집계
+                      ) rs_latest
+                INNER JOIN servicegroup_meta sm
+                   ON rs_latest.resource_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+                  AND sm.csp_type = 'NCP'
+                  AND sm.service_cd = #{projectId}
+                GROUP BY rs_latest.demand_month
+
+               UNION ALL
+
+               -- D-4: NCP Object Storage — 계정 단위(OSSM) 행, 최신 누적 스냅샷, Tumblebug OBJECT_STORAGE 메타가 있을 때만 1회 포함
+               SELECT nro.demand_month COLLATE utf8mb4_unicode_ci   AS yearMonth,
+                      SUM(nro.demand_amount) / ${krwPerUsd}          AS bill
+                 FROM (
+                      SELECT o1.resource_id, o1.resource_type, o1.member_no, o1.demand_month, o1.demand_amount
+                        FROM ncp_cost_resource_month o1
+                       INNER JOIN (
+                             SELECT demand_month, resource_id, demand_type_detail_code, contract_no, MAX(write_date) AS latest_write_date
+                               FROM ncp_cost_resource_month
+                              WHERE demand_month >= CONCAT(#{year}, '01')
+                                AND demand_month <= CONCAT(#{year}, '12')
+                                AND resource_type = 'OBJECT_STORAGE'
+                              GROUP BY demand_month, resource_id, demand_type_detail_code, contract_no
+                             ) o2
+                       ON o1.demand_month = o2.demand_month
+                      AND o1.resource_id = o2.resource_id
+                      AND o1.demand_type_detail_code = o2.demand_type_detail_code
+                      AND o1.contract_no = o2.contract_no
+                      AND o1.write_date = o2.latest_write_date
+                      ) nro
+                 WHERE nro.resource_type = 'OBJECT_STORAGE'
+                   AND EXISTS (SELECT 1 FROM servicegroup_meta smo
+                                WHERE smo.csp_type = 'NCP' AND smo.service_type = 'OBJECT_STORAGE'
+                                AND smo.service_cd = #{projectId}
+                              )
+                 GROUP BY nro.demand_month
+               ) ncp_data
+         GROUP BY ncp_data.yearMonth
 
         UNION ALL
 
-        SELECT DATE_FORMAT(a.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS yearMonth,
-               'Azure' COLLATE utf8mb4_unicode_ci                            AS csp,
-               COALESCE(SUM(a.pre_tax_cost), 0) / ${krwPerUsd}                     AS bill
-          FROM azure_cost_vm_daily a
-         INNER JOIN servicegroup_meta sm
-            ON a.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
-           AND sm.csp_type = 'AZURE'
-           AND sm.service_cd = #{projectId}
-         WHERE a.usage_date >= CONCAT(#{year}, '0101')
-           AND a.usage_date <= CONCAT(#{year}, '1231')
-         GROUP BY DATE_FORMAT(a.usage_date, '%Y%m')
+        -- Azure: VM + K8S/Object Storage 를 (yearMonth, csp)당 1행으로 합산
+        SELECT az_data.yearMonth COLLATE utf8mb4_unicode_ci              AS yearMonth,
+               'Azure' COLLATE utf8mb4_unicode_ci                         AS csp,
+               COALESCE(SUM(az_data.bill), 0)                             AS bill
+          FROM (
+               -- VM (azure_cost_vm_daily)
+               SELECT DATE_FORMAT(a.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS yearMonth,
+                      SUM(a.pre_tax_cost) / ${krwPerUsd}                            AS bill
+                 FROM azure_cost_vm_daily a
+                INNER JOIN servicegroup_meta sm
+                   ON a.resource_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+                  AND sm.csp_type = 'AZURE'
+                  AND sm.service_cd = #{projectId}
+                WHERE a.usage_date >= CONCAT(#{year}, '0101')
+                  AND a.usage_date <= CONCAT(#{year}, '1231')
+                GROUP BY DATE_FORMAT(a.usage_date, '%Y%m')
+
+               UNION ALL
+
+               -- K8S/Object Storage (azure_cost_resource_daily)
+               SELECT DATE_FORMAT(acr.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS yearMonth,
+                      SUM(acr.pre_tax_cost) / ${krwPerUsd}                            AS bill
+                 FROM azure_cost_resource_daily acr
+                INNER JOIN servicegroup_meta sm
+                   ON LOWER(acr.resource_id) COLLATE utf8mb4_unicode_ci = LOWER(sm.csp_instanceid) COLLATE utf8mb4_unicode_ci
+                  AND sm.csp_type = 'AZURE'
+                  AND acr.resource_type != 'OBJECT_STORAGE'  -- Object Storage 는 계정 단위 블록(D-4)에서 집계
+                  AND sm.service_cd = #{projectId}
+                WHERE acr.usage_date >= CONCAT(#{year}, '0101')
+                  AND acr.usage_date <= CONCAT(#{year}, '1231')
+                GROUP BY DATE_FORMAT(acr.usage_date, '%Y%m')
+
+               UNION ALL
+
+               -- D-4: Azure Object Storage — Storage Account 단위 행(계정 매핑 ${azureObjStgAccounts}), Tumblebug OBJECT_STORAGE 메타가 있을 때만 1회 포함
+               SELECT DATE_FORMAT(acr.usage_date, '%Y%m') COLLATE utf8mb4_unicode_ci AS yearMonth,
+                      SUM(acr.pre_tax_cost) / ${krwPerUsd}                            AS bill
+                 FROM azure_cost_resource_daily acr
+                WHERE acr.resource_type = 'OBJECT_STORAGE'
+                  AND LOWER(acr.resource_name) IN (${azureObjStgAccounts})
+                  AND acr.usage_date >= CONCAT(#{year}, '0101')
+                  AND acr.usage_date <= CONCAT(#{year}, '1231')
+                  AND EXISTS (SELECT 1 FROM servicegroup_meta smo
+                               WHERE smo.csp_type = 'AZURE' AND smo.service_type = 'OBJECT_STORAGE'
+                              AND smo.service_cd = #{projectId}
+                             )
+                GROUP BY DATE_FORMAT(acr.usage_date, '%Y%m')
+               ) az_data
+         GROUP BY az_data.yearMonth
 
         UNION ALL
 

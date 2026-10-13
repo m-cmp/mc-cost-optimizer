@@ -54,8 +54,13 @@ public class GcpBillingRawDto {
     private String tags;
 
     // labels(sys.* JSON)에서 추출한 servicegroup_meta 매핑용 식별자 (수집 시 파싱하여 채움)
-    private String cspInstanceid; // labels.sys_cspresourceid → servicegroup_meta.csp_instanceid (조인키)
+    // csp_instanceid 는 Tumblebug 매칭 키: labels.sys_cspresourceid(GCE VM) → GKE 클러스터명(Kubernetes Engine 행) → GCS 버킷명(Cloud Storage 행) 순으로 채움
+    private String cspInstanceid; // → servicegroup_meta.csp_instanceid (조인키)
     private String vmId;          // labels.sys_id
     private String mciId;         // labels.sys_infraid
     private String serviceCd;     // labels.sys_namespace (ns_id)
+
+    // GKE / GCS 매칭 보조 컬럼 (원본 보존용)
+    private String k8sClusterName; // labels 또는 system_labels 의 goog-k8s-cluster-name
+    private String resourceName;   // detailed export 의 resource.name (표준 export 는 null)
 }
