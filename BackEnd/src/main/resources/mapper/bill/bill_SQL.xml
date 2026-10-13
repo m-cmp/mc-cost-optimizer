@@ -574,12 +574,15 @@ SELECT ym.`year_month`
 
     <!-- TOP5 -->
     <select id="getTop5Bill" parameterType="com.mcmp.costbe.usage.model.bill.Top5WidgetReqModel" resultType="com.mcmp.costbe.usage.model.bill.Top5BillModel">
-SELECT service_name AS resourceNm
-       , total_cost   AS bill
+SELECT service_name     AS resourceNm
+       , SUM(total_cost) AS bill
        , csp
   FROM (
-       <!-- AWS -->
-       SELECT co.lineitem_productcode COLLATE utf8mb4_unicode_ci AS service_name
+       <!-- AWS (K8S 메타에 매칭된 EKS 노드 EC2 비용은 AmazonEKS 로 합산) -->
+       SELECT CASE
+                WHEN sm.service_type = 'K8S' THEN 'AmazonEKS'
+                ELSE co.lineitem_productcode
+              END COLLATE utf8mb4_unicode_ci AS service_name
               , COALESCE(SUM(co.lineitem_unblendedcost), 0) AS total_cost
               , 'AWS' COLLATE utf8mb4_unicode_ci AS csp
          FROM tbl_table_billing_detail_${year_month} co
@@ -593,7 +596,10 @@ SELECT service_name AS resourceNm
           AND co.lineitem_usagestartdate >= #{curMonthStartDate}
           AND co.lineitem_usageenddate < #{curMonthEndDate}
               ]]>
-        GROUP BY co.lineitem_productcode
+        GROUP BY CASE
+                   WHEN sm.service_type = 'K8S' THEN 'AmazonEKS'
+                   ELSE co.lineitem_productcode
+                 END
 
        UNION ALL
 
@@ -675,6 +681,7 @@ SELECT service_name AS resourceNm
        <!-- NCP (VM별, 최신 누적 금액만 반영, service_type에 따라 매핑) -->
        SELECT CASE
                 WHEN sm.service_type = 'VM' THEN 'Server'
+                WHEN sm.service_type = 'K8S' THEN 'Kubernetes Service'  -- NKS 노드 서버 비용은 NKS 관리비 줄과 합산
                 ELSE sm.service_type
               END COLLATE utf8mb4_unicode_ci AS service_name
               , COALESCE(SUM(vm_latest.demand_amount), 0) / ${krwPerUsd} AS total_cost
@@ -703,6 +710,7 @@ SELECT service_name AS resourceNm
               </if>
         GROUP BY CASE
                    WHEN sm.service_type = 'VM' THEN 'Server'
+                   WHEN sm.service_type = 'K8S' THEN 'Kubernetes Service'
                    ELSE sm.service_type
                  END
 
@@ -780,8 +788,11 @@ SELECT service_name AS resourceNm
 
        UNION ALL
 
-       <!-- GCP (service_description 단위, invoice_month 기준, KRW→USD 환산) -->
-       SELECT raw.service_description COLLATE utf8mb4_unicode_ci AS service_name
+       <!-- GCP (service_description 단위, invoice_month 기준, KRW→USD 환산. K8S 메타에 매칭된 GKE 노드·네트워크 비용은 Kubernetes Engine 으로 합산) -->
+       SELECT CASE
+                WHEN sm.service_type = 'K8S' THEN 'Kubernetes Engine'
+                ELSE raw.service_description
+              END COLLATE utf8mb4_unicode_ci AS service_name
               , COALESCE(SUM(raw.cost), 0) / ${krwPerUsd} AS total_cost
               , 'GCP' COLLATE utf8mb4_unicode_ci AS csp
          FROM gcp_billing_raw raw
@@ -795,10 +806,14 @@ SELECT service_name AS resourceNm
               #{selectedProject}
               </foreach>
               </if>
-        GROUP BY raw.service_description
+        GROUP BY CASE
+                   WHEN sm.service_type = 'K8S' THEN 'Kubernetes Engine'
+                   ELSE raw.service_description
+                 END
        ) AS all_services
- WHERE total_cost > 0
- ORDER BY total_cost DESC
+ GROUP BY service_name, csp   -- 같은 이름이 여러 블록에서 나오면(예: NKS 관리비 + NKS 노드) 한 줄로 합산
+HAVING SUM(total_cost) > 0
+ ORDER BY bill DESC
  LIMIT 5
     </select>
     <!-- 자식 단위별 비용 (VM, K8S, Others) -->
