@@ -30,8 +30,10 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -737,12 +739,14 @@ public class VMMetaService {
     /**
      * 워커 노드 메타 행. 노드 비용을 K8s 비용에 포함하기 위해 노드의 CSP 자원 ID를 service_type = 'K8S' 로 적재한다.
      * vm_id 에는 소속 클러스터 id를 넣어 같은 클러스터의 행끼리 묶는다(클러스터 행과 같은 값).
-     * 매칭 기준이 확인된 CSP(지금은 AWS: EC2 인스턴스 ID)만 적재하고, 그 외 CSP는 건너뛴다.
+     * 매칭 기준이 확인된 CSP(AWS: EC2 인스턴스 ID, AZURE: VM 스케일셋 ARM ID, NCP: 서버 인스턴스 번호)만 적재하고, 그 외 CSP는 건너뛴다.
+     * AZURE 는 노드 여러 개가 같은 스케일셋으로 모이므로 스케일셋당 1행만 만든다(PK 중복 방지).
      */
     private List<ResourcegroupMetaModel> buildK8sNodeMeta(TBBNSItemModel ns, K8sClusterItemModel cluster,
                                                           String cspType, String cspAccount){
         List<ResourcegroupMetaModel> rows = new ArrayList<>();
         if(cluster.getK8sNodeGroupList() == null) return rows;
+        Set<String> seen = new HashSet<>();
 
         for(K8sNodeGroupModel nodeGroup : cluster.getK8sNodeGroupList()){
             if(nodeGroup == null || nodeGroup.getK8sNodes() == null) continue;
@@ -758,6 +762,11 @@ public class VMMetaService {
                             node.getCspResourceId(), cluster.getId(), cspType);
                     continue;
                 }
+                if(!seen.add(nodeInstanceId.toLowerCase(Locale.ROOT))) continue;
+                // 노드 ID 그대로면(AWS) 노드 이름, 스케일셋으로 바뀌었으면(AZURE) 스케일셋 이름
+                String nodeNm = nodeInstanceId.equals(node.getCspResourceId()) && node.getCspResourceName() != null
+                        ? node.getCspResourceName()
+                        : nodeInstanceId.substring(nodeInstanceId.lastIndexOf('/') + 1);
                 rows.add(ResourcegroupMetaModel.builder()
                         .cspType(cspType)
                         .cspAccount(cspAccount)
@@ -768,7 +777,7 @@ public class VMMetaService {
                         .workspaceCd("ws1")  // TODO: 추후 동적으로 변경 필요
                         .vmId(cluster.getId() != null ? cluster.getId() : META_UNDEFINED)
                         .vmUid(nodeGroup.getId())
-                        .vmNm(node.getCspResourceName() != null ? node.getCspResourceName() : nodeInstanceId)
+                        .vmNm(nodeNm)
                         .mciId(META_UNDEFINED)
                         .mciUid(null)
                         .mciNm(null)

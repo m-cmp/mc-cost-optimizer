@@ -16,7 +16,7 @@ import lombok.ToString;
 /**
  * Azure 비-VM 자원(AKS managed cluster, Storage Account) 별 일별 요금.
  * azure_cost_vm_daily 의 자매 테이블로, VM 전용 컬럼(instance_type/os_type/vm_id/resource_guid) 이 없고
- * resource_type(K8S | OBJECT_STORAGE) 으로 자원 종류를 구분한다. DDL: ddl_AzureCostResourceDaily.sql
+ * resource_type(K8S | K8S_NODE | OBJECT_STORAGE) 으로 자원 종류를 구분한다. DDL: ddl_AzureCostResourceDaily.sql
  */
 @Entity
 @Getter
@@ -63,7 +63,7 @@ public class AzureCostResourceDaily extends AuditEntity {
     @Column(name = "resource_name", nullable = false)
     private String resourceName;
 
-    /** 자원 유형. K8S | OBJECT_STORAGE ({@link com.mcmp.cost.azure.collector.utils.AzureResourceType}) */
+    /** 자원 유형. K8S | K8S_NODE | OBJECT_STORAGE ({@link com.mcmp.cost.azure.collector.utils.AzureResourceType}) */
     @Column(name = "resource_type", nullable = false, length = 20)
     private String resourceType;
 

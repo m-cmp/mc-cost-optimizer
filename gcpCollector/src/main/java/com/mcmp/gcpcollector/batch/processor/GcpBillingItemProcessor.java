@@ -22,7 +22,6 @@ public class GcpBillingItemProcessor implements ItemProcessor<Map<String, Object
             .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
             .toFormatter();
 
-    private static final String SERVICE_GKE = "Kubernetes Engine";
     private static final String SERVICE_GCS = "Cloud Storage";
     private static final String LABEL_GKE_CLUSTER = "goog-k8s-cluster-name";
 
@@ -34,7 +33,7 @@ public class GcpBillingItemProcessor implements ItemProcessor<Map<String, Object
 
         // Tumblebug 메타(servicegroup_meta.csp_instanceid) 매칭 키
         //  1) GCE VM: Tumblebug 이 붙인 sys.cspResourceId 라벨
-        //  2) GKE  : GCP 가 붙이는 goog-k8s-cluster-name 라벨(labels 또는 system_labels) = 클러스터명 = Tumblebug cspResourceId
+        //  2) GKE  : GCP 가 붙이는 goog-k8s-cluster-name 라벨(labels 또는 system_labels) = 클러스터명 = Tumblebug cspResourceId. 관리비·노드 VM 모두
         //  3) GCS  : 상세 export 의 resource.global_name(//storage.googleapis.com/projects/_/buckets/<bucket>) 또는 resource.name = 버킷명
         String k8sClusterName = firstNonBlank(labelValue(labels, LABEL_GKE_CLUSTER), labelValue(systemLabels, LABEL_GKE_CLUSTER));
         String resourceName = str(row, "resource_name");
@@ -85,12 +84,13 @@ public class GcpBillingItemProcessor implements ItemProcessor<Map<String, Object
     }
 
     /**
-     * 매칭 키 결정. sys_cspresourceid 가 있으면 그대로(기존 동작), 없으면 서비스별로
-     * Kubernetes Engine → 클러스터명, Cloud Storage → 버킷명(global_name 우선, 없으면 resource.name). 그 외는 null.
+     * 매칭 키 결정. sys_cspresourceid 가 있으면 그대로(기존 동작), 없으면
+     * goog-k8s-cluster-name 라벨이 있는 행 → 클러스터명 (서비스 무관: Kubernetes Engine 관리비와 Compute Engine 노드 VM 을 같은 클러스터로 합산),
+     * Cloud Storage → 버킷명(global_name 우선, 없으면 resource.name). 그 외는 null.
      */
     static String resolveMatchKey(String sysCspResourceId, String serviceDescription, String k8sClusterName, String bucketName, String resourceName) {
         if (!isBlank(sysCspResourceId)) return sysCspResourceId;
-        if (SERVICE_GKE.equals(serviceDescription)) return firstNonBlank(k8sClusterName);
+        if (!isBlank(k8sClusterName)) return k8sClusterName;
         if (SERVICE_GCS.equals(serviceDescription)) return firstNonBlank(bucketName, resourceName);
         return null;
     }

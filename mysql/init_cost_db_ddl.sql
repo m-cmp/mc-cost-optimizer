@@ -514,7 +514,7 @@ CREATE TABLE IF NOT EXISTS `azure_cost_resource_daily` (
     `resource_group_name` varchar(255) NOT NULL COMMENT '리소스 그룹',
     `resource_id` varchar(512) NOT NULL COMMENT 'ARM 리소스 아이디(소문자 원문). ex) /subscriptions/.../providers/microsoft.containerservice/managedclusters/aks-1',
     `resource_name` varchar(255) NOT NULL COMMENT 'resource_id 마지막 세그먼트 (클러스터명 / 스토리지 계정명)',
-    `resource_type` varchar(20) NOT NULL COMMENT 'K8S | OBJECT_STORAGE',
+    `resource_type` varchar(20) NOT NULL COMMENT 'K8S | K8S_NODE | OBJECT_STORAGE',
     `service_name` varchar(255) NOT NULL COMMENT 'Azure 서비스명. ex) Azure Kubernetes Service, Storage',
     `region` varchar(255) DEFAULT NULL COMMENT 'ResourceLocation. ex) koreacentral',
     `currency` varchar(255) NOT NULL COMMENT '통화 단위. ex) KRW',

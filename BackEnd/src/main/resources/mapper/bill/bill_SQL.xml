@@ -625,6 +625,7 @@ SELECT service_name AS resourceNm
        <!-- Azure K8S/Object Storage (azure_cost_resource_daily, resource_type별 라벨) -->
        SELECT CASE acr.resource_type
                 WHEN 'K8S' THEN 'Azure Kubernetes Service'
+                WHEN 'K8S_NODE' THEN 'Azure Kubernetes Service'  -- AKS 노드 스케일셋도 AKS 로 합산
                 WHEN 'OBJECT_STORAGE' THEN 'Storage'
                 ELSE acr.resource_type
               END COLLATE utf8mb4_unicode_ci AS service_name
@@ -644,6 +645,7 @@ SELECT service_name AS resourceNm
               </if>
         GROUP BY CASE acr.resource_type
                    WHEN 'K8S' THEN 'Azure Kubernetes Service'
+                   WHEN 'K8S_NODE' THEN 'Azure Kubernetes Service'
                    WHEN 'OBJECT_STORAGE' THEN 'Storage'
                    ELSE acr.resource_type
                  END
@@ -1043,6 +1045,29 @@ SELECT service_name AS resourceNm
           AND sm.csp_type = 'NCP'
           AND sm.service_type = 'K8S'
         WHERE DATE_FORMAT(ncrd.target_date, '%Y%m') = #{year_month}
+              <if test="selectedProjects != null and selectedProjects.size() > 0">
+          AND sm.service_cd IN
+              <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+              #{selectedProject}
+              </foreach>
+              </if>
+              <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+          AND 1=0
+              </if>
+
+       UNION ALL
+
+       -- NCP K8S 워커 노드 (ncp_cost_vm_daily, service_type = 'K8S'): NKS 노드는 일반 서버로 청구되므로 서버 비용 테이블에서 읽는다
+       SELECT COALESCE(SUM(ncvd.daily_charge_amount), 0) / ${krwPerUsd} AS bill
+              , 'K8S' COLLATE utf8mb4_unicode_ci AS childProductCode
+              , COUNT(DISTINCT ncvd.instance_no) AS unit
+              , 'NCP' COLLATE utf8mb4_unicode_ci AS csp
+         FROM ncp_cost_vm_daily ncvd
+        INNER JOIN servicegroup_meta sm
+           ON ncvd.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+          AND sm.csp_type = 'NCP'
+          AND sm.service_type = 'K8S'
+        WHERE DATE_FORMAT(ncvd.target_date, '%Y%m') = #{year_month}
               <if test="selectedProjects != null and selectedProjects.size() > 0">
           AND sm.service_cd IN
               <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">

@@ -37,13 +37,31 @@ public final class TbbResourceIdResolver {
 
     private static final Pattern AWS_EC2_INSTANCE_ID = Pattern.compile("^i-[0-9a-f]{8,17}$");
 
+    /** AKS 노드: …/virtualMachineScaleSets/{vmss}/virtualMachines/{n} → group(1) = 스케일셋 ARM ID */
+    private static final Pattern AZURE_VMSS_ID = Pattern.compile(
+            "^(/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft\\.Compute/virtualMachineScaleSets/[^/]+)(/virtualMachines/[^/]+)?$",
+            Pattern.CASE_INSENSITIVE);
+
+    /** NKS 노드: 서버 인스턴스 번호(숫자). 생성 중에는 노드 이름이 임시로 들어오므로 숫자일 때만 사용 */
+    private static final Pattern NCP_SERVER_INSTANCE_NO = Pattern.compile("^[0-9]+$");
+
     /**
-     * K8s 워커 노드의 과금 매칭 키. 지금은 AWS만 지원: EKS 노드는 CUR에 AmazonEC2 인스턴스 ID(i-…)로 청구된다.
-     * 다른 CSP는 노드 청구 단위가 달라(Azure = VM 스케일셋, NCP = 서버 VM 비용 테이블) 매칭 기준이 정해지기 전까지 null.
+     * K8s 워커 노드의 과금 매칭 키.
+     * AWS: EKS 노드는 CUR에 AmazonEC2 인스턴스 ID(i-…)로 청구된다.
+     * AZURE: AKS 노드는 노드 단위가 아니라 VM 스케일셋 단위로 청구되므로 스케일셋 ARM ID (노드 그룹당 1개).
+     * NCP: NKS 노드는 서버 인스턴스 번호 → 서버 비용 테이블(ncp_cost_vm_*.instance_no)과 매칭.
+     * GCP 는 수집기가 노드 VM 비용을 goog-k8s-cluster-name 라벨로 클러스터 키에 붙이므로 노드 메타가 필요 없다(null).
      */
     public static String k8sNodeInstanceId(String cspType, String nodeCspResourceId) {
-        if ("AWS".equalsIgnoreCase(cspType) && nodeCspResourceId != null
-                && AWS_EC2_INSTANCE_ID.matcher(nodeCspResourceId).matches()) {
+        if (nodeCspResourceId == null) return null;
+        if ("AWS".equalsIgnoreCase(cspType) && AWS_EC2_INSTANCE_ID.matcher(nodeCspResourceId).matches()) {
+            return nodeCspResourceId;
+        }
+        if ("AZURE".equalsIgnoreCase(cspType)) {
+            Matcher m = AZURE_VMSS_ID.matcher(nodeCspResourceId);
+            if (m.matches()) return m.group(1);
+        }
+        if ("NCP".equalsIgnoreCase(cspType) && NCP_SERVER_INSTANCE_NO.matcher(nodeCspResourceId).matches()) {
             return nodeCspResourceId;
         }
         return null;

@@ -177,7 +177,7 @@ public class AzureUtils {
      * Cost Management 데이터는 수 시간~하루 늦게 채워지므로, 하루치만 조회하면 덜 채워진 날이 그대로 굳는다.
      * 매 실행마다 최근 며칠을 다시 조회해 덮어쓰면(writer 가 usage_date 단위로 delete 후 insert) 늦게 들어온 비용과
      * 이전 실행이 실패한 날짜도 다음 실행에서 채워진다.
-     * 대상: AKS managed cluster, Storage account — ResourceType dimension 필터({@link AzureResourceType#armTypes()}).
+     * 대상: AKS managed cluster, AKS 노드 VM 스케일셋, Storage account — ResourceType dimension 필터({@link AzureResourceType#armTypes()}).
      * grouping 은 기존 VM 쿼리와 같은 3개(ResourceGroupName, ResourceId, ResourceLocation) 로 고정한다(문서상 2개 제한, 3개 운영 확인).
      * 응답 row: [PreTaxCost, UsageDate, ResourceGroupName, ResourceId, ResourceLocation, Currency] — 단 인덱스에 의존하지 말고 {@link #columnIndex} 사용.
      */

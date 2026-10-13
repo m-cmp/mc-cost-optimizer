@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS azure_cost_resource_daily
     resource_group_name VARCHAR(255)          NOT NULL COMMENT '리소스 그룹. ex) rg-dongwoo-1',
     resource_id         VARCHAR(512)          NOT NULL COMMENT 'ARM 리소스 아이디(소문자 원문). ex) /subscriptions/.../resourcegroups/rg-1/providers/microsoft.containerservice/managedclusters/aks-1',
     resource_name       VARCHAR(255)          NOT NULL COMMENT 'resource_id 마지막 세그먼트(클러스터명/스토리지계정명). ex) aks-1',
-    resource_type       VARCHAR(20)           NOT NULL COMMENT '자원 유형. K8S | OBJECT_STORAGE',
+    resource_type       VARCHAR(20)           NOT NULL COMMENT '자원 유형. K8S | K8S_NODE | OBJECT_STORAGE',
     service_name        VARCHAR(255)          NOT NULL COMMENT 'Azure 서비스명. ex) Azure Kubernetes Service, Storage',
     region              VARCHAR(255)          NULL     COMMENT 'ResourceLocation. ex) koreacentral',
     currency            VARCHAR(255)          NOT NULL COMMENT '통화 단위. ex) KRW',

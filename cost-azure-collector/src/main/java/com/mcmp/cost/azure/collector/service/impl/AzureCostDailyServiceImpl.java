@@ -139,7 +139,7 @@ public class AzureCostDailyServiceImpl implements AzureCostDailyService {
         // 2. CostManagementManager 생성
         CostManagementManager costManager = CostManagementManager.authenticate(credential, profile);
 
-        // 3. QueryDefinition 작성 (ResourceType IN (managedclusters, storageaccounts), 최근 resourceLookbackDays일)
+        // 3. QueryDefinition 작성 (ResourceType IN (managedclusters, virtualmachinescalesets, storageaccounts), 최근 resourceLookbackDays일)
         QueryDefinition query = AzureUtils.getQueryCostByResources(resourceLookbackDays);
         log.info("Azure resource cost query window: last {} day(s) up to yesterday (UTC), subscription={}",
                 resourceLookbackDays, azureApiCredentialDto.getSubscriptionId());

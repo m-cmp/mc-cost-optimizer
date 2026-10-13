@@ -17,6 +17,8 @@ import java.util.Optional;
 @Getter
 public enum AzureResourceType {
     K8S("microsoft.containerservice/managedclusters", "Azure Kubernetes Service"),
+    /** AKS 워커 노드. 노드 VM 은 스케일셋 단위로 청구된다. AKS 가 아닌 스케일셋도 들어오지만 BackEnd 는 메타에 있는 것만 집계 */
+    K8S_NODE("microsoft.compute/virtualmachinescalesets", "Virtual Machines"),
     OBJECT_STORAGE("microsoft.storage/storageaccounts", "Storage");
 
     /** Cost Management ResourceType dimension 값(소문자) */
