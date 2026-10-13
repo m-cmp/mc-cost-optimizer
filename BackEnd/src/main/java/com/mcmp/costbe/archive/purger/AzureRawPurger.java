@@ -5,7 +5,7 @@ import com.mcmp.costbe.archive.model.Csp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/** Azure: vm_daily + service_daily 2테이블 원자적 DELETE(@Transactional in DAO). */
+/** Azure: vm_daily + service_daily + resource_daily(K8S/Object Storage) 3테이블 원자적 DELETE(@Transactional in DAO). */
 @Component
 @RequiredArgsConstructor
 public class AzureRawPurger extends AbstractRawPurger {

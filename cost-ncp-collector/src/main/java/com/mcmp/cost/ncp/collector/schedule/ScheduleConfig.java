@@ -17,6 +17,7 @@ public class ScheduleConfig {
 
     private String serviceBatchCron;
     private String vmBatchCron;
+    private String resourceBatchCron;
 
     @PostConstruct
     public void init() {
@@ -24,6 +25,7 @@ public class ScheduleConfig {
         log.info("NCP Schedule Config Initialized");
         log.info("serviceBatchCron: {}", serviceBatchCron);
         log.info("vmBatchCron: {}", vmBatchCron);
+        log.info("resourceBatchCron: {}", resourceBatchCron);
         log.info("====================================");
     }
 
@@ -58,6 +60,23 @@ public class ScheduleConfig {
                 .forJob(ncpVmJobDetail)
                 .withIdentity("NcpVmJobTrigger", "NcpCost")
                 .withSchedule(CronScheduleBuilder.cronSchedule(vmBatchCron))
+                .build();
+    }
+
+    @Bean
+    public JobDetail ncpResourceJobDetail() {
+        return JobBuilder.newJob(NcpResourceScheduleJob.class)
+                .withIdentity("NcpResourceJob", "NcpCost")
+                .storeDurably()
+                .build();
+    }
+
+    @Bean
+    public Trigger ncpResourceJobTrigger(JobDetail ncpResourceJobDetail) {
+        return TriggerBuilder.newTrigger()
+                .forJob(ncpResourceJobDetail)
+                .withIdentity("NcpResourceJobTrigger", "NcpCost")
+                .withSchedule(CronScheduleBuilder.cronSchedule(resourceBatchCron))
                 .build();
     }
 }

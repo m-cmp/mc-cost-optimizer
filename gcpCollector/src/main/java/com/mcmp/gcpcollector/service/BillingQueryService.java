@@ -27,8 +27,10 @@ public class BillingQueryService {
         String startDate = parsedDate.toString();
         String endDate   = parsedDate.plusDays(1).toString();
         String fullTable = getFullTableName();           // 설정값에서 오므로 신뢰 가능
+        boolean detailed = isDetailedExport(bigQueryConfig.getTable());
 
-        // 표준 빌링 내보내기 기준 필드 (resource, price, transaction_type 등 상세 내보내기 전용 필드 제외)
+        // 표준 빌링 내보내기 기준 필드. resource.* 는 상세(detailed) 내보내기(gcp_billing_export_resource_v1_*) 에만 존재하므로
+        // 테이블명으로 판별해 상세 export 일 때만 SELECT 하고, 표준 export 는 NULL 로 채운다 (GCS 버킷명 매칭용, Task D).
         // WHERE 조건은 named parameter(@startDate, @endDate)로 바인딩 → SQL 인젝션 방지
         // 테이블명은 BigQuery 파라미터 미지원(DDL 제약) → 설정값에서 주입
         String query = """
@@ -65,18 +67,31 @@ public class BillingQueryService {
                     ,adjustment_info.mode        AS adjustment_info_mode
                     ,adjustment_info.type        AS adjustment_info_type
                     ,export_time
+                    %s
                 FROM %s
                 WHERE usage_start_time >= @startDate
                   AND usage_start_time <  @endDate
-                """.formatted(fullTable);
+                """.formatted(resourceColumns(detailed), fullTable);
 
-        log.info("BigQuery raw 조회 - date: {}, table: {}", date, fullTable);
+        log.info("BigQuery raw 조회 - date: {}, table: {}, detailedExport: {}", date, fullTable, detailed);
 
         TableResult result = executeQuery(query, startDate, endDate);
         List<Map<String, Object>> rows = mapResultToList(result);
 
         log.info("BigQuery raw 조회 완료 - date: {}, 건수: {}", date, rows.size());
         return rows;
+    }
+
+    /** 상세(detailed) 사용량 비용 내보내기 테이블인지 — 이름 규칙 gcp_billing_export_resource_v1_&lt;id&gt; */
+    static boolean isDetailedExport(String tableName) {
+        return tableName != null && tableName.toLowerCase().contains("resource");
+    }
+
+    /** 상세 export 면 resource.name / resource.global_name 을, 아니면 NULL 컬럼을 같은 별칭으로 SELECT */
+    static String resourceColumns(boolean detailed) {
+        return detailed
+                ? ",resource.name        AS resource_name\n                    ,resource.global_name AS resource_global_name"
+                : ",CAST(NULL AS STRING) AS resource_name\n                    ,CAST(NULL AS STRING) AS resource_global_name";
     }
 
     public String getFullTableName() {

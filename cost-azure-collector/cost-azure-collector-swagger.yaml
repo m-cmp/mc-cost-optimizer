@@ -28,6 +28,17 @@ paths:
             '*/*':
               schema:
                 type: "string"
+  /api/batch/azure/resource:
+    get:
+      summary: "Azure 비-VM 자원(AKS managed cluster, Storage Account) 들의 전일 이용 금액을 자원 단위로 수집한다. (azure_cost_resource_daily)"
+      operationId: "batchAzureResource"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
   /api/azure/budget/test:
     get:
       summary: "이번달 비용이 설정한 예산을 초과하는지 확인하는 테스트용 API."

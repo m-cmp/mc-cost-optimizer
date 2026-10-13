@@ -3,7 +3,7 @@
 <mapper namespace="tbb">
     <insert id="insertTBBServicegroupMeta" parameterType="java.util.List">
         INSERT INTO servicegroup_meta(csp_type, csp_account, csp_instanceid, service_cd, service_nm, service_uid
-        , service_type, vm_id, vm_uid, vm_nm, mci_id, mci_uid, mci_nm, instance_running_status)
+        , service_type, workspace_cd, vm_id, vm_uid, vm_nm, mci_id, mci_uid, mci_nm, instance_running_status)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.cspType}
@@ -13,6 +13,7 @@
                , #{item.serviceNm}
                , #{item.serviceUid}
                , #{item.serviceType}
+               , COALESCE(#{item.workspaceCd}, 'undefined')
                , #{item.vmId}
                , #{item.vmUid}
                , #{item.vmNm}
@@ -21,10 +22,50 @@
                , #{item.mciNm}
                , #{item.instanceRunningStatus})
         </foreach>
-            ON DUPLICATE KEY UPDATE service_nm = values(service_nm)
+            <!--
+              Tumblebug 메타가 자원 소속(namespace)의 기준. costCollector의 insertRscGrpMeta가 CUR의 모든 resource id를
+              service_cd='undefined'로 선삽입하므로, 여기서 service_cd/계정/식별자까지 갱신해야 이후 동기화에서 교정된다.
+              (collector 쪽 upsert는 csp_instanceid만 갱신하므로 Tumblebug 값을 덮어쓰지 않는다)
+            -->
+            ON DUPLICATE KEY UPDATE csp_account = values(csp_account)
+                                 , service_cd = values(service_cd)
+                                 , service_nm = values(service_nm)
                                  , service_type = values(service_type)
+                                 , workspace_cd = values(workspace_cd)
+                                 , vm_id = values(vm_id)
+                                 , vm_uid = values(vm_uid)
                                  , vm_nm = values(vm_nm)
+                                 , mci_id = values(mci_id)
+                                 , mci_uid = values(mci_uid)
                                  , mci_nm = values(mci_nm)
                                  , instance_running_status = values(instance_running_status)
     </insert>
+
+    <select id="countTable" parameterType="String" resultType="Integer">
+        SELECT COUNT(*)
+          FROM information_schema.tables
+         WHERE table_schema = DATABASE()
+           AND table_name = #{tableName}
+    </select>
+
+    <!-- Tumblebug 응답에 EKS Arn이 없을 때 CUR에서 같은 클러스터의 ARN을 찾는다. yearMonth는 DAO 호출 측에서 YYYYMM으로 검증 -->
+    <select id="selectAwsEksArnsFromCur" parameterType="map" resultType="String">
+        SELECT DISTINCT lineitem_resourceid
+          FROM tbl_table_billing_detail_${yearMonth}
+         WHERE lineitem_productcode = 'AmazonEKS'
+           AND lineitem_resourceid LIKE #{pattern}
+    </select>
+
+    <!-- 같은 클러스터(ns, Tumblebug 클러스터 id)가 ARN이 아닌 값으로 남아 있는 예전 K8S 행 정리. AWS EKS에만 사용.
+         같은 vm_id 를 쓰는 워커 노드 행(EC2 인스턴스 ID i-…)은 지우지 않는다 -->
+    <delete id="deleteStaleAwsK8sMeta" parameterType="com.mcmp.costbe.tumblebugMeta.model.ResourcegroupMetaModel">
+        DELETE FROM servicegroup_meta
+         WHERE csp_type = 'AWS'
+           AND service_type = 'K8S'
+           AND service_cd = #{serviceCd}
+           AND vm_id = #{vmId}
+           AND csp_instanceid != #{cspInstanceid}
+           AND csp_instanceid NOT LIKE 'arn:aws:eks:%'
+           AND csp_instanceid NOT LIKE 'i-%'
+    </delete>
 </mapper>

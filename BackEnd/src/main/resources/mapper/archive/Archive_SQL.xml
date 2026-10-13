@@ -89,7 +89,9 @@
         SELECT DISTINCT ym FROM (
             SELECT `year_month`                COLLATE utf8mb4_general_ci AS ym FROM monthly_summation
             UNION SELECT demand_month          COLLATE utf8mb4_general_ci      FROM ncp_cost_vm_month
+            UNION SELECT demand_month          COLLATE utf8mb4_general_ci      FROM ncp_cost_resource_month
             UNION SELECT SUBSTRING(usage_date,1,6) COLLATE utf8mb4_general_ci  FROM azure_cost_vm_daily
+            UNION SELECT SUBSTRING(usage_date,1,6) COLLATE utf8mb4_general_ci  FROM azure_cost_resource_daily
             UNION SELECT invoice_month         COLLATE utf8mb4_general_ci      FROM gcp_billing_raw
         ) t
         WHERE ym REGEXP '^[0-9]{6}$'
@@ -129,12 +131,23 @@
     <delete id="purgeNcpServiceMonth">
         DELETE FROM ncp_cost_service_month WHERE demand_month = #{yearMonth}
     </delete>
+    <!-- K8S/Object Storage 자원 월누적·일별 (invoice.getNCPInvoice 가 resource_month 를 포함하므로 아카이브 CSV 에 담긴 뒤 삭제됨) -->
+    <delete id="purgeNcpResourceMonth">
+        DELETE FROM ncp_cost_resource_month WHERE demand_month = #{yearMonth}
+    </delete>
+    <delete id="purgeNcpResourceDaily">
+        DELETE FROM ncp_cost_resource_daily WHERE demand_month = #{yearMonth}
+    </delete>
 
     <delete id="purgeAzureVmDaily">
         DELETE FROM azure_cost_vm_daily WHERE usage_date LIKE CONCAT(#{yearMonth},'%')
     </delete>
     <delete id="purgeAzureServiceDaily">
         DELETE FROM azure_cost_service_daily WHERE usage_date LIKE CONCAT(#{yearMonth},'%')
+    </delete>
+    <!-- K8S/Object Storage 자원 일별 (invoice.getAzureInvoice 가 이 테이블을 포함하므로 아카이브 CSV 에 담긴 뒤 삭제됨) -->
+    <delete id="purgeAzureResourceDaily">
+        DELETE FROM azure_cost_resource_daily WHERE usage_date LIKE CONCAT(#{yearMonth},'%')
     </delete>
 
 </mapper>

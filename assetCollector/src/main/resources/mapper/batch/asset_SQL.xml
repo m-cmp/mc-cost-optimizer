@@ -14,6 +14,7 @@
              , sm.instance_running_status AS instanceRunningStatus
           FROM servicegroup_meta sm
          WHERE sm.instance_running_status = 'Y'
+           AND sm.service_type = 'VM'   -- K8S/OBJECT_STORAGE 메타 행은 compute 메트릭 수집 대상이 아님
          LIMIT #{_skiprows}, #{_pagesize}
     </select>
 

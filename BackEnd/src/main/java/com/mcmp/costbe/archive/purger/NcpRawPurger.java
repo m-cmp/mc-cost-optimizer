@@ -5,7 +5,7 @@ import com.mcmp.costbe.archive.model.Csp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/** NCP: vm_month + vm_daily + service_month 3테이블 원자적 DELETE(@Transactional in DAO). */
+/** NCP: vm_month + vm_daily + service_month + resource_month + resource_daily(K8S/Object Storage) 5테이블 원자적 DELETE(@Transactional in DAO). */
 @Component
 @RequiredArgsConstructor
 public class NcpRawPurger extends AbstractRawPurger {

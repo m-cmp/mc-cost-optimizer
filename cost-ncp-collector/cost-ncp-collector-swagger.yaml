@@ -28,6 +28,17 @@ paths:
             '*/*':
               schema:
                 type: "string"
+  /api/batch/ncp/resource:
+    get:
+      summary: "NCP NKS 클러스터·Object Storage 의 이 달의 월간 이용 누적금액을 계약 단위로 수집한다. (ncp_cost_resource_month / _daily)"
+      operationId: "batchNcpResource"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
   /api/ncp/budget/test:
     get:
       summary: "이번달 비용이 설정한 예산을 초과하는지 확인하는 테스트용 API."

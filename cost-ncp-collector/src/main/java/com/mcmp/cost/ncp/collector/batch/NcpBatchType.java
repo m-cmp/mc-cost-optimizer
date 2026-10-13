@@ -7,6 +7,7 @@ public enum NcpBatchType {
     // 새로운 배치가 생기면 여기에 추가
     NCP_COST_SERVICE(NcpBatchConstants.NCP_COST_SERVICE_JOB, "Ncp Cost Service"),
     NCP_COST_VM(NcpBatchConstants.NCP_COST_VM_JOB, "Ncp Cost Vm"),
+    NCP_COST_RESOURCE(NcpBatchConstants.NCP_COST_RESOURCE_JOB, "Ncp Cost Resource"),
     ;
 
     private final String jobBeanName;

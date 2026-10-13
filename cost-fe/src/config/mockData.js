@@ -48,34 +48,41 @@ export const billingAsset = {
   Data: {
     billingAsset: [
       {
-        familyProductCode: "Virtual Machine",
+        familyProductCode: "VM",
         childProductCode: [
-          {
-            childProductCode: "AmazonEC2",
-            unit: 116,
-            bill: 100.4075592312,
-          },
+          { childProductCode: "VM", csp: "AWS", unit: 3, bill: 65.6412 },
+          { childProductCode: "VM", csp: "AZURE", unit: 1, bill: 20.1 },
+          { childProductCode: "VM", csp: "NCP", unit: 1, bill: 14.6 },
         ],
-        totalUnit: 116,
-        totalCost: 100.4075592312,
+        totalUnit: 5,
+        totalCost: 100.3412,
       },
       {
-        familyProductCode: "Storage",
-        childProductCode: [],
-        totalUnit: 0,
-        totalCost: 0.0,
+        familyProductCode: "K8S",
+        childProductCode: [
+          { childProductCode: "K8S", csp: "AWS", unit: 2, bill: 26.0 },
+          { childProductCode: "K8S", csp: "GCP", unit: 1, bill: 12.0 },
+        ],
+        totalUnit: 3,
+        totalCost: 38.0,
       },
       {
-        familyProductCode: "Database",
-        childProductCode: [],
-        totalUnit: 0,
-        totalCost: 0.0,
+        familyProductCode: "Object Storage",
+        childProductCode: [
+          { childProductCode: "Object Storage", csp: "AWS", unit: 1, bill: 1.75 },
+          { childProductCode: "Object Storage", csp: "AZURE", unit: 1, bill: 3.5 },
+          { childProductCode: "Object Storage", csp: "GCP", unit: 1, bill: 2.25 },
+        ],
+        totalUnit: 3,
+        totalCost: 7.5,
       },
       {
-        familyProductCode: "LB",
-        childProductCode: [],
-        totalUnit: 0,
-        totalCost: 0.0,
+        familyProductCode: "Others",
+        childProductCode: [
+          { childProductCode: "Others", csp: "GCP", unit: 2, bill: 3.75 },
+        ],
+        totalUnit: 2,
+        totalCost: 3.75,
       },
     ],
   },

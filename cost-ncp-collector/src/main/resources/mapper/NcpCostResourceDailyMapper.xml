@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcmp.cost.ncp.collector.mapper.NcpCostResourceDailyMapper">
+
+    <sql id="resourceCols">
+        member_no, demand_month, region_code, resource_type,
+        demand_type_code, demand_type_name, demand_type_detail_code, demand_type_detail_name,
+        contract_no, product_code, product_name, instance_no, instance_name,
+        resource_id, resource_name, resource_id_source,
+        usage_unit_code, usage_unit_name, product_price, unit_usage_quantity, total_unit_usage_quantity,
+        use_amount, demand_amount, write_date, pay_currency
+    </sql>
+
+    <!-- UNIQUE (member_no, demand_month, resource_type, resource_id, region_code, demand_type_detail_code, contract_no, snapshot_date) 가 dedupe -->
+    <insert id="insertResourceMonthIgnore">
+        INSERT IGNORE INTO ncp_cost_resource_month (
+            created, updated, <include refid="resourceCols"/>, snapshot_date
+        ) VALUES (
+            NOW(), NOW(),
+            #{row.memberNo}, #{row.demandMonth}, #{row.regionCode}, #{row.resourceType},
+            #{row.demandTypeCode}, #{row.demandTypeName}, #{row.demandTypeDetailCode}, #{row.demandTypeDetailName},
+            #{row.contractNo}, #{row.productCode}, #{row.productName}, #{row.instanceNo}, #{row.instanceName},
+            #{row.resourceId}, #{row.resourceName}, #{row.resourceIdSource},
+            #{row.usageUnitCode}, #{row.usageUnitName}, #{row.productPrice}, #{row.unitUsageQuantity}, #{row.totalUnitUsageQuantity},
+            #{row.useAmount}, #{row.demandAmount}, #{row.writeDate}, #{row.payCurrency},
+            #{row.snapshotDate}
+        )
+    </insert>
+
+    <!-- NcpCostVmDailyMapper.insertDailyCost 와 동일한 전일 차분. 조인 키만 자원 키로 확장. -->
+    <insert id="insertDailyCost">
+        INSERT IGNORE INTO ncp_cost_resource_daily (
+            created, updated, <include refid="resourceCols"/>, target_date, daily_charge_amount
+        )
+        SELECT
+            NOW(), NOW(),
+            today.member_no, today.demand_month, today.region_code, today.resource_type,
+            today.demand_type_code, today.demand_type_name, today.demand_type_detail_code, today.demand_type_detail_name,
+            today.contract_no, today.product_code, today.product_name, today.instance_no, today.instance_name,
+            today.resource_id, today.resource_name, today.resource_id_source,
+            today.usage_unit_code, today.usage_unit_name, today.product_price, today.unit_usage_quantity, today.total_unit_usage_quantity,
+            today.use_amount, today.demand_amount, today.write_date, today.pay_currency,
+            today.snapshot_date AS target_date,
+            today.demand_amount - COALESCE(yesterday.demand_amount, 0) AS daily_charge_amount
+        FROM ncp_cost_resource_month today
+        LEFT JOIN ncp_cost_resource_month yesterday
+               ON yesterday.member_no               = today.member_no
+              AND yesterday.demand_month            = today.demand_month
+              AND yesterday.resource_type           = today.resource_type
+              AND yesterday.resource_id             = today.resource_id
+              AND yesterday.region_code             = today.region_code
+              AND yesterday.demand_type_detail_code = today.demand_type_detail_code
+              AND yesterday.contract_no             = today.contract_no
+              AND yesterday.snapshot_date           = today.snapshot_date - INTERVAL 1 DAY
+        WHERE today.member_no               = #{row.memberNo}
+          AND today.demand_month            = #{row.demandMonth}
+          AND today.resource_type           = #{row.resourceType}
+          AND today.resource_id             = #{row.resourceId}
+          AND today.region_code             = #{row.regionCode}
+          AND today.demand_type_detail_code = #{row.demandTypeDetailCode}
+          AND today.contract_no             = #{row.contractNo}
+          AND today.snapshot_date           = #{targetDate}
+    </insert>
+
+    <select id="selectResolvedResourceId" resultType="string">
+        SELECT resource_id
+          FROM ncp_cost_resource_month
+         WHERE member_no = #{memberNo}
+           AND instance_no = #{instanceNo}
+           AND resource_id_source = 'NKS_UUID'
+         ORDER BY id DESC
+         LIMIT 1
+    </select>
+</mapper>

@@ -10,6 +10,7 @@
         FROM servicegroup_meta
         WHERE csp_type = 'AZURE'
           AND csp_account = #{subscriptionId}
+          AND service_type = 'VM'   -- K8S(AKS)/OBJECT_STORAGE 메타 행 제외
         LIMIT 1
     </select>
 
@@ -21,6 +22,7 @@
         FROM servicegroup_meta
         WHERE csp_type = 'AZURE'
           AND csp_instanceid COLLATE utf8mb4_unicode_520_ci = #{resourceId}
+          AND service_type = 'VM'   -- K8S(AKS)/OBJECT_STORAGE 메타 행 제외
         LIMIT 1
     </select>
 

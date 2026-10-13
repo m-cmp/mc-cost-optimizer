@@ -4,6 +4,9 @@ public class NcpBatchConstants {
     public static final String NCP_COST_VM_JOB = "ncpCostVmJob";
     public static final String NCP_COST_SERVICE_JOB = "ncpCostServiceJob";
 
+    public static final String NCP_COST_RESOURCE_JOB = "ncpCostResourceJob";
+
     public static final String NCP_COST_VM_STEP = "ncpCostVmStep";
     public static final String NCP_COST_SERVICE_STEP = "ncpCostServiceStep";
+    public static final String NCP_COST_RESOURCE_STEP = "ncpCostResourceStep";
 }
