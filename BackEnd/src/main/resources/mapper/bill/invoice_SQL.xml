@@ -245,9 +245,10 @@
              , sm.csp_type                       AS csp
              , SUM(co.lineitem_unblendedcost)    AS bill
              , co.lineitem_resourceid            AS resourceID
+             , sm.service_type                   AS serviceType
           FROM tbl_table_billing_detail_${year_month} co
          INNER JOIN (
-               SELECT DISTINCT csp_instanceid, csp_type, service_cd
+               SELECT DISTINCT csp_instanceid, csp_type, service_cd, service_type
                  FROM servicegroup_meta
                 WHERE csp_type = 'AWS'
                ) sm
@@ -265,7 +266,7 @@
                <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AWS')">
            AND 1=0
                </if>
-         GROUP BY co.lineitem_usageaccountid, co.lineitem_productcode, sm.csp_type, co.lineitem_resourceid
+         GROUP BY co.lineitem_usageaccountid, co.lineitem_productcode, sm.csp_type, co.lineitem_resourceid, sm.service_type
     </select>
 
     <select id="getNCPInvoice"
@@ -277,6 +278,7 @@
             , 'NCP' AS csp
             , nvd_latest.demand_amount / ${krwPerUsd} AS bill
             , nvd_latest.instance_no AS resourceID
+            , sm.service_type COLLATE utf8mb4_unicode_ci AS serviceType
         FROM (
             SELECT n1.instance_no, n1.member_no, n1.demand_amount
             FROM ncp_cost_vm_month n1
@@ -315,6 +317,7 @@
             , 'NCP' AS csp
             , SUM(nr_latest.demand_amount) / ${krwPerUsd} AS bill
             , nr_latest.resource_id COLLATE utf8mb4_unicode_ci AS resourceID
+            , sm.service_type COLLATE utf8mb4_unicode_ci AS serviceType
          FROM (
               SELECT n1.resource_id, n1.resource_type, n1.member_no, n1.demand_month, n1.demand_amount
                 FROM ncp_cost_resource_month n1
@@ -343,7 +346,7 @@
             <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
             AND 1=0
             </if>
-        GROUP BY nr_latest.member_no, nr_latest.resource_type, nr_latest.resource_id
+        GROUP BY nr_latest.member_no, nr_latest.resource_type, nr_latest.resource_id, sm.service_type
 
         UNION ALL
 
@@ -353,6 +356,7 @@
             , 'NCP' AS csp
             , SUM(nro.demand_amount) / ${krwPerUsd} AS bill
             , nro.resource_id COLLATE utf8mb4_unicode_ci AS resourceID
+            , 'OBJECT_STORAGE' COLLATE utf8mb4_unicode_ci AS serviceType
          FROM (
               SELECT o1.resource_id, o1.resource_type, o1.member_no, o1.demand_month, o1.demand_amount
                 FROM ncp_cost_resource_month o1
@@ -393,6 +397,7 @@
              , 'AZURE'                         AS csp
              , SUM(acvd.pre_tax_cost) / ${krwPerUsd} AS bill
              , acvd.resource_id                AS resourceID
+             , sm.service_type COLLATE utf8mb4_unicode_ci AS serviceType
           FROM azure_cost_vm_daily acvd
          INNER JOIN servicegroup_meta sm
             ON acvd.resource_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
@@ -407,7 +412,7 @@
                <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
            AND 1=0
                </if>
-         GROUP BY acvd.tenant_id, acvd.vm_id, acvd.resource_id
+         GROUP BY acvd.tenant_id, acvd.vm_id, acvd.resource_id, sm.service_type
 
         UNION ALL
 
@@ -415,13 +420,14 @@
         SELECT acr.tenant_id COLLATE utf8mb4_unicode_ci     AS accountID
              , CASE acr.resource_type
                  WHEN 'K8S' THEN 'Azure Kubernetes Service'
-                 WHEN 'K8S_NODE' THEN 'Azure Kubernetes Service'  -- AKS 노드 스케일셋도 AKS 로 합산
+                 WHEN 'K8S_NODE' THEN 'Virtual Machines'  -- AKS 노드 스케일셋: Invoice 는 청구서 서비스명 그대로(AWS AmazonEC2, GCP Compute Engine, NCP Server 와 같은 기준)
                  WHEN 'OBJECT_STORAGE' THEN 'Storage'
                  ELSE acr.resource_type
                END COLLATE utf8mb4_unicode_ci                AS productID
              , 'AZURE'                                       AS csp
              , SUM(acr.pre_tax_cost) / ${krwPerUsd}          AS bill
              , acr.resource_id COLLATE utf8mb4_unicode_ci   AS resourceID
+             , sm.service_type COLLATE utf8mb4_unicode_ci   AS serviceType
           FROM azure_cost_resource_daily acr
          INNER JOIN servicegroup_meta sm
             ON LOWER(acr.resource_id) COLLATE utf8mb4_unicode_ci = LOWER(sm.csp_instanceid) COLLATE utf8mb4_unicode_ci
@@ -437,7 +443,7 @@
                <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
            AND 1=0
                </if>
-         GROUP BY acr.tenant_id, acr.resource_type, acr.resource_id
+         GROUP BY acr.tenant_id, acr.resource_type, acr.resource_id, sm.service_type
 
         UNION ALL
 
@@ -447,6 +453,7 @@
              , 'AZURE'                                       AS csp
              , SUM(acr.pre_tax_cost) / ${krwPerUsd}          AS bill
              , acr.resource_id COLLATE utf8mb4_unicode_ci   AS resourceID
+             , 'OBJECT_STORAGE' COLLATE utf8mb4_unicode_ci AS serviceType
           FROM azure_cost_resource_daily acr
          WHERE acr.resource_type = 'OBJECT_STORAGE'
            AND LOWER(acr.resource_name) IN (${azureObjStgAccounts})
@@ -474,6 +481,7 @@
              , 'GCP'                             AS csp
              , SUM(raw.cost) / ${krwPerUsd}      AS bill
              , raw.csp_instanceid                AS resourceID
+             , sm.service_type                   AS serviceType
           FROM gcp_billing_raw raw
          INNER JOIN servicegroup_meta sm
             ON sm.csp_type = 'GCP'
@@ -488,6 +496,6 @@
                <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('GCP')">
            AND 1=0
                </if>
-         GROUP BY raw.billing_account_id, raw.service_description, raw.csp_instanceid
+         GROUP BY raw.billing_account_id, raw.service_description, raw.csp_instanceid, sm.service_type
     </select>
 </mapper>

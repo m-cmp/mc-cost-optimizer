@@ -5,17 +5,19 @@ import com.mcmp.cost.ncp.collector.dto.Contract;
 import com.mcmp.cost.ncp.collector.dto.ContractDemandCost;
 import com.mcmp.cost.ncp.collector.dto.ContractProduct;
 import com.mcmp.cost.ncp.collector.dto.NksCluster;
+import com.mcmp.cost.ncp.collector.dto.NksClusterIndex;
 import com.mcmp.cost.ncp.collector.entity.NcpCostResourceMonth;
 
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Map;
 import java.util.function.Function;
 
 /**
  * ContractDemandCost → NcpCostResourceMonth 순수 매핑 (vserver 상세조회 없음).
  *
- * <p>resource_id 결정 순서: K8S 는 NKS 목록의 uuid(NKS_UUID) → 과거 적재 행에서 uuid 복원(NKS_UUID) → instanceNo(INSTANCE_NO) → contractNo(CONTRACT_NO).
+ * <p>resource_id 결정 순서: K8S 는 NKS 목록의 uuid(NKS_UUID: instanceNo 로, 없으면 contract.instanceName = 클러스터 이름으로)
+ * → 과거 적재 행에서 uuid 복원(NKS_UUID) → instanceNo(INSTANCE_NO) → contractNo(CONTRACT_NO).
+ * NKS 관리비(VNKS) 행의 instanceNo 는 마스터 인스턴스 번호라 클러스터 목록의 instanceNo(0)와 안 맞아 이름으로 찾는다(2026-10-14 실응답).
  * OBJECT_STORAGE 는 계정 단위 과금(OSSM)이라 계약 정보가 없는 행이 오므로, 그때는 계정 번호(MEMBER_NO)를 resource_id 로 쓴다.
  * Tumblebug 은 NKS 클러스터를 uuid 로 알고 있어서 NKS_UUID 만 servicegroup_meta 와 1:1 매칭된다.
  */
@@ -26,7 +28,7 @@ public final class NcpResourceCostMapper {
     private NcpResourceCostMapper() {}
 
     public static NcpCostResourceMonth toEntity(ContractDemandCost c, String resourceType,
-                                                Map<String, NksCluster> nksByInstanceNo,
+                                                NksClusterIndex nks,
                                                 Function<String, String> fallbackUuidLookup) {
         Contract contract = c.getContract();
         ContractProduct product = (contract != null && contract.getContractProductList() != null && !contract.getContractProductList().isEmpty())
@@ -38,10 +40,10 @@ public final class NcpResourceCostMapper {
         String resourceId;
         String resourceName;
         IdSource source;
-        if ("K8S".equals(resourceType) && instanceNo != null && nksByInstanceNo != null && nksByInstanceNo.containsKey(instanceNo)) {
-            NksCluster k = nksByInstanceNo.get(instanceNo);
-            resourceId = k.getUuid();
-            resourceName = k.getName();
+        NksCluster cluster = "K8S".equals(resourceType) && nks != null ? findCluster(nks, instanceNo, instanceName) : null;
+        if (cluster != null) {
+            resourceId = cluster.getUuid();
+            resourceName = cluster.getName();
             source = IdSource.NKS_UUID;
         } else if ("K8S".equals(resourceType) && instanceNo != null && fallbackUuidLookup != null && fallbackUuidLookup.apply(instanceNo) != null) {
             resourceId = fallbackUuidLookup.apply(instanceNo);   // 삭제된 클러스터: 과거 행에서 복원
@@ -98,6 +100,12 @@ public final class NcpResourceCostMapper {
                 .snapshotDate(writeDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
                 .payCurrency(c.getPayCurrency() != null && c.getPayCurrency().getCode() != null ? c.getPayCurrency().getCode() : "KRW")
                 .build();
+    }
+
+    /** instanceNo 로 먼저 찾고, 없으면 계약의 instanceName(= NKS 클러스터 이름)으로 찾는다. */
+    static NksCluster findCluster(NksClusterIndex nks, String instanceNo, String instanceName) {
+        NksCluster byNo = nks.findByInstanceNo(instanceNo);
+        return byNo != null ? byNo : nks.findByName(instanceName);
     }
 
     static String code(CommonCode cc) { return cc == null ? null : trimToNull(cc.getCode()); }

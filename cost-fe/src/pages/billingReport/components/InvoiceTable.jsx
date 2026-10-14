@@ -28,6 +28,17 @@ const ACCOUNT_LEVEL_STORAGE = [
 const findAccountLevel = (row) =>
   ACCOUNT_LEVEL_STORAGE.find((r) => r.csp === row.csp && r.productID === row.productID);
 
+// K8s cluster cost rows keep the CSP's billing service name, so worker nodes appear under the
+// same compute service as plain VMs (AmazonEC2, Virtual Machines, Compute Engine, Server(VPC)).
+// BE sends the meta category (serviceType); mark K8S rows that are not the cluster fee itself.
+const K8S_CLUSTER_PRODUCTS = ["AmazonEKS", "Azure Kubernetes Service", "Kubernetes Engine", "Kubernetes Service"];
+const K8S_NODE_PRODUCTS = ["AmazonEC2", "Virtual Machines", "Compute Engine", "Server(VPC)"];
+
+const k8sLabel = (row) => {
+  if (row.serviceType !== "K8S" || K8S_CLUSTER_PRODUCTS.includes(row.productID)) return null;
+  return K8S_NODE_PRODUCTS.includes(row.productID) ? "K8s node" : "K8s";
+};
+
 export default function InvoiceTable({ invoice, months = [], archiving, onArchive }) {
   const tableRef = useRef(null);
   const tabulatorInstance = useRef(null);
@@ -85,7 +96,9 @@ export default function InvoiceTable({ invoice, months = [], archiving, onArchiv
           formatter: (cell) => {
             const row = cell.getRow().getData();
             const value = cell.getValue() ?? "";
-            return findAccountLevel(row) ? `${value} (account total)` : value;
+            if (findAccountLevel(row)) return `${value} (account total)`;
+            const k8s = k8sLabel(row);
+            return k8s ? `${value} (${k8s})` : value;
           },
         },
         {

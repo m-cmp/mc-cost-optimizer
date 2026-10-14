@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.List;
 
@@ -46,12 +47,24 @@ public class GcpBillingJobConfig {
     private final GcpRightSizeService gcpRightSizeService;
 
     // ── Reader ────────────────────────────────────────────────────────────
+    /**
+     * date 를 마지막 날로 최근 lookbackDays 일(UTC)을 다시 조회한다. 하루치를 한 번만 가져오면 그 시점에 아직
+     * 내보내지지 않은 마지막 몇 시간이 영영 빠진다(2026-10 실측: 매일 14~19시 UTC 이후 누락).
+     * 조회에 성공해 행이 있을 때만 같은 기간의 기존 행을 지우고 다시 적재한다(조회 실패·빈 응답이면 기존 데이터 유지).
+     */
     @Bean
     @StepScope
     public ListItemReader<Map<String, Object>> gcpBillingItemReader(
-            @Value("#{jobParameters['date']}") String date) {
-        List<Map<String, Object>> rows = billingQueryService.getRawBillingByDate(date);
-        log.info("BigQuery 조회 완료 - date: {}, 건수: {}", date, rows.size());
+            @Value("#{jobParameters['date']}") String date,
+            @Value("${gcpBillingLookbackDays:3}") int lookbackDays) {
+        LocalDate lastDay = LocalDate.parse(date);
+        LocalDate firstDay = lastDay.minusDays(Math.max(1, lookbackDays) - 1L);
+        List<Map<String, Object>> rows = billingQueryService.getRawBillingByRange(firstDay, lastDay);
+        log.info("BigQuery 조회 완료 - 기간: {} ~ {}, 건수: {}", firstDay, lastDay, rows.size());
+        if (!rows.isEmpty()) {
+            int deleted = gcpBillingDao.deleteByUsageRange(firstDay + " 00:00:00", lastDay.plusDays(1) + " 00:00:00");
+            log.info("gcp_billing_raw 재적재 - 기존 {}건 삭제 후 {}건 적재 (기간: {} ~ {})", deleted, rows.size(), firstDay, lastDay);
+        }
         return new ListItemReader<>(rows);
     }
 
@@ -71,8 +84,11 @@ public class GcpBillingJobConfig {
     @Bean
     @StepScope
     public UpsertMonthlyTasklet upsertMonthlyTasklet(
-            @Value("#{jobParameters['date']}") String date) {
-        return new UpsertMonthlyTasklet(gcpBillingDao, date);
+            @Value("#{jobParameters['date']}") String date,
+            @Value("${gcpBillingLookbackDays:3}") int lookbackDays) {
+        // 재조회 기간이 전달에 걸치면(월초) 전달 합계도 다시 계산
+        String firstDay = LocalDate.parse(date).minusDays(Math.max(1, lookbackDays) - 1L).toString();
+        return new UpsertMonthlyTasklet(gcpBillingDao, firstDay, date);
     }
 
     @Bean
@@ -100,7 +116,7 @@ public class GcpBillingJobConfig {
     public Step billingCollectStep(JobRepository jobRepository, PlatformTransactionManager tm) {
         return new StepBuilder("billingCollectStep", jobRepository)
                 .<Map<String, Object>, GcpBillingRawDto>chunk(CHUNK_SIZE, tm)
-                .reader(gcpBillingItemReader(null))
+                .reader(gcpBillingItemReader(null, 0))  // @StepScope: 실제 값은 jobParameters·설정에서 주입
                 .processor(gcpBillingItemProcessor())
                 .writer(gcpBillingItemWriter())
                 .build();
@@ -109,7 +125,7 @@ public class GcpBillingJobConfig {
     @Bean
     public Step upsertMonthlyStep(JobRepository jobRepository, PlatformTransactionManager tm) {
         return new StepBuilder("upsertMonthlyStep", jobRepository)
-                .tasklet(upsertMonthlyTasklet(null), tm)
+                .tasklet(upsertMonthlyTasklet(null, 0), tm)
                 .build();
     }
 
