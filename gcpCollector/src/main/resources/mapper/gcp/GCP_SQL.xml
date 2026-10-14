@@ -357,6 +357,13 @@
 
     <!-- ===================== 예산 관리 끝 ===================== -->
 
+    <!-- 재조회 기간의 기존 raw 행 삭제. 조회 조건(usage_start_time, UTC)과 같은 기준이라 다시 적재하면 중복 없이 대체된다 -->
+    <delete id="deleteByUsageRange" parameterType="map">
+        DELETE FROM gcp_billing_raw
+         WHERE usage_start_time &gt;= #{start}
+           AND usage_start_time &lt;  #{end}
+    </delete>
+
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO gcp_billing_raw (
              created

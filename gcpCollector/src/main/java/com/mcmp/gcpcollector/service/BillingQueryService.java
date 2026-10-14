@@ -24,8 +24,17 @@ public class BillingQueryService {
      */
     public List<Map<String, Object>> getRawBillingByDate(String date) {
         LocalDate parsedDate = LocalDate.parse(date);   // 형식 검증: 실패 시 DateTimeParseException
-        String startDate = parsedDate.toString();
-        String endDate   = parsedDate.plusDays(1).toString();
+        return getRawBillingByRange(parsedDate, parsedDate);
+    }
+
+    /**
+     * [firstDay, lastDay] (UTC 날짜, 양끝 포함) 의 raw 빌링 데이터 조회.
+     * 빌링 내보내기는 몇 시간 늦게 채워지므로 배치는 최근 며칠을 매번 다시 조회한다(늦게 들어온 시간대 보정).
+     */
+    public List<Map<String, Object>> getRawBillingByRange(LocalDate firstDay, LocalDate lastDay) {
+        String date      = firstDay.equals(lastDay) ? firstDay.toString() : firstDay + "~" + lastDay;
+        String startDate = firstDay.toString();
+        String endDate   = lastDay.plusDays(1).toString();
         String fullTable = getFullTableName();           // 설정값에서 오므로 신뢰 가능
         boolean detailed = isDetailedExport(bigQueryConfig.getTable());
 

@@ -28,7 +28,7 @@
         )
     </insert>
 
-    <!-- NcpCostVmDailyMapper.insertDailyCost 와 동일한 전일 차분. 조인 키만 자원 키로 확장. -->
+    <!-- NcpCostVmDailyMapper.insertDailyCost 와 동일한 차분(같은 달의 직전 스냅샷 기준). 비교 키만 자원 키로 확장. -->
     <insert id="insertDailyCost">
         INSERT IGNORE INTO ncp_cost_resource_daily (
             created, updated, <include refid="resourceCols"/>, target_date, daily_charge_amount
@@ -42,17 +42,22 @@
             today.usage_unit_code, today.usage_unit_name, today.product_price, today.unit_usage_quantity, today.total_unit_usage_quantity,
             today.use_amount, today.demand_amount, today.write_date, today.pay_currency,
             today.snapshot_date AS target_date,
-            today.demand_amount - COALESCE(yesterday.demand_amount, 0) AS daily_charge_amount
+            -- 수집이 빠진 날이 있어도 누적이 다시 더해지지 않도록 "정확히 어제" 대신 같은 달의 직전 스냅샷과 비교
+            today.demand_amount - COALESCE((
+                SELECT prev.demand_amount
+                  FROM ncp_cost_resource_month prev
+                 WHERE prev.member_no               = today.member_no
+                   AND prev.demand_month            = today.demand_month
+                   AND prev.resource_type           = today.resource_type
+                   AND prev.resource_id             = today.resource_id
+                   AND prev.region_code             = today.region_code
+                   AND prev.demand_type_detail_code = today.demand_type_detail_code
+                   AND prev.contract_no             = today.contract_no
+                   AND prev.snapshot_date           &lt; today.snapshot_date
+                 ORDER BY prev.snapshot_date DESC, prev.id DESC
+                 LIMIT 1
+            ), 0) AS daily_charge_amount
         FROM ncp_cost_resource_month today
-        LEFT JOIN ncp_cost_resource_month yesterday
-               ON yesterday.member_no               = today.member_no
-              AND yesterday.demand_month            = today.demand_month
-              AND yesterday.resource_type           = today.resource_type
-              AND yesterday.resource_id             = today.resource_id
-              AND yesterday.region_code             = today.region_code
-              AND yesterday.demand_type_detail_code = today.demand_type_detail_code
-              AND yesterday.contract_no             = today.contract_no
-              AND yesterday.snapshot_date           = today.snapshot_date - INTERVAL 1 DAY
         WHERE today.member_no               = #{row.memberNo}
           AND today.demand_month            = #{row.demandMonth}
           AND today.resource_type           = #{row.resourceType}
