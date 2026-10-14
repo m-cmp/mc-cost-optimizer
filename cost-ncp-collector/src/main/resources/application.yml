@@ -56,7 +56,7 @@ ncp:
   resource-collect:
     types:
       - resource-type: K8S
-        demand-type-codes: ${NCP_K8S_DEMAND_TYPE_CODES:}
+        demand-type-codes: ${NCP_K8S_DEMAND_TYPE_CODES:VNKS}   # 청구 유형 코드 VNKS (상세 MSTND = 마스터 요금). 워커 노드는 Server(VSVR)로 따로 청구되어 겹치지 않음
         resolve-nks-uuid: true
       - resource-type: OBJECT_STORAGE
         demand-type-codes: ${NCP_OBJSTG_DEMAND_TYPE_CODES:OSSM}   # 청구 유형 코드 OSSM (OBJST 는 계약 유형 코드라 이 필터에 안 걸림)

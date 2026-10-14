@@ -7,7 +7,7 @@ import com.mcmp.cost.ncp.collector.dto.ContractDemandCost;
 import com.mcmp.cost.ncp.collector.dto.ContractDemandCostList;
 import com.mcmp.cost.ncp.collector.dto.ContractDemandCostListWrapper;
 import com.mcmp.cost.ncp.collector.dto.NcpApiCredentialDto;
-import com.mcmp.cost.ncp.collector.dto.NksCluster;
+import com.mcmp.cost.ncp.collector.dto.NksClusterIndex;
 import com.mcmp.cost.ncp.collector.entity.NcpCostResourceMonth;
 import com.mcmp.cost.ncp.collector.mapper.NcpCostResourceDailyMapper;
 import com.mcmp.cost.ncp.collector.properties.NcpResourceCollectProperties;
@@ -50,7 +50,7 @@ public class NcpCostResourceServiceImpl implements NcpCostResourceService {
         String yearMonth = DateUtils.getYearMonth(today);          // 1일이면 전월 (VM 경로와 동일)
 
         List<NcpCostResourceMonth> out = new ArrayList<>();
-        Map<String, Map<String, NksCluster>> nksCache = new HashMap<>();   // regionCode → (instanceNo → cluster), lazy
+        Map<String, NksClusterIndex> nksCache = new HashMap<>();   // regionCode → 클러스터 인덱스(instanceNo·이름), lazy
 
         for (NcpResourceCollectProperties.TypeSpec spec : properties.getTypes()) {
             List<String[]> filters = buildFilters(spec);
@@ -76,9 +76,9 @@ public class NcpCostResourceServiceImpl implements NcpCostResourceService {
                         log.warn("[{}] contract 가 없는 행은 건너뜁니다. memberNo={}, demandMonth={}", spec.getResourceType(), c.getMemberNo(), c.getDemandMonth());
                         continue;
                     }
-                    Map<String, NksCluster> nks = spec.isResolveNksUuid()
-                            ? nksCache.computeIfAbsent(regionOf(c), r -> nksClusterClient.listByInstanceNo(restClient, r))
-                            : Map.of();
+                    NksClusterIndex nks = spec.isResolveNksUuid()
+                            ? nksCache.computeIfAbsent(regionOf(c), r -> nksClusterClient.list(restClient, r))
+                            : NksClusterIndex.EMPTY;
                     try {
                         NcpCostResourceMonth entity = NcpResourceCostMapper.toEntity(c, spec.getResourceType(), nks,
                                 instNo -> spec.isResolveNksUuid() ? mapper.selectResolvedResourceId(c.getMemberNo(), instNo) : null);
