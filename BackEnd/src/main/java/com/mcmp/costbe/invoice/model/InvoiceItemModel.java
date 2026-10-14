@@ -15,4 +15,6 @@ public class InvoiceItemModel {
     private double bill;
     @Schema(description = "리소스 고유 ID", example = "TEST-RESOURCE-ID")
     private String resourceID;
+    @Schema(description = "메타 분류(servicegroup_meta.service_type). K8S 이면서 K8s 서비스가 아닌 줄(AmazonEC2, Compute Engine 등)은 클러스터 노드 비용", example = "K8S")
+    private String serviceType;
 }
