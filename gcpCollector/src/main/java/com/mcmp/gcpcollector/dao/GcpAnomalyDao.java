@@ -1,7 +1,7 @@
 package com.mcmp.gcpcollector.dao;
 
 import com.mcmp.gcpcollector.dto.GcpAnomalyDto;
-import com.mcmp.gcpcollector.dto.GcpProjectCostAnalysisDto;
+import com.mcmp.gcpcollector.dto.GcpVmCostAnalysisDto;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,8 +15,8 @@ public class GcpAnomalyDao {
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
-    public List<GcpProjectCostAnalysisDto> getGcpAbnormalCosts(Map<String, Object> param) {
-        return sqlSessionTemplate.selectList("gcp.getGcpAbnormalCosts", param);
+    public List<GcpVmCostAnalysisDto> getGcpVmAbnormalCosts(Map<String, Object> param) {
+        return sqlSessionTemplate.selectList("gcp.getGcpVmAbnormalCosts", param);
     }
 
     public void insertDailyAbnormal(GcpAnomalyDto dto) {

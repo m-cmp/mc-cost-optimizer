@@ -137,8 +137,8 @@ public class GcpRightSizeService {
         String recommendSpec = vm.getRecommendSpecName() != null ? vm.getRecommendSpecName() : "unknown";
 
         String note = String.format(
-                "GCP VM(%s)의 지난 4일 CPU 사용률 기준으로 %s 사이징을 권장합니다. " +
-                "(평균: %.1f%%, 최대: %.1f%%) 현재 스펙: %s → 추천 스펙: %s",
+                "GCP VM (%s) is recommended for %s sizing based on the past 4 days CPU utilization " +
+                "(average: %.1f%%, maximum: %.1f%%). Current spec: %s → recommended spec: %s",
                 vm.getVmId(), vm.getRecommendType(),
                 vm.getAvg4DaysCpu(), vm.getMax4DaysCpu(),
                 currentSpec, recommendSpec);
@@ -156,7 +156,7 @@ public class GcpRightSizeService {
             } else {
                 double monthlySavings = (vm.getCurrentCostPerHour() - vm.getRecommendCostPerHour()) * 24 * 30;
                 if (monthlySavings > 0) {
-                    note += String.format(" 예상 월 절감액: $%.2f.", monthlySavings);
+                    note += String.format(" Estimated monthly savings: $%.2f.", monthlySavings);
                 }
             }
         }

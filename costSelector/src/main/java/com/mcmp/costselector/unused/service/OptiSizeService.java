@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -74,18 +72,16 @@ public class OptiSizeService {
 
         if(!"None".equals(resizingType)){
 
-            OptiSizeTargetMetaModel targetMeta = unusedSelectDao.getOptiSizeTargetMeta(rscStatus);
-            if(targetMeta != null){
+            // 현재 스펙/단가를 Tumblebug에서 직접 조회 (TASM 메타표 의존 제거).
+            // originUSD(현재 스펙 시간당 USD) = Tumblebug costPerHour. 기존 TASM APP.USD 와 동일 단위.
+            tumblebugClient.fillCurrentSpec(rscStatus);
+            Double originUSD = rscStatus.getCurrentCostPerHour();
 
-                Map<String, Object> paramMap = new HashMap<>();
-                paramMap.put("rscInfo", rscStatus);
-                paramMap.put("targetMeta", targetMeta);
-
+            {
                 OptiEC2SizeRstModel rcmdType = null;
                 switch (resizingType){
                     case "Up":
                     case "Down":
-                        tumblebugClient.fillCurrentSpec(rscStatus);
                         String tbbSpecName = tumblebugClient.recommendSpec(rscStatus, resizingType);
                         if (tbbSpecName != null) {
                             rcmdType = new OptiEC2SizeRstModel();
@@ -126,29 +122,15 @@ public class OptiSizeService {
                             .originType(rscStatus.getInstance_type())
                             .rcmdType(rcmdType.getInstType())
                             .planType(resizingType)
-                            .originUSD(targetMeta.getUsd())
+                            .originUSD(originUSD)
                             .rcmdUSD(rcmdType.getUsd())
                             .build();
-                    alarmNote = "인스턴스(" + rscStatus.getResource_id() + ")를 기존 타입 : "
-                            + rscStatus.getInstance_type() + "에서 추천 타입 : " + rcmdType.getInstType() + "으로 변경하는 것을 추천드립니다.";
-                } else if(rcmdType == null && !"Modernize".equals(resizingType)) {
-                    rcmdRst = InstOptiRcmdRst.builder()
-                            .createDT(ZonedDateTime.now().toLocalDate())
-                            .resourceID(rscStatus.getResource_id())
-                            .cspType(rscStatus.getCsp_type())
-                            .cspAccount(rscStatus.getCsp_account())
-                            .originType(rscStatus.getInstance_type())
-                            .rcmdType("None")
-                            .planType(resizingType)
-                            .originUSD(targetMeta.getUsd())
-                            .rcmdUSD(null)
-                            .build();
-                    alarmNote = "인스턴스(" + rscStatus.getResource_id() + ")를 기존 타입 : "
-                            + rscStatus.getInstance_type() + "에서 " + resizingType + "Sizing으로 변경하는 것을 추천드립니다.";
-                } else { // resizingType이 Modernize 이면서 추천 타입이 없을 때
+                    alarmNote = "Recommend resizing instance (" + rscStatus.getResource_id() + ") from current type "
+                            + rscStatus.getInstance_type() + " to recommended type " + rcmdType.getInstType() + ".";
+                } else { // 추천 타입이 없을 때 (Up/Down/Modernize 공통) - 알람 발송하지 않음
                     rcmdRst = null;
                     alarmNote = "";
-                    log.info("Instance size recommendation results : Modernize - Recommend type is None => Resource id : " + rscStatus.getResource_id());
+                    log.info("Instance size recommendation results : " + resizingType + " - Recommend type is None => Resource id : " + rscStatus.getResource_id());
                 }
 
                 if(rcmdRst != null){
@@ -164,6 +146,7 @@ public class OptiSizeService {
                             .urgency("Advise")
                             .plan(resizingType)
                             .note(alarmNote)
+                            .project_cd(rscStatus.getService_cd() != null ? rscStatus.getService_cd() : "default")
                             .build();
 
                     alarmService.sendAlarm(alarmReqModel);

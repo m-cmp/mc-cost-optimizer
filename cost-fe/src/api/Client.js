@@ -23,7 +23,7 @@ function getApiConfig() {
   return { API_BE_URL, API_ALARM_URL, USE_MOCK };
 }
 
-const { API_BE_URL, API_ALARM_URL, USE_MOCK } = getApiConfig();
+const { API_BE_URL, USE_MOCK } = getApiConfig();
 
 function createClient(baseURL, timeout = 5000) {
   const client = axios.create({ baseURL, timeout });
@@ -74,21 +74,35 @@ export const budgetClient = createClient(
   5000,
 );
 
+// 비용 인보이스 아카이빙 — S3 업로드/삭제라 타임아웃 여유
+export const archiveClient = createClient(
+  `${API_BE_URL}${BASE_PATH}/archive`,
+  30000,
+);
+
 // LLM recommender (port 9090, BE base path) — long timeout: each call hits an LLM
 export const llmClient = createClient(
   `${API_BE_URL}${BASE_PATH}/llm_recommender`,
   30000,
 );
 
-// Alarm Service API (port 9000)
-const ALERT_PATH = "/api/costopti/alert";
-export const alertClient = createClient(`${API_ALARM_URL}${ALERT_PATH}`, 20000);
+// Alarm Service API — BE(:9090) 리버스 프록시를 경유한다.
+// 브라우저가 알람 서비스(:9000) 의 자체 서명 인증서를 직접 만지면 iframe 안에서
+// ERR_CERT_AUTHORITY_INVALID 로 차단되므로, 이미 신뢰된 BE origin 으로 우회한다.
+// (BE 의 AlertProxyController 가 /api/costopti/be/alert/** -> 알람서비스로 포워딩)
+export const alertClient = createClient(`${API_BE_URL}${BASE_PATH}/alert`, 20000);
 
 // API Key Management
 export const apikeyClient = createClient(
   `${API_BE_URL}${BASE_PATH}/llm_recommender/apikey`,
   5000,
 );
+
+// CUR 자동 설정 — IAM/S3/CUR 생성 포함하므로 타임아웃 여유
+export const curSetupClient = createClient(`${API_BE_URL}/api/aws/cur`, 90000);
+
+// GCP 자동 설정 — BigQuery 탐색 포함하므로 타임아웃 여유
+export const gcpSetupClient = createClient(`${API_BE_URL}/api/gcp/setup`, 120000);
 
 // Export Mock mode (used in API files)
 export { USE_MOCK };

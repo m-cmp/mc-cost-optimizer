@@ -7,6 +7,7 @@ public enum AzureBatchType {
     // 새로운 배치가 생기면 여기에 추가
     AZURE_COST_SERVICE(AzureBatchConstants.AZURE_COST_SERVICE_JOB, "Azure Cost Service"),
     AZURE_COST_VM(AzureBatchConstants.AZURE_COST_VM_JOB, "Azure Cost Vm"),
+    AZURE_COST_RESOURCE(AzureBatchConstants.AZURE_COST_RESOURCE_JOB, "Azure Cost Resource"),
     ;
 
     private final String jobBeanName;

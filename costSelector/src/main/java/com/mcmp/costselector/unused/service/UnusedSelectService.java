@@ -104,6 +104,8 @@ public class UnusedSelectService {
                                 .account_id(rsStatus.getCsp_account())
                                 .urgency("Caution")
                                 .plan(plan)
+                                .note("Instance (" + rsStatus.getResource_id() + ") is suspected to be an unused resource and requires verification.")
+                                .project_cd(rsStatus.getService_cd() != null ? rsStatus.getService_cd() : "default")
                                 .build();
 
                         alarmService.sendAlarm(alarmReqModel);

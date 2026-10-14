@@ -37,44 +37,123 @@
 
         UNION ALL
 
-                <!-- NCP (VM별 월별 최신 누적 금액만 반영) -->
-        SELECT COALESCE(SUM(nvd_latest.demand_amount), 0) / ${krwPerUsd} AS bill
-              , nvd_latest.demand_month AS yearMonth
+                <!-- NCP (VM + K8S/Object Storage, 자원별 월별 최신 누적 금액만 반영 — (csp, yearMonth)당 1행 유지: FE 추이차트/예산이 월당 첫 행만 읽음) -->
+        SELECT COALESCE(SUM(ncp_data.bill), 0) AS bill
+              , ncp_data.yearMonth AS yearMonth
               , 'NCP' AS csp
         FROM (
-            SELECT n1.demand_month, n1.instance_no, n1.demand_amount
-            FROM ncp_cost_vm_month n1
+            -- VM (ncp_cost_vm_month)
+            SELECT nvd_latest.demand_month COLLATE utf8mb4_unicode_ci AS yearMonth
+                 , SUM(nvd_latest.demand_amount) / ${krwPerUsd} AS bill
+            FROM (
+                SELECT n1.demand_month, n1.instance_no, n1.demand_amount
+                FROM ncp_cost_vm_month n1
+                INNER JOIN (
+                    SELECT demand_month, instance_no, MAX(id) AS latest_id
+                    FROM ncp_cost_vm_month
+                    WHERE demand_month IN
+                        <foreach item="prevMonth" collection="prevMonths" open="(" separator="," close=")">
+                        #{prevMonth}
+                        </foreach>
+                    GROUP BY demand_month, instance_no
+                ) n2
+                ON n1.demand_month = n2.demand_month
+                AND n1.instance_no = n2.instance_no
+                AND n1.id = n2.latest_id
+            ) nvd_latest
+            INNER JOIN servicegroup_meta sm
+                ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+                AND sm.csp_type = 'NCP'
+            WHERE 1=1
+                <if test="selectedProjects != null and selectedProjects.size() > 0">
+                AND sm.service_cd IN
+                    <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                    #{selectedProject}
+                    </foreach>
+                </if>
+            GROUP BY nvd_latest.demand_month
+
+            UNION ALL
+
+            -- K8S/Object Storage (ncp_cost_resource_month, 자원·상세코드·계약별 최신 스냅샷)
+            SELECT nr_latest.demand_month COLLATE utf8mb4_unicode_ci AS yearMonth
+                 , SUM(nr_latest.demand_amount) / ${krwPerUsd} AS bill
+            FROM (
+            SELECT n1.demand_month, n1.resource_id, n1.demand_amount
+            FROM ncp_cost_resource_month n1
             INNER JOIN (
-                SELECT demand_month, instance_no, MAX(id) AS latest_id
-                FROM ncp_cost_vm_month
+                SELECT demand_month, resource_id, demand_type_detail_code, contract_no, MAX(id) AS latest_id
+                FROM ncp_cost_resource_month
                 WHERE demand_month IN
                     <foreach item="prevMonth" collection="prevMonths" open="(" separator="," close=")">
                     #{prevMonth}
                     </foreach>
-                GROUP BY demand_month, instance_no
+                GROUP BY demand_month, resource_id, demand_type_detail_code, contract_no
             ) n2
             ON n1.demand_month = n2.demand_month
-            AND n1.instance_no = n2.instance_no
+            AND n1.resource_id = n2.resource_id
+            AND n1.demand_type_detail_code = n2.demand_type_detail_code
+            AND n1.contract_no = n2.contract_no
             AND n1.id = n2.latest_id
-        ) nvd_latest
-        INNER JOIN servicegroup_meta sm
-            ON nvd_latest.instance_no COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
-            AND sm.csp_type = 'NCP'
+            AND n1.resource_type != 'OBJECT_STORAGE'  -- Object Storage 는 계정 단위 블록(D-4)에서 집계
+            ) nr_latest
+            INNER JOIN servicegroup_meta sm
+                ON nr_latest.resource_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+                AND sm.csp_type = 'NCP'
+            WHERE 1=1
+                <if test="selectedProjects != null and selectedProjects.size() > 0">
+                AND sm.service_cd IN
+                    <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                    #{selectedProject}
+                    </foreach>
+                </if>
+            GROUP BY nr_latest.demand_month
+
+            UNION ALL
+
+            -- D-4: NCP Object Storage — 계정 단위(OSSM) 행, 최신 누적 스냅샷, Tumblebug OBJECT_STORAGE 메타가 있을 때만 1회 포함
+            SELECT nro.demand_month COLLATE utf8mb4_unicode_ci AS yearMonth
+                 , SUM(nro.demand_amount) / ${krwPerUsd} AS bill
+              FROM (
+                   SELECT o1.resource_id, o1.resource_type, o1.member_no, o1.demand_month, o1.demand_amount
+                     FROM ncp_cost_resource_month o1
+                    INNER JOIN (
+                          SELECT demand_month, resource_id, demand_type_detail_code, contract_no, MAX(id) AS latest_id
+                            FROM ncp_cost_resource_month
+                           WHERE demand_month IN
+                               <foreach item="prevMonth" collection="prevMonths" open="(" separator="," close=")">
+                               #{prevMonth}
+                               </foreach>
+                             AND resource_type = 'OBJECT_STORAGE'
+                           GROUP BY demand_month, resource_id, demand_type_detail_code, contract_no
+                          ) o2
+                    ON o1.demand_month = o2.demand_month
+                   AND o1.resource_id = o2.resource_id
+                   AND o1.demand_type_detail_code = o2.demand_type_detail_code
+                   AND o1.contract_no = o2.contract_no
+                   AND o1.id = o2.latest_id
+                   ) nro
+              WHERE nro.resource_type = 'OBJECT_STORAGE'
+                AND EXISTS (SELECT 1 FROM servicegroup_meta smo
+                             WHERE smo.csp_type = 'NCP' AND smo.service_type = 'OBJECT_STORAGE'
+                             <if test="selectedProjects != null and selectedProjects.size() > 0">
+                               AND smo.service_cd IN
+                                 <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                                 #{selectedProject}
+                                 </foreach>
+                             </if>
+                           )
+              GROUP BY nro.demand_month
+        ) ncp_data
         WHERE 1=1
-            <if test="selectedProjects != null and selectedProjects.size() > 0">
-            AND sm.service_cd IN
-                <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
-                #{selectedProject}
-                </foreach>
-            </if>
             <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
             AND 1=0
             </if>
-        GROUP BY nvd_latest.demand_month
+        GROUP BY ncp_data.yearMonth
 
         UNION ALL
 
-                <!-- AZURE (VM 기준, Meta 조인 후 필터링) -->
+                <!-- AZURE (VM + K8S/Object Storage, Meta 조인 후 필터링 — (csp, yearMonth)당 1행 유지) -->
         SELECT COALESCE(SUM(cost), 0) AS bill
              , yearMonth
              , 'AZURE' AS csp
@@ -84,7 +163,7 @@
                     , #{prevMonth} AS yearMonth
                  FROM azure_cost_vm_daily acvd
                 INNER JOIN servicegroup_meta sm
-                   ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
+                   ON acvd.resource_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
                    AND sm.csp_type = 'AZURE'
                       <if test="selectedProjects != null and selectedProjects.size() > 0">
                   AND sm.service_cd IN
@@ -93,6 +172,39 @@
                       </foreach>
                       </if>
                 WHERE DATE_FORMAT(acvd.usage_date, '%Y%m') = #{prevMonth}
+               UNION ALL
+               -- K8S/Object Storage (azure_cost_resource_daily)
+               SELECT COALESCE(SUM(acr.pre_tax_cost), 0) / ${krwPerUsd} AS cost
+                    , #{prevMonth} AS yearMonth
+                 FROM azure_cost_resource_daily acr
+                INNER JOIN servicegroup_meta sm
+                   ON LOWER(acr.resource_id) COLLATE utf8mb4_unicode_ci = LOWER(sm.csp_instanceid) COLLATE utf8mb4_unicode_ci
+                   AND sm.csp_type = 'AZURE'
+                   AND acr.resource_type != 'OBJECT_STORAGE'  -- Object Storage 는 계정 단위 블록(D-4)에서 집계
+                      <if test="selectedProjects != null and selectedProjects.size() > 0">
+                  AND sm.service_cd IN
+                      <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                      #{selectedProject}
+                      </foreach>
+                      </if>
+                WHERE DATE_FORMAT(acr.usage_date, '%Y%m') = #{prevMonth}
+               UNION ALL
+               -- D-4: Azure Object Storage — Storage Account 단위 행(계정 매핑 ${azureObjStgAccounts}), Tumblebug OBJECT_STORAGE 메타가 있을 때만 1회 포함
+               SELECT COALESCE(SUM(acr.pre_tax_cost), 0) / ${krwPerUsd} AS cost
+                    , #{prevMonth} AS yearMonth
+                 FROM azure_cost_resource_daily acr
+                WHERE acr.resource_type = 'OBJECT_STORAGE'
+                  AND LOWER(acr.resource_name) IN (${azureObjStgAccounts})
+                  AND DATE_FORMAT(acr.usage_date, '%Y%m') = #{prevMonth}
+                  AND EXISTS (SELECT 1 FROM servicegroup_meta smo
+                               WHERE smo.csp_type = 'AZURE' AND smo.service_type = 'OBJECT_STORAGE'
+                               <if test="selectedProjects != null and selectedProjects.size() > 0">
+                                 AND smo.service_cd IN
+                                   <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                                   #{selectedProject}
+                                   </foreach>
+                               </if>
+                             )
                </foreach>
                ) AS azure_data
          WHERE 1=1
@@ -133,10 +245,14 @@
              , sm.csp_type                       AS csp
              , SUM(co.lineitem_unblendedcost)    AS bill
              , co.lineitem_resourceid            AS resourceID
+             , sm.service_type                   AS serviceType
           FROM tbl_table_billing_detail_${year_month} co
-         INNER JOIN servicegroup_meta sm
+         INNER JOIN (
+               SELECT DISTINCT csp_instanceid, csp_type, service_cd, service_type
+                 FROM servicegroup_meta
+                WHERE csp_type = 'AWS'
+               ) sm
             ON co.lineitem_resourceid = sm.csp_instanceid
-           AND sm.csp_type = 'AWS'
                <if test="selectedProjects != null and selectedProjects.size() > 0">
            AND sm.service_cd IN
                <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
@@ -150,7 +266,7 @@
                <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AWS')">
            AND 1=0
                </if>
-         GROUP BY co.lineitem_usageaccountid, co.lineitem_productcode, sm.csp_type, co.lineitem_resourceid
+         GROUP BY co.lineitem_usageaccountid, co.lineitem_productcode, sm.csp_type, co.lineitem_resourceid, sm.service_type
     </select>
 
     <select id="getNCPInvoice"
@@ -162,6 +278,7 @@
             , 'NCP' AS csp
             , nvd_latest.demand_amount / ${krwPerUsd} AS bill
             , nvd_latest.instance_no AS resourceID
+            , sm.service_type COLLATE utf8mb4_unicode_ci AS serviceType
         FROM (
             SELECT n1.instance_no, n1.member_no, n1.demand_amount
             FROM ncp_cost_vm_month n1
@@ -187,6 +304,88 @@
             <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
             AND 1=0
             </if>
+
+        UNION ALL
+
+        <!-- NCP K8S / Object Storage (ncp_cost_resource_month, 자원·상세코드·계약별 최신 누적 금액) -->
+        SELECT nr_latest.member_no COLLATE utf8mb4_unicode_ci AS accountID
+            , CASE nr_latest.resource_type
+                WHEN 'K8S' THEN 'Kubernetes Service'
+                WHEN 'OBJECT_STORAGE' THEN 'Object Storage'
+                ELSE nr_latest.resource_type
+              END COLLATE utf8mb4_unicode_ci AS productID
+            , 'NCP' AS csp
+            , SUM(nr_latest.demand_amount) / ${krwPerUsd} AS bill
+            , nr_latest.resource_id COLLATE utf8mb4_unicode_ci AS resourceID
+            , sm.service_type COLLATE utf8mb4_unicode_ci AS serviceType
+         FROM (
+              SELECT n1.resource_id, n1.resource_type, n1.member_no, n1.demand_month, n1.demand_amount
+                FROM ncp_cost_resource_month n1
+               INNER JOIN (
+                     SELECT resource_id, demand_type_detail_code, contract_no, MAX(id) AS latest_id
+                       FROM ncp_cost_resource_month
+                      WHERE demand_month = #{year_month}
+                      GROUP BY resource_id, demand_type_detail_code, contract_no
+                     ) n2
+                  ON n1.resource_id = n2.resource_id
+                 AND n1.demand_type_detail_code = n2.demand_type_detail_code
+                 AND n1.contract_no = n2.contract_no
+                 AND n1.id = n2.latest_id
+                 AND n1.resource_type != 'OBJECT_STORAGE'  -- Object Storage 는 계정 단위 블록(D-4)에서 집계
+              ) nr_latest
+        INNER JOIN servicegroup_meta sm
+           ON nr_latest.resource_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
+          AND sm.csp_type = 'NCP'
+        WHERE 1=1
+            <if test="selectedProjects != null and selectedProjects.size() > 0">
+            AND sm.service_cd IN
+                <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                #{selectedProject}
+                </foreach>
+            </if>
+            <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+            AND 1=0
+            </if>
+        GROUP BY nr_latest.member_no, nr_latest.resource_type, nr_latest.resource_id, sm.service_type
+
+        UNION ALL
+
+        <!-- D-4: NCP Object Storage — 계정 단위(OSSM) 행, 최신 누적 스냅샷, Tumblebug OBJECT_STORAGE 메타가 있을 때만 1회 포함 -->
+        SELECT nro.member_no COLLATE utf8mb4_unicode_ci AS accountID
+            , 'Object Storage' COLLATE utf8mb4_unicode_ci AS productID
+            , 'NCP' AS csp
+            , SUM(nro.demand_amount) / ${krwPerUsd} AS bill
+            , nro.resource_id COLLATE utf8mb4_unicode_ci AS resourceID
+            , 'OBJECT_STORAGE' COLLATE utf8mb4_unicode_ci AS serviceType
+         FROM (
+              SELECT o1.resource_id, o1.resource_type, o1.member_no, o1.demand_month, o1.demand_amount
+                FROM ncp_cost_resource_month o1
+               INNER JOIN (
+                     SELECT resource_id, demand_type_detail_code, contract_no, MAX(id) AS latest_id
+                       FROM ncp_cost_resource_month
+                      WHERE demand_month = #{year_month}
+                        AND resource_type = 'OBJECT_STORAGE'
+                      GROUP BY resource_id, demand_type_detail_code, contract_no
+                     ) o2
+               ON o1.resource_id = o2.resource_id
+              AND o1.demand_type_detail_code = o2.demand_type_detail_code
+              AND o1.contract_no = o2.contract_no
+              AND o1.id = o2.latest_id
+              ) nro
+         WHERE nro.resource_type = 'OBJECT_STORAGE'
+           AND EXISTS (SELECT 1 FROM servicegroup_meta smo
+                        WHERE smo.csp_type = 'NCP' AND smo.service_type = 'OBJECT_STORAGE'
+                        <if test="selectedProjects != null and selectedProjects.size() > 0">
+                          AND smo.service_cd IN
+                            <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                            #{selectedProject}
+                            </foreach>
+                        </if>
+                      )
+           <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('NCP')">
+             AND 1=0
+           </if>
+         GROUP BY nro.member_no, nro.resource_id
     </select>
 
 
@@ -198,9 +397,10 @@
              , 'AZURE'                         AS csp
              , SUM(acvd.pre_tax_cost) / ${krwPerUsd} AS bill
              , acvd.resource_id                AS resourceID
+             , sm.service_type COLLATE utf8mb4_unicode_ci AS serviceType
           FROM azure_cost_vm_daily acvd
          INNER JOIN servicegroup_meta sm
-            ON acvd.vm_id COLLATE utf8mb4_unicode_ci = sm.vm_uid COLLATE utf8mb4_unicode_ci
+            ON acvd.resource_id COLLATE utf8mb4_unicode_ci = sm.csp_instanceid COLLATE utf8mb4_unicode_ci
            AND sm.csp_type = 'AZURE'
                <if test="selectedProjects != null and selectedProjects.size() > 0">
            AND sm.service_cd IN
@@ -212,7 +412,65 @@
                <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
            AND 1=0
                </if>
-         GROUP BY acvd.tenant_id, acvd.vm_id, acvd.resource_id
+         GROUP BY acvd.tenant_id, acvd.vm_id, acvd.resource_id, sm.service_type
+
+        UNION ALL
+
+        <!-- Azure K8S / Object Storage (azure_cost_resource_daily) -->
+        SELECT acr.tenant_id COLLATE utf8mb4_unicode_ci     AS accountID
+             , CASE acr.resource_type
+                 WHEN 'K8S' THEN 'Azure Kubernetes Service'
+                 WHEN 'K8S_NODE' THEN 'Virtual Machines'  -- AKS 노드 스케일셋: Invoice 는 청구서 서비스명 그대로(AWS AmazonEC2, GCP Compute Engine, NCP Server 와 같은 기준)
+                 WHEN 'OBJECT_STORAGE' THEN 'Storage'
+                 ELSE acr.resource_type
+               END COLLATE utf8mb4_unicode_ci                AS productID
+             , 'AZURE'                                       AS csp
+             , SUM(acr.pre_tax_cost) / ${krwPerUsd}          AS bill
+             , acr.resource_id COLLATE utf8mb4_unicode_ci   AS resourceID
+             , sm.service_type COLLATE utf8mb4_unicode_ci   AS serviceType
+          FROM azure_cost_resource_daily acr
+         INNER JOIN servicegroup_meta sm
+            ON LOWER(acr.resource_id) COLLATE utf8mb4_unicode_ci = LOWER(sm.csp_instanceid) COLLATE utf8mb4_unicode_ci
+           AND sm.csp_type = 'AZURE'
+           AND acr.resource_type != 'OBJECT_STORAGE'  -- Object Storage 는 계정 단위 블록(D-4)에서 집계
+               <if test="selectedProjects != null and selectedProjects.size() > 0">
+           AND sm.service_cd IN
+               <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+               #{selectedProject}
+               </foreach>
+               </if>
+         WHERE DATE_FORMAT(acr.usage_date, '%Y%m') = #{year_month}
+               <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
+           AND 1=0
+               </if>
+         GROUP BY acr.tenant_id, acr.resource_type, acr.resource_id, sm.service_type
+
+        UNION ALL
+
+        <!-- D-4: Azure Object Storage — Storage Account 단위 행(계정 매핑 ${azureObjStgAccounts}), Tumblebug OBJECT_STORAGE 메타가 있을 때만 1회 포함 -->
+        SELECT acr.tenant_id COLLATE utf8mb4_unicode_ci     AS accountID
+             , 'Storage' COLLATE utf8mb4_unicode_ci         AS productID
+             , 'AZURE'                                       AS csp
+             , SUM(acr.pre_tax_cost) / ${krwPerUsd}          AS bill
+             , acr.resource_id COLLATE utf8mb4_unicode_ci   AS resourceID
+             , 'OBJECT_STORAGE' COLLATE utf8mb4_unicode_ci AS serviceType
+          FROM azure_cost_resource_daily acr
+         WHERE acr.resource_type = 'OBJECT_STORAGE'
+           AND LOWER(acr.resource_name) IN (${azureObjStgAccounts})
+           AND DATE_FORMAT(acr.usage_date, '%Y%m') = #{year_month}
+           AND EXISTS (SELECT 1 FROM servicegroup_meta smo
+                        WHERE smo.csp_type = 'AZURE' AND smo.service_type = 'OBJECT_STORAGE'
+                        <if test="selectedProjects != null and selectedProjects.size() > 0">
+                          AND smo.service_cd IN
+                            <foreach item="selectedProject" collection="selectedProjects" open="(" separator="," close=")">
+                            #{selectedProject}
+                            </foreach>
+                        </if>
+                      )
+           <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('AZURE')">
+             AND 1=0
+           </if>
+         GROUP BY acr.tenant_id, acr.resource_id
     </select>
 
     <select id="getGCPInvoice"
@@ -223,6 +481,7 @@
              , 'GCP'                             AS csp
              , SUM(raw.cost) / ${krwPerUsd}      AS bill
              , raw.csp_instanceid                AS resourceID
+             , sm.service_type                   AS serviceType
           FROM gcp_billing_raw raw
          INNER JOIN servicegroup_meta sm
             ON sm.csp_type = 'GCP'
@@ -237,6 +496,6 @@
                <if test="selectedCsps != null and selectedCsps.size() > 0 and !selectedCsps.contains('GCP')">
            AND 1=0
                </if>
-         GROUP BY raw.billing_account_id, raw.service_description, raw.csp_instanceid
+         GROUP BY raw.billing_account_id, raw.service_description, raw.csp_instanceid, sm.service_type
     </select>
 </mapper>

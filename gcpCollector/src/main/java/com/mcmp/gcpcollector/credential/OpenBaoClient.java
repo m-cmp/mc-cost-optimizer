@@ -46,6 +46,39 @@ public class OpenBaoClient {
         return cache.computeIfAbsent(provider, this::fetch);
     }
 
+    /** secret/data/{path} 임의 읽기. 빈 결과는 캐싱하지 않아 재기동 시 재조회 가능. */
+    public Map<String, String> readPath(String path) {
+        if (!isConfigured()) return Collections.emptyMap();
+        Map<String, String> cached = cache.get("__path__" + path);
+        if (cached != null) return cached;
+        Map<String, String> result = fetchByPath(path);
+        if (result != null && !result.isEmpty()) cache.put("__path__" + path, result);
+        return result != null ? result : Collections.emptyMap();
+    }
+
+    private Map<String, String> fetchByPath(String path) {
+        String url = address.replaceAll("/+$", "") + "/v1/secret/data/" + path;
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Vault-Token", token);
+            ResponseEntity<JsonNode> res = restTemplate.exchange(
+                    url, HttpMethod.GET, new HttpEntity<>(headers), JsonNode.class);
+            JsonNode body = res.getBody();
+            JsonNode data = (body != null) ? body.path("data").path("data") : null;
+            if (data == null || data.isMissingNode() || !data.isObject()) {
+                log.warn("OpenBao: {} 에 데이터가 없습니다.", path);
+                return Collections.emptyMap();
+            }
+            Map<String, String> result = new HashMap<>();
+            data.fields().forEachRemaining(e -> result.put(e.getKey(), e.getValue().asText()));
+            log.info("OpenBao: {} 크레덴셜 {}개 키 로드", path, result.size());
+            return result;
+        } catch (Exception e) {
+            log.warn("OpenBao 조회 실패 ({}): {}", path, e.getMessage());
+            return Collections.emptyMap();
+        }
+    }
+
     private Map<String, String> fetch(String provider) {
         String url = address.replaceAll("/+$", "") + "/v1/secret/data/csp/" + provider;
         try {

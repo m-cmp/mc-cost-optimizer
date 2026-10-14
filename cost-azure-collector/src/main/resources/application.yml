@@ -58,6 +58,11 @@ azure-schedule:
   #  vm-batch-cron: ${AZURE_VM_BATCH_CRON_SCHEDULE:0 30 0 * * ?}
   service-batch-cron: ${AZURE_SERVICE_BATCH_CRON_SCHEDULE:0 0 0 * * ?}
   vm-batch-cron: ${AZURE_VM_BATCH_CRON_SCHEDULE:0 30 0 * * ?}
+  # 비-VM 자원(AKS, Storage Account) 수집. VM 배치 뒤 15분 — Cost Management 스로틀링 분산
+  # cron 은 컨테이너 TZ 기준(서버 compose 는 TZ=Asia/Seoul). 서버 값은 docs/.env 의 CO_AZURE_RESOURCE_BATCH_CRON_SCHEDULE
+  resource-batch-cron: ${AZURE_RESOURCE_BATCH_CRON_SCHEDULE:0 45 0 * * ?}
+  # 매 실행마다 최근 며칠(어제까지, UTC)을 다시 조회해 덮어쓴다. 늦게 들어온 비용·실패한 날 재수집
+  resource-lookback-days: ${AZURE_RESOURCE_LOOKBACK_DAYS:3}
 
 costopti:
   alarmservice:

@@ -42,12 +42,24 @@ logging:
 ncp-schedule:
   service-batch-cron: ${NCP_SERVICE_BATCH_CRON_SCHEDULE:0 0 0 * * ?}
   vm-batch-cron: ${NCP_VM_BATCH_CRON_SCHEDULE:0 30 0 * * ?}
+  # 09:45 KST = 00:45 UTC (NCP 비-VM 자원: NKS / Object Storage) — VM 배치 뒤
+  resource-batch-cron: ${NCP_RESOURCE_BATCH_CRON_SCHEDULE:0 45 0 * * ?}
 
 ncp:
   credential:
     # 기본값을 빈 값으로 둬야 미설정 시 OpenBao 폴백이 동작 (placeholder 문자열이면 폴백 안 됨)
     iam-access-key: ${IAM_ACCESS_KEY:}
     iam-secret-key: ${IAM_SECRET_KEY:}
+  # 비-VM 자원 수집 스펙. NCP 과금 코드값은 공식 문서에 열거되어 있지 않아 env 로 주입한다.
+  # (확인 방법: GET /billing/v1/cost/getCostRelationCodeList — Phase 0 프로브, 플랜 Task C8)
+  # 코드가 비어 있으면 해당 유형은 WARN 후 skip. 쉼표로 여러 코드 지정 가능.
+  resource-collect:
+    types:
+      - resource-type: K8S
+        demand-type-codes: ${NCP_K8S_DEMAND_TYPE_CODES:VNKS}   # 청구 유형 코드 VNKS (상세 MSTND = 마스터 요금). 워커 노드는 Server(VSVR)로 따로 청구되어 겹치지 않음
+        resolve-nks-uuid: true
+      - resource-type: OBJECT_STORAGE
+        demand-type-codes: ${NCP_OBJSTG_DEMAND_TYPE_CODES:OSSM}   # 청구 유형 코드 OSSM (OBJST 는 계약 유형 코드라 이 필터에 안 걸림)
 
 # OpenBao 크레덴셜 연동 (true: OpenBao 단일소스 / false: env 우선 후 OpenBao 폴백, 기본)
 openbao:

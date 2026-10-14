@@ -41,6 +41,12 @@ public class AzureBatchController {
         return ResponseEntity.ok("Azure Anomaly VM Type Batch Job started successfully");
     }
 
+    @GetMapping(value = "/batch/azure/unused")
+    public ResponseEntity<String> unusedAzureVm() {
+        batchExecutorService.asyncExecuteBatch(RightSizeType.AZURE_UNUSED_VM);
+        return ResponseEntity.ok("Azure Unused Resource Batch Job started successfully");
+    }
+
     /**
      * Tumblebug 추천 직접 테스트 (배치 없이 단건 확인)
      *

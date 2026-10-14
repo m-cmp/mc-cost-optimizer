@@ -9,14 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GcpProjectCostAnalysisDto {
-    private String projectId;
-    private String projectName;
+public class GcpVmCostAnalysisDto {
+    private String vmId;            // gcp_billing_raw.csp_instanceid (매핑된 리소스만)
     private String billingAccountId;
     private Double latestCost;      // 어제 비용
-    private Double avgCost;         // 기준 일평균 (지난달 or 전체)
-    private String dataRange;       // LAST_MONTH or ALL_DATA
+    private Double avgCost;         // 지난달 같은 요일 평균
     private String projectCd;       // servicegroup_meta.service_cd
     private String workspaceCd;     // servicegroup_meta.workspace_cd
-    private String currency;
 }

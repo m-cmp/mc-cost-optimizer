@@ -3,7 +3,6 @@ package com.mcmp.azure.vm.rightsizer.batch;
 import com.mcmp.azure.vm.rightsizer.client.AlarmServiceClient;
 import com.mcmp.azure.vm.rightsizer.dto.AlarmHistoryDto;
 import com.mcmp.azure.vm.rightsizer.dto.RecommendVmTypeDto;
-import com.mcmp.azure.vm.rightsizer.mapper.ServiceGroupMetaMapper;
 import com.mcmp.azure.vm.rightsizer.properties.AzureCredentialProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @StepScope
@@ -23,7 +21,6 @@ public class RecommendVmListItemWriter implements ItemWriter<RecommendVmTypeDto>
 
     private final AzureCredentialProperties azureCredentialProperties;
     private final AlarmServiceClient alarmServiceClient;
-    private final ServiceGroupMetaMapper serviceGroupMetaMapper;
 
     private String buildNote(String plan, RecommendVmTypeDto dto) {
         String base = String.format(
@@ -38,14 +35,10 @@ public class RecommendVmListItemWriter implements ItemWriter<RecommendVmTypeDto>
     @Override
     public void write(Chunk<? extends RecommendVmTypeDto> chunk) throws Exception {
         for (RecommendVmTypeDto recommendVmTypeDto : chunk) {
-            // servicegroup_meta에서 projectCd, workspaceCd 조회
-            Map<String, String> meta = serviceGroupMetaMapper.selectProjectAndWorkspaceByVmId(
-                    recommendVmTypeDto.getVmId(),
-                    azureCredentialProperties.getSubscriptionId()
-            );
-
-            String projectCd = (meta != null && meta.get("projectCd") != null)
-                    ? meta.get("projectCd")
+            // 후보 쿼리(selectRecommendCandidates)가 csp_instanceid 조인으로 이미 구한 projectCd 사용
+            // (csp_account=subscription 조회는 구독에 VM 여러 개면 임의 1행이라 부정확)
+            String projectCd = recommendVmTypeDto.getProjectCd() != null
+                    ? recommendVmTypeDto.getProjectCd()
                     : "default";
 
             String plan = recommendVmTypeDto.getPlan(); // "Up" or "Down"

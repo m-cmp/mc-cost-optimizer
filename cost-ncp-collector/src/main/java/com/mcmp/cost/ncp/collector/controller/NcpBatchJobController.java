@@ -26,4 +26,10 @@ public class NcpBatchJobController {
         asyncExecutorService.asyncExecuteBatch(NcpBatchType.NCP_COST_VM);
         return ResponseEntity.ok("Ncp Cost Vm Batch Job started successfully");
     }
+
+    @GetMapping(value = "/batch/ncp/resource")
+    public ResponseEntity<String> batchNcpResource() {
+        asyncExecutorService.asyncExecuteBatch(NcpBatchType.NCP_COST_RESOURCE);
+        return ResponseEntity.ok("Ncp Cost Resource(K8S/Object Storage) Batch Job started successfully");
+    }
 }

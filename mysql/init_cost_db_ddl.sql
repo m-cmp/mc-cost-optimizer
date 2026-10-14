@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS `service_category` (
 CREATE TABLE IF NOT EXISTS `servicegroup_meta` (
                                           `csp_type` varchar(100) COLLATE utf8mb4_unicode_520_ci NOT NULL COMMENT 'CSP 종류',
                                           `csp_account` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'mcmpcostopti' COMMENT 'CSP 계정 ID',
-                                          `csp_instanceid` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT 'common' COMMENT ' 인스턴스 구분코드',
+                                          `csp_instanceid` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT 'common' COMMENT '인스턴스 구분코드 = CSP 과금 데이터의 자원 식별자 (AWS: i-…/EKS ARN/버킷명, Azure: ARM ID, GCP: 인스턴스명/클러스터명/버킷명, NCP: instanceNo/NKS UUID/버킷명). Azure ARM ID 최대 ~274자',
                                           `service_cd` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'undefined' COMMENT '서비스 코드',
                                           `service_nm` varchar(100) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL COMMENT '서비스 명',
                                           `service_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT 'project' COMMENT '서비스 타입',
@@ -381,6 +381,86 @@ CREATE TABLE IF NOT EXISTS `ncp_cost_vm_daily` (
     KEY `idx_target_date` (`target_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci COMMENT='NCP VM 일별 비용 데이터 (월별 데이터에서 계산)';
 
+-- NCP 자원(K8S / OBJECT_STORAGE) 계약별 월 누적 청구 비용 — ncp_cost_vm_month 자매 테이블 (server_spec_code 없음)
+--   resource_id = servicegroup_meta.csp_instanceid 조인 키 (K8S = NKS 클러스터 UUID, OBJECT_STORAGE = member_no[계정 단위])
+--   UNIQUE 키가 재실행 dedupe 의 실체 (snapshot_date = DATE(write_date), 하루 1 스냅샷/키)
+CREATE TABLE IF NOT EXISTS `ncp_cost_resource_month` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '아이디',
+    `created` datetime DEFAULT NULL COMMENT 'row insert 시간',
+    `updated` datetime DEFAULT NULL COMMENT 'row update 시간',
+    `member_no` varchar(100) NOT NULL COMMENT '회원 번호',
+    `demand_month` varchar(6) NOT NULL COMMENT '청구 월. ex) 202510',
+    `region_code` varchar(10) NOT NULL DEFAULT 'KR' COMMENT '리전 코드',
+    `resource_type` varchar(20) NOT NULL COMMENT 'K8S | OBJECT_STORAGE',
+    `demand_type_code` varchar(20) NOT NULL COMMENT '청구 유형 코드. ex) OSSM',
+    `demand_type_name` varchar(100) DEFAULT NULL COMMENT '청구 유형 이름',
+    `demand_type_detail_code` varchar(20) NOT NULL DEFAULT '' COMMENT '청구 유형 상세 코드',
+    `demand_type_detail_name` varchar(100) DEFAULT NULL COMMENT '청구 유형 상세 이름',
+    `contract_no` varchar(50) NOT NULL DEFAULT '' COMMENT '계약 번호',
+    `product_code` varchar(50) DEFAULT NULL COMMENT '상품 코드 (contractProductList[0].productCode)',
+    `product_name` varchar(200) DEFAULT NULL COMMENT '상품 이름 (productItemKind.codeName)',
+    `instance_no` varchar(100) DEFAULT NULL COMMENT 'NCP 인스턴스 번호(원본)',
+    `instance_name` varchar(200) DEFAULT NULL COMMENT 'NCP 인스턴스 이름(원본, contract.instanceName)',
+    `resource_id` varchar(200) NOT NULL COMMENT 'servicegroup_meta.csp_instanceid 조인 키 (K8S = NKS 클러스터 UUID)',
+    `resource_name` varchar(200) DEFAULT NULL COMMENT '자원 표시 이름 (K8S = 클러스터명)',
+    `resource_id_source` varchar(20) NOT NULL COMMENT 'resource_id 출처. NKS_UUID | INSTANCE_NO | CONTRACT_NO | MEMBER_NO',
+    `usage_unit_code` varchar(50) NOT NULL DEFAULT '' COMMENT '사용량 단위 코드',
+    `usage_unit_name` varchar(100) NOT NULL DEFAULT '' COMMENT '사용량 단위 이름',
+    `product_price` double NOT NULL DEFAULT 0 COMMENT '상품 가격',
+    `unit_usage_quantity` double NOT NULL DEFAULT 0 COMMENT '단위 사용량',
+    `total_unit_usage_quantity` double NOT NULL DEFAULT 0 COMMENT '총 단위 사용량',
+    `use_amount` double NOT NULL COMMENT '사용 금액(월 누적, KRW)',
+    `demand_amount` double NOT NULL COMMENT '청구 금액(월 누적, KRW)',
+    `write_date` datetime NOT NULL COMMENT 'NCP 작성 일시',
+    `snapshot_date` date NOT NULL COMMENT 'DATE(write_date). 재실행 dedupe 키',
+    `pay_currency` varchar(10) NOT NULL COMMENT '결제 통화. ex) KRW',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_ncp_cost_resource_month` (`member_no`,`demand_month`,`resource_type`,`resource_id`,`region_code`,`demand_type_detail_code`,`contract_no`,`snapshot_date`),
+    KEY `idx_ncr_month_type_rid` (`resource_type`,`resource_id`,`demand_month`),
+    KEY `idx_ncr_month_month_rid` (`demand_month`,`resource_id`,`id`),
+    KEY `idx_ncr_month_write` (`write_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci COMMENT='NCP 자원(K8S/ObjectStorage)별 월 누적 청구 비용';
+
+-- NCP 자원(K8S / OBJECT_STORAGE) 일별 비용 — ncp_cost_vm_daily 와 동일하게 월 누적의 전일 차분
+CREATE TABLE IF NOT EXISTS `ncp_cost_resource_daily` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '아이디',
+    `created` datetime DEFAULT NULL COMMENT 'row insert 시간',
+    `updated` datetime DEFAULT NULL COMMENT 'row update 시간',
+    `member_no` varchar(100) NOT NULL COMMENT '회원 번호',
+    `demand_month` varchar(6) NOT NULL COMMENT '청구 월. ex) 202510',
+    `region_code` varchar(10) NOT NULL DEFAULT 'KR' COMMENT '리전 코드',
+    `resource_type` varchar(20) NOT NULL COMMENT 'K8S | OBJECT_STORAGE',
+    `demand_type_code` varchar(20) NOT NULL COMMENT '청구 유형 코드',
+    `demand_type_name` varchar(100) DEFAULT NULL,
+    `demand_type_detail_code` varchar(20) NOT NULL DEFAULT '' COMMENT '청구 유형 상세 코드',
+    `demand_type_detail_name` varchar(100) DEFAULT NULL,
+    `contract_no` varchar(50) NOT NULL DEFAULT '' COMMENT '계약 번호',
+    `product_code` varchar(50) DEFAULT NULL,
+    `product_name` varchar(200) DEFAULT NULL,
+    `instance_no` varchar(100) DEFAULT NULL COMMENT 'NCP 인스턴스 번호(원본)',
+    `instance_name` varchar(200) DEFAULT NULL COMMENT 'NCP 인스턴스 이름(원본)',
+    `resource_id` varchar(200) NOT NULL COMMENT 'servicegroup_meta.csp_instanceid 조인 키',
+    `resource_name` varchar(200) DEFAULT NULL,
+    `resource_id_source` varchar(20) NOT NULL COMMENT 'NKS_UUID | INSTANCE_NO | CONTRACT_NO | MEMBER_NO',
+    `usage_unit_code` varchar(50) NOT NULL DEFAULT '',
+    `usage_unit_name` varchar(100) NOT NULL DEFAULT '',
+    `product_price` double NOT NULL DEFAULT 0,
+    `unit_usage_quantity` double NOT NULL DEFAULT 0,
+    `total_unit_usage_quantity` double NOT NULL DEFAULT 0,
+    `use_amount` double NOT NULL COMMENT '사용 금액(누적, KRW)',
+    `demand_amount` double NOT NULL COMMENT '청구 금액(누적, KRW)',
+    `write_date` datetime NOT NULL COMMENT 'NCP 작성 일시',
+    `pay_currency` varchar(10) NOT NULL COMMENT '결제 통화. ex) KRW',
+    `target_date` date NOT NULL COMMENT '대상 날짜 (= DATE(write_date))',
+    `daily_charge_amount` double NOT NULL COMMENT '일별 청구 금액 (전일 누적 대비 차이, KRW)',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_ncp_cost_resource_daily` (`member_no`,`demand_month`,`resource_type`,`resource_id`,`region_code`,`demand_type_detail_code`,`contract_no`,`target_date`),
+    KEY `idx_ncr_daily_type_rid_date` (`resource_type`,`resource_id`,`target_date`),
+    KEY `idx_ncr_daily_rid_date` (`resource_id`,`target_date`),
+    KEY `idx_ncr_daily_target_date` (`target_date`),
+    KEY `idx_ncr_daily_month` (`demand_month`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci COMMENT='NCP 자원(K8S/ObjectStorage) 일별 비용 (월 누적 차분)';
+
 
 -- ============================================================
 -- cost-azure-collector module
@@ -418,6 +498,31 @@ CREATE TABLE IF NOT EXISTS `azure_cost_vm_daily` (
     `currency` varchar(255) NOT NULL COMMENT '통화 단위. ex) KRW',
     PRIMARY KEY (`id`) COMMENT 'Azure Virtual Machines 별 요금 목록'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Azure 비-VM 자원(AKS managed cluster, Storage Account) 별 일별 요금 — azure_cost_vm_daily 자매 테이블 (VM 전용 컬럼 없음)
+--   resource_id = Cost Management 반환값(소문자) 원문. BE 는 LOWER(servicegroup_meta.csp_instanceid) 와 비교
+--   UNIQUE (subscription_id, resource_id, usage_date) + 수집기 DELETE→INSERT 로 재수집 멱등 (VM 테이블은 UNIQUE 없음)
+--   collation 은 servicegroup_meta 와 같은 utf8mb4_unicode_520_ci (BE 조인 캐스팅 최소화; 이웃 Azure 테이블의 uca1400 과 다름)
+CREATE TABLE IF NOT EXISTS `azure_cost_resource_daily` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '아이디',
+    `created` datetime DEFAULT NULL COMMENT 'row insert 시간',
+    `updated` datetime DEFAULT NULL COMMENT 'row update 시간',
+    `tenant_id` varchar(255) NOT NULL COMMENT '테넌트 아이디',
+    `subscription_id` varchar(36) NOT NULL COMMENT 'subscriptions 아이디',
+    `pre_tax_cost` double NOT NULL COMMENT '비용(자원·일 합계, KRW)',
+    `usage_date` varchar(8) NOT NULL COMMENT '날짜(yyyyMMdd). ex) 20250903',
+    `resource_group_name` varchar(255) NOT NULL COMMENT '리소스 그룹',
+    `resource_id` varchar(512) NOT NULL COMMENT 'ARM 리소스 아이디(소문자 원문). ex) /subscriptions/.../providers/microsoft.containerservice/managedclusters/aks-1',
+    `resource_name` varchar(255) NOT NULL COMMENT 'resource_id 마지막 세그먼트 (클러스터명 / 스토리지 계정명)',
+    `resource_type` varchar(20) NOT NULL COMMENT 'K8S | K8S_NODE | OBJECT_STORAGE',
+    `service_name` varchar(255) NOT NULL COMMENT 'Azure 서비스명. ex) Azure Kubernetes Service, Storage',
+    `region` varchar(255) DEFAULT NULL COMMENT 'ResourceLocation. ex) koreacentral',
+    `currency` varchar(255) NOT NULL COMMENT '통화 단위. ex) KRW',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_azure_cost_resource_daily` (`subscription_id`,`resource_id`,`usage_date`),
+    KEY `idx_acr_date_type` (`usage_date`,`resource_type`),
+    KEY `idx_acr_resource_id` (`resource_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci COMMENT='Azure 비-VM 자원(AKS, Storage Account) 별 일별 요금';
 
 
 -- ============================================================
@@ -460,10 +565,18 @@ CREATE TABLE IF NOT EXISTS `gcp_billing_raw` (
     `labels` text DEFAULT NULL COMMENT '라벨 (JSON)',
     `system_labels` text DEFAULT NULL COMMENT '시스템 라벨 (JSON)',
     `tags` text DEFAULT NULL COMMENT '태그 (JSON)',
+    -- labels(sys.*) 추출 → servicegroup_meta 매핑용 식별자 (gcpCollector ddl_gcp_billing_raw.sql / GCP_SQL.xml initTable 과 동일)
+    `csp_instanceid` varchar(200) DEFAULT NULL COMMENT 'Tumblebug 매칭 키 = servicegroup_meta.csp_instanceid (labels.sys_cspresourceid | GKE 클러스터명 | GCS 버킷명)',
+    `vm_id` varchar(100) DEFAULT NULL COMMENT 'labels.sys_id',
+    `mci_id` varchar(100) DEFAULT NULL COMMENT 'labels.sys_infraid',
+    `service_cd` varchar(100) DEFAULT NULL COMMENT 'labels.sys_namespace (ns_id)',
+    `k8s_cluster_name` varchar(255) DEFAULT NULL COMMENT 'labels/system_labels.goog-k8s-cluster-name',
+    `resource_name` varchar(512) DEFAULT NULL COMMENT 'detailed export resource.name (표준 export 는 NULL)',
     PRIMARY KEY (`id`),
     KEY `idx_billing_date` (`billing_account_id`,`invoice_month`),
     KEY `idx_project_date` (`project_id`,`usage_start_time`),
-    KEY `idx_service` (`service_description`,`usage_start_time`)
+    KEY `idx_service` (`service_description`,`usage_start_time`),
+    KEY `idx_csp_instanceid` (`csp_instanceid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci COMMENT='GCP 빌링 원본 데이터';
 
 

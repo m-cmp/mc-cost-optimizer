@@ -10,6 +10,7 @@
         FROM servicegroup_meta
         WHERE csp_type = 'NCP'
           AND csp_account = #{memberNo}
+          AND service_type = 'VM'   -- K8S(NKS)/OBJECT_STORAGE 메타 행 제외
         LIMIT 1
     </select>
 
@@ -21,6 +22,7 @@
         FROM servicegroup_meta
         WHERE csp_type = 'NCP'
           AND csp_instanceid COLLATE utf8mb4_unicode_520_ci = #{instanceNo}
+          AND service_type = 'VM'   -- K8S(NKS)/OBJECT_STORAGE 메타 행 제외
         LIMIT 1
     </select>
 

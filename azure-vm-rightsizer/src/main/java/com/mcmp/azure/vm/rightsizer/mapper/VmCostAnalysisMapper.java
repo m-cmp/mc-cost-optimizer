@@ -12,7 +12,7 @@ public interface VmCostAnalysisMapper {
      * 특정 VM의 월별 평균 비용 조회
      * (지난달 데이터가 있으면 지난달, 없으면 전체 평균)
      */
-    VmMonthlyAvgCostDto selectMonthlyAvgCostByVmId(@Param("vmId") String vmId);
+    VmMonthlyAvgCostDto selectMonthlyAvgCostByVmId(@Param("vmId") String vmId, @Param("subscriptionId") String subscriptionId);
 
     /**
      * 전체 VM의 월별 평균 비용 조회

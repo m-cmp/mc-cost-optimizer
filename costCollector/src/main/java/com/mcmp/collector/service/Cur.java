@@ -60,23 +60,23 @@ public class Cur {
                     return;
                 }
             } catch (Exception e){
-                e.printStackTrace();
-                log.warn("No data for that month - Payer : " + payerId + ", Month : " + todoCollectMonth);
+                // CUR Setup 후 최대 24시간 동안 S3에 데이터 없음 — 이 기간 내 수집 실패는 정상
+                log.warn("CUR 데이터 없음 (CUR Setup 후 24시간 내 정상) — payer={}, month={}", payerId, todoCollectMonth);
                 return;
             }
 
             ResponseInputStream<GetObjectResponse> gzObject = getCsvGzObject(payerId, bucketNM, s3Object.key());
 
-            String line;
             List<AwsCurModel> batchList = new ArrayList<>();
             Map<String, Integer> headerMap = new HashMap<>();
 
             try(InputStream gzipInputStream = new GZIPInputStream(gzObject);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(gzipInputStream))){
 
-                String headerLine = reader.readLine();
-                if (headerLine != null) {
-                    String[] headers = headerLine.split(",");
+                // 따옴표 안 쉼표를 칸 구분으로 보지 않도록 CSV 규칙대로 읽는다 (CurCsvReader 주석 참고)
+                CurCsvReader csv = new CurCsvReader(reader);
+                String[] headers = csv.next();
+                if (headers != null) {
                     for (int i = 0; i < headers.length; i++) {
                         headerMap.put(headers[i].trim(), i);
                     }
@@ -106,8 +106,15 @@ public class Cur {
 
                 String certifed_fixed_yn = "Y";
 
-                while ((line = reader.readLine()) != null) {
-                    String[] fields = line.split(",", -1);
+                String[] fields;
+                while ((fields = csv.next()) != null) {
+                    if (headers != null && fields.length < headers.length) {
+                        // 빈 줄이나 잘린 레코드: 칸 수가 모자라면 인덱스 오류로 파일 전체가 중단되므로 건너뛴다
+                        if (!(fields.length == 1 && fields[0].isEmpty())) {
+                            log.warn("Cur Batch Insert - 칸 수가 헤더({})보다 적은 레코드({}) 건너뜀", headers.length, fields.length);
+                        }
+                        continue;
+                    }
                     OffsetDateTime usageStartDt = OffsetDateTime.parse(fields[indexMap.get("lineItem/UsageStartDate")], dtFormatter);
                     OffsetDateTime usageEndDt = OffsetDateTime.parse(fields[indexMap.get("lineItem/UsageEndDate")], dtFormatter);
 

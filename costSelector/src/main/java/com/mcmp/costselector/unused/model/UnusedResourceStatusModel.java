@@ -21,6 +21,7 @@ public class UnusedResourceStatusModel {
     private String inst_family;
     private String inst_family_type;
     private String product_sku;
+    private String service_cd;   // servicegroup_meta.service_cd = 알림 project_cd (없으면 default fallback)
 
     private Boolean isDownsizeTarget;
     private Boolean isUpsizeTarget;

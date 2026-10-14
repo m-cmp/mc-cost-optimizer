@@ -33,7 +33,7 @@ export default function SlackTestButton({ userId = "mcmp-user" }) {
       addAlert({
         variant: "danger",
         title: "Failed",
-        message: "An error occurred while sending Slack message.",
+        message: err.response?.data || "An error occurred while sending Slack message.",
       });
     } finally {
       setLoading(false);

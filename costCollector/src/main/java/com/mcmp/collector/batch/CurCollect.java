@@ -66,15 +66,19 @@ public class CurCollect {
             int run_idx = 0;
             for(String payer : payers){
 
-                if(collectDt.getDayOfMonth() == 1 && seq.equals("1")){
+                // 당월 todo 행이 없으면 생성(스케줄 시각/seq 무관, self-heal).
+                // 기존엔 "1일 0시(seq=1)"에만 넣어서, 그 실행을 놓치면(재배포 등) 그 달 내내 수집 불가였음.
+                // '없을 때만' insert 하므로 이후 update된 object_key 를 덮어쓰지 않음.
+                String curMonth = String.format("%04d%02d", collectDt.getYear(), collectDt.getMonthValue());
+                if (awsDao.countCurProcessMonth(payer, curMonth) == 0) {
                     CurProcessModel initCURProcess = CurProcessModel.builder()
                             .csp("AWS")
                             .payer_account(payer)
-                            .collect_date(String.format("%04d%02d", collectDt.getYear(), collectDt.getMonthValue()))
+                            .collect_date(curMonth)
                             .certifed_fixed_yn("N")
                             .build();
-
                     awsDao.insertCURProcess(initCURProcess);
+                    log.info("cur_process_info 당월 todo 생성 - payer: {}, month: {}", payer, curMonth);
                 }
 
                 List<CurProcessModel> todos = awsDao.getTodoCURCollectMonth(payer);

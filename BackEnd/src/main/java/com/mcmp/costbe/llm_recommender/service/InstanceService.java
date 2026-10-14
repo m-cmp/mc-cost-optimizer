@@ -16,6 +16,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,15 +27,21 @@ public class InstanceService {
 
     private static final Logger log = LoggerFactory.getLogger(InstanceService.class);
 
+    // TB rate-limits the node-spec endpoint at 2 req/sec; keep in-flight lookups at/under that.
+    private static final int SPEC_LOOKUP_CONCURRENCY = 2;
+
     private final InstanceDao instanceDao;
     private final VMMetaService vmMetaService;
     private final InvoiceService invoiceService;
 
     public List<ResourceInstance> getInstances(String nsId) {
         List<ResourceInstance> instances = instanceDao.selectInstancesByNs(Map.of("nsId", nsId));
-        // One Tumblebug call per instance, fanned out in parallel; failures
-        // leave spec=null (rendered as "-" by the frontend) without failing the request.
-        instances.parallelStream().forEach(this::fillSpec);
+        // One Tumblebug call per instance. TB rate-limits this endpoint at 2 req/sec,
+        // so cap concurrency at 2 (was parallelStream over the whole common pool, which
+        // burst past the limit and got 429s -> spec="-"). Combined with the 429 backoff
+        // retry in VMMetaService.getTBBNodeSpec, spec now resolves reliably. Failures
+        // still leave spec=null (rendered as "-") without failing the request.
+        fillSpecs(instances);
         // Attach this month's per-resource cost (USD). A cost-source failure must
         // never break the instance grid, so it is swallowed and leaves usd=null.
         fillMonthlyCost(nsId, instances);
@@ -73,6 +82,36 @@ public class InstanceService {
             }
         } catch (Exception e) {
             log.warn("Failed to fill monthly cost for ns {}: {}", nsId, e.getMessage());
+        }
+    }
+
+    /**
+     * Resolves each instance's spec via Tumblebug with concurrency capped at
+     * {@link #SPEC_LOOKUP_CONCURRENCY} to stay within TB's 2 req/sec rate limit.
+     */
+    private void fillSpecs(List<ResourceInstance> instances) {
+        if (instances == null || instances.isEmpty()) {
+            return;
+        }
+        int poolSize = Math.max(1, Math.min(SPEC_LOOKUP_CONCURRENCY, instances.size()));
+        ExecutorService specPool = Executors.newFixedThreadPool(poolSize);
+        try {
+            List<Future<?>> futures = instances.stream()
+                    .map(inst -> specPool.submit(() -> fillSpec(inst)))
+                    .collect(Collectors.toList());
+            for (Future<?> f : futures) {
+                try {
+                    f.get();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                } catch (Exception e) {
+                    // fillSpec swallows its own failures (spec stays null); nothing to do here.
+                    log.debug("spec lookup task failed: {}", e.getMessage());
+                }
+            }
+        } finally {
+            specPool.shutdown();
         }
     }
 
